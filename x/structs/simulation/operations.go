@@ -565,15 +565,17 @@ func SimulateMsgGuildMembershipRequest(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequest{}), "failed to get player cache"), nil, nil
 		}
 
-		// Check if player already in a guild
-		if playerCache.GetGuildId() != "" {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequest{}), "player already in guild"), nil, nil
+		// Get guilds, excluding the player's current guild (same-guild request would fail)
+		allGuilds := k.GetAllGuild(ctx)
+		currentGuildId := playerCache.GetGuildId()
+		var guilds []types.Guild
+		for _, g := range allGuilds {
+			if g.Id != currentGuildId {
+				guilds = append(guilds, g)
+			}
 		}
-
-		// Get a random guild to request joining
-		guilds := k.GetAllGuild(ctx)
 		if len(guilds) == 0 {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequest{}), "no guilds found"), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequest{}), "no eligible guilds found"), nil, nil
 		}
 
 		targetGuild := guilds[r.Intn(len(guilds))]
@@ -618,15 +620,17 @@ func SimulateMsgGuildMembershipJoin(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipJoin{}), "failed to get player cache"), nil, nil
 		}
 
-		// Check if player already in a guild
-		if playerCache.GetGuildId() != "" {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipJoin{}), "player already in guild"), nil, nil
+		// Get guilds, excluding the player's current guild (same-guild join would fail)
+		allGuilds := k.GetAllGuild(ctx)
+		currentGuildId := playerCache.GetGuildId()
+		var guilds []types.Guild
+		for _, g := range allGuilds {
+			if g.Id != currentGuildId {
+				guilds = append(guilds, g)
+			}
 		}
-
-		// Get a random guild to join
-		guilds := k.GetAllGuild(ctx)
 		if len(guilds) == 0 {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipJoin{}), "no guilds found"), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipJoin{}), "no eligible guilds found"), nil, nil
 		}
 
 		targetGuild := guilds[r.Intn(len(guilds))]
@@ -635,7 +639,6 @@ func SimulateMsgGuildMembershipJoin(
 			Creator:  simAccount.Address.String(),
 			GuildId:  targetGuild.Id,
 			PlayerId: player.GetPlayerId(),
-			// InfusionId can be empty if guild doesn't require minimum infusion
 		}
 
 		// Execute the message using the message server

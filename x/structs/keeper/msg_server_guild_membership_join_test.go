@@ -6,7 +6,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	keeperlib "structs/x/structs/keeper"
 	"structs/x/structs/types"
 )
 
@@ -14,77 +13,70 @@ func TestMsgGuildMembershipJoin(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
 	wctx := sdk.UnwrapSDKContext(ctx)
 
-	// Create players
-	playerAcc := sdk.AccAddress("player123456789012345678901234567890")
-	player := types.Player{
-		Creator:        playerAcc.String(),
-		PrimaryAddress: playerAcc.String(),
+	gs := testCreateGuild(k, ctx)
+
+	joinerAcc := sdk.AccAddress("join_test_addr_pad01")
+	joiner := types.Player{
+		Creator:        joinerAcc.String(),
+		PrimaryAddress: joinerAcc.String(),
 	}
-	player = testAppendPlayer(k, ctx, player)
+	joiner = testAppendPlayer(k, ctx, joiner)
 
-	// Create reactor and guild
-	validatorAddress := sdk.ValAddress(playerAcc.Bytes())
-	reactor := types.Reactor{
-		RawAddress: validatorAddress.Bytes(),
-	}
-	// AppendReactor already calls SetReactorValidatorBytes internally
-	reactor = k.AppendReactor(ctx, reactor)
-
-	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, player)
-
-	// Grant permissions
-	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	testPermissionAdd(k, ctx, addressPermissionId, types.PermGuildMembership)
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgGuildMembershipJoin
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid direct join",
-			input: &types.MsgGuildMembershipJoin{
-				Creator:    player.Creator,
-				GuildId:    guild.Id,
-				PlayerId:   player.Id,
-				InfusionId: []string{},
-			},
-			expErr: false,
-		},
-		{
-			name: "no permissions",
-			input: &types.MsgGuildMembershipJoin{
-				Creator:    sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				GuildId:    guild.Id,
-				PlayerId:   player.Id,
-				InfusionId: []string{},
-			},
-			expErr:    true,
-			expErrMsg: "has no",
-			skip:      true, // Skip - GetPlayerCacheFromAddress might create player
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
-			}
-
-			resp, err := ms.GuildMembershipJoin(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				// Note: This test may fail if direct join requirements aren't met
-				// The actual join requires specific conditions
-				_ = resp
-				_ = err
-			}
+	t.Run("valid direct join", func(t *testing.T) {
+		resp, err := ms.GuildMembershipJoin(wctx, &types.MsgGuildMembershipJoin{
+			Creator:    joiner.Creator,
+			GuildId:    gs.Guild.Id,
+			PlayerId:   joiner.Id,
+			InfusionId: []string{},
 		})
-	}
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		p, found := k.GetPlayer(ctx, joiner.Id)
+		require.True(t, found)
+		require.Equal(t, gs.Guild.Id, p.GuildId)
+	})
+
+	t.Run("guild not found", func(t *testing.T) {
+		_, err := ms.GuildMembershipJoin(wctx, &types.MsgGuildMembershipJoin{
+			Creator:    joiner.Creator,
+			GuildId:    "0-999",
+			PlayerId:   joiner.Id,
+			InfusionId: []string{},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not found")
+	})
+
+	t.Run("already a member", func(t *testing.T) {
+		memberAcc := sdk.AccAddress("join_alrmemb_pad0001")
+		member := types.Player{
+			Creator:        memberAcc.String(),
+			PrimaryAddress: memberAcc.String(),
+			GuildId:        gs.Guild.Id,
+		}
+		member = testAppendPlayer(k, ctx, member)
+		member.GuildId = gs.Guild.Id
+		k.SetPlayer(ctx, member)
+
+		_, err := ms.GuildMembershipJoin(wctx, &types.MsgGuildMembershipJoin{
+			Creator:    member.Creator,
+			GuildId:    gs.Guild.Id,
+			PlayerId:   member.Id,
+			InfusionId: []string{},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "already a member")
+	})
+
+	t.Run("unregistered creator", func(t *testing.T) {
+		unregAcc := sdk.AccAddress("unreg_creator_pad000")
+		_, err := ms.GuildMembershipJoin(wctx, &types.MsgGuildMembershipJoin{
+			Creator:    unregAcc.String(),
+			GuildId:    gs.Guild.Id,
+			PlayerId:   joiner.Id,
+			InfusionId: []string{},
+		})
+		require.Error(t, err)
+	})
 }

@@ -14,87 +14,54 @@ func TestMsgGuildMembershipRequestRevoke(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
 	wctx := sdk.UnwrapSDKContext(ctx)
 
-	// Create players
-	requesterAcc := sdk.AccAddress("requester123456789012345678901234567890")
+	gs := testCreateGuild(k, ctx)
+
+	requesterAcc := sdk.AccAddress("req_revoke_addr_pad0")
 	requester := types.Player{
 		Creator:        requesterAcc.String(),
 		PrimaryAddress: requesterAcc.String(),
 	}
 	requester = testAppendPlayer(k, ctx, requester)
 
-	// Create reactor and guild
-	validatorAddress := sdk.ValAddress(requesterAcc.Bytes())
-	reactor := types.Reactor{
-		RawAddress: validatorAddress.Bytes(),
-	}
-	// AppendReactor already calls SetReactorValidatorBytes internally
-	reactor = k.AppendReactor(ctx, reactor)
+	requesterPermId := keeperlib.GetAddressPermissionIDBytes(requester.Creator)
+	testPermissionAdd(k, ctx, requesterPermId, types.PermGuildMembership)
 
-	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, requester)
-	// Don't add requester to guild yet - they need to request membership first
-
-	// Configure guild to allow membership requests (set bypass level to member so all members can approve)
-	guildObj, _ := k.GetGuild(ctx, guild.Id)
-	guildObj.JoinInfusionMinimumBypassByRequest = types.GuildJoinBypassLevel_member
-	k.SetGuild(ctx, guildObj)
-
-	// Grant permissions
-	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(requester.Creator)
-	testPermissionAdd(k, ctx, addressPermissionId, types.PermGuildMembership)
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgGuildMembershipRequestRevoke
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid request revoke",
-			input: &types.MsgGuildMembershipRequestRevoke{
-				Creator:  requester.Creator,
-				GuildId:  guild.Id,
-				PlayerId: requester.Id,
-			},
-			expErr: false,
-		},
-		{
-			name: "no permissions",
-			input: &types.MsgGuildMembershipRequestRevoke{
-				Creator:  sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				GuildId:  guild.Id,
-				PlayerId: requester.Id,
-			},
-			expErr:    true,
-			expErrMsg: "has no",
-			skip:      true, // Skip - GetPlayerCacheFromAddress might create player
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
-			}
-
-			// Create request first
-			_, _ = ms.GuildMembershipRequest(wctx, &types.MsgGuildMembershipRequest{
-				Creator:  requester.Creator,
-				GuildId:  guild.Id,
-				PlayerId: requester.Id,
-			})
-
-			resp, err := ms.GuildMembershipRequestRevoke(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, resp)
-				require.NotNil(t, resp.GuildMembershipApplication)
-			}
+	t.Run("valid request revoke", func(t *testing.T) {
+		_, err := ms.GuildMembershipRequest(wctx, &types.MsgGuildMembershipRequest{
+			Creator:  requester.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: requester.Id,
 		})
-	}
+		require.NoError(t, err)
+
+		resp, err := ms.GuildMembershipRequestRevoke(wctx, &types.MsgGuildMembershipRequestRevoke{
+			Creator:  requester.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: requester.Id,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NotNil(t, resp.GuildMembershipApplication)
+		require.Equal(t, types.RegistrationStatus_revoked, resp.GuildMembershipApplication.RegistrationStatus)
+	})
+
+	t.Run("no pending request", func(t *testing.T) {
+		_, err := ms.GuildMembershipRequestRevoke(wctx, &types.MsgGuildMembershipRequestRevoke{
+			Creator:  requester.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: "1-999",
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "permission")
+	})
+
+	t.Run("unregistered creator", func(t *testing.T) {
+		unregAcc := sdk.AccAddress("unreg_revoke_addr_pad0")
+		_, err := ms.GuildMembershipRequestRevoke(wctx, &types.MsgGuildMembershipRequestRevoke{
+			Creator:  unregAcc.String(),
+			GuildId:  gs.Guild.Id,
+			PlayerId: requester.Id,
+		})
+		require.Error(t, err)
+	})
 }

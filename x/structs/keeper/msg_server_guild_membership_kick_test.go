@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"strings"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,94 +15,120 @@ func TestMsgGuildMembershipKick(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
 	wctx := sdk.UnwrapSDKContext(ctx)
 
-	// Create players
-	guildOwnerAcc := sdk.AccAddress("guildowner123456789012345678901234567890")
-	guildOwner := types.Player{
-		Creator:        guildOwnerAcc.String(),
-		PrimaryAddress: guildOwnerAcc.String(),
-	}
-	guildOwner = testAppendPlayer(k, ctx, guildOwner)
+	gs := testCreateGuild(k, ctx)
 
-	memberAcc := sdk.AccAddress("member123456789012345678901234567890")
+	memberAcc := sdk.AccAddress("kick_member_addr_pad")
 	member := types.Player{
 		Creator:        memberAcc.String(),
 		PrimaryAddress: memberAcc.String(),
+		GuildId:        gs.Guild.Id,
+		GuildRank:      50,
 	}
 	member = testAppendPlayer(k, ctx, member)
 
-	// Create reactor and guild
-	validatorAddress := sdk.ValAddress(guildOwnerAcc.Bytes())
-	reactor := types.Reactor{
-		RawAddress: validatorAddress.Bytes(),
-	}
-	// AppendReactor already calls SetReactorValidatorBytes internally
-	reactor = k.AppendReactor(ctx, reactor)
-
-	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, guildOwner)
-	guildOwner.GuildId = guild.Id
-	guildOwner.GuildRank = 1
-	k.SetPlayer(ctx, guildOwner)
-	member.GuildId = guild.Id
-	member.GuildRank = 2
-	k.SetPlayer(ctx, member)
-
-	// Grant permissions
-	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(guildOwner.Creator)
-	testPermissionAdd(k, ctx, addressPermissionId, types.PermGuildMembership)
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgGuildMembershipKick
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid kick",
-			input: &types.MsgGuildMembershipKick{
-				Creator:  guildOwner.Creator,
-				GuildId:  guild.Id,
-				PlayerId: member.Id,
-			},
-			expErr: false,
-		},
-		{
-			name: "no permissions",
-			input: &types.MsgGuildMembershipKick{
-				Creator:  sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				GuildId:  guild.Id,
-				PlayerId: member.Id,
-			},
-			expErr:    true,
-			expErrMsg: "has no",
-			skip:      true, // Skip - GetPlayerCacheFromAddress might create player
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
-			}
-
-			// Re-add member if needed
-			if tc.name == "valid kick" {
-				member.GuildId = guild.Id
-				member.GuildRank = 2
-				k.SetPlayer(ctx, member)
-			}
-
-			resp, err := ms.GuildMembershipKick(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, resp)
-				require.NotNil(t, resp.GuildMembershipApplication)
-			}
+	t.Run("valid kick", func(t *testing.T) {
+		resp, err := ms.GuildMembershipKick(wctx, &types.MsgGuildMembershipKick{
+			Creator:  gs.GuildOwner.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: member.Id,
 		})
-	}
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		p, found := k.GetPlayer(ctx, member.Id)
+		require.True(t, found)
+		require.Equal(t, "", p.GuildId)
+	})
+
+	t.Run("target not a member", func(t *testing.T) {
+		nonMemberAcc := sdk.AccAddress("nonmember_kickpad_01")
+		nonMember := types.Player{
+			Creator:        nonMemberAcc.String(),
+			PrimaryAddress: nonMemberAcc.String(),
+		}
+		nonMember = testAppendPlayer(k, ctx, nonMember)
+
+		_, err := ms.GuildMembershipKick(wctx, &types.MsgGuildMembershipKick{
+			Creator:  gs.GuildOwner.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: nonMember.Id,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not a member")
+	})
+
+	t.Run("cannot kick owner", func(t *testing.T) {
+		kickerAcc := sdk.AccAddress("kicker_rank1_addr_pad")
+		kicker := types.Player{
+			Creator:        kickerAcc.String(),
+			PrimaryAddress: kickerAcc.String(),
+			GuildId:        gs.Guild.Id,
+			GuildRank:      1,
+		}
+		kicker = testAppendPlayer(k, ctx, kicker)
+
+		permId := keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id, kicker.Id)
+		testPermissionAdd(k, ctx, permId, types.PermGuildMembership)
+
+		_, err := ms.GuildMembershipKick(wctx, &types.MsgGuildMembershipKick{
+			Creator:  kicker.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: gs.GuildOwner.Id,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "cannot_kick_owner")
+	})
+
+	t.Run("lower rank cannot kick higher rank", func(t *testing.T) {
+		memberAAcc := sdk.AccAddress("member_a_rank50_pad0")
+		memberA := types.Player{
+			Creator:        memberAAcc.String(),
+			PrimaryAddress: memberAAcc.String(),
+			GuildId:        gs.Guild.Id,
+			GuildRank:      50,
+		}
+		memberA = testAppendPlayer(k, ctx, memberA)
+
+		memberBAcc := sdk.AccAddress("member_b_rank10_pad0")
+		memberB := types.Player{
+			Creator:        memberBAcc.String(),
+			PrimaryAddress: memberBAcc.String(),
+			GuildId:        gs.Guild.Id,
+			GuildRank:      10,
+		}
+		memberB = testAppendPlayer(k, ctx, memberB)
+
+		permId := keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id, memberA.Id)
+		testPermissionAdd(k, ctx, permId, types.PermGuildMembership)
+
+		_, err := ms.GuildMembershipKick(wctx, &types.MsgGuildMembershipKick{
+			Creator:  memberA.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: memberB.Id,
+		})
+		require.Error(t, err)
+		errStr := err.Error()
+		require.True(t, strings.Contains(errStr, "permission") || strings.Contains(errStr, "administrate"),
+			"expected error containing 'permission' or 'administrate', got: %s", errStr)
+	})
+
+	t.Run("target player not found", func(t *testing.T) {
+		_, err := ms.GuildMembershipKick(wctx, &types.MsgGuildMembershipKick{
+			Creator:  gs.GuildOwner.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: "1-999",
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not a member")
+	})
+
+	t.Run("unregistered creator", func(t *testing.T) {
+		unregAcc := sdk.AccAddress("unreg_kick_addr_pad0")
+		_, err := ms.GuildMembershipKick(wctx, &types.MsgGuildMembershipKick{
+			Creator:  unregAcc.String(),
+			GuildId:  gs.Guild.Id,
+			PlayerId: member.Id,
+		})
+		require.Error(t, err)
+	})
 }

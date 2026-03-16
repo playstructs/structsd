@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	keeperlib "structs/x/structs/keeper"
 	"structs/x/structs/types"
 )
@@ -157,6 +159,64 @@ func testSetStructAttributeDelta(k keeperlib.Keeper, ctx context.Context, struct
 	amount := resetAmount + newAmount
 	k.SetStructAttribute(ctx, structAttributeId, amount)
 	return amount
+}
+
+type testGuildSetup struct {
+	GuildOwner types.Player
+	Reactor    types.Reactor
+	Guild      types.Guild
+	Substation types.Substation
+}
+
+func testCreateGuild(k keeperlib.Keeper, ctx context.Context) testGuildSetup {
+	ownerAcc := sdk.AccAddress(fmt.Sprintf("guildowner%d_padding_addr", k.GetPlayerCount(ctx)))
+	owner := types.Player{
+		Creator:        ownerAcc.String(),
+		PrimaryAddress: ownerAcc.String(),
+	}
+	owner = testAppendPlayer(k, ctx, owner)
+
+	validatorAddress := sdk.ValAddress(ownerAcc.Bytes())
+	reactor := testAppendReactor(k, ctx, types.Reactor{
+		RawAddress: validatorAddress.Bytes(),
+		Validator:  validatorAddress.String(),
+	})
+
+	reactorPermId := keeperlib.GetObjectPermissionIDBytes(reactor.Id, owner.Id)
+	testPermissionAdd(k, ctx, reactorPermId, types.PermAll)
+
+	alloc := types.Allocation{
+		SourceObjectId: owner.Id,
+		Controller:     owner.Id,
+		Type:           types.AllocationType_static,
+	}
+	alloc, _ = testAppendAllocation(k, ctx, alloc, 100)
+
+	substation, _, _ := testAppendSubstation(k, ctx, alloc, owner)
+	substationPermId := keeperlib.GetObjectPermissionIDBytes(substation.Id, owner.Id)
+	testPermissionAdd(k, ctx, substationPermId, types.PermAll)
+
+	guild := k.AppendGuild(ctx, "test-endpoint", substation.Id, reactor, owner)
+
+	owner.GuildId = guild.Id
+	owner.GuildRank = 1
+	k.SetPlayer(ctx, owner)
+
+	guildObj, _ := k.GetGuild(ctx, guild.Id)
+	guildObj.JoinInfusionMinimumBypassByInvite = types.GuildJoinBypassLevel_member
+	guildObj.JoinInfusionMinimumBypassByRequest = types.GuildJoinBypassLevel_member
+	k.SetGuild(ctx, guildObj)
+	guild = guildObj
+
+	guildPermId := keeperlib.GetObjectPermissionIDBytes(guild.Id, owner.Id)
+	testPermissionAdd(k, ctx, guildPermId, types.PermAll)
+
+	return testGuildSetup{
+		GuildOwner: owner,
+		Reactor:    reactor,
+		Guild:      guild,
+		Substation: substation,
+	}
 }
 
 func testSetStructAttributeDecrement(k keeperlib.Keeper, ctx context.Context, structAttributeId string, decrementAmount uint64) uint64 {

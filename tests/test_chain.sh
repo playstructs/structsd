@@ -527,7 +527,28 @@ recover_state() {
     REACTOR_ID=$(query query structs reactor-all 2>/dev/null | jq -r '.Reactor[0].id // empty' 2>/dev/null || echo "")
     SUBSTATION_ID=$(query query structs substation-all 2>/dev/null | jq -r '.Substation[0].id // empty' 2>/dev/null || echo "")
     GUILD_TOKEN_DENOM="uguild.${GUILD_ID}"
-    echo "  Guild: ${GUILD_ID}  Reactor: ${REACTOR_ID}  Substation: ${SUBSTATION_ID}"
+    echo "  Guild A: ${GUILD_ID}  Reactor: ${REACTOR_ID}  Substation: ${SUBSTATION_ID}"
+
+    # Recover guild leaders and guilds B/C
+    for LEADER_SUFFIX in b c; do
+        local LADDR
+        LADDR=$(structsd ${PARAMS_KEYS} keys show "guild_leader_${LEADER_SUFFIX}" 2>/dev/null | jq -r .address || echo "")
+        if [ -z "${LADDR}" ]; then continue; fi
+        local LSUFFIX_UPPER
+        LSUFFIX_UPPER=$(echo "${LEADER_SUFFIX}" | tr '[:lower:]' '[:upper:]')
+        eval "GUILD_LEADER_${LSUFFIX_UPPER}_ADDRESS=${LADDR}"
+        local LPID
+        LPID=$(query query structs address "${LADDR}" 2>/dev/null | jq -r '.playerId // empty' 2>/dev/null || echo "")
+        if [ -n "${LPID}" ]; then
+            eval "GUILD_LEADER_${LSUFFIX_UPPER}_ID=${LPID}"
+            echo "  Guild Leader ${LSUFFIX_UPPER}: ${LPID} (${LADDR})"
+        fi
+    done
+    local GUILD_ALL_JSON
+    GUILD_ALL_JSON=$(query query structs guild-all 2>/dev/null || echo '{}')
+    GUILD_B_ID=$(echo "${GUILD_ALL_JSON}" | jq -r --arg ga "${GUILD_ID}" '[.Guild[] | select(.id != $ga)] | .[0].id // empty' 2>/dev/null || echo "")
+    GUILD_C_ID=$(echo "${GUILD_ALL_JSON}" | jq -r --arg ga "${GUILD_ID}" --arg gb "${GUILD_B_ID:-}" '[.Guild[] | select(.id != $ga and .id != $gb)] | .[0].id // empty' 2>/dev/null || echo "")
+    echo "  Guild B: ${GUILD_B_ID:-?}  Guild C: ${GUILD_C_ID:-?}"
 
     for PLAYER_NUM in 2 3 4; do
         eval "local PID=\${PLAYER_${PLAYER_NUM}_ID:-}"
@@ -809,6 +830,94 @@ assert_eq "Player 1 primaryAddress intact after new players" "${PLAYER_1_ADDRESS
 REACTOR_RECHECK=$(query query structs reactor "${REACTOR_ID}")
 REACTOR_RECHECK_VAL=$(jqr "${REACTOR_RECHECK}" '.Reactor.validator')
 assert_eq "Reactor validator intact after new players" "${VALIDATOR_ADDRESS}" "${REACTOR_RECHECK_VAL}"
+
+# ─── Create Guild Leaders and Additional Guilds ──────────────────────────────
+# Guild creation moves the creator into the new guild, so alice cannot create
+# more guilds without leaving her own. Instead, create dedicated leader accounts
+# and grant them PermReactorGuildCreate (524288) on the reactor.
+
+section "Create Guild Leaders (B, C)"
+
+for LEADER_SUFFIX in b c; do
+    LEADER_KEY="guild_leader_${LEADER_SUFFIX}"
+    info "Setting up ${LEADER_KEY}"
+    EXISTING=$(structsd ${PARAMS_KEYS} keys show "${LEADER_KEY}" 2>/dev/null | jq -r .address || echo "")
+    if [ -z "${EXISTING}" ]; then
+        ADDR=$(structsd ${PARAMS_KEYS} keys add "${LEADER_KEY}" | jq -r .address)
+        echo "  Created ${LEADER_KEY}: ${ADDR}"
+    else
+        ADDR="${EXISTING}"
+        echo "  Reusing ${LEADER_KEY}: ${ADDR}"
+    fi
+    LEADER_SUFFIX_UPPER=$(echo "${LEADER_SUFFIX}" | tr '[:lower:]' '[:upper:]')
+    eval "GUILD_LEADER_${LEADER_SUFFIX_UPPER}_ADDRESS=${ADDR}"
+done
+
+assert_not_empty "Guild Leader B address" "${GUILD_LEADER_B_ADDRESS}"
+assert_not_empty "Guild Leader C address" "${GUILD_LEADER_C_ADDRESS}"
+
+# Fund guild leaders (from alice to avoid draining bob's faucet budget)
+for LEADER_SUFFIX in B C; do
+    LEADER_LOWER=$(echo "${LEADER_SUFFIX}" | tr '[:upper:]' '[:lower:]')
+    eval "LADDR=\${GUILD_LEADER_${LEADER_SUFFIX}_ADDRESS}"
+    run_tx "Sending 10000000ualpha from alice to guild_leader_${LEADER_LOWER}" \
+        tx bank send "${PLAYER_1_ADDRESS}" "${LADDR}" 10000000ualpha --from alice
+done
+
+# Delegate guild leaders (creates player accounts)
+for LEADER_SUFFIX in B C; do
+    LEADER_LOWER=$(echo "${LEADER_SUFFIX}" | tr '[:upper:]' '[:lower:]')
+    run_tx "Delegating 5000000ualpha from guild_leader_${LEADER_LOWER} to validator" \
+        tx staking delegate "${VALIDATOR_ADDRESS}" 5000000ualpha --from "guild_leader_${LEADER_LOWER}"
+
+    eval "LADDR=\${GUILD_LEADER_${LEADER_SUFFIX}_ADDRESS}"
+    ADDR_JSON=$(query query structs address "${LADDR}")
+    LID=$(jqr "${ADDR_JSON}" '.playerId')
+    eval "GUILD_LEADER_${LEADER_SUFFIX}_ID=${LID}"
+    assert_not_empty "Guild Leader ${LEADER_SUFFIX} ID" "${LID}"
+    echo "  Guild Leader ${LEADER_SUFFIX} ID: ${LID}"
+done
+
+# Grant PermReactorGuildCreate (524288) on reactor to each leader
+run_tx "Granting PermReactorGuildCreate on reactor to Guild Leader B" \
+    tx structs permission-grant-on-object "${REACTOR_ID}" "${GUILD_LEADER_B_ID}" 524288 --from alice
+
+run_tx "Granting PermReactorGuildCreate on reactor to Guild Leader C" \
+    tx structs permission-grant-on-object "${REACTOR_ID}" "${GUILD_LEADER_C_ID}" 524288 --from alice
+
+# Grant PermSubstationConnection (1024) on substation to each leader
+run_tx "Granting PermSubstationConnection on substation to Guild Leader B" \
+    tx structs permission-grant-on-object "${SUBSTATION_ID}" "${GUILD_LEADER_B_ID}" 1024 --from alice
+
+run_tx "Granting PermSubstationConnection on substation to Guild Leader C" \
+    tx structs permission-grant-on-object "${SUBSTATION_ID}" "${GUILD_LEADER_C_ID}" 1024 --from alice
+
+# Create Guild B
+run_tx "Guild Leader B creates Guild B" \
+    tx structs guild-create "${REACTOR_ID}" "guild-b.energy" "${SUBSTATION_ID}" --from guild_leader_b
+
+GUILD_ALL_JSON=$(query query structs guild-all)
+GUILD_B_ID=$(echo "${GUILD_ALL_JSON}" | jq -r --arg ga "${GUILD_ID}" '[.Guild[] | select(.id != $ga)] | .[0].id // empty' 2>/dev/null || echo "")
+assert_not_empty "Guild B ID" "${GUILD_B_ID}"
+echo "  Guild B ID: ${GUILD_B_ID}"
+
+# Create Guild C
+run_tx "Guild Leader C creates Guild C" \
+    tx structs guild-create "${REACTOR_ID}" "guild-c.energy" "${SUBSTATION_ID}" --from guild_leader_c
+
+GUILD_ALL_JSON=$(query query structs guild-all)
+GUILD_C_ID=$(echo "${GUILD_ALL_JSON}" | jq -r --arg ga "${GUILD_ID}" --arg gb "${GUILD_B_ID}" '[.Guild[] | select(.id != $ga and .id != $gb)] | .[0].id // empty' 2>/dev/null || echo "")
+assert_not_empty "Guild C ID" "${GUILD_C_ID}"
+echo "  Guild C ID: ${GUILD_C_ID}"
+
+info "Guilds: A=${GUILD_ID}  B=${GUILD_B_ID}  C=${GUILD_C_ID}"
+
+# Enable invite and request bypass on Guild B (for cross-guild membership tests)
+run_tx "Enabling Guild B invites (bypass=member)" \
+    tx structs guild-update-join-infusion-minimum-by-invite "${GUILD_B_ID}" member --from guild_leader_b
+
+run_tx "Enabling Guild B requests (bypass=member)" \
+    tx structs guild-update-join-infusion-minimum-by-request "${GUILD_B_ID}" member --from guild_leader_b
 
 fi # phase 2
 
@@ -1294,8 +1403,270 @@ P2_JSON=$(query query structs player "${PLAYER_2_ID}")
 P2_GUILD=$(jqr "${P2_JSON}" '.Player.guildId' '')
 assert_eq "Player 2 still in guild after unauthorized kick" "${GUILD_ID}" "${P2_GUILD}"
 
-# ─── Cleanup: leave Player 5 in guild for completeness ───
-info "Guild membership tests complete. Player 5 remains in guild."
+# ─── Reset: kick Player 5 so subsequent tests start clean ─────────────────
+run_tx "Kick Player 5 (reset for tests 9+)" \
+    tx structs guild-membership-kick "${PLAYER_5_ID}" --from alice
+
+P5_JSON=$(query query structs player "${PLAYER_5_ID}")
+P5_GUILD=$(jqr "${P5_JSON}" '.Player.guildId' '')
+assert_eq "Player 5 out of guild (reset)" "" "${P5_GUILD}"
+
+# ─── Test 9: Invite → Approve (using run_tx_noauto) ─────────────────────────
+info "--- Test 9: Invite → Approve ---"
+
+run_tx "Alice invites Player 5" \
+    tx structs guild-membership-invite "${PLAYER_5_ID}" --from alice
+
+APP_JSON=$(query query structs guild-membership-application "${GUILD_ID}" "${PLAYER_5_ID}" 2>/dev/null || echo '{}')
+APP_TYPE=$(jqr "${APP_JSON}" '.GuildMembershipApplication.joinType' '')
+assert_eq "Invite application exists" "invite" "${APP_TYPE}"
+
+run_tx_noauto "Player 5 approves invite" \
+    tx structs guild-membership-invite-approve "${GUILD_ID}" --from player_5
+
+P5_JSON=$(query query structs player "${PLAYER_5_ID}")
+P5_GUILD=$(jqr "${P5_JSON}" '.Player.guildId' '')
+assert_eq "Player 5 joined guild via invite-approve" "${GUILD_ID}" "${P5_GUILD}"
+
+run_tx "Kick Player 5 (reset after test 9)" \
+    tx structs guild-membership-kick "${PLAYER_5_ID}" --from alice
+
+# ─── Test 10: Invite → Approve with substation override ─────────────────────
+info "--- Test 10: Invite → Approve with substation override ---"
+
+# Player 5 needs PermSubstationConnection on the substation for the override
+run_tx "Grant Player 5 PermSubstationConnection on substation" \
+    tx structs permission-grant-on-object "${SUBSTATION_ID}" "${PLAYER_5_ID}" 1024 --from alice
+
+run_tx "Alice invites Player 5" \
+    tx structs guild-membership-invite "${PLAYER_5_ID}" --from alice
+
+run_tx_noauto "Player 5 approves invite with substation override" \
+    tx structs guild-membership-invite-approve "${GUILD_ID}" --substation-id "${SUBSTATION_ID}" --from player_5
+
+P5_JSON=$(query query structs player "${PLAYER_5_ID}")
+P5_GUILD=$(jqr "${P5_JSON}" '.Player.guildId' '')
+assert_eq "Player 5 joined guild via invite-approve with substation" "${GUILD_ID}" "${P5_GUILD}"
+
+run_tx "Kick Player 5 (reset after test 10)" \
+    tx structs guild-membership-kick "${PLAYER_5_ID}" --from alice
+
+# ─── Test 11: Request when already a member (negative) ──────────────────────
+info "--- Test 11: Request when already a member ---"
+
+# Safety: revoke any lingering invite application from previous tests
+run_tx "Revoking any lingering invite (safety cleanup)" \
+    tx structs guild-membership-invite-revoke "${GUILD_ID}" "${PLAYER_5_ID}" --from alice
+
+run_tx "Player 5 requests to join guild (setup)" \
+    tx structs guild-membership-request "${GUILD_ID}" --from player_5
+run_tx "Alice approves Player 5's request (setup)" \
+    tx structs guild-membership-request-approve "${PLAYER_5_ID}" --from alice
+
+P5_JSON=$(query query structs player "${PLAYER_5_ID}")
+P5_GUILD=$(jqr "${P5_JSON}" '.Player.guildId' '')
+assert_eq "Player 5 in guild (setup for test 11)" "${GUILD_ID}" "${P5_GUILD}"
+
+run_tx_expect_fail "Player 5 requests again while already in guild (should fail)" \
+    tx structs guild-membership-request "${GUILD_ID}" --from player_5
+
+run_tx "Kick Player 5 (reset after test 11)" \
+    tx structs guild-membership-kick "${PLAYER_5_ID}" --from alice
+
+# ─── Test 12: Invite a player who is already a member (negative) ────────────
+info "--- Test 12: Invite already-member ---"
+
+# Safety cleanup of any lingering applications
+run_tx "Revoking any lingering application (safety)" \
+    tx structs guild-membership-invite-revoke "${GUILD_ID}" "${PLAYER_5_ID}" --from alice
+
+run_tx "Player 5 requests to join guild (setup)" \
+    tx structs guild-membership-request "${GUILD_ID}" --from player_5
+run_tx "Alice approves (setup)" \
+    tx structs guild-membership-request-approve "${PLAYER_5_ID}" --from alice
+
+run_tx_expect_fail "Alice invites Player 5 who is already in guild (should fail)" \
+    tx structs guild-membership-invite "${PLAYER_5_ID}" --from alice
+
+run_tx "Kick Player 5 (reset after test 12)" \
+    tx structs guild-membership-kick "${PLAYER_5_ID}" --from alice
+
+# ─── Test 13: Cross-guild request — player in Guild B requests Guild A ──────
+info "--- Test 13: Cross-guild request (Guild B -> Guild A) ---"
+
+# Safety cleanup
+run_tx "Revoking any lingering application (safety)" \
+    tx structs guild-membership-invite-revoke "${GUILD_ID}" "${PLAYER_5_ID}" --from alice
+
+# Player 5 joins Guild B
+run_tx "Player 5 requests to join Guild B" \
+    tx structs guild-membership-request "${GUILD_B_ID}" --from player_5
+run_tx "Guild Leader B approves Player 5" \
+    tx structs guild-membership-request-approve "${PLAYER_5_ID}" --from guild_leader_b
+
+P5_JSON=$(query query structs player "${PLAYER_5_ID}")
+P5_GUILD=$(jqr "${P5_JSON}" '.Player.guildId' '')
+assert_eq "Player 5 in Guild B" "${GUILD_B_ID}" "${P5_GUILD}"
+
+# Player 5 requests Guild A while in Guild B (allowed — creates application)
+run_tx "Player 5 requests Guild A while in Guild B" \
+    tx structs guild-membership-request "${GUILD_ID}" --from player_5
+
+# Alice approves — migrates Player 5 from Guild B to Guild A
+run_tx "Alice approves cross-guild request" \
+    tx structs guild-membership-request-approve "${PLAYER_5_ID}" --from alice
+
+P5_JSON=$(query query structs player "${PLAYER_5_ID}")
+P5_GUILD=$(jqr "${P5_JSON}" '.Player.guildId' '')
+assert_eq "Player 5 migrated from Guild B to Guild A" "${GUILD_ID}" "${P5_GUILD}"
+
+# Kick from Guild A to reset
+run_tx "Kick Player 5 from Guild A (reset after test 13)" \
+    tx structs guild-membership-kick "${PLAYER_5_ID}" --from alice
+
+# ─── Test 14: Cross-guild invite — player in Guild B accepts Guild A invite ─
+info "--- Test 14: Cross-guild invite-approve (Guild B -> Guild A) ---"
+
+# Player 5 joins Guild B
+run_tx "Player 5 requests to join Guild B (setup)" \
+    tx structs guild-membership-request "${GUILD_B_ID}" --from player_5
+run_tx "Guild Leader B approves Player 5 (setup)" \
+    tx structs guild-membership-request-approve "${PLAYER_5_ID}" --from guild_leader_b
+
+# Alice invites Player 5 to Guild A
+run_tx "Alice invites Player 5 to Guild A" \
+    tx structs guild-membership-invite "${PLAYER_5_ID}" --from alice
+
+# Player 5 accepts the invite while in Guild B (allowed — migrates to Guild A)
+run_tx_noauto "Player 5 approves Guild A invite while in Guild B" \
+    tx structs guild-membership-invite-approve "${GUILD_ID}" --from player_5
+
+P5_JSON=$(query query structs player "${PLAYER_5_ID}")
+P5_GUILD=$(jqr "${P5_JSON}" '.Player.guildId' '')
+assert_eq "Player 5 migrated from Guild B to Guild A" "${GUILD_ID}" "${P5_GUILD}"
+
+# Kick from Guild A to reset
+run_tx "Kick Player 5 from Guild A (reset after test 14)" \
+    tx structs guild-membership-kick "${PLAYER_5_ID}" --from alice
+
+# ─── Test 15: Invites closed (negative) ─────────────────────────────────────
+info "--- Test 15: Invites closed ---"
+
+run_tx "Setting invite bypass to closed" \
+    tx structs guild-update-join-infusion-minimum-by-invite "${GUILD_ID}" closed --from alice
+
+run_tx_expect_fail "Alice tries to invite Player 5 with invites closed (should fail)" \
+    tx structs guild-membership-invite "${PLAYER_5_ID}" --from alice
+
+# Restore
+run_tx "Restoring invite bypass to member" \
+    tx structs guild-update-join-infusion-minimum-by-invite "${GUILD_ID}" member --from alice
+
+# ─── Test 16: Requests closed (negative) ────────────────────────────────────
+info "--- Test 16: Requests closed ---"
+
+run_tx "Setting request bypass to closed" \
+    tx structs guild-update-join-infusion-minimum-by-request "${GUILD_ID}" closed --from alice
+
+run_tx_expect_fail "Player 5 requests to join with requests closed (should fail)" \
+    tx structs guild-membership-request "${GUILD_ID}" --from player_5
+
+# Restore
+run_tx "Restoring request bypass to member" \
+    tx structs guild-update-join-infusion-minimum-by-request "${GUILD_ID}" member --from alice
+
+# ─── Test 17: Kick guild owner (negative) ───────────────────────────────────
+info "--- Test 17: Kick guild owner ---"
+
+# Player 5 joins, gets high rank, tries to kick alice
+run_tx "Player 5 requests to join guild (setup)" \
+    tx structs guild-membership-request "${GUILD_ID}" --from player_5
+run_tx "Alice approves (setup)" \
+    tx structs guild-membership-request-approve "${PLAYER_5_ID}" --from alice
+run_tx "Alice sets Player 5 rank to 2" \
+    tx structs player-update-guild-rank "${PLAYER_5_ID}" 2 --from alice
+
+run_tx_expect_fail "Player 5 (rank 2) tries to kick alice/owner (should fail)" \
+    tx structs guild-membership-kick "${PLAYER_1_ID}" --from player_5
+
+P1_JSON=$(query query structs player "${PLAYER_1_ID}")
+P1_GUILD=$(jqr "${P1_JSON}" '.Player.guildId' '')
+assert_eq "Alice still in guild after owner-kick attempt" "${GUILD_ID}" "${P1_GUILD}"
+
+run_tx "Kick Player 5 (reset after test 17)" \
+    tx structs guild-membership-kick "${PLAYER_5_ID}" --from alice
+
+# ─── Test 18: Permissioned invite bypass — member without permission ────────
+info "--- Test 18: Permissioned invite bypass (no perm) ---"
+
+run_tx "Setting invite bypass to permissioned" \
+    tx structs guild-update-join-infusion-minimum-by-invite "${GUILD_ID}" permissioned --from alice
+
+# Player 2 is a guild member but does NOT have explicit PermGuildMembership on guild object
+run_tx_expect_fail "Player 2 (no guild perm) tries to invite Player 5 (should fail)" \
+    tx structs guild-membership-invite "${PLAYER_5_ID}" --from player_2
+
+run_tx "Restoring invite bypass to member" \
+    tx structs guild-update-join-infusion-minimum-by-invite "${GUILD_ID}" member --from alice
+
+# ─── Test 19: Permissioned invite bypass — admin with permission (success) ──
+info "--- Test 19: Permissioned invite bypass (admin) ---"
+
+run_tx "Setting invite bypass to permissioned" \
+    tx structs guild-update-join-infusion-minimum-by-invite "${GUILD_ID}" permissioned --from alice
+
+# Alice (owner) has admin permissions — should succeed
+run_tx "Alice invites Player 5 (permissioned mode)" \
+    tx structs guild-membership-invite "${PLAYER_5_ID}" --from alice
+
+APP_JSON=$(query query structs guild-membership-application "${GUILD_ID}" "${PLAYER_5_ID}" 2>/dev/null || echo '{}')
+APP_TYPE=$(jqr "${APP_JSON}" '.GuildMembershipApplication.joinType' '')
+assert_eq "Invite created in permissioned mode" "invite" "${APP_TYPE}"
+
+# Revoke the invite to clean up
+run_tx "Alice revokes the invite (cleanup)" \
+    tx structs guild-membership-invite-revoke "${GUILD_ID}" "${PLAYER_5_ID}" --from alice
+
+run_tx "Restoring invite bypass to member" \
+    tx structs guild-update-join-infusion-minimum-by-invite "${GUILD_ID}" member --from alice
+
+# ─── Test 20: Permissioned request bypass — non-permissioned approver ───────
+info "--- Test 20: Permissioned request bypass (non-perm approver) ---"
+
+run_tx "Setting request bypass to permissioned" \
+    tx structs guild-update-join-infusion-minimum-by-request "${GUILD_ID}" permissioned --from alice
+
+# Player 5 requests to join
+run_tx "Player 5 requests to join guild" \
+    tx structs guild-membership-request "${GUILD_ID}" --from player_5
+
+# Player 2 (member, no explicit PermGuildMembership on guild) tries to approve
+run_tx_expect_fail "Player 2 (no guild perm) tries to approve request (should fail)" \
+    tx structs guild-membership-request-approve "${PLAYER_5_ID}" --from player_2
+
+# Alice (admin) approves instead
+run_tx "Alice approves Player 5's request (cleanup)" \
+    tx structs guild-membership-request-approve "${PLAYER_5_ID}" --from alice
+
+run_tx "Kick Player 5 (reset after test 20)" \
+    tx structs guild-membership-kick "${PLAYER_5_ID}" --from alice
+
+run_tx "Restoring request bypass to member" \
+    tx structs guild-update-join-infusion-minimum-by-request "${GUILD_ID}" member --from alice
+
+# ─── Final: Re-join Player 5 for subsequent phases ──────────────────────────
+info "--- Re-joining Player 5 for later phases ---"
+run_tx "Player 5 requests to join guild (final setup)" \
+    tx structs guild-membership-request "${GUILD_ID}" --from player_5
+run_tx "Alice approves Player 5 (final setup)" \
+    tx structs guild-membership-request-approve "${PLAYER_5_ID}" --from alice
+
+P5_JSON=$(query query structs player "${PLAYER_5_ID}")
+P5_GUILD=$(jqr "${P5_JSON}" '.Player.guildId' '')
+assert_eq "Player 5 in guild (final)" "${GUILD_ID}" "${P5_GUILD}"
+
+# ─── Cleanup ───
+info "Guild membership tests complete (20 tests). Player 5 remains in guild."
 info "All membership applications summary:"
 query query structs guild-membership-application-all | jq -r '.GuildMembershipApplication[] | "  \(.guildId) player=\(.playerId) type=\(.joinType)"' 2>/dev/null || echo "  (none pending)"
 
@@ -3217,18 +3588,7 @@ assert_eq "Generator built" "true" "${GEN_BUILT}"
 assert_eq "Generator online after build" "true" "${GEN_ONLINE}"
 assert_eq "Generator type" "20" "${GEN_TYPE}"
 
-# ─── Deactivate generator (must be offline to infuse) ───
-run_tx "Deactivating generator for infusion" \
-    tx structs struct-deactivate "${GENERATOR_STRUCT_ID}" --from player_4
-
-# NOTE: isOnline may still read 'true' briefly after deactivation due to query timing.
-# The infuse succeeding (next step) is the authoritative confirmation that the struct
-# is offline, since struct-generator-infuse rejects online structs.
-GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}")
-GEN_ONLINE_AFTER_DEACTIVATE=$(jqr "${GEN_JSON}" '.structAttributes.isOnline' 'true')
-info "Generator isOnline after deactivate: ${GEN_ONLINE_AFTER_DEACTIVATE} (infuse success confirms offline)"
-
-# ─── Infuse alpha into the generator ───
+# ─── Infuse alpha into the generator (must be online) ───
 INFUSE_AMOUNT="1000000ualpha"
 info "Infusing ${INFUSE_AMOUNT} into generator (GeneratingRate=2, expected power=2000000)"
 
@@ -3241,13 +3601,9 @@ GEN_FUEL=$(jqr "${GEN_JSON}" '.gridAttributes.fuel' '0')
 info "Generator fuel after infusion: ${GEN_FUEL}"
 assert_gt "Generator has fuel" 0 "${GEN_FUEL}"
 
-# ─── Activate generator (bring back online with power) ───
-run_tx "Activating generator ${GENERATOR_STRUCT_ID}" \
-    tx structs struct-activate "${GENERATOR_STRUCT_ID}" --from player_4
-
-GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}")
-GEN_ONLINE_AFTER_ACTIVATE=$(jqr "${GEN_JSON}" '.structAttributes.isOnline' 'false')
-assert_eq "Generator online after activate" "true" "${GEN_ONLINE_AFTER_ACTIVATE}"
+# Generator remains online — verify
+GEN_ONLINE_AFTER_INFUSE=$(jqr "${GEN_JSON}" '.structAttributes.isOnline' 'false')
+assert_eq "Generator still online after infuse" "true" "${GEN_ONLINE_AFTER_INFUSE}"
 
 # ─── Verify Player 4's capacity increased from generator power ───
 P4_JSON=$(query query structs player "${PLAYER_4_ID}")
