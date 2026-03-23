@@ -188,7 +188,7 @@ option go_package = "structs/x/structs/types";
     bool targetCountered                    = 24;
     uint64 targetCounteredDamage            = 25;
     bool targetCounterDestroyedAttacker     = 26;
-    techPassiveWeaponry targetCounterCause  = 27;
+    techPassiveWeaponry targetCounterWeaponSystem  = 27;
 
     bool targetDestroyed = 28;
 
