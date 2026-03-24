@@ -33,6 +33,8 @@ type StructCache struct {
 	ReadyAttributeId string
 
 	structType *types.StructType
+
+	CounterSpent bool
 }
 
 
@@ -46,6 +48,14 @@ func (cache *StructCache) Commit() {
 
 func (cache *StructCache) IsChanged() bool {
 	return cache.Changed
+}
+
+func (cache *StructCache) IsCounterSpent() bool {
+	return cache.CounterSpent
+}
+
+func (cache *StructCache) SetCounterSpent() {
+	cache.CounterSpent = true
 }
 
 func (cache *StructCache) ID() string {
@@ -578,6 +588,10 @@ func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err err
 		return readinessError
 	}
 
+	if cache.IsCounterSpent() {
+	    return types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "spent").AsCounter()
+	}
+
 	if attackerStruct.IsDestroyed() || cache.IsDestroyed() {
 		cache.CC.k.logger.Info("Counter Struct or Attacker Struct is already destroyed", "counterStruct", cache.StructId, "target", attackerStruct.StructId)
 		err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "destroyed").AsCounter()
@@ -783,6 +797,7 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
 	cache.CC.k.logger.Info("Struct Counter-Attack", "damage", damage, "counterAttacker", counterStruct.GetStructId(), "target", cache.GetStructId())
 
 	if damage != 0 {
+	    counterStruct.SetCounterSpent()
         cache.CC.SetStructAttributeDecrement(cache.HealthAttributeId, damage)
 
 		if cache.GetHealth() == 0 {
