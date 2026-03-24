@@ -34,6 +34,7 @@ func NewAttackContext(cc *CurrentContext, attacker *StructCache, weaponSystem ty
 		attacker.GetOwnerId(),
 		attacker.GetStructId(),
 		attacker.GetTypeId(),
+		attacker.GetStructType().Type,
 		attacker.GetLocationType(),
 		attacker.GetLocationId(),
 		attacker.GetOperatingAmbit(),
@@ -42,6 +43,8 @@ func NewAttackContext(cc *CurrentContext, attacker *StructCache, weaponSystem ty
 		attacker.GetStructType().GetWeaponControl(weaponSystem),
 		attacker.GetStructType().GetWeapon(weaponSystem),
 	)
+	ac.AttackDetail.SetAttackerHealthBefore(attacker.GetHealth())
+	ac.AttackDetail.SetAttackerHealthMax(attacker.GetStructType().MaxHealth)
 
 	cc.Attack = ac
 	return ac
@@ -56,6 +59,7 @@ func (ac *AttackContext) BeginShot(target *StructCache) {
 	ac.ShotDetail.SetTargetDetails(
 		target.GetStructId(),
 		target.GetTypeId(),
+		target.GetStructType().Type,
 		target.GetLocationType(),
 		target.GetLocationId(),
 		target.GetOperatingAmbit(),
@@ -67,6 +71,7 @@ func (ac *AttackContext) BeginShot(target *StructCache) {
 	currentTargetHealth := target.GetHealth()
 	ac.ShotDetail.SetTargetHealthBefore(currentTargetHealth)
 	ac.ShotDetail.SetTargetHealthAfter(currentTargetHealth)
+	ac.ShotDetail.SetTargetHealthMax(target.GetStructType().MaxHealth)
 }
 
 func (ac *AttackContext) ValidateTarget() error {

@@ -796,12 +796,15 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
 
 	}
 
+	counterWS := counterStruct.GetStructType().GetCounterWeaponSystem(
+		counterStruct.GetOperatingAmbit(), cache.CC.Attack.Attacker.GetOperatingAmbit())
+
 	if counterStruct != cache.CC.Attack.Target {
 		cache.CC.k.logger.Info("Generating a Defender Counter-Attack Record for the event")
-		cache.CC.Attack.ShotDetail.AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed(), counterStruct.GetTypeId(), counterStruct.GetLocationType(), counterStruct.GetLocationId(), counterStruct.GetOperatingAmbit(), counterStruct.GetSlot())
+		cache.CC.Attack.ShotDetail.AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed(), counterStruct.GetTypeId(), counterStruct.GetStructType().Type, counterStruct.GetLocationType(), counterStruct.GetLocationId(), counterStruct.GetOperatingAmbit(), counterStruct.GetSlot(), counterWS, counterStruct.GetStructType().GetWeaponControl(counterWS), counterStruct.GetStructType().GetWeapon(counterWS))
 	} else {
 		cache.CC.k.logger.Info("Generating a Target Counter-Attack Record for the event")
-		cache.CC.Attack.ShotDetail.AppendTargetCounter(damage, cache.IsDestroyed(), counterStruct.GetStructType().PassiveWeaponry)
+		cache.CC.Attack.ShotDetail.AppendTargetCounter(damage, cache.IsDestroyed(), counterStruct.GetStructType().PassiveWeaponry, counterWS, counterStruct.GetStructType().GetWeaponControl(counterWS), counterStruct.GetStructType().GetWeapon(counterWS))
 	}
 
 	return
@@ -830,7 +833,9 @@ func (cache *StructCache) AttemptBlock(attacker *StructCache, weaponSystem types
 		if cache.GetOperatingAmbit() == target.GetOperatingAmbit() {
 			blocked = true
 			cache.CC.Attack.Blocker = cache
-			cache.CC.Attack.ShotDetail.SetBlocker(cache.StructId, cache.GetTypeId(), cache.GetLocationType(), cache.GetLocationId(), cache.GetOperatingAmbit(), cache.GetSlot())
+			cache.CC.Attack.ShotDetail.SetBlocker(cache.StructId, cache.GetTypeId(), cache.GetStructType().Type, cache.GetLocationType(), cache.GetLocationId(), cache.GetOperatingAmbit(), cache.GetSlot())
+			cache.CC.Attack.ShotDetail.SetBlockerHealthBefore(cache.GetHealth())
+			cache.CC.Attack.ShotDetail.SetBlockerHealthMax(cache.GetStructType().MaxHealth)
 			cache.TakeAttackDamage(attacker, weaponSystem)
 		}
 	}

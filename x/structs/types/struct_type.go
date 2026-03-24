@@ -213,6 +213,13 @@ func (structType StructType) CanCounterTargetAmbit(counterAmbit Ambit, targetAmb
     return allAmbits&Ambit_flag[targetAmbit] != 0
 }
 
+func (structType StructType) GetCounterWeaponSystem(counterAmbit Ambit, targetAmbit Ambit) TechWeaponSystem {
+    if structType.CanTargetAmbit(TechWeaponSystem_primaryWeapon, counterAmbit, targetAmbit) {
+        return TechWeaponSystem_primaryWeapon
+    }
+    return TechWeaponSystem_secondaryWeapon
+}
+
 func (structType StructType) CanBlockTargeting() (bool) {
     return false
 }
