@@ -192,17 +192,17 @@ option go_package = "structs/x/structs/types";
     bool targetCountered                    = 26;
     uint64 targetCounteredDamage            = 27;
     bool targetCounterDestroyedAttacker     = 28;
-    techPassiveWeaponry targetCounterPassiveWeaponry = 29;
-    techWeaponSystem    targetCounterWeaponSystem    = 30;
-    techWeaponControl   targetCounterWeaponControl   = 31;
-    techActiveWeaponry  targetCounterActiveWeaponry  = 32;
+    techPassiveWeaponry targetCounterPassiveWeaponry = 29 [(amino.dont_omitempty) = true];
+    techWeaponSystem    targetCounterWeaponSystem    = 30 [(amino.dont_omitempty) = true];
+    techWeaponControl   targetCounterWeaponControl   = 31 [(amino.dont_omitempty) = true];
+    techActiveWeaponry  targetCounterActiveWeaponry  = 32 [(amino.dont_omitempty) = true];
 
     bool targetDestroyed = 33;
 
     bool postDestructionDamageToAttacker            = 34;
     uint64 postDestructionDamage                    = 35;
     bool postDestructionDamageDestroyedAttacker     = 36;
-    techPassiveWeaponry postDestructionDamageCause  = 37;
+    techPassiveWeaponry postDestructionDamagePassiveWeaponry  = 37 [(amino.dont_omitempty) = true];
 
 
     uint64 targetHealthBefore  = 38;

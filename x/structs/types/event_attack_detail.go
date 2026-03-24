@@ -142,11 +142,11 @@ func (eventAttackShotDetail *EventAttackShotDetail) SetTargetHealthMax(targetHea
 	eventAttackShotDetail.TargetHealthMax = targetHealthMax
 }
 
-func (eventAttackShotDetail *EventAttackShotDetail) SetPostDestructionDamage(postDestructionDamage uint64, postDestructionDamageDestroyedAttacker bool, postDestructionDamageCause TechPassiveWeaponry) {
+func (eventAttackShotDetail *EventAttackShotDetail) SetPostDestructionDamage(postDestructionDamage uint64, postDestructionDamageDestroyedAttacker bool, postDestructionDamagePassiveWeaponry TechPassiveWeaponry) {
 	eventAttackShotDetail.PostDestructionDamageToAttacker = true
 	eventAttackShotDetail.PostDestructionDamage = postDestructionDamage
 	eventAttackShotDetail.PostDestructionDamageDestroyedAttacker = postDestructionDamageDestroyedAttacker
-	eventAttackShotDetail.PostDestructionDamageCause = postDestructionDamageCause
+	eventAttackShotDetail.PostDestructionDamagePassiveWeaponry = postDestructionDamagePassiveWeaponry
 }
 
 func (eventAttackShotDetail *EventAttackShotDetail) AppendDefenderCounter(counterByStructId string, counterDamage uint64, counterDestroyedAttacker bool, counterByStructTypeId uint64, counterByStructType string, counterByStructLocationType ObjectType, counterByStructLocationId string, counterByStructOperatingAmbit Ambit, counterByStructSlot uint64, counterByStructWeaponSystem TechWeaponSystem, counterByStructWeaponControl TechWeaponControl, counterByStructActiveWeaponry TechActiveWeaponry) {
