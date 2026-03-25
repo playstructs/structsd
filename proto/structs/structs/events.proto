@@ -145,7 +145,6 @@ option go_package = "structs/x/structs/types";
     bool planetaryDefenseCannonDamageDestroyedAttacker  = 17;
 
     string attackerPlayerId = 18;
-    string targetPlayerId   = 19;
 
     uint64 attackerHealthBefore = 20;
     uint64 attackerHealthAfter = 21;
@@ -155,6 +154,7 @@ option go_package = "structs/x/structs/types";
 
   message EventAttackShotDetail {
     string  targetStructId = 1;
+    string  targetPlayerId = 44;
 
     uint64      targetStructTypeId          = 2;
     string      targetStructType            = 3;

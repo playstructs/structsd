@@ -64,13 +64,13 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
 	ac := NewAttackContext(cc, structure, weaponSystem)
 
-	// Begin taking shots. Most weapons only use a single shot but some perform multiple.
-	for shot := uint64(0); shot < (structure.GetStructType().GetWeaponTargets(weaponSystem)); shot++ {
-		k.logger.Info("Attack Action", "structId", msg.OperatingStructId, "shot", shot, "shots", structure.GetStructType().GetWeaponTargets(weaponSystem), "target", msg.TargetStructId[shot])
+	// One iteration per weapon target (multi-target weapons); per-target projectile count is GetWeaponShots.
+	for targetIdx := uint64(0); targetIdx < structure.GetStructType().GetWeaponTargets(weaponSystem); targetIdx++ {
+		k.logger.Info("Attack Action", "structId", msg.OperatingStructId, "targetIdx", targetIdx, "weaponTargets", structure.GetStructType().GetWeaponTargets(weaponSystem), "target", msg.TargetStructId[targetIdx])
 
-		targetStructure := cc.GetStruct(msg.TargetStructId[shot])
+		targetStructure := cc.GetStruct(msg.TargetStructId[targetIdx])
 		if !targetStructure.LoadStruct() {
-			return emptyResponse, types.NewObjectNotFoundError("struct", msg.TargetStructId[shot])
+			return emptyResponse, types.NewObjectNotFoundError("struct", msg.TargetStructId[targetIdx])
 		}
 
 		ac.BeginShot(targetStructure)
@@ -80,7 +80,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 			return emptyResponse, targetingError
 		}
 
-		k.logger.Info("Struct Targetable", "target", msg.TargetStructId[shot])
+		k.logger.Info("Struct Targetable", "target", msg.TargetStructId[targetIdx])
 
 		evaded := ac.ResolveEvasion()
 
@@ -91,7 +91,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 		ac.ResolveTargetCounter()
 		ac.EndShot()
 
-		// If the attacker was destroyed during this shot (e.g. by counter-attacks),
+		// If the attacker was destroyed during this target volley (e.g. by counter-attacks),
 		// stop processing further targets immediately.
 		if structure.IsDestroyed() {
 			k.logger.Info("Attacker destroyed during combat, ending attack early", "structId", msg.OperatingStructId)

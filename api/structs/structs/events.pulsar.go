@@ -25469,7 +25469,6 @@ var (
 	fd_EventAttackDetail_planetaryDefenseCannonDamage                  protoreflect.FieldDescriptor
 	fd_EventAttackDetail_planetaryDefenseCannonDamageDestroyedAttacker protoreflect.FieldDescriptor
 	fd_EventAttackDetail_attackerPlayerId                              protoreflect.FieldDescriptor
-	fd_EventAttackDetail_targetPlayerId                                protoreflect.FieldDescriptor
 	fd_EventAttackDetail_attackerHealthBefore                          protoreflect.FieldDescriptor
 	fd_EventAttackDetail_attackerHealthAfter                           protoreflect.FieldDescriptor
 	fd_EventAttackDetail_attackerHealthMax                             protoreflect.FieldDescriptor
@@ -25496,7 +25495,6 @@ func init() {
 	fd_EventAttackDetail_planetaryDefenseCannonDamage = md_EventAttackDetail.Fields().ByName("planetaryDefenseCannonDamage")
 	fd_EventAttackDetail_planetaryDefenseCannonDamageDestroyedAttacker = md_EventAttackDetail.Fields().ByName("planetaryDefenseCannonDamageDestroyedAttacker")
 	fd_EventAttackDetail_attackerPlayerId = md_EventAttackDetail.Fields().ByName("attackerPlayerId")
-	fd_EventAttackDetail_targetPlayerId = md_EventAttackDetail.Fields().ByName("targetPlayerId")
 	fd_EventAttackDetail_attackerHealthBefore = md_EventAttackDetail.Fields().ByName("attackerHealthBefore")
 	fd_EventAttackDetail_attackerHealthAfter = md_EventAttackDetail.Fields().ByName("attackerHealthAfter")
 	fd_EventAttackDetail_attackerHealthMax = md_EventAttackDetail.Fields().ByName("attackerHealthMax")
@@ -25675,12 +25673,6 @@ func (x *fastReflection_EventAttackDetail) Range(f func(protoreflect.FieldDescri
 			return
 		}
 	}
-	if x.TargetPlayerId != "" {
-		value := protoreflect.ValueOfString(x.TargetPlayerId)
-		if !f(fd_EventAttackDetail_targetPlayerId, value) {
-			return
-		}
-	}
 	if x.AttackerHealthBefore != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.AttackerHealthBefore)
 		if !f(fd_EventAttackDetail_attackerHealthBefore, value) {
@@ -25750,8 +25742,6 @@ func (x *fastReflection_EventAttackDetail) Has(fd protoreflect.FieldDescriptor) 
 		return x.PlanetaryDefenseCannonDamageDestroyedAttacker != false
 	case "structs.structs.EventAttackDetail.attackerPlayerId":
 		return x.AttackerPlayerId != ""
-	case "structs.structs.EventAttackDetail.targetPlayerId":
-		return x.TargetPlayerId != ""
 	case "structs.structs.EventAttackDetail.attackerHealthBefore":
 		return x.AttackerHealthBefore != uint64(0)
 	case "structs.structs.EventAttackDetail.attackerHealthAfter":
@@ -25810,8 +25800,6 @@ func (x *fastReflection_EventAttackDetail) Clear(fd protoreflect.FieldDescriptor
 		x.PlanetaryDefenseCannonDamageDestroyedAttacker = false
 	case "structs.structs.EventAttackDetail.attackerPlayerId":
 		x.AttackerPlayerId = ""
-	case "structs.structs.EventAttackDetail.targetPlayerId":
-		x.TargetPlayerId = ""
 	case "structs.structs.EventAttackDetail.attackerHealthBefore":
 		x.AttackerHealthBefore = uint64(0)
 	case "structs.structs.EventAttackDetail.attackerHealthAfter":
@@ -25891,9 +25879,6 @@ func (x *fastReflection_EventAttackDetail) Get(descriptor protoreflect.FieldDesc
 	case "structs.structs.EventAttackDetail.attackerPlayerId":
 		value := x.AttackerPlayerId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.EventAttackDetail.targetPlayerId":
-		value := x.TargetPlayerId
-		return protoreflect.ValueOfString(value)
 	case "structs.structs.EventAttackDetail.attackerHealthBefore":
 		value := x.AttackerHealthBefore
 		return protoreflect.ValueOfUint64(value)
@@ -25961,8 +25946,6 @@ func (x *fastReflection_EventAttackDetail) Set(fd protoreflect.FieldDescriptor, 
 		x.PlanetaryDefenseCannonDamageDestroyedAttacker = value.Bool()
 	case "structs.structs.EventAttackDetail.attackerPlayerId":
 		x.AttackerPlayerId = value.Interface().(string)
-	case "structs.structs.EventAttackDetail.targetPlayerId":
-		x.TargetPlayerId = value.Interface().(string)
 	case "structs.structs.EventAttackDetail.attackerHealthBefore":
 		x.AttackerHealthBefore = value.Uint()
 	case "structs.structs.EventAttackDetail.attackerHealthAfter":
@@ -26029,8 +26012,6 @@ func (x *fastReflection_EventAttackDetail) Mutable(fd protoreflect.FieldDescript
 		panic(fmt.Errorf("field planetaryDefenseCannonDamageDestroyedAttacker of message structs.structs.EventAttackDetail is not mutable"))
 	case "structs.structs.EventAttackDetail.attackerPlayerId":
 		panic(fmt.Errorf("field attackerPlayerId of message structs.structs.EventAttackDetail is not mutable"))
-	case "structs.structs.EventAttackDetail.targetPlayerId":
-		panic(fmt.Errorf("field targetPlayerId of message structs.structs.EventAttackDetail is not mutable"))
 	case "structs.structs.EventAttackDetail.attackerHealthBefore":
 		panic(fmt.Errorf("field attackerHealthBefore of message structs.structs.EventAttackDetail is not mutable"))
 	case "structs.structs.EventAttackDetail.attackerHealthAfter":
@@ -26086,8 +26067,6 @@ func (x *fastReflection_EventAttackDetail) NewField(fd protoreflect.FieldDescrip
 	case "structs.structs.EventAttackDetail.planetaryDefenseCannonDamageDestroyedAttacker":
 		return protoreflect.ValueOfBool(false)
 	case "structs.structs.EventAttackDetail.attackerPlayerId":
-		return protoreflect.ValueOfString("")
-	case "structs.structs.EventAttackDetail.targetPlayerId":
 		return protoreflect.ValueOfString("")
 	case "structs.structs.EventAttackDetail.attackerHealthBefore":
 		return protoreflect.ValueOfUint64(uint64(0))
@@ -26225,10 +26204,6 @@ func (x *fastReflection_EventAttackDetail) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 2 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.TargetPlayerId)
-		if l > 0 {
-			n += 2 + l + runtime.Sov(uint64(l))
-		}
 		if x.AttackerHealthBefore != 0 {
 			n += 2 + runtime.Sov(uint64(x.AttackerHealthBefore))
 		}
@@ -26287,15 +26262,6 @@ func (x *fastReflection_EventAttackDetail) ProtoMethods() *protoiface.Methods {
 			dAtA[i] = 0x1
 			i--
 			dAtA[i] = 0xa0
-		}
-		if len(x.TargetPlayerId) > 0 {
-			i -= len(x.TargetPlayerId)
-			copy(dAtA[i:], x.TargetPlayerId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TargetPlayerId)))
-			i--
-			dAtA[i] = 0x1
-			i--
-			dAtA[i] = 0x9a
 		}
 		if len(x.AttackerPlayerId) > 0 {
 			i -= len(x.AttackerPlayerId)
@@ -26894,38 +26860,6 @@ func (x *fastReflection_EventAttackDetail) ProtoMethods() *protoiface.Methods {
 				}
 				x.AttackerPlayerId = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 19:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TargetPlayerId", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.TargetPlayerId = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
 			case 20:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AttackerHealthBefore", wireType)
@@ -27072,6 +27006,7 @@ func (x *_EventAttackShotDetail_21_list) IsValid() bool {
 var (
 	md_EventAttackShotDetail                                        protoreflect.MessageDescriptor
 	fd_EventAttackShotDetail_targetStructId                         protoreflect.FieldDescriptor
+	fd_EventAttackShotDetail_targetPlayerId                         protoreflect.FieldDescriptor
 	fd_EventAttackShotDetail_targetStructTypeId                     protoreflect.FieldDescriptor
 	fd_EventAttackShotDetail_targetStructType                       protoreflect.FieldDescriptor
 	fd_EventAttackShotDetail_targetStructLocationType               protoreflect.FieldDescriptor
@@ -27120,6 +27055,7 @@ func init() {
 	file_structs_structs_events_proto_init()
 	md_EventAttackShotDetail = File_structs_structs_events_proto.Messages().ByName("EventAttackShotDetail")
 	fd_EventAttackShotDetail_targetStructId = md_EventAttackShotDetail.Fields().ByName("targetStructId")
+	fd_EventAttackShotDetail_targetPlayerId = md_EventAttackShotDetail.Fields().ByName("targetPlayerId")
 	fd_EventAttackShotDetail_targetStructTypeId = md_EventAttackShotDetail.Fields().ByName("targetStructTypeId")
 	fd_EventAttackShotDetail_targetStructType = md_EventAttackShotDetail.Fields().ByName("targetStructType")
 	fd_EventAttackShotDetail_targetStructLocationType = md_EventAttackShotDetail.Fields().ByName("targetStructLocationType")
@@ -27232,6 +27168,12 @@ func (x *fastReflection_EventAttackShotDetail) Range(f func(protoreflect.FieldDe
 	if x.TargetStructId != "" {
 		value := protoreflect.ValueOfString(x.TargetStructId)
 		if !f(fd_EventAttackShotDetail_targetStructId, value) {
+			return
+		}
+	}
+	if x.TargetPlayerId != "" {
+		value := protoreflect.ValueOfString(x.TargetPlayerId)
+		if !f(fd_EventAttackShotDetail_targetPlayerId, value) {
 			return
 		}
 	}
@@ -27504,6 +27446,8 @@ func (x *fastReflection_EventAttackShotDetail) Has(fd protoreflect.FieldDescript
 	switch fd.FullName() {
 	case "structs.structs.EventAttackShotDetail.targetStructId":
 		return x.TargetStructId != ""
+	case "structs.structs.EventAttackShotDetail.targetPlayerId":
+		return x.TargetPlayerId != ""
 	case "structs.structs.EventAttackShotDetail.targetStructTypeId":
 		return x.TargetStructTypeId != uint64(0)
 	case "structs.structs.EventAttackShotDetail.targetStructType":
@@ -27606,6 +27550,8 @@ func (x *fastReflection_EventAttackShotDetail) Clear(fd protoreflect.FieldDescri
 	switch fd.FullName() {
 	case "structs.structs.EventAttackShotDetail.targetStructId":
 		x.TargetStructId = ""
+	case "structs.structs.EventAttackShotDetail.targetPlayerId":
+		x.TargetPlayerId = ""
 	case "structs.structs.EventAttackShotDetail.targetStructTypeId":
 		x.TargetStructTypeId = uint64(0)
 	case "structs.structs.EventAttackShotDetail.targetStructType":
@@ -27708,6 +27654,9 @@ func (x *fastReflection_EventAttackShotDetail) Get(descriptor protoreflect.Field
 	switch descriptor.FullName() {
 	case "structs.structs.EventAttackShotDetail.targetStructId":
 		value := x.TargetStructId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventAttackShotDetail.targetPlayerId":
+		value := x.TargetPlayerId
 		return protoreflect.ValueOfString(value)
 	case "structs.structs.EventAttackShotDetail.targetStructTypeId":
 		value := x.TargetStructTypeId
@@ -27860,6 +27809,8 @@ func (x *fastReflection_EventAttackShotDetail) Set(fd protoreflect.FieldDescript
 	switch fd.FullName() {
 	case "structs.structs.EventAttackShotDetail.targetStructId":
 		x.TargetStructId = value.Interface().(string)
+	case "structs.structs.EventAttackShotDetail.targetPlayerId":
+		x.TargetPlayerId = value.Interface().(string)
 	case "structs.structs.EventAttackShotDetail.targetStructTypeId":
 		x.TargetStructTypeId = value.Uint()
 	case "structs.structs.EventAttackShotDetail.targetStructType":
@@ -27974,6 +27925,8 @@ func (x *fastReflection_EventAttackShotDetail) Mutable(fd protoreflect.FieldDesc
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.EventAttackShotDetail.targetStructId":
 		panic(fmt.Errorf("field targetStructId of message structs.structs.EventAttackShotDetail is not mutable"))
+	case "structs.structs.EventAttackShotDetail.targetPlayerId":
+		panic(fmt.Errorf("field targetPlayerId of message structs.structs.EventAttackShotDetail is not mutable"))
 	case "structs.structs.EventAttackShotDetail.targetStructTypeId":
 		panic(fmt.Errorf("field targetStructTypeId of message structs.structs.EventAttackShotDetail is not mutable"))
 	case "structs.structs.EventAttackShotDetail.targetStructType":
@@ -28070,6 +28023,8 @@ func (x *fastReflection_EventAttackShotDetail) Mutable(fd protoreflect.FieldDesc
 func (x *fastReflection_EventAttackShotDetail) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "structs.structs.EventAttackShotDetail.targetStructId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventAttackShotDetail.targetPlayerId":
 		return protoreflect.ValueOfString("")
 	case "structs.structs.EventAttackShotDetail.targetStructTypeId":
 		return protoreflect.ValueOfUint64(uint64(0))
@@ -28228,6 +28183,10 @@ func (x *fastReflection_EventAttackShotDetail) ProtoMethods() *protoiface.Method
 		l = len(x.TargetStructId)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.TargetPlayerId)
+		if l > 0 {
+			n += 2 + l + runtime.Sov(uint64(l))
 		}
 		if x.TargetStructTypeId != 0 {
 			n += 1 + runtime.Sov(uint64(x.TargetStructTypeId))
@@ -28391,6 +28350,15 @@ func (x *fastReflection_EventAttackShotDetail) ProtoMethods() *protoiface.Method
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.TargetPlayerId) > 0 {
+			i -= len(x.TargetPlayerId)
+			copy(dAtA[i:], x.TargetPlayerId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TargetPlayerId)))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0xe2
 		}
 		if x.BlockerHealthMax != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockerHealthMax))
@@ -28811,6 +28779,38 @@ func (x *fastReflection_EventAttackShotDetail) ProtoMethods() *protoiface.Method
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
 				x.TargetStructId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 44:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TargetPlayerId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.TargetPlayerId = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
 				if wireType != 0 {
@@ -35031,7 +35031,6 @@ type EventAttackDetail struct {
 	PlanetaryDefenseCannonDamage                  uint64                   `protobuf:"varint,16,opt,name=planetaryDefenseCannonDamage,proto3" json:"planetaryDefenseCannonDamage,omitempty"`
 	PlanetaryDefenseCannonDamageDestroyedAttacker bool                     `protobuf:"varint,17,opt,name=planetaryDefenseCannonDamageDestroyedAttacker,proto3" json:"planetaryDefenseCannonDamageDestroyedAttacker,omitempty"`
 	AttackerPlayerId                              string                   `protobuf:"bytes,18,opt,name=attackerPlayerId,proto3" json:"attackerPlayerId,omitempty"`
-	TargetPlayerId                                string                   `protobuf:"bytes,19,opt,name=targetPlayerId,proto3" json:"targetPlayerId,omitempty"`
 	AttackerHealthBefore                          uint64                   `protobuf:"varint,20,opt,name=attackerHealthBefore,proto3" json:"attackerHealthBefore,omitempty"`
 	AttackerHealthAfter                           uint64                   `protobuf:"varint,21,opt,name=attackerHealthAfter,proto3" json:"attackerHealthAfter,omitempty"`
 	AttackerHealthMax                             uint64                   `protobuf:"varint,22,opt,name=attackerHealthMax,proto3" json:"attackerHealthMax,omitempty"`
@@ -35183,13 +35182,6 @@ func (x *EventAttackDetail) GetAttackerPlayerId() string {
 	return ""
 }
 
-func (x *EventAttackDetail) GetTargetPlayerId() string {
-	if x != nil {
-		return x.TargetPlayerId
-	}
-	return ""
-}
-
 func (x *EventAttackDetail) GetAttackerHealthBefore() uint64 {
 	if x != nil {
 		return x.AttackerHealthBefore
@@ -35217,6 +35209,7 @@ type EventAttackShotDetail struct {
 	unknownFields protoimpl.UnknownFields
 
 	TargetStructId                         string                              `protobuf:"bytes,1,opt,name=targetStructId,proto3" json:"targetStructId,omitempty"`
+	TargetPlayerId                         string                              `protobuf:"bytes,44,opt,name=targetPlayerId,proto3" json:"targetPlayerId,omitempty"`
 	TargetStructTypeId                     uint64                              `protobuf:"varint,2,opt,name=targetStructTypeId,proto3" json:"targetStructTypeId,omitempty"`
 	TargetStructType                       string                              `protobuf:"bytes,3,opt,name=targetStructType,proto3" json:"targetStructType,omitempty"`
 	TargetStructLocationType               ObjectType                          `protobuf:"varint,4,opt,name=targetStructLocationType,proto3,enum=structs.structs.ObjectType" json:"targetStructLocationType,omitempty"`
@@ -35284,6 +35277,13 @@ func (*EventAttackShotDetail) Descriptor() ([]byte, []int) {
 func (x *EventAttackShotDetail) GetTargetStructId() string {
 	if x != nil {
 		return x.TargetStructId
+	}
+	return ""
+}
+
+func (x *EventAttackShotDetail) GetTargetPlayerId() string {
+	if x != nil {
+		return x.TargetPlayerId
 	}
 	return ""
 }
@@ -36316,7 +36316,7 @@ var file_structs_structs_events_proto_rawDesc = []byte{
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45,
 	0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
 	0x52, 0x11, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x74,
-	0x61, 0x69, 0x6c, 0x22, 0x9e, 0x0b, 0x0a, 0x11, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74,
+	0x61, 0x69, 0x6c, 0x22, 0xf6, 0x0a, 0x0a, 0x11, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74,
 	0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x2a, 0x0a, 0x10, 0x61, 0x74, 0x74,
 	0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x10, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72,
@@ -36394,23 +36394,23 @@ var file_structs_structs_events_proto_rawDesc = []byte{
 	0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x2a, 0x0a, 0x10,
 	0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64,
 	0x18, 0x12, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
-	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67,
-	0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x13, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64,
-	0x12, 0x32, 0x0a, 0x14, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c,
-	0x74, 0x68, 0x42, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x18, 0x14, 0x20, 0x01, 0x28, 0x04, 0x52, 0x14,
-	0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x42, 0x65,
-	0x66, 0x6f, 0x72, 0x65, 0x12, 0x30, 0x0a, 0x13, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
-	0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x18, 0x15, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x13, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74,
-	0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x12, 0x2c, 0x0a, 0x11, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b,
-	0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x4d, 0x61, 0x78, 0x18, 0x16, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x11, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74,
-	0x68, 0x4d, 0x61, 0x78, 0x22, 0x8d, 0x16, 0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74,
-	0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x26,
-	0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x2e, 0x0a, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
+	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x32, 0x0a, 0x14, 0x61, 0x74, 0x74, 0x61,
+	0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x42, 0x65, 0x66, 0x6f, 0x72, 0x65,
+	0x18, 0x14, 0x20, 0x01, 0x28, 0x04, 0x52, 0x14, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
+	0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x42, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x12, 0x30, 0x0a, 0x13,
+	0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x66,
+	0x74, 0x65, 0x72, 0x18, 0x15, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x61, 0x74, 0x74, 0x61, 0x63,
+	0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x12, 0x2c,
+	0x0a, 0x11, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68,
+	0x4d, 0x61, 0x78, 0x18, 0x16, 0x20, 0x01, 0x28, 0x04, 0x52, 0x11, 0x61, 0x74, 0x74, 0x61, 0x63,
+	0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x4d, 0x61, 0x78, 0x22, 0xb5, 0x16, 0x0a,
+	0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f, 0x74,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x26, 0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e,
+	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x26,
+	0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64,
+	0x18, 0x2c, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x50, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x2e, 0x0a, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
 	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01,
 	0x28, 0x04, 0x52, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x54, 0x79, 0x70, 0x65, 0x49, 0x64, 0x12, 0x2a, 0x0a, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,

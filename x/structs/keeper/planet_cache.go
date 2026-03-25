@@ -460,13 +460,6 @@ func (cache *PlanetCache) AttemptComplete() (error) {
     return types.NewPlanetStateError(cache.GetPlanetId(), "has_ore", "explore")
 }
 
-func (cache *PlanetCache) AttemptDefenseCannon(attacker *StructCache) (cannoned bool) {
-    if (cache.GetDefensiveCannonQuantity() > 0) {
-        attacker.TakePlanetaryDefenseCanonDamage(cache.GetDefensiveCannonQuantity())
-    }
-    return
-}
-
 func (cache *PlanetCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
     return types.NewAllocationError(cache.ID(), "unacceptable_source")
 }

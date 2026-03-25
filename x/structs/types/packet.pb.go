@@ -24,7 +24,6 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type StructsPacketData struct {
 	// Types that are valid to be assigned to Packet:
-	//
 	//	*StructsPacketData_NoData
 	Packet isStructsPacketData_Packet `protobuf_oneof:"packet"`
 }

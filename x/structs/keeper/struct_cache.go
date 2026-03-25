@@ -521,341 +521,86 @@ func (cache *StructCache) OreRefine() error {
 	return nil
 }
 
+func (cache *StructCache) isReachable(targetLocationId string, targetPlanetId string) bool {
+	switch cache.GetLocationType() {
+	case types.ObjectType_planet:
+		return cache.GetPlanet().GetLocationListStart() == targetLocationId
+	case types.ObjectType_fleet:
+		if cache.GetFleet().IsOnStation() {
+			return cache.GetPlanet().GetLocationListStart() == targetLocationId
+		}
+		if cache.GetFleet().GetLocationListForward() == "" && cache.GetPlanetId() == targetPlanetId {
+			return true
+		}
+		return cache.GetFleet().GetLocationListForward() == targetLocationId ||
+			cache.GetFleet().GetLocationListBackward() == targetLocationId
+	default:
+		return false
+	}
+}
+
 func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem types.TechWeaponSystem) (err error) {
-
 	if targetStruct.IsDestroyed() {
-		err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "destroyed")
-	} else {
-		if !cache.GetStructType().CanTargetAmbit(weaponSystem, cache.GetOperatingAmbit(), targetStruct.GetOperatingAmbit()) {
-			err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "out_of_range").WithAmbits(cache.GetOperatingAmbit().String(), targetStruct.GetOperatingAmbit().String())
-		} else {
-			// Not MVP CanBlockTargeting always returns false
-			if (!cache.GetStructType().GetWeaponBlockable(weaponSystem)) && (targetStruct.GetStructType().CanBlockTargeting()) {
-				err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "blocked")
-			} else {
-				if targetStruct.IsHidden() && (targetStruct.GetOperatingAmbit() != cache.GetOperatingAmbit()) {
-					err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "hidden")
-				}
-			}
-		}
+		return types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "destroyed")
 	}
-
-	// Now that the inexpensive checks are done, lets go deeper
-	if err == nil {
-		switch cache.GetLocationType() {
-		case types.ObjectType_planet:
-			if cache.GetPlanet().GetLocationListStart() == targetStruct.GetLocationId() {
-				// The enemy fleet is here
-			} else {
-				err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "unreachable")
-			}
-
-		case types.ObjectType_fleet:
-			// Is the Fleet at home?
-			if cache.GetFleet().IsOnStation() {
-				// If the Fleet is On Station, ensure the enemy is reachable
-				if cache.GetPlanet().GetLocationListStart() == targetStruct.GetLocationId() {
-					// The Fleet is on station, and the enemy is reachable
-					// Proceed with the intended action for the Fleet attacking the target
-				} else {
-					err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "unreachable")
-				}
-				// Or is the Fleet out raiding another planet?
-			} else {
-				// If the Fleet is away, first check if the target is on the same planet
-				if cache.GetFleet().GetLocationListForward() == "" && cache.GetPlanetId() == targetStruct.GetPlanetId() {
-					// Target has reached the planetary raid
-					// Proceed with the intended action for the Fleet attacking the target
-					// Otherwise check if the target is adjacent (either forward or backward)
-				} else if cache.GetFleet().GetLocationListForward() == targetStruct.GetLocationId() || cache.GetFleet().GetLocationListBackward() == targetStruct.GetLocationId() {
-					// The target is to either side of the Fleet
-					// Proceed with the intended action for the Fleet attacking the target
-				} else {
-					err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "unreachable")
-				}
-			}
-		default:
-			err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "unreachable")
-		}
+	if !cache.GetStructType().CanTargetAmbit(weaponSystem, cache.GetOperatingAmbit(), targetStruct.GetOperatingAmbit()) {
+		return types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "out_of_range").WithAmbits(cache.GetOperatingAmbit().String(), targetStruct.GetOperatingAmbit().String())
 	}
-	return
+	if (!cache.GetStructType().GetWeaponBlockable(weaponSystem)) && (targetStruct.GetStructType().CanBlockTargeting()) {
+		return types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "blocked")
+	}
+	if targetStruct.IsHidden() && (targetStruct.GetOperatingAmbit() != cache.GetOperatingAmbit()) {
+		return types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "hidden")
+	}
+	if !cache.isReachable(targetStruct.GetLocationId(), targetStruct.GetPlanetId()) {
+		return types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "unreachable")
+	}
+	return nil
 }
 
 func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err error) {
-
 	readinessError := cache.ReadinessCheck()
 	if readinessError != nil {
 		return readinessError
 	}
 
 	if cache.IsCounterSpent() {
-	    return types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "spent").AsCounter()
+		return types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "spent").AsCounter()
 	}
 
 	if attackerStruct.IsDestroyed() || cache.IsDestroyed() {
-		cache.CC.k.logger.Info("Counter Struct or Attacker Struct is already destroyed", "counterStruct", cache.StructId, "target", attackerStruct.StructId)
-		err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "destroyed").AsCounter()
-	} else {
-		if !cache.GetStructType().CanCounterTargetAmbit(cache.GetOperatingAmbit(), attackerStruct.GetOperatingAmbit()) {
-			cache.CC.k.logger.Info("Attacker Struct cannot be hit from Counter Struct using this weapon system", "target", attackerStruct.StructId, "counterStruct", cache.StructId)
-			err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "out_of_range").AsCounter().WithAmbits(cache.GetOperatingAmbit().String(), attackerStruct.GetOperatingAmbit().String())
-		}
+		return types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "destroyed").AsCounter()
 	}
-
-	// Now that the inexpensive checks are done, lets go deeper
-	if err == nil {
-		switch cache.GetLocationType() {
-		case types.ObjectType_planet:
-			if cache.GetPlanet().GetLocationListStart() == attackerStruct.GetLocationId() {
-				// The enemy fleet is here
-			} else {
-				err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "unreachable").AsCounter()
-			}
-
-		case types.ObjectType_fleet:
-			// Is the Fleet at home?
-			if cache.GetFleet().IsOnStation() {
-				// If the Fleet is On Station, ensure the enemy is reachable
-				if cache.GetPlanet().GetLocationListStart() == attackerStruct.GetLocationId() {
-					// The Fleet is on station, and the enemy is reachable
-					// Proceed with the intended action for the Fleet attacking the target
-				} else {
-					err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "unreachable").AsCounter()
-				}
-				// Or is the Fleet out raiding another planet?
-			} else {
-				// If the Fleet is away, first check if the target is on the same planet
-				if cache.GetFleet().GetLocationListForward() == "" && cache.GetPlanetId() == attackerStruct.GetPlanetId() {
-					// Target has reached the planetary raid
-					// Proceed with the intended action for the Fleet attacking the target
-					// Otherwise check if the target is adjacent (either forward or backward)
-				} else if cache.GetFleet().GetLocationListForward() == attackerStruct.GetLocationId() || cache.GetFleet().GetLocationListBackward() == attackerStruct.GetLocationId() {
-					// The target is to either side of the Fleet
-					// Proceed with the intended action for the Fleet attacking the target
-				} else {
-					err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "unreachable").AsCounter()
-				}
-			}
-		default:
-			err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "unreachable").AsCounter()
-		}
+	if !cache.GetStructType().CanCounterTargetAmbit(cache.GetOperatingAmbit(), attackerStruct.GetOperatingAmbit()) {
+		return types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "out_of_range").AsCounter().WithAmbits(cache.GetOperatingAmbit().String(), attackerStruct.GetOperatingAmbit().String())
 	}
-	return
+	if !cache.isReachable(attackerStruct.GetLocationId(), attackerStruct.GetPlanetId()) {
+		return types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "unreachable").AsCounter()
+	}
+	return nil
 }
 
-func (cache *StructCache) CanEvade(attackerStruct *StructCache, weaponSystem types.TechWeaponSystem) (canEvade bool) {
-
-	var successRate fraction.Fraction
-	switch attackerStruct.GetStructType().GetWeaponControl(weaponSystem) {
-	case types.TechWeaponControl_guided:
-		successRate = cache.GetStructType().GetGuidedDefensiveSuccessRate()
-	case types.TechWeaponControl_unguided:
-		successRate = cache.GetStructType().GetUnguidedDefensiveSuccessRate()
-	}
-
-	if successRate.Numerator() != int64(0) {
-		canEvade = cache.IsSuccessful(successRate)
-	}
-
-	cache.CC.Attack.ShotDetail.SetEvade(canEvade, cache.GetStructType().UnitDefenses)
-
-	// If there has already been an successful evade then don't both evading harder
-	if !canEvade {
-		// Check for Planetary Defenses - Low Orbit Ballistic Interceptor Network
-		if attackerStruct.GetLocationType() == types.ObjectType_fleet {
-
-			// Is the Struct at home? Either via their fleet or on the planet directly
-			if cache.GetPlanet().GetOwnerId() == cache.GetOwnerId() {
-
-				// Grab the success rate for the interceptor network. If it returns an error, then the planet doesn't have it
-				successRate, successRateError := cache.GetPlanet().GetLowOrbitBallisticsInterceptorNetworkSuccessRate()
-				if successRateError == nil {
-
-					// Only effective is the Struct is in the Air or Space
-					if (attackerStruct.GetOperatingAmbit() == types.Ambit_air) || (attackerStruct.GetOperatingAmbit() == types.Ambit_space) {
-
-						// Only effective if the target is in the Water or on Land
-						if (cache.GetOperatingAmbit() == types.Ambit_water) || (cache.GetOperatingAmbit() == types.Ambit_land) {
-							canEvade = cache.IsSuccessful(successRate)
-							cache.CC.Attack.ShotDetail.SetEvadeByPlanetaryDefenses(canEvade, types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork)
-						}
-					}
-				}
-			}
-		}
-	}
-
-	return
-}
-
-func (cache *StructCache) TakeAttackDamage(attackingStruct *StructCache, weaponSystem types.TechWeaponSystem) (damage uint64) {
-	if cache.IsDestroyed() {
-		return 0
-	}
-
-
-	for shot := uint64(0); shot < attackingStruct.GetStructType().GetWeaponShots(weaponSystem); shot++ {
-		if attackingStruct.IsSuccessful(attackingStruct.GetStructType().GetWeaponShotSuccessRate(weaponSystem)) {
-			damage = damage + attackingStruct.GetStructType().GetWeaponDamage(weaponSystem)
-		}
-	}
-
-	cache.CC.Attack.ShotDetail.SetDamageDealt(damage)
-
-	if damage != 0 {
-		damageReduction := cache.GetStructType().AttackReduction
-
-		if damageReduction > 0 {
-			cache.CC.Attack.ShotDetail.SetDamageReduction(damageReduction, cache.GetStructType().UnitDefenses)
-		}
-
-		if damageReduction >= damage {
-			damage = 1
-		} else {
-			damage = damage - damageReduction
-		}
-	}
-
-	cache.CC.Attack.ShotDetail.SetDamage(damage)
-
-	if damage != 0 {
-
-        cache.CC.SetStructAttributeDecrement(cache.HealthAttributeId, damage)
-
-		if cache.GetHealth() == 0 {
-			if cache.CC.Attack.Blocker == cache {
-				cache.CC.Attack.ShotDetail.SetBlockerDestroyed()
-			} else {
-				cache.CC.Attack.ShotDetail.SetTargetDestroyed()
-			}
-
-			// destruction damage from the grave
-			if cache.GetStructType().PostDestructionDamage > 0 {
-				attackingStruct.TakePostDestructionDamage(cache)
-			}
-
-			cache.DestroyAndCommit()
-		}
-
-	}
-
-	if cache.CC.Attack.Blocker == cache {
-		cache.CC.Attack.ShotDetail.SetBlockerHealthAfter(cache.GetHealth())
-	} else {
-		cache.CC.Attack.ShotDetail.SetTargetHealthAfter(cache.GetHealth())
-	}
-
-	return
-}
-
-func (cache *StructCache) TakeRecoilDamage(weaponSystem types.TechWeaponSystem) (damage uint64) {
-	if cache.IsDestroyed() {
-		return 0
-	}
-
-	damage = cache.GetStructType().GetWeaponRecoilDamage(weaponSystem)
-
-	if damage != 0 {
-        cache.CC.SetStructAttributeDecrement(cache.HealthAttributeId, damage)
-
-		if cache.GetHealth() == 0 {
-			cache.DestroyAndCommit()
-		}
-	}
-
-	cache.CC.Attack.AttackDetail.SetRecoilDamage(damage, cache.IsDestroyed())
-	return
-}
-
-func (cache *StructCache) TakePostDestructionDamage(destroyedStruct *StructCache) (damage uint64) {
-	if cache.IsDestroyed() {
-		return 0
+// applyPostDestructionDamageCore applies post-destruction damage to the attacker without mutating attack event details.
+func (attackingStruct *StructCache) applyPostDestructionDamageCore(destroyedStruct *StructCache) (damage uint64, attackerDestroyed bool, passive types.TechPassiveWeaponry) {
+	if attackingStruct.IsDestroyed() {
+		return 0, false, types.TechPassiveWeaponry_noPassiveWeaponry
 	}
 
 	damage = destroyedStruct.GetStructType().PostDestructionDamage
+	passive = destroyedStruct.GetStructType().PassiveWeaponry
 
 	if damage != 0 {
-        cache.CC.SetStructAttributeDecrement(cache.HealthAttributeId, damage)
+		attackingStruct.CC.SetStructAttributeDecrement(attackingStruct.HealthAttributeId, damage)
 
-		if cache.GetHealth() == 0 {
-			cache.DestroyAndCommit()
-		}
-
-	}
-
-	cache.CC.Attack.ShotDetail.SetPostDestructionDamage(damage, cache.IsDestroyed(), destroyedStruct.GetStructType().PassiveWeaponry)
-
-	return
-}
-
-func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (damage uint64) {
-	if cache.IsDestroyed() {
-		return 0
-	}
-
-	damage = counterStruct.GetStructType().GetCounterAttackDamage(cache.GetOperatingAmbit() == counterStruct.GetOperatingAmbit())
-	cache.CC.k.logger.Info("Struct Counter-Attack", "damage", damage, "counterAttacker", counterStruct.GetStructId(), "target", cache.GetStructId())
-
-	if damage != 0 {
-	    counterStruct.SetCounterSpent()
-        cache.CC.SetStructAttributeDecrement(cache.HealthAttributeId, damage)
-
-		if cache.GetHealth() == 0 {
-			// destruction damage from the grave
-			cache.CC.k.logger.Info("Struct Destroyed During Counter-Attack", "counterAttacker", counterStruct.GetStructId(), "target", cache.GetStructId())
-			if cache.GetStructType().PostDestructionDamage > 0 {
-				counterStruct.TakePostDestructionDamage(cache)
-			}
-			cache.DestroyAndCommit()
-		}
-
-	}
-
-	counterWS := counterStruct.GetStructType().GetCounterWeaponSystem(
-		counterStruct.GetOperatingAmbit(), cache.CC.Attack.Attacker.GetOperatingAmbit())
-
-	if counterStruct != cache.CC.Attack.Target {
-		cache.CC.k.logger.Info("Generating a Defender Counter-Attack Record for the event")
-		cache.CC.Attack.ShotDetail.AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed(), counterStruct.GetTypeId(), counterStruct.GetStructType().Type, counterStruct.GetLocationType(), counterStruct.GetLocationId(), counterStruct.GetOperatingAmbit(), counterStruct.GetSlot(), counterWS, counterStruct.GetStructType().GetWeaponControl(counterWS), counterStruct.GetStructType().GetWeapon(counterWS))
-	} else {
-		cache.CC.k.logger.Info("Generating a Target Counter-Attack Record for the event")
-		cache.CC.Attack.ShotDetail.AppendTargetCounter(damage, cache.IsDestroyed(), counterStruct.GetStructType().PassiveWeaponry, counterWS, counterStruct.GetStructType().GetWeaponControl(counterWS), counterStruct.GetStructType().GetWeapon(counterWS))
-	}
-
-	return
-}
-
-func (cache *StructCache) TakePlanetaryDefenseCanonDamage(damage uint64) uint64 {
-	if cache.IsDestroyed() {
-		return 0
-	}
-
-	if damage != 0 {
-        cache.CC.SetStructAttributeDecrement(cache.HealthAttributeId, damage)
-
-		if cache.GetHealth() == 0 {
-			cache.DestroyAndCommit()
+		if attackingStruct.GetHealth() == 0 {
+			attackingStruct.DestroyAndCommit()
 		}
 	}
 
-	cache.CC.Attack.AttackDetail.SetPlanetaryDefenseCannonDamage(damage, cache.IsDestroyed())
-
-	return damage
+	attackerDestroyed = attackingStruct.IsDestroyed()
+	return damage, attackerDestroyed, passive
 }
 
-func (cache *StructCache) AttemptBlock(attacker *StructCache, weaponSystem types.TechWeaponSystem, target *StructCache) (blocked bool) {
-	if cache.Ready && attacker.Ready {
-		if cache.GetOperatingAmbit() == target.GetOperatingAmbit() {
-			blocked = true
-			cache.CC.Attack.Blocker = cache
-			cache.CC.Attack.ShotDetail.SetBlocker(cache.StructId, cache.GetTypeId(), cache.GetStructType().Type, cache.GetLocationType(), cache.GetLocationId(), cache.GetOperatingAmbit(), cache.GetSlot())
-			cache.CC.Attack.ShotDetail.SetBlockerHealthBefore(cache.GetHealth())
-			cache.CC.Attack.ShotDetail.SetBlockerHealthMax(cache.GetStructType().MaxHealth)
-			cache.TakeAttackDamage(attacker, weaponSystem)
-		}
-	}
-	return
-}
 
 func (cache *StructCache) DestroyAndCommit() {
 

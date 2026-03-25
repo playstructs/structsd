@@ -201,8 +201,6 @@ func (structType StructType) CanTargetAmbit(weaponSystem TechWeaponSystem, count
 }
 
 func (structType StructType) CanCounterTargetAmbit(counterAmbit Ambit, targetAmbit Ambit) (bool) {
-    fmt.Printf("\n %s Checking on counter of primary %d secondary %d and ambit %d and ambit %d\n", structType.Type, structType.PrimaryWeaponAmbits, structType.SecondaryWeaponAmbits, Ambit_flag[targetAmbit], targetAmbit)
-
     allAmbits := structType.PrimaryWeaponAmbits | structType.SecondaryWeaponAmbits
 
     // Is local anywhere in the ambits?
