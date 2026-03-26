@@ -63,6 +63,7 @@ option go_package = "structs/x/structs/types";
   }
 
   message EventPermission { PermissionRecord permissionRecord = 1; }
+  message EventGuildRankPermission { GuildRankPermissionRecord guildRankPermissionRecord = 1; }
   message EventGrid { GridRecord gridRecord = 1; }
 
   message EventProviderAddress { EventProviderAddressDetail eventProviderAddressDetail = 1;}
@@ -122,97 +123,114 @@ option go_package = "structs/x/structs/types";
   message EventAttackDetail {
     string attackerStructId = 1;
 
-    uint64      attackerStructType            = 2;
-    objectType  attackerStructLocationType    = 3 [(amino.dont_omitempty) = true];
-    string      attackerStructLocationId      = 4;
-    ambit       attackerStructOperatingAmbit  = 5 [(amino.dont_omitempty) = true];
-    uint64      attackerStructSlot            = 6;
+    uint64      attackerStructTypeId          = 2;
+    string      attackerStructType            = 3;
+    objectType  attackerStructLocationType    = 4 [(amino.dont_omitempty) = true];
+    string      attackerStructLocationId      = 5;
+    ambit       attackerStructOperatingAmbit  = 6 [(amino.dont_omitempty) = true];
+    uint64      attackerStructSlot            = 7;
 
+    techWeaponSystem    weaponSystem    = 8;
+    techWeaponControl   weaponControl   = 9;
+    techActiveWeaponry  activeWeaponry  = 10;
 
-    techWeaponSystem    weaponSystem    = 7;
-    techWeaponControl   weaponControl   = 8;
-    techActiveWeaponry  activeWeaponry  = 9;
+    repeated EventAttackShotDetail eventAttackShotDetail = 11;
 
-    repeated EventAttackShotDetail eventAttackShotDetail = 10;
+    bool recoilDamageToAttacker         = 12;
+    uint64 recoilDamage                 = 13;
+    bool recoilDamageDestroyedAttacker  = 14;
 
-    bool recoilDamageToAttacker         = 11;
-    uint64 recoilDamage                 = 12;
-    bool recoilDamageDestroyedAttacker  = 13;
+    bool planetaryDefenseCannonDamageToAttacker         = 15;
+    uint64 planetaryDefenseCannonDamage                 = 16;
+    bool planetaryDefenseCannonDamageDestroyedAttacker  = 17;
 
-    bool planetaryDefenseCannonDamageToAttacker         = 14;
-    uint64 planetaryDefenseCannonDamage                 = 15;
-    bool planetaryDefenseCannonDamageDestroyedAttacker  = 16;
+    string attackerPlayerId = 18;
 
-    string attackerPlayerId = 17;
-    string targetPlayerId   = 18;
-
-    uint64 attackerHealthAfter = 19;
+    uint64 attackerHealthBefore = 20;
+    uint64 attackerHealthAfter = 21;
+    uint64 attackerHealthMax = 22;
 
   }
 
   message EventAttackShotDetail {
     string  targetStructId = 1;
+    string  targetPlayerId = 44;
 
-    uint64      targetStructType            = 2;
-    objectType  targetStructLocationType    = 3 [(amino.dont_omitempty) = true];
-    string      targetStructLocationId      = 4;
-    ambit       targetStructOperatingAmbit  = 5 [(amino.dont_omitempty) = true];
-    uint64      targetStructSlot            = 6;
-
-
-    bool evaded                  = 7;
-    techUnitDefenses evadedCause = 8;
-
-    bool evadedByPlanetaryDefenses  = 9;
-    techPlanetaryDefenses evadedByPlanetaryDefensesCause = 10;
-
-    bool        blocked                        = 11;
-    string      blockedByStructId              = 12;
-    uint64      blockedByStructType            = 13;
-    objectType  blockedByStructLocationType    = 14 [(amino.dont_omitempty) = true];
-    string      blockedByStructLocationId      = 15;
-    ambit       blockedByStructOperatingAmbit  = 16 [(amino.dont_omitempty) = true];
-    uint64      blockedByStructSlot            = 17;
-
-    bool blockerDestroyed     = 18;
-
-    repeated EventAttackDefenderCounterDetail eventAttackDefenderCounterDetail = 19;
-
-    uint64 damageDealt                    = 20;
-    uint64 damageReduction                = 21;
-    techUnitDefenses damageReductionCause = 22;
-    uint64 damage                         = 23;
+    uint64      targetStructTypeId          = 2;
+    string      targetStructType            = 3;
+    objectType  targetStructLocationType    = 4 [(amino.dont_omitempty) = true];
+    string      targetStructLocationId      = 5;
+    ambit       targetStructOperatingAmbit  = 6 [(amino.dont_omitempty) = true];
+    uint64      targetStructSlot            = 7;
 
 
-    bool targetCountered                    = 24;
-    uint64 targetCounteredDamage            = 25;
-    bool targetCounterDestroyedAttacker     = 26;
-    techPassiveWeaponry targetCounterCause  = 27;
+    bool evaded                  = 8;
+    techUnitDefenses evadedCause = 9;
 
-    bool targetDestroyed = 28;
+    bool evadedByPlanetaryDefenses  = 10;
+    techPlanetaryDefenses evadedByPlanetaryDefensesCause = 11;
 
-    bool postDestructionDamageToAttacker            = 29;
-    uint64 postDestructionDamage                    = 30;
-    bool postDestructionDamageDestroyedAttacker     = 31;
-    techPassiveWeaponry postDestructionDamageCause  = 32;
+    bool        blocked                        = 12;
+    string      blockedByStructId              = 13;
+    string      blockedByStructType            = 14;
+    uint64      blockedByStructTypeId          = 15;
+    objectType  blockedByStructLocationType    = 16 [(amino.dont_omitempty) = true];
+    string      blockedByStructLocationId      = 17;
+    ambit       blockedByStructOperatingAmbit  = 18 [(amino.dont_omitempty) = true];
+    uint64      blockedByStructSlot            = 19;
 
-    uint64 targetHealthBefore  = 33;
-    uint64 targetHealthAfter   = 34;
-    uint64 blockerHealthAfter  = 35;
+    bool blockerDestroyed     = 20;
+
+    repeated EventAttackDefenderCounterDetail eventAttackDefenderCounterDetail = 21;
+
+    uint64 damageDealt                    = 22;
+    uint64 damageReduction                = 23;
+    techUnitDefenses damageReductionCause = 24;
+    uint64 damage                         = 25;
+
+
+    bool targetCountered                    = 26;
+    uint64 targetCounteredDamage            = 27;
+    bool targetCounterDestroyedAttacker     = 28;
+    techPassiveWeaponry targetCounterPassiveWeaponry = 29 [(amino.dont_omitempty) = true];
+    techWeaponSystem    targetCounterWeaponSystem    = 30 [(amino.dont_omitempty) = true];
+    techWeaponControl   targetCounterWeaponControl   = 31 [(amino.dont_omitempty) = true];
+    techActiveWeaponry  targetCounterActiveWeaponry  = 32 [(amino.dont_omitempty) = true];
+
+    bool targetDestroyed = 33;
+
+    bool postDestructionDamageToAttacker            = 34;
+    uint64 postDestructionDamage                    = 35;
+    bool postDestructionDamageDestroyedAttacker     = 36;
+    techPassiveWeaponry postDestructionDamagePassiveWeaponry  = 37 [(amino.dont_omitempty) = true];
+
+
+    uint64 targetHealthBefore  = 38;
+    uint64 targetHealthAfter   = 39;
+    uint64 targetHealthMax     = 40;
+
+    uint64 blockerHealthBefore = 41;
+    uint64 blockerHealthAfter  = 42;
+    uint64 blockerHealthMax    = 43;
 
   }
 
   message EventAttackDefenderCounterDetail {
     string  counterByStructId         = 1;
 
-    uint64      counterByStructType            = 2;
-    objectType  counterByStructLocationType    = 3 [(amino.dont_omitempty) = true];
-    string      counterByStructLocationId      = 4;
-    ambit       counterByStructOperatingAmbit  = 5 [(amino.dont_omitempty) = true];
-    uint64      counterByStructSlot            = 6;
+    uint64              counterByStructTypeId           = 2;
+    string              counterByStructType             = 3;
+    objectType          counterByStructLocationType     = 4 [(amino.dont_omitempty) = true];
+    string              counterByStructLocationId       = 5;
+    ambit               counterByStructOperatingAmbit   = 6 [(amino.dont_omitempty) = true];
+    uint64              counterByStructSlot             = 7;
+    techWeaponSystem    counterByStructWeaponSystem     = 8;
+    techWeaponControl   counterByStructWeaponControl    = 9;
+    techActiveWeaponry  counterByStructActiveWeaponry   = 10;
 
-    uint64  counterDamage             = 7;
-    bool    counterDestroyedAttacker  = 8;
+    uint64  counterDamage             = 11;
+    bool    counterDestroyedAttacker  = 12;
+
   }
 
   message EventRaid { EventRaidDetail eventRaidDetail = 1; }

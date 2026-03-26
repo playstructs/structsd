@@ -13,6 +13,7 @@ import (
 )
 
 func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressRegister) (*types.MsgAddressRegisterResponse, error) {
+    emptyResponse := &types.MsgAddressRegisterResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -20,33 +21,30 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return emptyResponse, err
+    }
+
 
     player, err := cc.GetPlayer(msg.PlayerId)
     if err != nil {
-       return &types.MsgAddressRegisterResponse{}, err
+       return emptyResponse, err
     }
 
     if player.CheckPlayer() != nil {
-        return &types.MsgAddressRegisterResponse{}, types.NewObjectNotFoundError("player", msg.PlayerId)
+        return emptyResponse, types.NewObjectNotFoundError("player", msg.PlayerId)
     }
 
 	// Is the address associated with an account yet
     playerFoundForAddress := cc.GetPlayerIndexFromAddress(msg.Address)
     if (playerFoundForAddress > 0) {
-        return &types.MsgAddressRegisterResponse{}, types.NewAddressValidationError(msg.Address, "already_registered")
+        return emptyResponse, types.NewAddressValidationError(msg.Address, "already_registered")
     }
 
-     // Check if msg.Creator has PermissionAssociations on the Address and Account
-    err = player.CanBeAdministratedBy(msg.Creator, types.PermissionAssociations)
+    err = player.CanRegisterAddressBy(activePlayer, types.Permission(msg.Permissions));
     if err != nil {
-       return &types.MsgAddressRegisterResponse{}, err
-    }
-
-	// Does this creator address have the permissions to do this
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    // The calling address must have a minimum of the same permission level
-    if (!cc.PermissionHasAll(addressPermissionId, types.Permission(msg.Permissions))) {
-        return &types.MsgAddressRegisterResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(msg.Permissions), "address_association")
+       return emptyResponse, err
     }
 
 	// Does the signature verify in the proof
@@ -56,11 +54,12 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     decodedProofPubKey, decodeErr := hex.DecodeString(msg.ProofPubKey)
     if decodeErr != nil {
         k.logger.Error("Address Register Public Key", "decodingError", decodeErr)
+        return emptyResponse, decodeErr
     }
     // Convert provided pub key into a bech32 string (i.e., an address)
 	address := types.PubKeyToBech32(decodedProofPubKey)
     if (address != msg.Address) {
-         return &types.MsgAddressRegisterResponse{}, types.NewAddressValidationError(msg.Address, "proof_mismatch").WithPlayers(address, msg.Address)
+         return emptyResponse, types.NewAddressValidationError(msg.Address, "proof_mismatch").WithPlayers(address, msg.Address)
     }
 
     pubKey := crypto.PubKey{}
@@ -74,11 +73,16 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     decodedProofSignature, decodeErr := hex.DecodeString(msg.ProofSignature)
     if decodeErr != nil {
         k.logger.Error("Address Register Signature", "decodingError", decodeErr)
+        return emptyResponse, decodeErr
     }
 
-    // Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all
+    if len(decodedProofSignature) < 64 {
+        return emptyResponse, types.NewAddressValidationError(msg.Address, "signature_too_short")
+    }
+
+    // Proof needs to only be 64 bytes. Some systems provide a checksum byte on the end that ruins it all
     if (!pubKey.VerifySignature([]byte(hashInput), decodedProofSignature[:64])) {
-         return &types.MsgAddressRegisterResponse{}, types.NewAddressValidationError(msg.Address, "signature_invalid")
+         return emptyResponse, types.NewAddressValidationError(msg.Address, "signature_invalid")
     }
 
 	// Add the address and player index to the keeper
@@ -99,7 +103,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     // Transfer
     err = k.bankKeeper.SendCoins(ctx, newAcc, primaryAcc, balances)
     if err != nil {
-        return &types.MsgAddressRegisterResponse{}, err
+        return emptyResponse, err
     }
 
     // Move Reactor Infusions over

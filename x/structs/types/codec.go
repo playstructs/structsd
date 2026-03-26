@@ -39,6 +39,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateJoinInfusionMinimumBypassByInvite{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateJoinInfusionMinimumBypassByRequest{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateOwnerId{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateEntryRank{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildMembershipInvite{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildMembershipInviteApprove{},)
@@ -58,11 +59,14 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPermissionRevokeOnAddress{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPermissionSetOnObject{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPermissionSetOnAddress{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPermissionGuildRankSet{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPermissionGuildRankRevoke{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlanetExplore{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlanetRaidComplete{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdatePrimaryAddress{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdateGuildRank{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerSend{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderCreate{},)
@@ -72,8 +76,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderUpdateDurationMinimum{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderUpdateDurationMaximum{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderUpdateAccessPolicy{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderGuildGrant{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderGuildRevoke{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderDelete{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgReactorInfuse{},)

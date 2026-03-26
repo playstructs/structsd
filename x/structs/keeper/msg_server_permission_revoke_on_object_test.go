@@ -20,14 +20,14 @@ func TestMsgPermissionRevokeOnObject(t *testing.T) {
 		Creator:        ownerAcc.String(),
 		PrimaryAddress: ownerAcc.String(),
 	}
-	owner = k.AppendPlayer(ctx, owner)
+	owner = testAppendPlayer(k, ctx, owner)
 
 	targetAcc := sdk.AccAddress("target123456789012345678901234567890")
 	targetPlayer := types.Player{
 		Creator:        targetAcc.String(),
 		PrimaryAddress: targetAcc.String(),
 	}
-	targetPlayer = k.AppendPlayer(ctx, targetPlayer)
+	targetPlayer = testAppendPlayer(k, ctx, targetPlayer)
 
 	// Create an object (struct) owned by owner
 	structObj := types.Struct{
@@ -35,19 +35,19 @@ func TestMsgPermissionRevokeOnObject(t *testing.T) {
 		Owner:   owner.Id,
 		Type:    1,
 	}
-	structObj = k.AppendStruct(ctx, structObj)
+	structObj = testAppendStruct(k, ctx, structObj)
 
 	// Grant owner permissions on the object
 	ownerPermissionId := keeperlib.GetObjectPermissionIDBytes(structObj.Id, owner.Id)
-	k.PermissionAdd(ctx, ownerPermissionId, types.PermissionAll)
+	testPermissionAdd(k, ctx, ownerPermissionId, types.PermAll)
 
 	// Grant target player some permissions
 	targetPermissionId := keeperlib.GetObjectPermissionIDBytes(structObj.Id, targetPlayer.Id)
-	k.PermissionAdd(ctx, targetPermissionId, types.PermissionPlay|types.PermissionUpdate)
+	testPermissionAdd(k, ctx, targetPermissionId, types.PermPlay|types.PermUpdate)
 
 	// Grant owner address permissions permission
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(owner.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.Permissions)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermAdmin)
 
 	testCases := []struct {
 		name      string
@@ -62,7 +62,7 @@ func TestMsgPermissionRevokeOnObject(t *testing.T) {
 				Creator:     owner.Creator,
 				ObjectId:    structObj.Id,
 				PlayerId:    targetPlayer.Id,
-				Permissions: uint64(types.PermissionPlay),
+				Permissions: uint64(types.PermPlay),
 			},
 			expErr: false,
 		},
@@ -72,7 +72,7 @@ func TestMsgPermissionRevokeOnObject(t *testing.T) {
 				Creator:     sdk.AccAddress("noperms123456789012345678901234567890").String(),
 				ObjectId:    structObj.Id,
 				PlayerId:    targetPlayer.Id,
-				Permissions: uint64(types.PermissionPlay),
+				Permissions: uint64(types.PermPlay),
 			},
 			expErr:    true,
 			expErrMsg: "has no permissions permission",
@@ -84,7 +84,7 @@ func TestMsgPermissionRevokeOnObject(t *testing.T) {
 				Creator:     owner.Creator,
 				ObjectId:    structObj.Id,
 				PlayerId:    targetPlayer.Id,
-				Permissions: uint64(types.PermissionAll),
+				Permissions: uint64(types.PermAll),
 			},
 			expErr:    true,
 			expErrMsg: "does not have the authority",
@@ -101,12 +101,12 @@ func TestMsgPermissionRevokeOnObject(t *testing.T) {
 			// Reset permissions for owner if needed
 			if tc.name == "owner doesn't have authority" {
 				k.PermissionClearAll(ctx, ownerPermissionId)
-				k.PermissionAdd(ctx, ownerPermissionId, types.PermissionPlay) // Only minimal permission
+				testPermissionAdd(k, ctx, ownerPermissionId, types.PermPlay) // Only minimal permission
 			}
 
 			// Re-grant target permissions if needed
 			if tc.name == "valid permission revoke" {
-				k.PermissionAdd(ctx, targetPermissionId, types.PermissionPlay|types.PermissionUpdate)
+				testPermissionAdd(k, ctx, targetPermissionId, types.PermPlay|types.PermUpdate)
 			}
 
 			resp, err := ms.PermissionRevokeOnObject(wctx, tc.input)
@@ -120,7 +120,7 @@ func TestMsgPermissionRevokeOnObject(t *testing.T) {
 				require.NotNil(t, resp)
 
 				// Verify permission was revoked
-				require.False(t, k.PermissionHasOneOf(ctx, targetPermissionId, types.Permission(tc.input.Permissions)))
+				require.False(t, testPermissionHasOneOf(k, ctx, targetPermissionId, types.Permission(tc.input.Permissions)))
 			}
 		})
 	}

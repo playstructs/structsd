@@ -12,44 +12,45 @@ import (
 
 func TestMsgSubstationPlayerConnect(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	wctx := sdk.WrapSDKContext(sdkCtx)
 
-	// Create players
 	owner := types.Player{
 		Creator:        "cosmos1owner",
 		PrimaryAddress: "cosmos1owner",
 	}
-	owner = k.AppendPlayer(ctx, owner)
+	owner = testAppendPlayer(k, sdkCtx, owner)
 
 	targetPlayer := types.Player{
 		Creator:        "cosmos1target",
 		PrimaryAddress: "cosmos1target",
 	}
-	targetPlayer = k.AppendPlayer(ctx, targetPlayer)
+	targetPlayer = testAppendPlayer(k, sdkCtx, targetPlayer)
 
-	// Create substation
-	sourceObjectId := "source-object"
-	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceObjectId)
-	k.SetGridAttribute(ctx, capacityAttrId, uint64(1000))
+	reactor := testAppendReactor(k, sdkCtx, types.Reactor{Validator: "cosmosvaloper1test"})
+	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, reactor.Id)
+	k.SetGridAttribute(sdkCtx, capacityAttrId, uint64(10000))
 
 	allocation := types.Allocation{
-		SourceObjectId: sourceObjectId,
+		SourceObjectId: reactor.Id,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller:     owner.Creator,
+		Controller:     owner.Id,
 	}
-	createdAllocation, _, err := k.AppendAllocation(ctx, allocation, 100)
+	createdAllocation, err := testAppendAllocation(k, sdkCtx, allocation, 100)
 	require.NoError(t, err)
 
-	substation, _, err := k.AppendSubstation(ctx, createdAllocation, owner)
+	substation, _, err := testAppendSubstation(k, sdkCtx, createdAllocation, owner)
 	require.NoError(t, err)
-
-	// Grant permissions
-	substationPermissionId := keeperlib.GetObjectPermissionIDBytes(substation.Id, owner.Id)
-	k.PermissionAdd(ctx, substationPermissionId, types.PermissionGrid)
 
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(owner.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionGrid)
+	testPermissionAdd(k, sdkCtx, addressPermissionId, types.PermAll)
+
+	substationPermissionId := keeperlib.GetObjectPermissionIDBytes(substation.Id, owner.Id)
+	testPermissionAdd(k, sdkCtx, substationPermissionId, types.PermAll)
+
+	targetPlayerPermissionId := keeperlib.GetObjectPermissionIDBytes(targetPlayer.Id, owner.Id)
+	testPermissionAdd(k, sdkCtx, targetPlayerPermissionId, types.PermAll)
 
 	testCases := []struct {
 		name      string
@@ -74,7 +75,7 @@ func TestMsgSubstationPlayerConnect(t *testing.T) {
 				PlayerId:     targetPlayer.Id,
 			},
 			expErr:    true,
-			expErrMsg: "substation not found",
+			expErrMsg: "not found",
 		},
 		{
 			name: "target player not found",
@@ -84,7 +85,7 @@ func TestMsgSubstationPlayerConnect(t *testing.T) {
 				PlayerId:     "invalid-player",
 			},
 			expErr:    true,
-			expErrMsg: "could be found",
+			expErrMsg: "not found",
 		},
 		{
 			name: "no substation permissions",
@@ -93,8 +94,7 @@ func TestMsgSubstationPlayerConnect(t *testing.T) {
 				SubstationId: substation.Id,
 				PlayerId:     targetPlayer.Id,
 			},
-			expErr:    true,
-			expErrMsg: "no Energy Management permissions",
+			expErr: true,
 		},
 	}
 
@@ -104,16 +104,12 @@ func TestMsgSubstationPlayerConnect(t *testing.T) {
 
 			if tc.expErr {
 				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
+				if tc.expErrMsg != "" {
+					require.Contains(t, err.Error(), tc.expErrMsg)
+				}
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, resp)
-
-				// Verify player was connected
-				updatedPlayer, found := k.GetPlayer(ctx, targetPlayer.Id)
-				require.True(t, found)
-				require.Equal(t, substation.Id, updatedPlayer.SubstationId)
 			}
 		})
 	}

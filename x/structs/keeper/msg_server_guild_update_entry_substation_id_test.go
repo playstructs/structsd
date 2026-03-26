@@ -20,7 +20,7 @@ func TestMsgGuildUpdateEntrySubstationId(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Create reactor for guild
 	validatorAddress := sdk.ValAddress(playerAcc.Bytes())
@@ -44,23 +44,23 @@ func TestMsgGuildUpdateEntrySubstationId(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller:     player.Creator,
+		Controller: player.Id,
 	}
-	createdAllocation, _, err := k.AppendAllocation(ctx, allocation, 100)
+	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
 
-	substation, _, err := k.AppendSubstation(ctx, createdAllocation, player)
+	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, player)
 	require.NoError(t, err)
 
 	// Grant permissions
 	guildPermissionId := keeperlib.GetObjectPermissionIDBytes(guild.Id, player.Id)
-	k.PermissionAdd(ctx, guildPermissionId, types.PermissionUpdate)
+	testPermissionAdd(k, ctx, guildPermissionId, types.PermUpdate)
 
 	substationPermissionId := keeperlib.GetObjectPermissionIDBytes(substation.Id, player.Id)
-	k.PermissionAdd(ctx, substationPermissionId, types.PermissionGrid)
+	testPermissionAdd(k, ctx, substationPermissionId, types.PermSubstationConnection)
 
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssets)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
 
 	testCases := []struct {
 		name      string

@@ -2,10 +2,10 @@ version: 1
 accounts:
 - name: alice
   coins:
-  - 200000000ualpha
+  - 400000000ualpha
 - name: bob
   coins:
-  - 100000000ualpha
+  - 400000000ualpha
 faucet:
   name: bob
   coins:

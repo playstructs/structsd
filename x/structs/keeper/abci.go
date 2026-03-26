@@ -71,10 +71,18 @@ func (k *Keeper) EventAllGenesis(ctx context.Context) {
 	}
 
 	// Permissions
-    permissions := k.GetAllPermissionExport(ctx)
-    for _, permission := range permissions {
-        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPermission{&types.PermissionRecord{PermissionId: permission.PermissionId, Value: permission.Value}})
-    }
+	permissions := k.GetAllPermissionExport(ctx)
+	for _, permission := range permissions {
+		_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPermission{&types.PermissionRecord{PermissionId: permission.PermissionId, Value: permission.Value}})
+	}
+
+	// Guild rank permissions
+	guildRankPerms := k.GetAllGuildRankPermissionExport(ctx)
+	for _, rec := range guildRankPerms {
+		if rec != nil {
+			_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildRankPermission{GuildRankPermissionRecord: rec})
+		}
+	}
 
 	// Grid Attributes
 	grids := k.GetAllGridExport(ctx)

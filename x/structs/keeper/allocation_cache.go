@@ -67,6 +67,27 @@ func (cache *AllocationCache) GetAllocation() types.Allocation {
 	return cache.Allocation
 }
 
+func (cache *AllocationCache) GetOwnerId() string {
+	return cache.GetAllocation().Controller
+}
+
+func (cache *AllocationCache) GetOwner() *PlayerCache {
+	player, _ :=  cache.CC.GetPlayer(cache.GetAllocation().Controller)
+	return player
+}
+
+func (cache *AllocationCache) GetSourceId() string {
+    return cache.GetAllocation().SourceObjectId
+}
+
+func (cache *AllocationCache) GetSource() PermissionedObject {
+	return cache.CC.GetPermissionedObject(cache.GetSourceId())
+}
+
+func (cache *AllocationCache) GetDestination() *SubstationCache {
+	return cache.CC.GetSubstation(cache.GetAllocation().DestinationId)
+}
+
 func (cache *AllocationCache) IsAutomated() bool {
     return cache.GetAllocation().Type == types.AllocationType_automated
 }
@@ -97,11 +118,11 @@ func (cache *AllocationCache) GetObjectLoad(objectId string) (uint64) {
     return cache.CC.GetGridAttribute(objectLoadAttributeId)
 }
 
-func (cache *AllocationCache) SetController(address string) () {
+func (cache *AllocationCache) SetController(playerId string) () {
     if !cache.Loaded {
         cache.LoadAllocation()
     }
-    cache.Allocation.Controller = address
+    cache.Allocation.Controller = playerId
     cache.Changed = true
 }
 
@@ -129,14 +150,14 @@ func (cache *AllocationCache) SetAllocationDestinationId(destinationId string) (
     return true
 }
 
-func (cache *AllocationCache) SetAllocationController(address string) (bool) {
+func (cache *AllocationCache) SetAllocationController(playerId string) (bool) {
     if ! cache.Loaded {
         if ! cache.LoadAllocation() {
             return false
         }
     }
 
-    cache.Allocation.Controller = address
+    cache.Allocation.Controller = playerId
     cache.Changed = true
     return true
 }
@@ -180,6 +201,9 @@ func (cache *AllocationCache) SetDynamicPower(newPower uint64) (uint64, error) {
 
     sourceLoad := cache.CC.GetGridAttribute(cache.SourceLoadAttributeId)
     sourceCapacity := cache.CC.GetGridAttribute(cache.SourceCapacityAttributeId)
+    if sourceLoad >= sourceCapacity {
+        return 0, types.NewAllocationError(cache.GetAllocation().SourceObjectId, "capacity_exceeded").WithCapacity(0, newPower)
+    }
     availableCapacity := sourceCapacity - sourceLoad
     if (availableCapacity < newPower) {
         return 0, types.NewAllocationError(cache.GetAllocation().SourceObjectId, "capacity_exceeded").WithCapacity(availableCapacity, newPower)
@@ -199,6 +223,9 @@ func (cache *AllocationCache) SetInitialPower(newPower uint64) (uint64, error) {
 
     sourceLoad := cache.CC.GetGridAttribute(cache.SourceLoadAttributeId)
     sourceCapacity := cache.CC.GetGridAttribute(cache.SourceCapacityAttributeId)
+    if sourceLoad >= sourceCapacity {
+        return 0, types.NewAllocationError(cache.GetAllocation().SourceObjectId, "capacity_exceeded").WithCapacity(0, newPower)
+    }
     availableCapacity := sourceCapacity - sourceLoad
     if (availableCapacity < newPower) {
         return 0, types.NewAllocationError(cache.GetAllocation().SourceObjectId, "capacity_exceeded").WithCapacity(availableCapacity, newPower)
@@ -320,25 +347,51 @@ func (cache *AllocationCache) Destroy() (error) {
 
 
     // Check for a related Agreement and close it
-    // TODO change to CC
     agreement := cache.CC.GetAgreement(GetObjectID(types.ObjectType_agreement, cache.GetAllocation().Index))
     if agreement.LoadAgreement() {
         agreement.PrematureCloseByAllocation()
     }
+
+    cache.CC.ClearPermissionsForObject(cache.ID())
 
     cache.Changed = true
     cache.Deleted = true
     return nil
 }
 
-
-func (cache *AllocationCache) CanBeUpdatedBySource() bool {
-    // TODO
-    return true
+/* Permissions */
+func (cache *AllocationCache) CanSourceDetailsBeUpdatedBy(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache.GetSource(), activePlayer, types.PermSourceAllocation)
 }
 
-func (cache *AllocationCache) CanBeUpdatedByController() bool {
-    // TODO
-    return true
+func (cache *AllocationCache) CanBeUpdatedBy(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermUpdate)
 }
 
+
+func (cache *AllocationCache) CanBeDeletedBy(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermDelete)
+}
+
+func (cache *AllocationCache) CanBeTransferBy(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermAdmin)
+}
+
+func (cache *AllocationCache) CanBeConnectedBy(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermAllocationConnection)
+}
+
+func (cache *AllocationCache) CanBeDisconnectedBy(activePlayer *PlayerCache) error {
+    err := cache.CC.PermissionCheck(cache, activePlayer, types.PermAllocationConnection)
+
+    // success on first try
+    if err == nil {
+        return nil
+    }
+
+    return cache.CC.PermissionCheck(cache.GetDestination(), activePlayer, types.PermAllocationConnection)
+}
+
+func (cache *AllocationCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return types.NewAllocationError(cache.ID(), "unacceptable_source")
+}

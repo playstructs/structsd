@@ -50,22 +50,25 @@ func TestPermissionBitOperations(t *testing.T) {
 	flag2 := types.Permission(0b0010)
 
 	// Add first flag
-	newPermission := keeper.PermissionAdd(ctx, permissionId, flag1)
+	testPermissionAdd(keeper, ctx, permissionId, flag1)
+	newPermission := keeper.GetPermissionsByBytes(ctx, permissionId)
 	require.Equal(t, flag1, newPermission)
 
 	// Add second flag
-	newPermission = keeper.PermissionAdd(ctx, permissionId, flag2)
+	testPermissionAdd(keeper, ctx, permissionId, flag2)
+	newPermission = keeper.GetPermissionsByBytes(ctx, permissionId)
 	require.Equal(t, types.Permission(0b0011), newPermission)
 
 	// Test removing permissions
-	newPermission = keeper.PermissionRemove(ctx, permissionId, flag1)
+	testPermissionRemove(keeper, ctx, permissionId, flag1)
+	newPermission = keeper.GetPermissionsByBytes(ctx, permissionId)
 	require.Equal(t, flag2, newPermission)
 
 	// Test permission checks
-	require.True(t, keeper.PermissionHasAll(ctx, permissionId, flag2))
-	require.False(t, keeper.PermissionHasAll(ctx, permissionId, flag1))
-	require.True(t, keeper.PermissionHasOneOf(ctx, permissionId, types.Permission(0b0011)))
-	require.False(t, keeper.PermissionHasOneOf(ctx, permissionId, types.Permission(0b0100)))
+	require.True(t, testPermissionHasAll(keeper, ctx, permissionId, flag2))
+	require.False(t, testPermissionHasAll(keeper, ctx, permissionId, flag1))
+	require.True(t, testPermissionHasOneOf(keeper, ctx, permissionId, types.Permission(0b0011)))
+	require.False(t, testPermissionHasOneOf(keeper, ctx, permissionId, types.Permission(0b0100)))
 }
 
 func TestGetPermissionsByObject(t *testing.T) {
@@ -201,6 +204,88 @@ func TestAddressPermissionIDBytes(t *testing.T) {
 	require.Equal(t, testPermission, retrievedPermission)
 
 	// Test permission operations
-	require.True(t, keeper.PermissionHasAll(ctx, permissionId, testPermission))
-	require.False(t, keeper.PermissionHasAll(ctx, permissionId, types.Permission(0b0101)))
+	require.True(t, testPermissionHasAll(keeper, ctx, permissionId, testPermission))
+	require.False(t, testPermissionHasAll(keeper, ctx, permissionId, types.Permission(0b0101)))
+}
+
+func TestGuildRankRegisterReadWrite(t *testing.T) {
+	keeper, ctx := keepertest.StructsKeeper(t)
+
+	objectId := "1-1"
+	guildId := "2-2"
+
+	// Empty register returns all zeros
+	reg := keeper.ReadGuildRankRegister(ctx, objectId, guildId)
+	for i := 0; i < types.PermissionBitCount; i++ {
+		require.Equal(t, uint64(0), reg[i])
+	}
+
+	// Write a register with some slots set
+	reg[0] = 5 // PermPlay -> rank 5
+	reg[1] = 3 // PermAdmin -> rank 3
+	keeper.WriteGuildRankRegister(ctx, objectId, guildId, reg)
+
+	// Read it back
+	reg2 := keeper.ReadGuildRankRegister(ctx, objectId, guildId)
+	require.Equal(t, uint64(5), reg2[0])
+	require.Equal(t, uint64(3), reg2[1])
+	for i := 2; i < types.PermissionBitCount; i++ {
+		require.Equal(t, uint64(0), reg2[i])
+	}
+
+	// Writing all-zero register deletes the key
+	var zeroReg [types.PermissionBitCount]uint64
+	keeper.WriteGuildRankRegister(ctx, objectId, guildId, zeroReg)
+	reg3 := keeper.ReadGuildRankRegister(ctx, objectId, guildId)
+	for i := 0; i < types.PermissionBitCount; i++ {
+		require.Equal(t, uint64(0), reg3[i])
+	}
+}
+
+func TestSetGuildRankPermissionStoreOnly(t *testing.T) {
+	keeper, ctx := keepertest.StructsKeeper(t)
+
+	objectId := "1-1"
+	guildId := "2-2"
+
+	// Set individual permission bits via StoreOnly (genesis path)
+	keeper.SetGuildRankPermissionStoreOnly(ctx, objectId, guildId, types.PermPlay, 5)
+	keeper.SetGuildRankPermissionStoreOnly(ctx, objectId, guildId, types.PermAdmin, 3)
+
+	reg := keeper.ReadGuildRankRegister(ctx, objectId, guildId)
+	require.Equal(t, uint64(5), reg[0]) // bit 0 = PermPlay
+	require.Equal(t, uint64(3), reg[1]) // bit 1 = PermAdmin
+
+	// Set combined mask -- both bits get the same rank
+	keeper.SetGuildRankPermissionStoreOnly(ctx, objectId, guildId, types.PermUpdate|types.PermDelete, 7)
+	reg = keeper.ReadGuildRankRegister(ctx, objectId, guildId)
+	require.Equal(t, uint64(5), reg[0]) // PermPlay unchanged
+	require.Equal(t, uint64(3), reg[1]) // PermAdmin unchanged
+	require.Equal(t, uint64(7), reg[2]) // PermUpdate
+	require.Equal(t, uint64(7), reg[3]) // PermDelete
+}
+
+func TestClearPermissionGuildRankByObject(t *testing.T) {
+	keeper, ctx := keepertest.StructsKeeper(t)
+
+	objectId := "1-10"
+	guild1 := "2-1"
+	guild2 := "2-2"
+
+	keeper.SetGuildRankPermissionStoreOnly(ctx, objectId, guild1, types.PermPlay, 3)
+	keeper.SetGuildRankPermissionStoreOnly(ctx, objectId, guild2, types.PermAdmin, 1)
+
+	reg1 := keeper.ReadGuildRankRegister(ctx, objectId, guild1)
+	require.Equal(t, uint64(3), reg1[0])
+
+	keeper.ClearPermissionGuildRankByObject(ctx, objectId)
+
+	// After clear, registers are gone
+	reg1 = keeper.ReadGuildRankRegister(ctx, objectId, guild1)
+	require.Equal(t, uint64(0), reg1[0])
+	reg2 := keeper.ReadGuildRankRegister(ctx, objectId, guild2)
+	require.Equal(t, uint64(0), reg2[1])
+
+	// Clear on nonexistent object is a no-op
+	keeper.ClearPermissionGuildRankByObject(ctx, "nonexistent")
 }

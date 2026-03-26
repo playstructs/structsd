@@ -11,6 +11,7 @@ import (
 )
 
 func (k msgServer) ReactorCancelDefusion(goCtx context.Context, msg *types.MsgReactorCancelDefusion) (*types.MsgReactorCancelDefusionResponse, error) {
+    emptyResponse := &types.MsgReactorCancelDefusionResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -18,66 +19,69 @@ func (k msgServer) ReactorCancelDefusion(goCtx context.Context, msg *types.MsgRe
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return emptyResponse, err
+    }
+
     // Load the player related to the specified address
     // Normally the address specified should be the PrimaryAddress
     player, err := cc.GetPlayerByAddress(msg.DelegatorAddress)
     if err != nil {
-       return &types.MsgReactorCancelDefusionResponse{}, err
+       return emptyResponse, err
     }
 
-    // Check if msg.Creator has PermissionAssets on the Address and Account
-    err = player.CanBeAdministratedBy(msg.Creator, types.PermissionAssets)
+    err = player.CanInfuseTokensBy(callingPlayer)
     if err != nil {
-       return &types.MsgReactorCancelDefusionResponse{}, err
+       return emptyResponse, err
     }
-
 
     delegatorAddress, delegatorAddressErr := sdk.AccAddressFromBech32(msg.DelegatorAddress)
  	if delegatorAddressErr != nil {
- 		return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "invalid_address").WithAddress(msg.DelegatorAddress, "delegator")
+ 		return emptyResponse, types.NewReactorError("cancel_defusion", "invalid_address").WithAddress(msg.DelegatorAddress, "delegator")
  	}
 
     valAddr, valErr := sdk.ValAddressFromBech32(msg.ValidatorAddress)
 	if valErr != nil {
-		return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "invalid_address").WithAddress(msg.ValidatorAddress, "validator")
+		return emptyResponse, types.NewReactorError("cancel_defusion", "invalid_address").WithAddress(msg.ValidatorAddress, "validator")
 	}
 
 	if !msg.Amount.IsValid() || !msg.Amount.Amount.IsPositive() {
-		return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "invalid_amount")
+		return emptyResponse, types.NewReactorError("cancel_defusion", "invalid_amount")
 	}
 
 	bondDenom, err := k.stakingKeeper.BondDenom(ctx)
 	if err != nil {
-		return &types.MsgReactorCancelDefusionResponse{}, err
+		return emptyResponse, err
 	}
 
 	if msg.Amount.Denom != bondDenom {
-		return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "invalid_denom").WithDenom(msg.Amount.Denom, bondDenom)
+		return emptyResponse, types.NewReactorError("cancel_defusion", "invalid_denom").WithDenom(msg.Amount.Denom, bondDenom)
 	}
 
 	if msg.CreationHeight <= 0 {
-		return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "invalid_height")
+		return emptyResponse, types.NewReactorError("cancel_defusion", "invalid_height")
 	}
 
 	validator, err := k.stakingKeeper.GetValidator(ctx, valAddr)
 	if err != nil {
-		return &types.MsgReactorCancelDefusionResponse{}, err
+		return emptyResponse, err
 	}
 
 	// In some situations, the exchange rate becomes invalid, e.g. if
 	// Validator loses all tokens due to slashing. In this case,
 	// make all future delegations invalid.
 	if validator.InvalidExRate() {
-		return &types.MsgReactorCancelDefusionResponse{}, staking.ErrDelegatorShareExRateInvalid
+		return emptyResponse, staking.ErrDelegatorShareExRateInvalid
 	}
 
 	if validator.IsJailed() {
-		return &types.MsgReactorCancelDefusionResponse{}, staking.ErrValidatorJailed
+		return emptyResponse, staking.ErrValidatorJailed
 	}
 
 	ubd, err := k.stakingKeeper.GetUnbondingDelegation(ctx, delegatorAddress, valAddr)
 	if err != nil {
-		return &types.MsgReactorCancelDefusionResponse{}, types.NewObjectNotFoundError("unbonding_delegation", msg.DelegatorAddress).WithContext("validator: " + msg.ValidatorAddress)
+		return emptyResponse, types.NewObjectNotFoundError("unbonding_delegation", msg.DelegatorAddress).WithContext("validator: " + msg.ValidatorAddress)
 	}
 
     var (
@@ -93,21 +97,21 @@ func (k msgServer) ReactorCancelDefusion(goCtx context.Context, msg *types.MsgRe
         }
     }
     if unbondEntryIndex == -1 {
-        return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "entry_not_found").WithHeight(msg.CreationHeight)
+        return emptyResponse, types.NewReactorError("cancel_defusion", "entry_not_found").WithHeight(msg.CreationHeight)
     }
 
 	if unbondEntry.Balance.LT(msg.Amount.Amount) {
-		return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "balance_exceeded")
+		return emptyResponse, types.NewReactorError("cancel_defusion", "balance_exceeded")
 	}
 
 	if unbondEntry.CompletionTime.Before(ctx.BlockTime()) {
-		return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "already_processed")
+		return emptyResponse, types.NewReactorError("cancel_defusion", "already_processed")
 	}
 
 	// delegate back the unbonding delegation amount to the validator
 	_, err = k.stakingKeeper.Delegate(ctx, delegatorAddress, msg.Amount.Amount, staking.Unbonding, validator, false)
 	if err != nil {
-		return &types.MsgReactorCancelDefusionResponse{}, err
+		return emptyResponse, err
 	}
 
 	amount := unbondEntry.Balance.Sub(msg.Amount.Amount)
@@ -128,7 +132,7 @@ func (k msgServer) ReactorCancelDefusion(goCtx context.Context, msg *types.MsgRe
 	}
 
 	if err != nil {
-		return &types.MsgReactorCancelDefusionResponse{}, err
+		return emptyResponse, err
 	}
 
 	ctx.EventManager().EmitEvent(

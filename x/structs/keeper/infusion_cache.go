@@ -237,3 +237,7 @@ func (cache *InfusionCache) Destroy() {
     cache.Deleted = true
     cache.Changed = true
 }
+
+func (cache *InfusionCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return types.NewAllocationError(cache.ID(), "unacceptable_source")
+}

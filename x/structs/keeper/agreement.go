@@ -66,7 +66,6 @@ func (k Keeper) ClearAgreement(ctx context.Context, agreementId string) {
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ObjectId: agreementId})
 }
-// TODO NEED TO CLEAR THE INDEX
 
 // RemoveAgreement removes a agreement from the store
 func (k Keeper) RemoveAgreement(ctx context.Context, agreement types.Agreement) {

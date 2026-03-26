@@ -21,7 +21,7 @@ func TestMsgAddressRegister(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Generate a new keypair for the address to register
 	privKey := secp256k1.GenPrivKey()
@@ -46,7 +46,7 @@ func TestMsgAddressRegister(t *testing.T) {
 				Creator:        player.Creator,
 				PlayerId:       player.Id,
 				Address:        newAddress,
-				Permissions:    uint64(types.PermissionAll),
+				Permissions:    uint64(types.PermAll),
 				ProofPubKey:    hex.EncodeToString(pubKey.Bytes()),
 				ProofSignature: hex.EncodeToString(signature),
 			},
@@ -59,7 +59,7 @@ func TestMsgAddressRegister(t *testing.T) {
 				Creator:        player.Creator,
 				PlayerId:       "player-invalid-999999",
 				Address:        newAddress,
-				Permissions:    uint64(types.PermissionAll),
+				Permissions:    uint64(types.PermAll),
 				ProofPubKey:    hex.EncodeToString(pubKey.Bytes()),
 				ProofSignature: hex.EncodeToString(signature),
 			},
@@ -73,7 +73,7 @@ func TestMsgAddressRegister(t *testing.T) {
 				Creator:        player.Creator,
 				PlayerId:       player.Id,
 				Address:        player.Creator, // Use existing address
-				Permissions:    uint64(types.PermissionAll),
+				Permissions:    uint64(types.PermAll),
 				ProofPubKey:    hex.EncodeToString(pubKey.Bytes()),
 				ProofSignature: hex.EncodeToString(signature),
 			},
@@ -87,7 +87,7 @@ func TestMsgAddressRegister(t *testing.T) {
 				Creator:        player.Creator,
 				PlayerId:       player.Id,
 				Address:        newAddress,
-				Permissions:    uint64(types.PermissionAll),
+				Permissions:    uint64(types.PermAll),
 				ProofPubKey:    hex.EncodeToString(pubKey.Bytes()),
 				ProofSignature: hex.EncodeToString([]byte("invalid-signature")),
 			},
@@ -105,7 +105,7 @@ func TestMsgAddressRegister(t *testing.T) {
 
 			// Grant permissions for tests that need them to pass earlier checks
 			addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-			k.PermissionAdd(ctx, addressPermissionId, types.PermissionAll)
+			testPermissionAdd(k, ctx, addressPermissionId, types.PermAll)
 
 			resp, err := ms.AddressRegister(wctx, tc.input)
 

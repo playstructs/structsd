@@ -130,6 +130,8 @@ func (cache *SubstationCache) Delete(migrationSubstationId string) {
 	cache.CC.ClearGridAttribute(cache.ConnectionCountAttributeId)
 	cache.CC.ClearGridAttribute(cache.ConnectionCapacityAttributeId)
 
+    cache.CC.ClearPermissionsForObject(cache.ID())
+
     cache.Deleted = true
     cache.Changed = true
 }
@@ -144,41 +146,19 @@ func (cache *SubstationCache) SetOwnerId(owner string) {
 
 // Delete Permission
 func (cache *SubstationCache) CanBeDeleteDBy(activePlayer *PlayerCache) (error) {
-    return cache.PermissionCheck(types.PermissionDelete, activePlayer);
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermDelete);
 }
 
 // Association Permission
-func (cache *SubstationCache) CanManagePlayerConnections(activePlayer *PlayerCache) (error) {
-    return cache.PermissionCheck(types.PermissionAssociations, activePlayer)
+func (cache *SubstationCache) CanManageConnectionsBy(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermSubstationConnection)
 }
 
-// Grid Permission
-func (cache *SubstationCache) CanManageAllocationConnections(activePlayer *PlayerCache) (error) {
-    return cache.PermissionCheck(types.PermissionGrid, activePlayer)
+func (cache *SubstationCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermSourceAllocation)
 }
 
-// Asset Permission
-func (cache *SubstationCache) CanCreateAllocations(activePlayer *PlayerCache) (error) {
-    return cache.PermissionCheck(types.PermissionAssets, activePlayer)
-}
 
-func (cache *SubstationCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (error) {
-    // Make sure the address calling this has Play permissions
-    if (!cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
-        return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "substation_action")
-    }
-
-    if !activePlayer.HasPlayerAccount() {
-        return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "substation_action")
-    } else {
-        if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
-            if (!cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetSubstationId(), activePlayer.GetPlayerId()), permission)) {
-               return types.NewPermissionError("player", activePlayer.GetPlayerId(), "substation", cache.GetSubstationId(), uint64(permission), "substation_action")
-            }
-        }
-    }
-    return nil
-}
 
 func (cache *SubstationCache) ConnectionCountDecrement(amount uint64) {
     cache.CC.SetGridAttributeDecrement(cache.ConnectionCountAttributeId, amount)
@@ -197,3 +177,5 @@ func (cache *SubstationCache) PlayerIncrease() {
 func (cache *SubstationCache) PlayerDecrease(){
     cache.ConnectionCountDecrement(1)
 }
+
+

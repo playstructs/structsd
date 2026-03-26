@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) PermissionRevokeOnObject(goCtx context.Context, msg *types.MsgPermissionRevokeOnObject) (*types.MsgPermissionResponse, error) {
+    emptyResponse := &types.MsgPermissionResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -20,26 +21,17 @@ func (k msgServer) PermissionRevokeOnObject(goCtx context.Context, msg *types.Ms
 
     player, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return &types.MsgPermissionResponse{}, err
+        return emptyResponse, err
     }
 
-    if (player.GetPlayerId() != msg.PlayerId) {
-        _, err := cc.GetPlayer(msg.PlayerId)
-        if err != nil {
-            return &types.MsgPermissionResponse{}, err
-        }
+    permissionedObject := cc.GetPermissionedObject(msg.ObjectId)
+    if permissionedObject == nil {
+        return  &types.MsgPermissionResponse{},  types.NewPermissionError("player", player.GetPlayerId(), "object", msg.ObjectId, uint64(msg.Permissions), "permission_grant")
     }
 
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    // Make sure the address calling this has the Permissions permission for editing permissions
-    if (!cc.PermissionHasOneOf(addressPermissionId, types.Permissions)) {
-        return &types.MsgPermissionResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.Permissions), "permission_edit")
-    }
-
-    // Make sure the calling player has the same permissions that are being applied to the other player
-    playerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, player.GetPlayerId())
-    if (!cc.PermissionHasAll(playerPermissionId, types.Permission(msg.Permissions))) {
-        return &types.MsgPermissionResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "object", msg.ObjectId, uint64(msg.Permissions), "permission_revoke")
+    permissionErr := cc.PermissionCheck(permissionedObject, player, types.Permission(msg.Permissions))
+    if permissionErr != nil {
+        return  &types.MsgPermissionResponse{}, permissionErr
     }
 
     targetPlayerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, msg.PlayerId)

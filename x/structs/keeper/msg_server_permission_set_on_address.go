@@ -8,9 +8,9 @@ import (
 )
 
 func (k msgServer) PermissionSetOnAddress(goCtx context.Context, msg *types.MsgPermissionSetOnAddress) (*types.MsgPermissionResponse, error) {
+    emptyResponse := &types.MsgPermissionResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -18,25 +18,19 @@ func (k msgServer) PermissionSetOnAddress(goCtx context.Context, msg *types.MsgP
 
     var err error
 
-    player, err := cc.GetPlayerByAddress(msg.Creator)
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return  &types.MsgPermissionResponse{}, err
+        return  emptyResponse, err
     }
 
     targetPlayer, err := cc.GetPlayerByAddress(msg.Address)
     if err != nil {
-         return  &types.MsgPermissionResponse{}, err
+         return  emptyResponse, err
      }
 
-     if (targetPlayer.GetPlayerId() != player.GetPlayerId()) {
-        return  &types.MsgPermissionResponse{}, types.NewObjectNotFoundError("player", targetPlayer.GetPlayerId()) // Can only set address permissions on your own player
-     }
-
-
-    // Make sure the calling address has enough permissions to apply to another address
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    if (!cc.PermissionHasAll(addressPermissionId, types.Permission(msg.Permissions) | types.Permissions)) {
-        return &types.MsgPermissionResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(msg.Permissions), "permission_set")
+    permissionErr := targetPlayer.CanRegisterAddressBy(callingPlayer, types.Permission(msg.Permissions))
+    if permissionErr != nil {
+        return  emptyResponse, permissionErr
     }
 
     targetAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)

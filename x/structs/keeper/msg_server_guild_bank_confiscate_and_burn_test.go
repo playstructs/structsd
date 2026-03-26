@@ -20,7 +20,7 @@ func TestMsgGuildBankConfiscateAndBurn(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Create reactor for guild
 	validatorAddress := sdk.ValAddress(playerAcc.Bytes())
@@ -40,9 +40,11 @@ func TestMsgGuildBankConfiscateAndBurn(t *testing.T) {
 	k.BankKeeper().MintCoins(ctx, types.ModuleName, sdk.NewCoins(alphaCoin))
 	k.BankKeeper().SendCoinsFromModuleToAccount(ctx, types.ModuleName, playerAcc, sdk.NewCoins(alphaCoin))
 
-	guildCache := k.GetGuildCacheFromId(ctx, guild.Id)
-	ownerCache, _ := k.GetPlayerCacheFromAddress(ctx, player.Creator)
-	err := guildCache.BankMint(math.NewInt(100), math.NewInt(10), &ownerCache)
+	_, err := ms.GuildBankMint(wctx, &types.MsgGuildBankMint{
+		Creator:     player.Creator,
+		AmountAlpha: 100,
+		AmountToken: 10,
+	})
 	require.NoError(t, err)
 
 	testCases := []struct {

@@ -9,24 +9,17 @@ import (
 )
 
 func (k msgServer) GuildMembershipKick(goCtx context.Context, msg *types.MsgGuildMembershipKick) (*types.MsgGuildMembershipResponse, error) {
+    emptyResponse := &types.MsgGuildMembershipResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return &types.MsgGuildMembershipResponse{}, err
-    }
-
-    // Use cache permission methods
-    callingPlayerPermissionError := callingPlayer.CanBeAdministratedBy(msg.Creator, types.PermissionAssociations)
-    if callingPlayerPermissionError != nil {
-        return &types.MsgGuildMembershipResponse{}, callingPlayerPermissionError
+        return emptyResponse, err
     }
 
 	if msg.GuildId == "" {
@@ -35,12 +28,12 @@ func (k msgServer) GuildMembershipKick(goCtx context.Context, msg *types.MsgGuil
 
     guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipKickCache(callingPlayer, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
-        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
+        return emptyResponse, guildMembershipApplicationError
     }
 
     guildMembershipApplicationError = guildMembershipApplication.Kick()
     if guildMembershipApplicationError != nil {
-        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
+        return emptyResponse, guildMembershipApplicationError
     }
 
 	cc.CommitAll()

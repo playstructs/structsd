@@ -40,14 +40,6 @@ type PlanetCache struct {
     LowOrbitBallisticsInterceptorNetworkSuccessRateDenominatorAttributeId string
     OrbitalJammingStationQuantityAttributeId string
     AdvancedOrbitalJammingStationQuantityAttributeId string
-
-    // Event Tracking
-    EventAttackDetailLoaded bool
-    EventAttackDetail *types.EventAttackDetail
-
-    EventAttackShotDetailLoaded bool
-    EventAttackShotDetail *types.EventAttackShotDetail
-
 }
 
 
@@ -154,20 +146,6 @@ func (cache *PlanetCache) GetLocationListLast() string {
     return cache.GetPlanet().LocationListLast
 }
 
-func (cache *PlanetCache) GetEventAttackDetail() (*types.EventAttackDetail) {
-    if (!cache.EventAttackDetailLoaded) { cache.EventAttackDetail = types.CreateEventAttackDetail() }
-    return cache.EventAttackDetail
-}
-
-
-func (cache *PlanetCache) GetEventAttackShotDetail() (*types.EventAttackShotDetail) {
-    return cache.EventAttackShotDetail
-}
-
-func (cache *PlanetCache) FlushEventAttackShotDetail() ( *types.EventAttackShotDetail) {
-    cache.EventAttackShotDetailLoaded = false
-    return cache.EventAttackShotDetail
-}
 
 /* Setters - SET DOES NOT COMMIT()
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
@@ -262,17 +240,6 @@ func (cache *PlanetCache) LowOrbitBallisticsInterceptorNetworkRecalculate() {
     }
 }
 
-
-// Set the Event data manually
-// Used to manage the same event across objects
-func (cache *PlanetCache) ManualLoadEventAttackDetail(eventAttackDetail *types.EventAttackDetail) {
-    cache.EventAttackDetail = eventAttackDetail
-    cache.EventAttackDetailLoaded = true
-}
-func (cache *PlanetCache) ManualLoadEventAttackShotDetail(eventAttackShotDetail *types.EventAttackShotDetail) {
-    cache.EventAttackShotDetail = eventAttackShotDetail
-    cache.EventAttackShotDetailLoaded = true
-}
 
 
 /* Flag Commands for the Status field */
@@ -493,9 +460,6 @@ func (cache *PlanetCache) AttemptComplete() (error) {
     return types.NewPlanetStateError(cache.GetPlanetId(), "has_ore", "explore")
 }
 
-func (cache *PlanetCache) AttemptDefenseCannon(attacker *StructCache) (cannoned bool) {
-    if (cache.GetDefensiveCannonQuantity() > 0) {
-        attacker.TakePlanetaryDefenseCanonDamage(cache.GetDefensiveCannonQuantity())
-    }
-    return
+func (cache *PlanetCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return types.NewAllocationError(cache.ID(), "unacceptable_source")
 }

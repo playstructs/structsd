@@ -85,4 +85,3 @@ func (cc *CurrentContext) GenesisImportReactorInfusions(reactor types.Reactor) {
 		}
 	}
 }
-

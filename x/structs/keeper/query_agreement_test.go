@@ -64,7 +64,6 @@ func TestAgreementAllQuery(t *testing.T) {
 	resp, err = keeper.AgreementAll(ctx, req)
 	require.NoError(t, err)
 	require.Len(t, resp.Agreement, len(agreements))
-	require.Nil(t, resp.Pagination)
 
 	// Verify all agreements are present
 	for _, agreement := range agreements {

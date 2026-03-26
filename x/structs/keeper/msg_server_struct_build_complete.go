@@ -5,12 +5,19 @@ import (
 	"strconv"
 	"structs/x/structs/types"
 
+	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStructBuildComplete) (*types.MsgStructStatusResponse, error) {
+    emptyResponse := &types.MsgStructStatusResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
+
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return emptyResponse, err
+    }
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
@@ -20,21 +27,20 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 	structure := cc.GetStruct(msg.StructId)
 
 	// Check to see if the caller has permissions to proceed
-	/*
-	   callerID, isOwner, permissionError := structure.CanBeHashedBy(msg.Creator)
-	   if (permissionError != nil) {
-	       return &types.MsgStructStatusResponse{}, permissionError
-	   }
-	*/
+    permissionError := structure.GetOwner().CanBuildHashedBy(callingPlayer)
+    if (permissionError != nil) {
+       return emptyResponse, permissionError
+    }
+
 
 	if !structure.LoadStruct() {
-		return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct", msg.StructId)
+		return emptyResponse, types.NewObjectNotFoundError("struct", msg.StructId)
 	}
 
 	if structure.IsBuilt() {
 		//structure.GetOwner().Discharge()
 		//structure.GetOwner().Commit()
-		return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "built", "building", "build_complete")
+		return emptyResponse, types.NewStructStateError(msg.StructId, "built", "building", "build_complete")
 	}
 
 	// Check Player Charge
@@ -43,12 +49,12 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 	       err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().ActivateCharge, structure.GetOwner().GetCharge(), "struct_build_complete").WithStructType(structure.GetStructType().Id)
 	       structure.GetOwner().Discharge()
 	       structure.GetOwner().Commit()
-	       return &types.MsgStructStatusResponse{}, err
+	       return emptyResponse, err
 	   }
 	*/
 
 	if structure.GetOwner().IsOffline() {
-		return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(structure.GetOwnerId(), "offline")
+		return emptyResponse, types.NewPlayerPowerError(structure.GetOwnerId(), "offline")
 	}
 
 	// Remove the BuildDraw load
@@ -58,14 +64,19 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 		//structure.GetOwner().StructsLoadIncrement(structure.GetStructType().BuildDraw)
 		//structure.GetOwner().Discharge()
 		//structure.GetOwner().Commit()
-		return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(structure.GetOwnerId(), "capacity_exceeded").WithCapacity(structure.GetStructType().PassiveDraw, structure.GetOwner().GetAvailableCapacity())
+		return emptyResponse, types.NewPlayerPowerError(structure.GetOwnerId(), "capacity_exceeded").WithCapacity(structure.GetStructType().PassiveDraw, structure.GetOwner().GetAvailableCapacity())
 	}
 
 	// Check the Proof
 	buildStartBlockString := strconv.FormatUint(structure.GetBlockStartBuild(), 10)
 	hashInput := structure.GetStructId() + "BUILD" + buildStartBlockString + "NONCE" + msg.Nonce
 
-	currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartBuild()
+	blockHeight := uint64(ctx.BlockHeight())
+	blockStart := structure.GetBlockStartBuild()
+	if blockHeight < blockStart {
+		return emptyResponse, sdkerrors.Wrapf(types.ErrInvalidParameters, "block height %d precedes start block %d", blockHeight, blockStart)
+	}
+	currentAge := blockHeight - blockStart
 
     valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().BuildDifficulty)
 	if !valid {
@@ -73,7 +84,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 		//structure.GetOwner().Discharge()
 		//structure.GetOwner().Halt()
 		//structure.GetOwner().Commit()
-		return &types.MsgStructStatusResponse{}, types.NewWorkFailureError("build", structure.GetStructId(), hashInput)
+		return emptyResponse, types.NewWorkFailureError("build", structure.GetStructId(), hashInput)
 	}
 
 	structure.StatusAddBuilt()

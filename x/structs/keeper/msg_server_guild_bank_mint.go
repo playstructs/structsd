@@ -10,6 +10,7 @@ import (
 )
 
 func (k msgServer) GuildBankMint(goCtx context.Context, msg *types.MsgGuildBankMint) (*types.MsgGuildBankMintResponse, error) {
+    emptyResponse := &types.MsgGuildBankMintResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -20,14 +21,14 @@ func (k msgServer) GuildBankMint(goCtx context.Context, msg *types.MsgGuildBankM
 
     activePlayer, lookupErr := cc.GetPlayerByAddress(msg.Creator)
     if lookupErr != nil {
-        return &types.MsgGuildBankMintResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_bank_mint")
+        return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_bank_mint")
     }
 
     guild := cc.GetGuild(activePlayer.GetGuildId())
 
-    permissionError := guild.CanAdministrateBank(activePlayer)
+    permissionError := guild.CanMintTokenBy(activePlayer)
     if (permissionError != nil) {
-        return &types.MsgGuildBankMintResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     amountAlphaInt := math.NewIntFromUint64(msg.AmountAlpha)
@@ -35,7 +36,7 @@ func (k msgServer) GuildBankMint(goCtx context.Context, msg *types.MsgGuildBankM
 
     err := guild.BankMint(amountAlphaInt, amountTokenInt, activePlayer)
     if err != nil {
-        return &types.MsgGuildBankMintResponse{}, err
+        return emptyResponse, err
     }
 
 	cc.CommitAll()

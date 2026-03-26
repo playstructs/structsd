@@ -9,44 +9,49 @@ import (
 )
 
 func (k msgServer) StructStealthDeactivate(goCtx context.Context, msg *types.MsgStructStealthDeactivate) (*types.MsgStructStatusResponse, error) {
-    ctx := sdk.UnwrapSDKContext(goCtx)
+    emptyResponse := &types.MsgStructStatusResponse{}
+	ctx := sdk.UnwrapSDKContext(goCtx)
     cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return emptyResponse, err
+    }
 
     structure := cc.GetStruct(msg.StructId)
 
-    permissionError := structure.CanBePlayedBy(msg.Creator)
+    permissionError := structure.CanBePlayedBy(callingPlayer)
     if (permissionError != nil) {
-        return &types.MsgStructStatusResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     // Is the Struct & Owner online?
     readinessError := structure.ReadinessCheck()
     if (readinessError != nil) {
-        return &types.MsgStructStatusResponse{}, readinessError
+        return emptyResponse, readinessError
     }
 
     if !structure.IsCommandable() {
-        return &types.MsgStructStatusResponse{}, types.NewFleetCommandError(structure.GetStructId(), "no_command_struct")
+        return emptyResponse, types.NewFleetCommandError(structure.GetStructId(), "no_command_struct")
     }
 
     // Is Struct Stealth Mode already activated?
     if !structure.IsHidden() {
-        return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "visible", "hidden", "stealth_deactivate")
+        return emptyResponse, types.NewStructStateError(msg.StructId, "visible", "hidden", "stealth_deactivate")
     }
 
     if (!structure.GetStructType().HasStealthSystem()) {
-        return &types.MsgStructStatusResponse{}, types.NewStructCapabilityError(msg.StructId, "stealth")
+        return emptyResponse, types.NewStructCapabilityError(msg.StructId, "stealth")
     }
 
 
     // Check Sudo Player Charge
     if (structure.GetOwner().GetCharge()  < structure.GetStructType().StealthActivateCharge) {
-        return &types.MsgStructStatusResponse{}, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().StealthActivateCharge, structure.GetOwner().GetCharge() , "stealth").WithStructType(structure.GetTypeId())
+        return emptyResponse, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().StealthActivateCharge, structure.GetOwner().GetCharge() , "stealth").WithStructType(structure.GetTypeId())
     }
 
     structure.GetOwner().Discharge()

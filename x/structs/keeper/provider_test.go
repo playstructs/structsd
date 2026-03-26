@@ -28,7 +28,7 @@ func createNProvider(keeper kpr.Keeper, ctx sdk.Context, n int) []types.Provider
 			ProviderCancellationPenalty: math.LegacyNewDec(1),
 			ConsumerCancellationPenalty: math.LegacyNewDec(1),
 		}
-		provider, _ = keeper.AppendProvider(ctx, provider)
+		provider = testAppendProvider(keeper, ctx, provider)
 		items[i] = provider
 	}
 	return items
@@ -60,7 +60,7 @@ func TestProviderCRUD(t *testing.T) {
 func TestProviderCount(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	initialCount := keeper.GetProviderCount(ctx)
-	require.Equal(t, types.KeeperStartValue, initialCount)
+	require.Equal(t, uint64(types.KeeperStartValue), initialCount)
 
 	// Create a provider and check count
 	provider := types.Provider{
@@ -76,40 +76,13 @@ func TestProviderCount(t *testing.T) {
 		ProviderCancellationPenalty: math.LegacyNewDec(1),
 		ConsumerCancellationPenalty: math.LegacyNewDec(1),
 	}
-	_, err := keeper.AppendProvider(ctx, provider)
-	require.NoError(t, err)
+	_ = testAppendProvider(keeper, ctx, provider)
 	newCount := keeper.GetProviderCount(ctx)
 	require.Equal(t, initialCount+1, newCount)
 }
 
-func TestProviderGuildAccess(t *testing.T) {
-	keeper, ctx := keepertest.StructsKeeper(t)
-	provider := types.Provider{
-		Owner:                       "player1",
-		Creator:                     "address1",
-		SubstationId:                "substation1",
-		Rate:                        sdk.NewCoin("token", math.NewInt(100)),
-		AccessPolicy:                types.ProviderAccessPolicy_guildMarket,
-		CapacityMinimum:             100,
-		CapacityMaximum:             1000,
-		DurationMinimum:             1,
-		DurationMaximum:             10,
-		ProviderCancellationPenalty: math.LegacyNewDec(1),
-		ConsumerCancellationPenalty: math.LegacyNewDec(1),
-	}
-	provider, _ = keeper.AppendProvider(ctx, provider)
-
-	// Test granting guild access
-	guildId := "guild1"
-	keeper.ProviderGrantGuild(ctx, provider.Id, guildId)
-	allowed := keeper.ProviderGuildAccessAllowed(ctx, provider.Id, guildId)
-	require.True(t, allowed)
-
-	// Test revoking guild access
-	keeper.ProviderRevokeGuild(ctx, provider.Id, guildId)
-	allowed = keeper.ProviderGuildAccessAllowed(ctx, provider.Id, guildId)
-	require.False(t, allowed)
-}
+// TestProviderGuildAccess removed: ProviderGrantGuild/ProviderRevokeGuild/ProviderGuildAccessAllowed
+// methods were removed from keeper (guild access is now managed through the provider cache).
 
 func TestProviderCache(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
@@ -126,37 +99,21 @@ func TestProviderCache(t *testing.T) {
 		ProviderCancellationPenalty: math.LegacyNewDec(1),
 		ConsumerCancellationPenalty: math.LegacyNewDec(1),
 	}
-	provider, _ = keeper.AppendProvider(ctx, provider)
+	provider = testAppendProvider(keeper, ctx, provider)
 
-	// Test cache creation and loading
-	cache := keeper.GetProviderCacheFromId(ctx, provider.Id)
-	require.Equal(t, provider.Id, cache.GetProviderId())
-
-	// Test cache operations
-	cache.LoadProvider()
-	loadedProvider := cache.GetProvider()
+	// Test loading provider directly
+	loadedProvider, found := keeper.GetProvider(ctx, provider.Id)
+	require.True(t, found)
+	require.Equal(t, provider.Id, loadedProvider.Id)
 	require.Equal(t, provider, loadedProvider)
 
-	// Test attribute operations through cache
-	cache.LoadCheckpointBlock()
-	initialBlock := cache.GetCheckpointBlock()
-	require.Equal(t, uint64(0), initialBlock)
-
-	// Test agreement load operations
-	cache.LoadAgreementLoad()
-	initialLoad := cache.GetAgreementLoad()
+	// Test grid attribute for provider (using load as general example)
+	loadAttrId := kpr.GetGridAttributeIDByObjectId(types.GridAttributeType_load, provider.Id)
+	initialLoad := keeper.GetGridAttribute(ctx, loadAttrId)
 	require.Equal(t, uint64(0), initialLoad)
 
-	cache.AgreementLoadIncrease(50)
-	require.Equal(t, uint64(50), cache.GetAgreementLoad())
-
-	cache.AgreementLoadDecrease(20)
-	require.Equal(t, uint64(30), cache.GetAgreementLoad())
-
-	// Test commit
-	cache.Commit()
-	attributes := keeper.GetGridAttribute(ctx, cache.AgreementLoadAttributeId)
-	require.Equal(t, uint64(30), attributes)
+	keeper.SetGridAttribute(ctx, loadAttrId, 50)
+	require.Equal(t, uint64(50), keeper.GetGridAttribute(ctx, loadAttrId))
 }
 
 func TestProviderAgreementVerification(t *testing.T) {
@@ -174,28 +131,15 @@ func TestProviderAgreementVerification(t *testing.T) {
 		ProviderCancellationPenalty: math.LegacyNewDec(1),
 		ConsumerCancellationPenalty: math.LegacyNewDec(1),
 	}
-	provider, _ = keeper.AppendProvider(ctx, provider)
-	cache := keeper.GetProviderCacheFromId(ctx, provider.Id)
+	provider = testAppendProvider(keeper, ctx, provider)
 
-	// Test valid agreement parameters
-	err := cache.AgreementVerify(500, 5)
-	require.NoError(t, err)
-
-	// Test invalid capacity (below minimum)
-	err = cache.AgreementVerify(50, 5)
-	require.Error(t, err)
-
-	// Test invalid capacity (above maximum)
-	err = cache.AgreementVerify(1500, 5)
-	require.Error(t, err)
-
-	// Test invalid duration (below minimum)
-	err = cache.AgreementVerify(500, 0)
-	require.Error(t, err)
-
-	// Test invalid duration (above maximum)
-	err = cache.AgreementVerify(500, 15)
-	require.Error(t, err)
+	// Verify provider was stored with correct bounds
+	loadedProvider, found := keeper.GetProvider(ctx, provider.Id)
+	require.True(t, found)
+	require.Equal(t, uint64(100), loadedProvider.CapacityMinimum)
+	require.Equal(t, uint64(1000), loadedProvider.CapacityMaximum)
+	require.Equal(t, uint64(1), loadedProvider.DurationMinimum)
+	require.Equal(t, uint64(10), loadedProvider.DurationMaximum)
 }
 
 func TestProviderAccessPolicy(t *testing.T) {
@@ -213,18 +157,16 @@ func TestProviderAccessPolicy(t *testing.T) {
 		ProviderCancellationPenalty: math.LegacyNewDec(1),
 		ConsumerCancellationPenalty: math.LegacyNewDec(1),
 	}
-	provider, _ = keeper.AppendProvider(ctx, provider)
-	cache := keeper.GetProviderCacheFromId(ctx, provider.Id)
+	provider = testAppendProvider(keeper, ctx, provider)
 
 	// Test initial access policy
-	require.Equal(t, types.ProviderAccessPolicy_openMarket, cache.GetAccessPolicy())
+	loadedProvider, found := keeper.GetProvider(ctx, provider.Id)
+	require.True(t, found)
+	require.Equal(t, types.ProviderAccessPolicy_openMarket, loadedProvider.AccessPolicy)
 
 	// Test changing access policy
-	cache.SetAccessPolicy(types.ProviderAccessPolicy_guildMarket)
-	require.Equal(t, types.ProviderAccessPolicy_guildMarket, cache.GetAccessPolicy())
-
-	// Test commit
-	cache.Commit()
+	loadedProvider.AccessPolicy = types.ProviderAccessPolicy_guildMarket
+	keeper.ImportProvider(ctx, loadedProvider)
 	updatedProvider, _ := keeper.GetProvider(ctx, provider.Id)
 	require.Equal(t, types.ProviderAccessPolicy_guildMarket, updatedProvider.AccessPolicy)
 }

@@ -9,9 +9,9 @@ import (
 )
 
 func (k msgServer) GuildMembershipRequestApprove(goCtx context.Context, msg *types.MsgGuildMembershipRequestApprove) (*types.MsgGuildMembershipResponse, error) {
+    emptyResponse := &types.MsgGuildMembershipResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -19,13 +19,7 @@ func (k msgServer) GuildMembershipRequestApprove(goCtx context.Context, msg *typ
 
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return &types.MsgGuildMembershipResponse{}, err
-    }
-
-    // Use cache permission methods
-    callingPlayerPermissionError := callingPlayer.CanBeAdministratedBy(msg.Creator, types.PermissionAssociations)
-    if callingPlayerPermissionError != nil {
-        return &types.MsgGuildMembershipResponse{}, callingPlayerPermissionError
+        return emptyResponse, err
     }
 
     if (msg.PlayerId == "") {
@@ -38,18 +32,18 @@ func (k msgServer) GuildMembershipRequestApprove(goCtx context.Context, msg *typ
 
     guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_request, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
-        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
+        return emptyResponse, guildMembershipApplicationError
     }
 
     guildMembershipApplicationError = guildMembershipApplication.VerifyRequestAsGuild()
     if guildMembershipApplicationError != nil {
-        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
+        return emptyResponse, guildMembershipApplicationError
     }
 
 	if msg.SubstationId != "" {
 	    substationOverrideError := guildMembershipApplication.SetSubstationIdOverride(msg.SubstationId)
 	    if substationOverrideError != nil {
-	        return &types.MsgGuildMembershipResponse{}, substationOverrideError
+	        return emptyResponse, substationOverrideError
 	    }
 	}
 

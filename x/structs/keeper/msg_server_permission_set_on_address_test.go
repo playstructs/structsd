@@ -20,16 +20,17 @@ func TestMsgPermissionSetOnAddress(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
-	// Register another address for the player
 	secondaryAcc := sdk.AccAddress("secondary123456789012345678901234567890")
 	secondaryAddress := secondaryAcc.String()
 	k.SetPlayerIndexForAddress(ctx, secondaryAddress, player.Index)
 
-	// Grant creator address permissions
 	creatorPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, creatorPermissionId, types.PermissionAll|types.Permissions)
+	testPermissionAdd(k, ctx, creatorPermissionId, types.PermAll)
+
+	secondaryPermissionId := keeperlib.GetAddressPermissionIDBytes(secondaryAddress)
+	testPermissionAdd(k, ctx, secondaryPermissionId, types.PermAll)
 
 	testCases := []struct {
 		name      string
@@ -43,7 +44,7 @@ func TestMsgPermissionSetOnAddress(t *testing.T) {
 			input: &types.MsgPermissionSetOnAddress{
 				Creator:     player.Creator,
 				Address:     secondaryAddress,
-				Permissions: uint64(types.PermissionPlay),
+				Permissions: uint64(types.PermPlay),
 			},
 			expErr: false,
 		},
@@ -52,7 +53,7 @@ func TestMsgPermissionSetOnAddress(t *testing.T) {
 			input: &types.MsgPermissionSetOnAddress{
 				Creator:     player.Creator,
 				Address:     sdk.AccAddress("notassociated123456789012345678901234567890").String(),
-				Permissions: uint64(types.PermissionPlay),
+				Permissions: uint64(types.PermPlay),
 			},
 			expErr:    true,
 			expErrMsg: "Non-player account",
@@ -63,7 +64,7 @@ func TestMsgPermissionSetOnAddress(t *testing.T) {
 			input: &types.MsgPermissionSetOnAddress{
 				Creator:     player.Creator,
 				Address:     secondaryAddress,
-				Permissions: uint64(types.PermissionPlay),
+				Permissions: uint64(types.PermPlay),
 			},
 			expErr:    true,
 			expErrMsg: "Can only",
@@ -74,7 +75,7 @@ func TestMsgPermissionSetOnAddress(t *testing.T) {
 			input: &types.MsgPermissionSetOnAddress{
 				Creator:     sdk.AccAddress("noperms123456789012345678901234567890").String(),
 				Address:     secondaryAddress,
-				Permissions: uint64(types.PermissionAll),
+				Permissions: uint64(types.PermAll),
 			},
 			expErr:    true,
 			expErrMsg: "does not have the permissions needed",
@@ -97,7 +98,7 @@ func TestMsgPermissionSetOnAddress(t *testing.T) {
 					Creator:        "cosmos1other",
 					PrimaryAddress: "cosmos1other",
 				}
-				otherPlayer = k.AppendPlayer(ctx, otherPlayer)
+				otherPlayer = testAppendPlayer(k, ctx, otherPlayer)
 				k.SetPlayerIndexForAddress(ctx, secondaryAddress, otherPlayer.Index)
 			}
 

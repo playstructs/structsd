@@ -14,7 +14,6 @@ func CreateAllocationStub(allocationType AllocationType, sourceObjectId string, 
 		DestinationId: "",
 		Creator: creator,
 		Controller: controller,
-		Locked: false,
 	}
 }
 

@@ -153,7 +153,7 @@ func (cache *FleetCache) HasCommandStruct() (bool) {
 func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
     if (!cache.FleetLoaded) { cache.LoadFleet() }
 
-    // TODO/MVP
+    // Beyond MVP
     // One day it'll matter that the previous destination might not be a planet
     // Until that day, let's not complicate this further.
 
@@ -438,4 +438,8 @@ func (cache *FleetCache) MigrateToNewPlanet(destination *PlanetCache) {
     cache.Fleet.LocationType = types.ObjectType_planet
 
     cache.Changed = true
+}
+
+func (cache *FleetCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return types.NewAllocationError(cache.ID(), "unacceptable_source")
 }

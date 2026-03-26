@@ -20,7 +20,7 @@ func TestMsgGuildBankMint(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Create reactor for guild
 	validatorAddress := sdk.ValAddress(playerAcc.Bytes())

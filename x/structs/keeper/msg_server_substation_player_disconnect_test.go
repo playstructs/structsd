@@ -19,13 +19,13 @@ func TestMsgSubstationPlayerDisconnect(t *testing.T) {
 		Creator:        "cosmos1owner",
 		PrimaryAddress: "cosmos1owner",
 	}
-	owner = k.AppendPlayer(ctx, owner)
+	owner = testAppendPlayer(k, ctx, owner)
 
 	targetPlayer := types.Player{
 		Creator:        "cosmos1target",
 		PrimaryAddress: "cosmos1target",
 	}
-	targetPlayer = k.AppendPlayer(ctx, targetPlayer)
+	targetPlayer = testAppendPlayer(k, ctx, targetPlayer)
 
 	// Create substation and connect player
 	sourceObjectId := "source-object"
@@ -36,22 +36,21 @@ func TestMsgSubstationPlayerDisconnect(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller:     owner.Creator,
+		Controller: owner.Id,
 	}
-	createdAllocation, _, err := k.AppendAllocation(ctx, allocation, 100)
+	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
 
-	substation, _, err := k.AppendSubstation(ctx, createdAllocation, owner)
+	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, owner)
 	require.NoError(t, err)
 
-	// Connect player to substation
-	connectedPlayer, err := k.SubstationConnectPlayer(ctx, substation, targetPlayer)
-	require.NoError(t, err)
-	require.Equal(t, substation.Id, connectedPlayer.SubstationId)
+	// Connect player to substation by setting SubstationId directly
+	targetPlayer.SubstationId = substation.Id
+	k.SetPlayer(ctx, targetPlayer)
 
 	// Grant permissions
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(owner.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionGrid)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermSubstationConnection)
 
 	testCases := []struct {
 		name      string
@@ -74,7 +73,7 @@ func TestMsgSubstationPlayerDisconnect(t *testing.T) {
 				PlayerId: "invalid-player",
 			},
 			expErr:    true,
-			expErrMsg: "could be found",
+			expErrMsg: "not found",
 		},
 		{
 			name: "no permissions",
@@ -82,8 +81,7 @@ func TestMsgSubstationPlayerDisconnect(t *testing.T) {
 				Creator:  "cosmos1noperms",
 				PlayerId: targetPlayer.Id,
 			},
-			expErr:    true,
-			expErrMsg: "no Energy Management permissions",
+			expErr: true,
 		},
 	}
 
@@ -91,16 +89,17 @@ func TestMsgSubstationPlayerDisconnect(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			// Reconnect player if needed
 			if tc.name == "valid player disconnection" {
-				_, err := k.SubstationConnectPlayer(ctx, substation, targetPlayer)
-				require.NoError(t, err)
+				targetPlayer.SubstationId = substation.Id
+				k.SetPlayer(ctx, targetPlayer)
 			}
 
 			resp, err := ms.SubstationPlayerDisconnect(wctx, tc.input)
 
 			if tc.expErr {
 				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
+				if tc.expErrMsg != "" {
+					require.Contains(t, err.Error(), tc.expErrMsg)
+				}
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, resp)

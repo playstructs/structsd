@@ -36,8 +36,6 @@ func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValA
 		reactor.DefaultCommission, _ = math.LegacyNewDecFromStr("0.04")
 		reactor = k.AppendReactor(ctx, reactor)
 
-		k.SetReactorValidatorBytes(ctx, reactor.Id, validatorAddress.Bytes())
-
 		/*
 		 * Convert the sdk.ValAddress into a regular sdk.AccAddress
 		 *
@@ -50,9 +48,9 @@ func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValA
 
 		// Add the player as a permissioned user of the reactor
 		permissionId := GetObjectPermissionIDBytes(reactor.Id, player.GetPlayerId())
-		cc.PermissionAdd(permissionId, types.PermissionAll)
+		cc.PermissionAdd(permissionId, types.PermReactorAll)
 
-		// TODO apply the energy distribution to the reactor player account
+		// apply the energy distribution to the reactor player account
 		delegation, err := k.stakingKeeper.GetDelegation(ctx, identity, validatorAddress)
 		if err == nil {
 			validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
@@ -128,10 +126,11 @@ func (k Keeper) ReactorInfusionUnbonding(ctx context.Context, unbondingId uint64
 	defer cc.CommitAll()
 
 	unbondingDelegation, err := k.stakingKeeper.GetUnbondingDelegationByUnbondingID(ctx, unbondingId)
-
-	k.logger.Info("Unbonding Request", "unbondingId", unbondingId, "delegator", unbondingDelegation.DelegatorAddress, "validator", unbondingDelegation.ValidatorAddress)
+    k.logger.Info("Unbonding Request", "unbondingId", unbondingId)
 
 	if err == nil {
+    	k.logger.Info("Delegation Found", "unbondingId", unbondingId, "delegator", unbondingDelegation.DelegatorAddress, "validator", unbondingDelegation.ValidatorAddress)
+
 		var playerAddress sdk.AccAddress
 		playerAddress, _ = sdk.AccAddressFromBech32(unbondingDelegation.DelegatorAddress)
 		var validatorAddress sdk.ValAddress

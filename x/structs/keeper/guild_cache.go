@@ -132,6 +132,13 @@ func (cache *GuildCache) GetSubstation() (substation *SubstationCache) {
 	return
 }
 
+func (cache *GuildCache) GetEntryRank() uint64 {
+	if !cache.GuildLoaded {
+		cache.LoadGuild()
+	}
+	return cache.Guild.EntryRank
+}
+
 func (cache *GuildCache) GetPrimaryReactorId() string {
 	if !cache.GuildLoaded {
 		cache.LoadGuild()
@@ -153,24 +160,54 @@ func (cache *GuildCache) GetBankDenom() string { return "uguild." + cache.GetGui
 
 /* Permissions */
 
+/*
+    PermGuildAll = PermAdmin | PermUpdate | PermDelete | PermGuildMembership |
+                    PermGuildEndpointUpdate | PermGuildJoinConstraintsUpdate | PermGuildSubstationUpdate |
+                    PermGuildTokenBurn | PermGuildTokenMint
+*/
+
 // Delete Permission
-func (cache *GuildCache) CanDelete(activePlayer *PlayerCache) error {
-	return cache.PermissionCheck(types.PermissionDelete, activePlayer)
+func (cache *GuildCache) CanDeleteBy(activePlayer *PlayerCache) error {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermDelete)
 }
 
 // Update Permission
-func (cache *GuildCache) CanUpdate(activePlayer *PlayerCache) error {
-	return cache.PermissionCheck(types.PermissionUpdate, activePlayer)
+func (cache *GuildCache) CanUpdateBy(activePlayer *PlayerCache) error {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermUpdate)
 }
 
-// Assets Permission
-func (cache *GuildCache) CanAdministrateBank(activePlayer *PlayerCache) error {
-	return cache.PermissionCheck(types.PermissionAssets, activePlayer)
+// Update Permission
+func (cache *GuildCache) CanTransferOwnershipBy(activePlayer *PlayerCache) error {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermAdmin)
+}
+
+func (cache *GuildCache) CanUpdateEndpointBy(activePlayer *PlayerCache) error {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildEndpointUpdate)
+}
+
+func (cache *GuildCache) CanUpdateJoinConstraintsBy(activePlayer *PlayerCache) error {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildJoinConstraintsUpdate)
+}
+
+func (cache *GuildCache) CanUpdateSubstationBy(activePlayer *PlayerCache) error {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildSubstationUpdate)
+}
+
+func (cache *GuildCache) CanBurnTokenBy(activePlayer *PlayerCache) error {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildTokenBurn)
+}
+
+func (cache *GuildCache) CanMintTokenBy(activePlayer *PlayerCache) error {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildTokenMint)
+}
+
+func (cache *GuildCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return types.NewAllocationError(cache.ID(), "unacceptable_source")
 }
 
 // Associations Permission
 func (cache *GuildCache) CanAddMembersByProxy(activePlayer *PlayerCache) error {
-	return cache.PermissionCheck(types.PermissionAssociations, activePlayer)
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildMembership)
 }
 
 func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error) {
@@ -182,7 +219,7 @@ func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error)
 
 	// Only specific players can invite
 	case types.GuildJoinBypassLevel_permissioned:
-		err = cache.PermissionCheck(types.PermissionAssociations, activePlayer)
+		err = cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildMembership)
 
 	// All Guild Members can Invite
 	case types.GuildJoinBypassLevel_member:
@@ -195,25 +232,25 @@ func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error)
 
 func (cache *GuildCache) CanApproveMembershipRequest(activePlayer *PlayerCache) (err error) {
 	switch cache.GetJoinInfusionMinimumBypassByRequest() {
-	// Invites are currently closed
-	case types.GuildJoinBypassLevel_closed:
-		err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_allowed").WithJoinType("request")
+        // Invites are currently closed
+        case types.GuildJoinBypassLevel_closed:
+            err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_allowed").WithJoinType("request")
 
-	// Only specific players can request
-	case types.GuildJoinBypassLevel_permissioned:
-		err = cache.PermissionCheck(types.PermissionAssociations, activePlayer)
+        // Only specific players can request
+        case types.GuildJoinBypassLevel_permissioned:
+            err = cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildMembership)
 
-	// All Guild Members can Invite
-	case types.GuildJoinBypassLevel_member:
-		if activePlayer.GetGuildId() != cache.GetGuildId() {
-			err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_member")
-		}
-	}
+        // All Guild Members can Invite
+        case types.GuildJoinBypassLevel_member:
+            if activePlayer.GetGuildId() != cache.GetGuildId() {
+                err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_member")
+            }
+        }
 	return
 }
 
 func (cache *GuildCache) CanKickMembers(activePlayer *PlayerCache) error {
-	return cache.PermissionCheck(types.PermissionAssociations, activePlayer)
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildMembership)
 }
 
 func (cache *GuildCache) CanRequestMembership() (err error) {
@@ -225,23 +262,6 @@ func (cache *GuildCache) CanRequestMembership() (err error) {
 	return
 }
 
-func (cache *GuildCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) error {
-	// Make sure the address calling this has permissions
-	if !cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission) {
-		return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "guild_action")
-	}
-
-	if !activePlayer.HasPlayerAccount() {
-		return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "guild_action")
-	} else {
-		if activePlayer.GetPlayerId() != cache.GetOwnerId() {
-			if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetGuildId(), activePlayer.GetPlayerId()), permission) {
-				return types.NewPermissionError("player", activePlayer.GetPlayerId(), "guild", cache.GetGuildId(), uint64(permission), "guild_action")
-			}
-		}
-	}
-	return nil
-}
 
 /* Temporary Banking Infrastructure */
 
@@ -368,6 +388,8 @@ func (cache *GuildCache) SetOwner(owner string) {
     if (!cache.GuildLoaded) {
         cache.LoadGuild()
     }
+
+    cache.CC.PermissionAdd(GetObjectPermissionIDBytes(cache.ID(), owner), types.PermGuildAll)
     cache.Guild.Owner = owner
     cache.Changed = true
 }
@@ -404,6 +426,14 @@ func (cache *GuildCache) SetEntrySubstationId(substationId string) {
         cache.LoadGuild()
     }
     cache.Guild.EntrySubstationId = substationId
+    cache.Changed = true
+}
+
+func (cache *GuildCache) SetEntryRank(entryRank uint64) {
+    if !cache.GuildLoaded {
+        cache.LoadGuild()
+    }
+    cache.Guild.EntryRank = entryRank
     cache.Changed = true
 }
 

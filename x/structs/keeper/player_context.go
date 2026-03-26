@@ -127,7 +127,11 @@ func (cc *CurrentContext) NewPlayer(address string) *PlayerCache {
 
     //Add permissions
 	addressPermissionId := GetAddressPermissionIDBytes(player.Creator)
-	cc.PermissionAdd(addressPermissionId, types.PermissionAll)
+	cc.SetPermissions(addressPermissionId, types.PermAll)
+
+    playerPermissionId := GetObjectPermissionIDBytes(playerId, playerId)
+    cc.SetPermissions(playerPermissionId, types.PermAll)
+
 
     // Add the initial Player Load
     cc.SetGridAttributeIncrement(cc.players[playerId].StructsLoadAttributeId, types.PlayerPassiveDraw)

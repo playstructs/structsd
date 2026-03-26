@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) PermissionGrantOnAddress(goCtx context.Context, msg *types.MsgPermissionGrantOnAddress) (*types.MsgPermissionResponse, error) {
+    emptyResponse := &types.MsgPermissionResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -19,29 +20,24 @@ func (k msgServer) PermissionGrantOnAddress(goCtx context.Context, msg *types.Ms
     var err error
 
     if msg.Permissions == 0 {
-        return &types.MsgPermissionResponse{}, types.NewParameterValidationError("permissions", 0, "below_minimum").WithRange(1, 0)
+        return emptyResponse, types.NewParameterValidationError("permissions", 0, "below_minimum").WithRange(1, 0)
     }
 
-    player, _ := cc.GetPlayerByAddress(msg.Creator)
-    err = player.CheckPlayer()
+    callingPlayer, _ := cc.GetPlayerByAddress(msg.Creator)
+    err = callingPlayer.CheckPlayer()
     if err != nil {
-        return  &types.MsgPermissionResponse{}, err
+        return emptyResponse, err
     }
 
     targetPlayer, _ := cc.GetPlayerByAddress(msg.Address)
     err = targetPlayer.CheckPlayer()
     if err != nil {
-         return  &types.MsgPermissionResponse{}, err
-     }
+         return emptyResponse, err
+    }
 
-     if (targetPlayer.GetPlayerId() != player.GetPlayerId()) {
-        return  &types.MsgPermissionResponse{}, types.NewObjectNotFoundError("player", targetPlayer.GetPlayerId()) // Can only set address permissions on your own player
-     }
-
-    // Make sure the calling address has enough permissions to apply to another address
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    if (!cc.PermissionHasAll(addressPermissionId, types.Permission(msg.Permissions) | types.Permissions)) {
-        return &types.MsgPermissionResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(msg.Permissions), "permission_grant")
+    permissionErr := targetPlayer.CanRegisterAddressBy(callingPlayer, types.Permission(msg.Permissions))
+    if permissionErr != nil {
+        return emptyResponse, permissionErr
     }
 
     targetAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)

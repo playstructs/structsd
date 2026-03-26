@@ -21,7 +21,4 @@ message Allocation {
   // Who does this currently belong to
   string      creator             = 6;
   string      controller          = 7;
-
-  // Locking will be needed for IBC
-  bool        locked              = 8;
 }

@@ -18,8 +18,8 @@ func createNInfusion(keeper kpr.Keeper, ctx sdk.Context, n int, destinationId st
 		items[i] = types.CreateNewInfusion(
 			types.ObjectType_struct,
 			destinationId,
-			"address"+string(rune(i)),
-			"player"+string(rune(i)),
+			"address"+string(rune('a'+i)),
+			"player"+string(rune('a'+i)),
 			uint64(100+i),
 			math.LegacyNewDec(int64(i+1)),
 			uint64(1),
@@ -31,7 +31,7 @@ func createNInfusion(keeper kpr.Keeper, ctx sdk.Context, n int, destinationId st
 
 func TestInfusionCRUD(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
-	destinationId := "dest1"
+	destinationId := "5-1"
 	infusions := createNInfusion(keeper, ctx, 5, destinationId)
 
 	// Test GetInfusion
@@ -68,8 +68,7 @@ func TestAppendAndSetInfusion(t *testing.T) {
 		math.LegacyNewDec(2),
 		1,
 	)
-	err := keeper.AppendInfusion(ctx, infusion)
-	require.NoError(t, err)
+	testAppendInfusion(keeper, ctx, infusion)
 	got, found := keeper.GetInfusion(ctx, "dest2", "addressX")
 	require.True(t, found)
 	require.Equal(t, infusion, got)
@@ -140,7 +139,7 @@ func TestDestroyInfusion(t *testing.T) {
 		3,
 	)
 	keeper.SetInfusion(ctx, infusion)
-	keeper.DestroyInfusion(ctx, infusion)
+	keeper.RemoveInfusion(ctx, "dest5", "addressZ")
 	_, found := keeper.GetInfusion(ctx, "dest5", "addressZ")
 	require.False(t, found)
 }
@@ -148,7 +147,9 @@ func TestDestroyInfusion(t *testing.T) {
 func TestDestroyAllInfusions(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	infusions := createNInfusion(keeper, ctx, 2, "dest6")
-	keeper.DestroyAllInfusions(ctx, infusions)
+	for _, infusion := range infusions {
+		keeper.RemoveInfusion(ctx, "dest6", infusion.Address)
+	}
 	for _, infusion := range infusions {
 		_, found := keeper.GetInfusion(ctx, "dest6", infusion.Address)
 		require.False(t, found)

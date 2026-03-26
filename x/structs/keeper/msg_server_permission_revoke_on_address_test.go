@@ -20,7 +20,7 @@ func TestMsgPermissionRevokeOnAddress(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Register another address for the player
 	secondaryAcc := sdk.AccAddress("secondary123456789012345678901234567890")
@@ -29,11 +29,11 @@ func TestMsgPermissionRevokeOnAddress(t *testing.T) {
 
 	// Grant permissions to the secondary address
 	secondaryPermissionId := keeperlib.GetAddressPermissionIDBytes(secondaryAddress)
-	k.PermissionAdd(ctx, secondaryPermissionId, types.PermissionPlay|types.PermissionUpdate)
+	testPermissionAdd(k, ctx, secondaryPermissionId, types.PermPlay|types.PermUpdate)
 
 	// Grant creator address permissions
 	creatorPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, creatorPermissionId, types.PermissionAll|types.Permissions)
+	testPermissionAdd(k, ctx, creatorPermissionId, types.PermAll|types.PermAdmin)
 
 	testCases := []struct {
 		name      string
@@ -47,7 +47,7 @@ func TestMsgPermissionRevokeOnAddress(t *testing.T) {
 			input: &types.MsgPermissionRevokeOnAddress{
 				Creator:     player.Creator,
 				Address:     secondaryAddress,
-				Permissions: uint64(types.PermissionPlay),
+				Permissions: uint64(types.PermPlay),
 			},
 			expErr: false,
 		},
@@ -56,7 +56,7 @@ func TestMsgPermissionRevokeOnAddress(t *testing.T) {
 			input: &types.MsgPermissionRevokeOnAddress{
 				Creator:     player.Creator,
 				Address:     sdk.AccAddress("notassociated123456789012345678901234567890").String(),
-				Permissions: uint64(types.PermissionPlay),
+				Permissions: uint64(types.PermPlay),
 			},
 			expErr:    true,
 			expErrMsg: "Non-player account",
@@ -67,7 +67,7 @@ func TestMsgPermissionRevokeOnAddress(t *testing.T) {
 			input: &types.MsgPermissionRevokeOnAddress{
 				Creator:     player.Creator,
 				Address:     secondaryAddress,
-				Permissions: uint64(types.PermissionPlay),
+				Permissions: uint64(types.PermPlay),
 			},
 			expErr:    true,
 			expErrMsg: "Can only",
@@ -78,7 +78,7 @@ func TestMsgPermissionRevokeOnAddress(t *testing.T) {
 			input: &types.MsgPermissionRevokeOnAddress{
 				Creator:     sdk.AccAddress("noperms123456789012345678901234567890").String(),
 				Address:     secondaryAddress,
-				Permissions: uint64(types.PermissionAll),
+				Permissions: uint64(types.PermAll),
 			},
 			expErr:    true,
 			expErrMsg: "does not have the permissions needed",
@@ -95,7 +95,7 @@ func TestMsgPermissionRevokeOnAddress(t *testing.T) {
 			// Re-register address if needed
 			if tc.name == "valid permission revoke" {
 				k.SetPlayerIndexForAddress(ctx, secondaryAddress, player.Index)
-				k.PermissionAdd(ctx, secondaryPermissionId, types.PermissionPlay|types.PermissionUpdate)
+				testPermissionAdd(k, ctx, secondaryPermissionId, types.PermPlay|types.PermUpdate)
 			} else if tc.name == "different player" {
 				// Create another player and associate address with them
 				otherAcc := sdk.AccAddress("other123456789012345678901234567890")
@@ -103,7 +103,7 @@ func TestMsgPermissionRevokeOnAddress(t *testing.T) {
 					Creator:        otherAcc.String(),
 					PrimaryAddress: otherAcc.String(),
 				}
-				otherPlayer = k.AppendPlayer(ctx, otherPlayer)
+				otherPlayer = testAppendPlayer(k, ctx, otherPlayer)
 				k.SetPlayerIndexForAddress(ctx, secondaryAddress, otherPlayer.Index)
 			}
 
@@ -118,7 +118,7 @@ func TestMsgPermissionRevokeOnAddress(t *testing.T) {
 				require.NotNil(t, resp)
 
 				// Verify permission was revoked
-				require.False(t, k.PermissionHasOneOf(ctx, secondaryPermissionId, types.Permission(tc.input.Permissions)))
+				require.False(t, testPermissionHasOneOf(k, ctx, secondaryPermissionId, types.Permission(tc.input.Permissions)))
 			}
 		})
 	}

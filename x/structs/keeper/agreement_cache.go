@@ -35,8 +35,6 @@ type AgreementCache struct {
 	CurrentBlock       uint64
 	CurrentBlockLoaded bool
 
-	// TODO allocationCache
-
 }
 
 
@@ -95,45 +93,44 @@ func (cache *AgreementCache) LoadCurrentBlock() bool {
 }
 
 func (cache *AgreementCache) LoadDurationRemaining() bool {
-	cache.DurationRemaining = cache.GetEndBlock() - cache.GetCurrentBlock()
+	if cache.GetEndBlock() >= cache.GetCurrentBlock() {
+		cache.DurationRemaining = cache.GetEndBlock() - cache.GetCurrentBlock()
+	} else {
+		cache.DurationRemaining = 0
+	}
 	cache.DurationRemainingLoaded = true
 	return cache.DurationRemainingLoaded
 }
 
 func (cache *AgreementCache) LoadDurationPast() bool {
-	cache.DurationPast = cache.GetCurrentBlock() - cache.GetStartBlock()
+	if cache.GetCurrentBlock() >= cache.GetStartBlock() {
+		cache.DurationPast = cache.GetCurrentBlock() - cache.GetStartBlock()
+	} else {
+		cache.DurationPast = 0
+	}
 	cache.DurationPastLoaded = true
 	return cache.DurationPastLoaded
 }
 
 func (cache *AgreementCache) LoadDuration() bool {
-	cache.Duration = cache.GetEndBlock() - cache.GetStartBlock()
+	if cache.GetEndBlock() >= cache.GetStartBlock() {
+		cache.Duration = cache.GetEndBlock() - cache.GetStartBlock()
+	} else {
+		cache.Duration = 0
+	}
 	cache.DurationLoaded = true
 	return cache.DurationLoaded
 }
 
 // Update Permission
 func (cache *AgreementCache) CanUpdate(activePlayer *PlayerCache) error {
-	return cache.PermissionCheck(types.PermissionUpdate, activePlayer)
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermUpdate)
 }
 
-func (cache *AgreementCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) error {
-	// Make sure the address calling this has permissions
-	if !cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission) {
-		return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "agreement_action")
-	}
-
-	if !activePlayer.HasPlayerAccount() {
-		return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "agreement_action")
-	} else {
-		if activePlayer.GetPlayerId() != cache.GetOwnerId() {
-			if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetAgreementId(), activePlayer.GetPlayerId()), permission) {
-				return types.NewPermissionError("player", activePlayer.GetPlayerId(), "agreement", cache.GetAgreementId(), uint64(permission), "agreement_action")
-			}
-		}
-	}
-	return nil
+func (cache *AgreementCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return types.NewAllocationError(cache.ID(), "unacceptable_source")
 }
+
 
 /* Getters
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
@@ -184,7 +181,6 @@ func (cache *AgreementCache) GetAllocationId() string {
 	return cache.Agreement.AllocationId
 }
 
-// TODO func GetAllocation()
 func (cache *AgreementCache) GetAllocation() (*AllocationCache, bool) {
 	return cache.CC.GetAllocation(cache.GetAllocationId())
 }
@@ -325,6 +321,8 @@ func (cache *AgreementCache) PrematureCloseByProvider() error {
 	cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
 	cache.CC.k.RemoveAgreement(cache.CC.ctx, cache.GetAgreement())
 
+    cache.CC.ClearPermissionsForObject(cache.ID())
+
 	return nil
 }
 
@@ -345,6 +343,8 @@ func (cache *AgreementCache) PrematureCloseByConsumer() error {
 	cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
 	cache.CC.k.RemoveAgreement(cache.CC.ctx, cache.GetAgreement())
 
+    cache.CC.ClearPermissionsForObject(cache.ID())
+
 	return nil
 
 }
@@ -360,6 +360,8 @@ func (cache *AgreementCache) PrematureCloseByAllocation() error {
 	// Destroy the Agreement
 	cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
 	cache.CC.k.RemoveAgreement(cache.CC.ctx, cache.GetAgreement())
+
+    cache.CC.ClearPermissionsForObject(cache.ID())
 
 	return nil
 
@@ -380,6 +382,8 @@ func (cache *AgreementCache) Expire() error {
 	// Destroy the Agreement
 	cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
 	cache.CC.k.RemoveAgreement(cache.CC.ctx, cache.GetAgreement())
+
+    cache.CC.ClearPermissionsForObject(cache.ID())
 
 	return nil
 

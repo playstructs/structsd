@@ -74,8 +74,6 @@ const (
 	OpWeightMsgProviderUpdateDurationMin  = "op_weight_msg_provider_update_duration_min"
 	OpWeightMsgProviderUpdateDurationMax  = "op_weight_msg_provider_update_duration_max"
 	OpWeightMsgProviderUpdateAccessPolicy = "op_weight_msg_provider_update_access_policy"
-	OpWeightMsgProviderGuildGrant         = "op_weight_msg_provider_guild_grant"
-	OpWeightMsgProviderGuildRevoke        = "op_weight_msg_provider_guild_revoke"
 	OpWeightMsgProviderDelete             = "op_weight_msg_provider_delete"
 	// Substation operations
 	OpWeightMsgSubstationAllocationConnect    = "op_weight_msg_substation_allocation_connect"
@@ -112,6 +110,7 @@ const (
 	OpWeightMsgGuildUpdateJoinInfusionMin           = "op_weight_msg_guild_update_join_infusion_min"
 	OpWeightMsgGuildUpdateJoinInfusionBypassInvite  = "op_weight_msg_guild_update_join_infusion_bypass_invite"
 	OpWeightMsgGuildUpdateJoinInfusionBypassRequest = "op_weight_msg_guild_update_join_infusion_bypass_request"
+	OpWeightMsgGuildUpdateEntryRank                 = "op_weight_msg_guild_update_entry_rank"
 )
 
 // GenerateGenesisState creates a randomized GenState of the module.
@@ -956,14 +955,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	simState.AppParams.GetOrGenerate(OpWeightMsgProviderUpdateAccessPolicy, &weightMsgProviderUpdateAccessPolicy, nil,
 		func(_ *rand.Rand) { weightMsgProviderUpdateAccessPolicy = 5 },
 	)
-	var weightMsgProviderGuildGrant int
-	simState.AppParams.GetOrGenerate(OpWeightMsgProviderGuildGrant, &weightMsgProviderGuildGrant, nil,
-		func(_ *rand.Rand) { weightMsgProviderGuildGrant = 5 },
-	)
-	var weightMsgProviderGuildRevoke int
-	simState.AppParams.GetOrGenerate(OpWeightMsgProviderGuildRevoke, &weightMsgProviderGuildRevoke, nil,
-		func(_ *rand.Rand) { weightMsgProviderGuildRevoke = 5 },
-	)
 	var weightMsgProviderDelete int
 	simState.AppParams.GetOrGenerate(OpWeightMsgProviderDelete, &weightMsgProviderDelete, nil,
 		func(_ *rand.Rand) { weightMsgProviderDelete = 5 },
@@ -1087,6 +1078,10 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	simState.AppParams.GetOrGenerate(OpWeightMsgGuildUpdateJoinInfusionBypassRequest, &weightMsgGuildUpdateJoinInfusionBypassRequest, nil,
 		func(_ *rand.Rand) { weightMsgGuildUpdateJoinInfusionBypassRequest = 5 },
 	)
+	var weightMsgGuildUpdateEntryRank int
+	simState.AppParams.GetOrGenerate(OpWeightMsgGuildUpdateEntryRank, &weightMsgGuildUpdateEntryRank, nil,
+		func(_ *rand.Rand) { weightMsgGuildUpdateEntryRank = 5 },
+	)
 
 	operations = append(operations,
 		simulation.NewWeightedOperation(
@@ -1188,8 +1183,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		simulation.NewWeightedOperation(weightMsgProviderUpdateDurationMin, structssimulation.SimulateMsgProviderUpdateDurationMinimum(am.keeper, am.accountKeeper, am.bankKeeper)),
 		simulation.NewWeightedOperation(weightMsgProviderUpdateDurationMax, structssimulation.SimulateMsgProviderUpdateDurationMaximum(am.keeper, am.accountKeeper, am.bankKeeper)),
 		simulation.NewWeightedOperation(weightMsgProviderUpdateAccessPolicy, structssimulation.SimulateMsgProviderUpdateAccessPolicy(am.keeper, am.accountKeeper, am.bankKeeper)),
-		simulation.NewWeightedOperation(weightMsgProviderGuildGrant, structssimulation.SimulateMsgProviderGuildGrant(am.keeper, am.accountKeeper, am.bankKeeper)),
-		simulation.NewWeightedOperation(weightMsgProviderGuildRevoke, structssimulation.SimulateMsgProviderGuildRevoke(am.keeper, am.accountKeeper, am.bankKeeper)),
 		simulation.NewWeightedOperation(weightMsgProviderDelete, structssimulation.SimulateMsgProviderDelete(am.keeper, am.accountKeeper, am.bankKeeper)),
 		// Substation operations
 		simulation.NewWeightedOperation(weightMsgSubstationAllocationConnect, structssimulation.SimulateMsgSubstationAllocationConnect(am.keeper, am.accountKeeper, am.bankKeeper)),
@@ -1226,6 +1219,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		simulation.NewWeightedOperation(weightMsgGuildUpdateJoinInfusionMin, structssimulation.SimulateMsgGuildUpdateJoinInfusionMinimum(am.keeper, am.accountKeeper, am.bankKeeper)),
 		simulation.NewWeightedOperation(weightMsgGuildUpdateJoinInfusionBypassInvite, structssimulation.SimulateMsgGuildUpdateJoinInfusionMinimumBypassByInvite(am.keeper, am.accountKeeper, am.bankKeeper)),
 		simulation.NewWeightedOperation(weightMsgGuildUpdateJoinInfusionBypassRequest, structssimulation.SimulateMsgGuildUpdateJoinInfusionMinimumBypassByRequest(am.keeper, am.accountKeeper, am.bankKeeper)),
+		simulation.NewWeightedOperation(weightMsgGuildUpdateEntryRank, structssimulation.SimulateMsgGuildUpdateEntryRank(am.keeper, am.accountKeeper, am.bankKeeper)),
 	)
 
 	return operations

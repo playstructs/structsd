@@ -138,38 +138,20 @@ func (cache *ProviderCache) AgreementDurationVerify(duration uint64) error {
 /* Permissions */
 
 // Delete Permission
-func (cache *ProviderCache) CanDelete(activePlayer *PlayerCache) (error) {
-    return cache.PermissionCheck(types.PermissionDelete, activePlayer)
+func (cache *ProviderCache) CanBeDeletedBy(activePlayer *PlayerCache) (error) {
+    return cache.CC.PermissionCheck(cache, activePlayer,types.PermDelete)
 }
 
 // Update Permission
-func (cache *ProviderCache) CanUpdate(activePlayer *PlayerCache) (error) {
-    return cache.PermissionCheck(types.PermissionUpdate, activePlayer)
+func (cache *ProviderCache) CanBeUpdatedBy(activePlayer *PlayerCache) (error) {
+    return cache.CC.PermissionCheck(cache, activePlayer,types.PermUpdate)
 }
 
 // Assets Permission
-func (cache *ProviderCache) CanWithdrawBalance(activePlayer *PlayerCache) (error) {
-    return cache.PermissionCheck(types.PermissionAssets, activePlayer)
+func (cache *ProviderCache) CanWithdrawBalanceBy(activePlayer *PlayerCache) (error) {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermProviderWithdraw)
 }
 
-
-func (cache *ProviderCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (error) {
-    // Make sure the address calling this has permissions
-    if (!cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
-        return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "provider_action")
-    }
-
-    if !activePlayer.HasPlayerAccount() {
-        return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "provider_action")
-    } else {
-        if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
-            if (!cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetProviderId(), activePlayer.GetPlayerId()), permission)) {
-               return types.NewPermissionError("player", activePlayer.GetPlayerId(), "provider", cache.GetProviderId(), uint64(permission), "provider_action")
-            }
-        }
-    }
-    return nil
-}
 
 func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) {
 
@@ -177,11 +159,8 @@ func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) 
         if !activePlayer.HasPlayerAccount() {
             return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "agreement_open")
         }
-
     } else if cache.GetAccessPolicy() == types.ProviderAccessPolicy_guildMarket {
-        if !cache.CC.k.ProviderGuildAccessAllowed(cache.CC.ctx, cache.GetProviderId(), activePlayer.GetGuildId()) {
-            return types.NewProviderAccessError(cache.GetProviderId(), "guild_not_allowed").WithGuild(activePlayer.GetGuildId()).WithPlayer(activePlayer.GetPlayerId())
-        }
+        return cache.CC.PermissionCheck(cache, activePlayer, types.PermProviderOpen)
 
     } else if cache.GetAccessPolicy() == types.ProviderAccessPolicy_closedMarket {
         return types.NewProviderAccessError(cache.GetProviderId(), "closed_market").WithPlayer(activePlayer.GetPlayerId())
@@ -241,23 +220,6 @@ func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) 
 
 
 
-func (cache *ProviderCache) GrantGuildsAndCommit(guildIdSet []string) (error) {
-    for _, guildId := range guildIdSet {
-        guild := cache.CC.GetGuild(guildId)
-        if !guild.LoadGuild() {
-            return types.NewObjectNotFoundError("guild", guildId)
-        }
-        cache.CC.k.ProviderGrantGuild(cache.CC.ctx, cache.GetProviderId(), guildId)
-    }
-    return nil
-}
-
-func (cache *ProviderCache) RevokeGuildsAndCommit(guildIdSet []string) (error) {
-    for _, guildId := range guildIdSet {
-        cache.CC.k.ProviderRevokeGuild(cache.CC.ctx, cache.GetProviderId(), guildId)
-    }
-    return nil
-}
 
 func (cache *ProviderCache) Delete() (error) {
 
@@ -270,6 +232,8 @@ func (cache *ProviderCache) Delete() (error) {
 
     cache.CC.ClearGridAttribute(cache.CheckpointBlockAttributeId)
     cache.CC.ClearGridAttribute(cache.AgreementLoadAttributeId)
+
+    cache.CC.ClearPermissionsForObject(cache.ID())
 
     cache.Deleted = true
     cache.Changed = true
@@ -362,4 +326,9 @@ func (cache *ProviderCache) Checkpoint() (error) {
     cache.SetCheckpointBlock(currentBlock)
 
     return nil
+}
+
+
+func (cache *ProviderCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return types.NewAllocationError(cache.ID(), "unacceptable_source")
 }

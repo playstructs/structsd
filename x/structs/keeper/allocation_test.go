@@ -30,10 +30,9 @@ func TestAppendAllocation(t *testing.T) {
 	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(200))
 
 	allocation := createTestAllocation(sourceId, destId, types.AllocationType_static)
-	appendedAlloc, actualPower, err := keeper.AppendAllocation(ctx, allocation, power)
+	appendedAlloc, err := testAppendAllocation(keeper, ctx, allocation, power)
 
 	require.NoError(t, err)
-	require.Equal(t, power, actualPower)
 	require.NotEmpty(t, appendedAlloc.Id)
 	require.Equal(t, sourceId, appendedAlloc.SourceObjectId)
 	require.Equal(t, destId, appendedAlloc.DestinationId)
@@ -47,10 +46,9 @@ func TestAppendAllocation(t *testing.T) {
 	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(200))
 
 	automatedAlloc := createTestAllocation(sourceId, destId, types.AllocationType_automated)
-	appendedAutoAlloc, autoPower, err := keeper.AppendAllocation(ctx, automatedAlloc, 0)
+	appendedAutoAlloc, err := testAppendAllocation(keeper, ctx, automatedAlloc, 0)
 
 	require.NoError(t, err)
-	require.Equal(t, uint64(200), autoPower) // Should use full capacity
 	require.NotEmpty(t, appendedAutoAlloc.Id)
 	require.Equal(t, types.AllocationType_automated, appendedAutoAlloc.Type)
 }
@@ -66,16 +64,15 @@ func TestSetAllocation(t *testing.T) {
 	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(200))
 
 	allocation := createTestAllocation(sourceId, destId, types.AllocationType_static)
-	appendedAlloc, _, err := keeper.AppendAllocation(ctx, allocation, power)
+	appendedAlloc, err := testAppendAllocation(keeper, ctx, allocation, power)
 	require.NoError(t, err)
 
 	// Test updating allocation
 	newDestId := "4-2"
 	appendedAlloc.DestinationId = newDestId
-	updatedAlloc, newPower, err := keeper.SetAllocation(ctx, appendedAlloc, power)
+	updatedAlloc, err := keeper.SetAllocationOnly(ctx, appendedAlloc)
 
 	require.NoError(t, err)
-	require.Equal(t, power, newPower)
 	require.Equal(t, newDestId, updatedAlloc.DestinationId)
 }
 
@@ -115,7 +112,7 @@ func TestRemoveAndDestroyAllocation(t *testing.T) {
 	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(200))
 
 	allocation := createTestAllocation(sourceId, destId, types.AllocationType_static)
-	appendedAlloc, _, err := keeper.AppendAllocation(ctx, allocation, power)
+	appendedAlloc, err := testAppendAllocation(keeper, ctx, allocation, power)
 	require.NoError(t, err)
 
 	// Test RemoveAllocation
@@ -123,13 +120,12 @@ func TestRemoveAndDestroyAllocation(t *testing.T) {
 	_, found := keeper.GetAllocation(ctx, appendedAlloc.Id)
 	require.False(t, found)
 
-	// Test DestroyAllocation
+	// Test RemoveAllocation again
 	allocation = createTestAllocation(sourceId, destId, types.AllocationType_static)
-	appendedAlloc, _, err = keeper.AppendAllocation(ctx, allocation, power)
+	appendedAlloc, err = testAppendAllocation(keeper, ctx, allocation, power)
 	require.NoError(t, err)
 
-	destroyed := keeper.DestroyAllocation(ctx, appendedAlloc.Id)
-	require.True(t, destroyed)
+	keeper.RemoveAllocation(ctx, appendedAlloc.Id)
 
 	_, found = keeper.GetAllocation(ctx, appendedAlloc.Id)
 	require.False(t, found)
@@ -146,7 +142,7 @@ func TestGetAllocation(t *testing.T) {
 	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(200))
 
 	allocation := createTestAllocation(sourceId, destId, types.AllocationType_static)
-	appendedAlloc, _, err := keeper.AppendAllocation(ctx, allocation, power)
+	appendedAlloc, err := testAppendAllocation(keeper, ctx, allocation, power)
 	require.NoError(t, err)
 
 	// Test GetAllocation
@@ -171,7 +167,7 @@ func TestGetAllAllocation(t *testing.T) {
 	}
 
 	for _, alloc := range allocations {
-		_, _, err := keeper.AppendAllocation(ctx, alloc, 100)
+		_, err := testAppendAllocation(keeper, ctx, alloc, 100)
 		require.NoError(t, err)
 	}
 

@@ -23,6 +23,8 @@ type Committable interface {
 	Commit()
 }
 
+
+
 // =============================================================================
 // CurrentContext
 // =============================================================================
@@ -60,7 +62,8 @@ type CurrentContext struct {
   	structAttributes map[string]*StructAttributeCache
   	planetAttributes map[string]*PlanetAttributeCache
 
-	permissions     map[string]*PermissionsCache
+	permissions             map[string]*PermissionsCache
+	guildRankRegisters      map[string]*GuildRankRegisterCache
 
 	players             map[string]*PlayerCache
 	fleets              map[uint64]*FleetCache
@@ -91,6 +94,9 @@ type CurrentContext struct {
 	structTypes     map[uint64]*StructTypeCache // read-only, never committed
 
 
+	// Transient combat state (nil outside attack handler, not committed)
+	Attack *AttackContext
+
 	// State flags
 	committed bool
 }
@@ -108,7 +114,9 @@ func (k *Keeper) NewCurrentContext(ctx context.Context) *CurrentContext {
 		structAttributes: make(map[string]*StructAttributeCache),
 		planetAttributes: make(map[string]*PlanetAttributeCache),
 
-		permissions:     make(map[string]*PermissionsCache),
+		permissions:            make(map[string]*PermissionsCache),
+		guildRankRegisters:     make(map[string]*GuildRankRegisterCache),
+
 
 		players:             make(map[string]*PlayerCache),
 		fleets:              make(map[uint64]*FleetCache),
@@ -166,9 +174,6 @@ func (cc *CurrentContext) CommitAll() {
 		cc.k.logger.Warn("CurrentContext.CommitAll called multiple times")
 		return
 	}
-
-	// Actually Implemented Shit (AIS)
-
 
     for _, playerCache := range cc.players {
         playerCache.Commit()
@@ -238,11 +243,9 @@ func (cc *CurrentContext) CommitAll() {
 	    permissionsCache.Commit()
 	}
 
+	for _, regCache := range cc.guildRankRegisters {
+	    regCache.Commit()
+	}
+
 	cc.committed = true
-    /*
-	TODO
-	cc.k.logger.Debug("CurrentContext committed",
-		"entity_cache_count", 0,
-	)
-	*/
 }

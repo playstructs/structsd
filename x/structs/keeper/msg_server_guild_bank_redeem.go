@@ -10,6 +10,7 @@ import (
 )
 
 func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBankRedeem) (*types.MsgGuildBankRedeemResponse, error) {
+    emptyResponse := &types.MsgGuildBankRedeemResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -20,22 +21,29 @@ func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBan
 
     activePlayer, lookupErr := cc.GetPlayerByAddress(msg.Creator)
     if lookupErr != nil {
-        return &types.MsgGuildBankRedeemResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_bank_redeem")
+        return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_bank_redeem")
     }
 
-    // TODO permission check on the address to look for Asset permissions
+    permissionErr := activePlayer.CanTransferTokensBy(activePlayer)
+    if permissionErr != nil {
+        return emptyResponse, permissionErr
+    }
+
     denomSlice := strings.Split(msg.AmountToken.Denom,".")
     if len(denomSlice) != 2 {
-        return &types.MsgGuildBankRedeemResponse{}, types.NewParameterValidationError("denom", 0, "invalid_format")
+        return emptyResponse, types.NewParameterValidationError("denom", 0, "invalid_format")
     }
 
     guild := cc.GetGuild(denomSlice[1])
     if !guild.LoadGuild() {
-        return &types.MsgGuildBankRedeemResponse{}, types.NewObjectNotFoundError("guild", guild.GetGuildId())
+        return emptyResponse, types.NewObjectNotFoundError("guild", guild.GetGuildId())
     }
 
     err := guild.BankRedeem(msg.AmountToken.Amount, activePlayer);
+    if err != nil {
+        return emptyResponse, err
+    }
 
 	cc.CommitAll()
-	return &types.MsgGuildBankRedeemResponse{}, err
+	return &types.MsgGuildBankRedeemResponse{}, nil
 }

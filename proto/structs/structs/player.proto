@@ -20,6 +20,8 @@ message Player {
   string planetId       = 7;
   string fleetId        = 8;
 
+  uint64 guildRank      = 9;
+
 }
 
 message PlayerInventory {

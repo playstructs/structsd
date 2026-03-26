@@ -42,6 +42,7 @@ const (
 	Msg_GuildUpdateJoinInfusionMinimum_FullMethodName                = "/structs.structs.Msg/GuildUpdateJoinInfusionMinimum"
 	Msg_GuildUpdateJoinInfusionMinimumBypassByInvite_FullMethodName  = "/structs.structs.Msg/GuildUpdateJoinInfusionMinimumBypassByInvite"
 	Msg_GuildUpdateJoinInfusionMinimumBypassByRequest_FullMethodName = "/structs.structs.Msg/GuildUpdateJoinInfusionMinimumBypassByRequest"
+	Msg_GuildUpdateEntryRank_FullMethodName                          = "/structs.structs.Msg/GuildUpdateEntryRank"
 	Msg_GuildMembershipInvite_FullMethodName                         = "/structs.structs.Msg/GuildMembershipInvite"
 	Msg_GuildMembershipInviteApprove_FullMethodName                  = "/structs.structs.Msg/GuildMembershipInviteApprove"
 	Msg_GuildMembershipInviteDeny_FullMethodName                     = "/structs.structs.Msg/GuildMembershipInviteDeny"
@@ -59,9 +60,12 @@ const (
 	Msg_PermissionRevokeOnObject_FullMethodName                      = "/structs.structs.Msg/PermissionRevokeOnObject"
 	Msg_PermissionSetOnAddress_FullMethodName                        = "/structs.structs.Msg/PermissionSetOnAddress"
 	Msg_PermissionSetOnObject_FullMethodName                         = "/structs.structs.Msg/PermissionSetOnObject"
+	Msg_PermissionGuildRankSet_FullMethodName                        = "/structs.structs.Msg/PermissionGuildRankSet"
+	Msg_PermissionGuildRankRevoke_FullMethodName                     = "/structs.structs.Msg/PermissionGuildRankRevoke"
 	Msg_PlanetExplore_FullMethodName                                 = "/structs.structs.Msg/PlanetExplore"
 	Msg_PlanetRaidComplete_FullMethodName                            = "/structs.structs.Msg/PlanetRaidComplete"
 	Msg_PlayerUpdatePrimaryAddress_FullMethodName                    = "/structs.structs.Msg/PlayerUpdatePrimaryAddress"
+	Msg_PlayerUpdateGuildRank_FullMethodName                         = "/structs.structs.Msg/PlayerUpdateGuildRank"
 	Msg_PlayerSend_FullMethodName                                    = "/structs.structs.Msg/PlayerSend"
 	Msg_ProviderCreate_FullMethodName                                = "/structs.structs.Msg/ProviderCreate"
 	Msg_ProviderWithdrawBalance_FullMethodName                       = "/structs.structs.Msg/ProviderWithdrawBalance"
@@ -70,8 +74,6 @@ const (
 	Msg_ProviderUpdateDurationMinimum_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateDurationMinimum"
 	Msg_ProviderUpdateDurationMaximum_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateDurationMaximum"
 	Msg_ProviderUpdateAccessPolicy_FullMethodName                    = "/structs.structs.Msg/ProviderUpdateAccessPolicy"
-	Msg_ProviderGuildGrant_FullMethodName                            = "/structs.structs.Msg/ProviderGuildGrant"
-	Msg_ProviderGuildRevoke_FullMethodName                           = "/structs.structs.Msg/ProviderGuildRevoke"
 	Msg_ProviderDelete_FullMethodName                                = "/structs.structs.Msg/ProviderDelete"
 	Msg_ReactorInfuse_FullMethodName                                 = "/structs.structs.Msg/ReactorInfuse"
 	Msg_ReactorDefuse_FullMethodName                                 = "/structs.structs.Msg/ReactorDefuse"
@@ -131,6 +133,7 @@ type MsgClient interface {
 	GuildUpdateJoinInfusionMinimum(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimum, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByInvite(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimumBypassByInvite, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByRequest(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimumBypassByRequest, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
+	GuildUpdateEntryRank(ctx context.Context, in *MsgGuildUpdateEntryRank, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildMembershipInvite(ctx context.Context, in *MsgGuildMembershipInvite, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
 	GuildMembershipInviteApprove(ctx context.Context, in *MsgGuildMembershipInviteApprove, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
 	GuildMembershipInviteDeny(ctx context.Context, in *MsgGuildMembershipInviteDeny, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
@@ -148,9 +151,12 @@ type MsgClient interface {
 	PermissionRevokeOnObject(ctx context.Context, in *MsgPermissionRevokeOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PermissionSetOnAddress(ctx context.Context, in *MsgPermissionSetOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PermissionSetOnObject(ctx context.Context, in *MsgPermissionSetOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
+	PermissionGuildRankSet(ctx context.Context, in *MsgPermissionGuildRankSet, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
+	PermissionGuildRankRevoke(ctx context.Context, in *MsgPermissionGuildRankRevoke, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error)
 	PlanetRaidComplete(ctx context.Context, in *MsgPlanetRaidComplete, opts ...grpc.CallOption) (*MsgPlanetRaidCompleteResponse, error)
 	PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlayerUpdatePrimaryAddress, opts ...grpc.CallOption) (*MsgPlayerUpdatePrimaryAddressResponse, error)
+	PlayerUpdateGuildRank(ctx context.Context, in *MsgPlayerUpdateGuildRank, opts ...grpc.CallOption) (*MsgPlayerUpdateGuildRankResponse, error)
 	PlayerSend(ctx context.Context, in *MsgPlayerSend, opts ...grpc.CallOption) (*MsgPlayerSendResponse, error)
 	ProviderCreate(ctx context.Context, in *MsgProviderCreate, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderWithdrawBalance(ctx context.Context, in *MsgProviderWithdrawBalance, opts ...grpc.CallOption) (*MsgProviderResponse, error)
@@ -159,8 +165,6 @@ type MsgClient interface {
 	ProviderUpdateDurationMinimum(ctx context.Context, in *MsgProviderUpdateDurationMinimum, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderUpdateDurationMaximum(ctx context.Context, in *MsgProviderUpdateDurationMaximum, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderUpdateAccessPolicy(ctx context.Context, in *MsgProviderUpdateAccessPolicy, opts ...grpc.CallOption) (*MsgProviderResponse, error)
-	ProviderGuildGrant(ctx context.Context, in *MsgProviderGuildGrant, opts ...grpc.CallOption) (*MsgProviderResponse, error)
-	ProviderGuildRevoke(ctx context.Context, in *MsgProviderGuildRevoke, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderDelete(ctx context.Context, in *MsgProviderDelete, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ReactorInfuse(ctx context.Context, in *MsgReactorInfuse, opts ...grpc.CallOption) (*MsgReactorInfuseResponse, error)
 	ReactorDefuse(ctx context.Context, in *MsgReactorDefuse, opts ...grpc.CallOption) (*MsgReactorDefuseResponse, error)
@@ -427,6 +431,16 @@ func (c *msgClient) GuildUpdateJoinInfusionMinimumBypassByRequest(ctx context.Co
 	return out, nil
 }
 
+func (c *msgClient) GuildUpdateEntryRank(ctx context.Context, in *MsgGuildUpdateEntryRank, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgGuildUpdateResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildUpdateEntryRank_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) GuildMembershipInvite(ctx context.Context, in *MsgGuildMembershipInvite, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgGuildMembershipResponse)
@@ -597,6 +611,26 @@ func (c *msgClient) PermissionSetOnObject(ctx context.Context, in *MsgPermission
 	return out, nil
 }
 
+func (c *msgClient) PermissionGuildRankSet(ctx context.Context, in *MsgPermissionGuildRankSet, opts ...grpc.CallOption) (*MsgPermissionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgPermissionResponse)
+	err := c.cc.Invoke(ctx, Msg_PermissionGuildRankSet_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) PermissionGuildRankRevoke(ctx context.Context, in *MsgPermissionGuildRankRevoke, opts ...grpc.CallOption) (*MsgPermissionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgPermissionResponse)
+	err := c.cc.Invoke(ctx, Msg_PermissionGuildRankRevoke_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgPlanetExploreResponse)
@@ -621,6 +655,16 @@ func (c *msgClient) PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlaye
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgPlayerUpdatePrimaryAddressResponse)
 	err := c.cc.Invoke(ctx, Msg_PlayerUpdatePrimaryAddress_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) PlayerUpdateGuildRank(ctx context.Context, in *MsgPlayerUpdateGuildRank, opts ...grpc.CallOption) (*MsgPlayerUpdateGuildRankResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgPlayerUpdateGuildRankResponse)
+	err := c.cc.Invoke(ctx, Msg_PlayerUpdateGuildRank_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -701,26 +745,6 @@ func (c *msgClient) ProviderUpdateAccessPolicy(ctx context.Context, in *MsgProvi
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgProviderResponse)
 	err := c.cc.Invoke(ctx, Msg_ProviderUpdateAccessPolicy_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) ProviderGuildGrant(ctx context.Context, in *MsgProviderGuildGrant, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgProviderResponse)
-	err := c.cc.Invoke(ctx, Msg_ProviderGuildGrant_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) ProviderGuildRevoke(ctx context.Context, in *MsgProviderGuildRevoke, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgProviderResponse)
-	err := c.cc.Invoke(ctx, Msg_ProviderGuildRevoke_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1018,6 +1042,7 @@ type MsgServer interface {
 	GuildUpdateJoinInfusionMinimum(context.Context, *MsgGuildUpdateJoinInfusionMinimum) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByInvite(context.Context, *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByRequest(context.Context, *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) (*MsgGuildUpdateResponse, error)
+	GuildUpdateEntryRank(context.Context, *MsgGuildUpdateEntryRank) (*MsgGuildUpdateResponse, error)
 	GuildMembershipInvite(context.Context, *MsgGuildMembershipInvite) (*MsgGuildMembershipResponse, error)
 	GuildMembershipInviteApprove(context.Context, *MsgGuildMembershipInviteApprove) (*MsgGuildMembershipResponse, error)
 	GuildMembershipInviteDeny(context.Context, *MsgGuildMembershipInviteDeny) (*MsgGuildMembershipResponse, error)
@@ -1035,9 +1060,12 @@ type MsgServer interface {
 	PermissionRevokeOnObject(context.Context, *MsgPermissionRevokeOnObject) (*MsgPermissionResponse, error)
 	PermissionSetOnAddress(context.Context, *MsgPermissionSetOnAddress) (*MsgPermissionResponse, error)
 	PermissionSetOnObject(context.Context, *MsgPermissionSetOnObject) (*MsgPermissionResponse, error)
+	PermissionGuildRankSet(context.Context, *MsgPermissionGuildRankSet) (*MsgPermissionResponse, error)
+	PermissionGuildRankRevoke(context.Context, *MsgPermissionGuildRankRevoke) (*MsgPermissionResponse, error)
 	PlanetExplore(context.Context, *MsgPlanetExplore) (*MsgPlanetExploreResponse, error)
 	PlanetRaidComplete(context.Context, *MsgPlanetRaidComplete) (*MsgPlanetRaidCompleteResponse, error)
 	PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error)
+	PlayerUpdateGuildRank(context.Context, *MsgPlayerUpdateGuildRank) (*MsgPlayerUpdateGuildRankResponse, error)
 	PlayerSend(context.Context, *MsgPlayerSend) (*MsgPlayerSendResponse, error)
 	ProviderCreate(context.Context, *MsgProviderCreate) (*MsgProviderResponse, error)
 	ProviderWithdrawBalance(context.Context, *MsgProviderWithdrawBalance) (*MsgProviderResponse, error)
@@ -1046,8 +1074,6 @@ type MsgServer interface {
 	ProviderUpdateDurationMinimum(context.Context, *MsgProviderUpdateDurationMinimum) (*MsgProviderResponse, error)
 	ProviderUpdateDurationMaximum(context.Context, *MsgProviderUpdateDurationMaximum) (*MsgProviderResponse, error)
 	ProviderUpdateAccessPolicy(context.Context, *MsgProviderUpdateAccessPolicy) (*MsgProviderResponse, error)
-	ProviderGuildGrant(context.Context, *MsgProviderGuildGrant) (*MsgProviderResponse, error)
-	ProviderGuildRevoke(context.Context, *MsgProviderGuildRevoke) (*MsgProviderResponse, error)
 	ProviderDelete(context.Context, *MsgProviderDelete) (*MsgProviderResponse, error)
 	ReactorInfuse(context.Context, *MsgReactorInfuse) (*MsgReactorInfuseResponse, error)
 	ReactorDefuse(context.Context, *MsgReactorDefuse) (*MsgReactorDefuseResponse, error)
@@ -1153,6 +1179,9 @@ func (UnimplementedMsgServer) GuildUpdateJoinInfusionMinimumBypassByInvite(conte
 func (UnimplementedMsgServer) GuildUpdateJoinInfusionMinimumBypassByRequest(context.Context, *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) (*MsgGuildUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildUpdateJoinInfusionMinimumBypassByRequest not implemented")
 }
+func (UnimplementedMsgServer) GuildUpdateEntryRank(context.Context, *MsgGuildUpdateEntryRank) (*MsgGuildUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildUpdateEntryRank not implemented")
+}
 func (UnimplementedMsgServer) GuildMembershipInvite(context.Context, *MsgGuildMembershipInvite) (*MsgGuildMembershipResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipInvite not implemented")
 }
@@ -1204,6 +1233,12 @@ func (UnimplementedMsgServer) PermissionSetOnAddress(context.Context, *MsgPermis
 func (UnimplementedMsgServer) PermissionSetOnObject(context.Context, *MsgPermissionSetOnObject) (*MsgPermissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PermissionSetOnObject not implemented")
 }
+func (UnimplementedMsgServer) PermissionGuildRankSet(context.Context, *MsgPermissionGuildRankSet) (*MsgPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PermissionGuildRankSet not implemented")
+}
+func (UnimplementedMsgServer) PermissionGuildRankRevoke(context.Context, *MsgPermissionGuildRankRevoke) (*MsgPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PermissionGuildRankRevoke not implemented")
+}
 func (UnimplementedMsgServer) PlanetExplore(context.Context, *MsgPlanetExplore) (*MsgPlanetExploreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlanetExplore not implemented")
 }
@@ -1212,6 +1247,9 @@ func (UnimplementedMsgServer) PlanetRaidComplete(context.Context, *MsgPlanetRaid
 }
 func (UnimplementedMsgServer) PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayerUpdatePrimaryAddress not implemented")
+}
+func (UnimplementedMsgServer) PlayerUpdateGuildRank(context.Context, *MsgPlayerUpdateGuildRank) (*MsgPlayerUpdateGuildRankResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlayerUpdateGuildRank not implemented")
 }
 func (UnimplementedMsgServer) PlayerSend(context.Context, *MsgPlayerSend) (*MsgPlayerSendResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayerSend not implemented")
@@ -1236,12 +1274,6 @@ func (UnimplementedMsgServer) ProviderUpdateDurationMaximum(context.Context, *Ms
 }
 func (UnimplementedMsgServer) ProviderUpdateAccessPolicy(context.Context, *MsgProviderUpdateAccessPolicy) (*MsgProviderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateAccessPolicy not implemented")
-}
-func (UnimplementedMsgServer) ProviderGuildGrant(context.Context, *MsgProviderGuildGrant) (*MsgProviderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ProviderGuildGrant not implemented")
-}
-func (UnimplementedMsgServer) ProviderGuildRevoke(context.Context, *MsgProviderGuildRevoke) (*MsgProviderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ProviderGuildRevoke not implemented")
 }
 func (UnimplementedMsgServer) ProviderDelete(context.Context, *MsgProviderDelete) (*MsgProviderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProviderDelete not implemented")
@@ -1756,6 +1788,24 @@ func _Msg_GuildUpdateJoinInfusionMinimumBypassByRequest_Handler(srv interface{},
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_GuildUpdateEntryRank_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildUpdateEntryRank)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildUpdateEntryRank(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildUpdateEntryRank_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildUpdateEntryRank(ctx, req.(*MsgGuildUpdateEntryRank))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_GuildMembershipInvite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgGuildMembershipInvite)
 	if err := dec(in); err != nil {
@@ -2062,6 +2112,42 @@ func _Msg_PermissionSetOnObject_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_PermissionGuildRankSet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPermissionGuildRankSet)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).PermissionGuildRankSet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_PermissionGuildRankSet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).PermissionGuildRankSet(ctx, req.(*MsgPermissionGuildRankSet))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_PermissionGuildRankRevoke_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPermissionGuildRankRevoke)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).PermissionGuildRankRevoke(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_PermissionGuildRankRevoke_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).PermissionGuildRankRevoke(ctx, req.(*MsgPermissionGuildRankRevoke))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_PlanetExplore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgPlanetExplore)
 	if err := dec(in); err != nil {
@@ -2112,6 +2198,24 @@ func _Msg_PlayerUpdatePrimaryAddress_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).PlayerUpdatePrimaryAddress(ctx, req.(*MsgPlayerUpdatePrimaryAddress))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_PlayerUpdateGuildRank_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPlayerUpdateGuildRank)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).PlayerUpdateGuildRank(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_PlayerUpdateGuildRank_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).PlayerUpdateGuildRank(ctx, req.(*MsgPlayerUpdateGuildRank))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2256,42 +2360,6 @@ func _Msg_ProviderUpdateAccessPolicy_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).ProviderUpdateAccessPolicy(ctx, req.(*MsgProviderUpdateAccessPolicy))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_ProviderGuildGrant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgProviderGuildGrant)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).ProviderGuildGrant(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_ProviderGuildGrant_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ProviderGuildGrant(ctx, req.(*MsgProviderGuildGrant))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_ProviderGuildRevoke_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgProviderGuildRevoke)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).ProviderGuildRevoke(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_ProviderGuildRevoke_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ProviderGuildRevoke(ctx, req.(*MsgProviderGuildRevoke))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2864,6 +2932,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_GuildUpdateJoinInfusionMinimumBypassByRequest_Handler,
 		},
 		{
+			MethodName: "GuildUpdateEntryRank",
+			Handler:    _Msg_GuildUpdateEntryRank_Handler,
+		},
+		{
 			MethodName: "GuildMembershipInvite",
 			Handler:    _Msg_GuildMembershipInvite_Handler,
 		},
@@ -2932,6 +3004,14 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_PermissionSetOnObject_Handler,
 		},
 		{
+			MethodName: "PermissionGuildRankSet",
+			Handler:    _Msg_PermissionGuildRankSet_Handler,
+		},
+		{
+			MethodName: "PermissionGuildRankRevoke",
+			Handler:    _Msg_PermissionGuildRankRevoke_Handler,
+		},
+		{
 			MethodName: "PlanetExplore",
 			Handler:    _Msg_PlanetExplore_Handler,
 		},
@@ -2942,6 +3022,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PlayerUpdatePrimaryAddress",
 			Handler:    _Msg_PlayerUpdatePrimaryAddress_Handler,
+		},
+		{
+			MethodName: "PlayerUpdateGuildRank",
+			Handler:    _Msg_PlayerUpdateGuildRank_Handler,
 		},
 		{
 			MethodName: "PlayerSend",
@@ -2974,14 +3058,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ProviderUpdateAccessPolicy",
 			Handler:    _Msg_ProviderUpdateAccessPolicy_Handler,
-		},
-		{
-			MethodName: "ProviderGuildGrant",
-			Handler:    _Msg_ProviderGuildGrant_Handler,
-		},
-		{
-			MethodName: "ProviderGuildRevoke",
-			Handler:    _Msg_ProviderGuildRevoke_Handler,
 		},
 		{
 			MethodName: "ProviderDelete",

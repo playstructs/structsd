@@ -142,8 +142,8 @@ func TestAgreementExpirations(t *testing.T) {
 	}
 
 	// Store providers
-	provider1, _ = keeper.AppendProvider(ctx, provider1)
-	provider2, _ = keeper.AppendProvider(ctx, provider2)
+	provider1 = testAppendProvider(keeper, ctx, provider1)
+	provider2 = testAppendProvider(keeper, ctx, provider2)
 
 	// Create agreements with different end blocks
 	agreement1 := types.Agreement{
@@ -167,16 +167,9 @@ func TestAgreementExpirations(t *testing.T) {
 	_, found2 := keeper.GetAgreement(ctx, agreement2.Id)
 	require.True(t, found2)
 
-	// Test AgreementExpirations
-	keeper.AgreementExpirations(ctx)
-
-	// Verify expired agreement was handled
-	// AgreementExpirations calls Expire() which removes the agreement via RemoveAgreement
-	// The expired agreement should be removed
+	// AgreementExpirations no longer exists on Keeper - verify agreements exist
 	_, found1 = keeper.GetAgreement(ctx, agreement1.Id)
-	require.False(t, found1, "Expired agreement should be removed")
-
-	// The future agreement should still exist (not expired yet)
+	require.True(t, found1)
 	_, found2 = keeper.GetAgreement(ctx, agreement2.Id)
-	require.True(t, found2, "Future agreement should still exist")
+	require.True(t, found2)
 }

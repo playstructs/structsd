@@ -20,7 +20,7 @@ func TestMsgAllocationDelete(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up source capacity
 	sourceObjectId := "source-object"
@@ -29,20 +29,20 @@ func TestMsgAllocationDelete(t *testing.T) {
 
 	// Grant permissions
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssets)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
 
 	// Grant object permissions on source object
 	sourceObjectPermissionId := keeperlib.GetObjectPermissionIDBytes(sourceObjectId, player.Id)
-	k.PermissionAdd(ctx, sourceObjectPermissionId, types.PermissionAssets)
+	testPermissionAdd(k, ctx, sourceObjectPermissionId, types.PermAssetsAll)
 
 	// Create a dynamic allocation (required for deletion)
 	allocation := types.Allocation{
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_dynamic,
-		Controller:     player.Creator,
+		Controller: player.Id,
 	}
-	createdAllocation, _, err := k.AppendAllocation(ctx, allocation, 100)
+	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
 
 	testCases := []struct {
@@ -104,9 +104,9 @@ func TestMsgAllocationDelete(t *testing.T) {
 					SourceObjectId: sourceObjectId,
 					DestinationId:  "",
 					Type:           types.AllocationType_static,
-					Controller:     player.Creator,
+					Controller: player.Id,
 				}
-				staticAlloc, _, err := k.AppendAllocation(ctx, staticAllocation, 100)
+				staticAlloc, err := testAppendAllocation(k, ctx, staticAllocation, 100)
 				require.NoError(t, err)
 				tc.input.AllocationId = staticAlloc.Id
 			}

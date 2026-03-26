@@ -63,6 +63,14 @@ func (cache *ReactorCache) GetReactorId() string {
 	return cache.ReactorId
 }
 
+func (cache *ReactorCache) GetOwnerId()  (string) { return cache.GetReactor().Owner }
+func (cache *ReactorCache) GetOwner()    (*PlayerCache) {
+    player, _ := cache.CC.GetPlayer(cache.GetOwnerId())
+    return player
+}
+
+
+
 func (cache *ReactorCache) SetGuild(guildId string) {
 	if !cache.ReactorLoaded {
 		cache.LoadReactor()
@@ -70,4 +78,13 @@ func (cache *ReactorCache) SetGuild(guildId string) {
 	cache.Reactor.GuildId = guildId
 	cache.Changed = true
 
+}
+
+func (cache *ReactorCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermSourceAllocation)
+}
+
+
+func (cache *ReactorCache) CanCreateGuildBy(activePlayer *PlayerCache) (err error) {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermReactorGuildCreate)
 }

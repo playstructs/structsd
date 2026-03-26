@@ -182,6 +182,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
                 },
 				{
+                    RpcMethod:      "GuildRankPermissionByObject",
+                    Use:            "guild-rank-permission-by-object [object id]",
+                    Short:          "List guild rank permissions for an object",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "object_id"}},
+                },
+				{
+                    RpcMethod:      "GuildRankPermissionByObjectAndGuild",
+                    Use:            "guild-rank-permission-by-object-and-guild [object id] [guild id]",
+                    Short:          "List guild rank permissions for an object and guild",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "object_id"},{ProtoField: "guild_id"}},
+                },
+				{
                     RpcMethod:      "Planet",
                     Use:            "planet [planet id]",
                     Short:          "Show the details of a specific Planet",
@@ -336,7 +348,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                 },
                 {
                     RpcMethod:      "AllocationTransfer",
-                    Use:            "allocation-transfer [allocation id] [new controller address]",
+                    Use:            "allocation-transfer [allocation id] [new controller playerId]",
                     Short:          "Transfer an Allocation to a different account",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "allocationId"}, {ProtoField: "controller"}},
                 },
@@ -402,9 +414,9 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                 },
                 {
                     RpcMethod:      "GuildCreate",
-                    Use:            "guild-create [endpoint] [substation id]",
+                    Use:            "guild-create [reactor id] [endpoint] [substation id]",
                     Short:          "Create a guild from an account with an associated Reactor",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "endpoint"},{ProtoField: "entrySubstationId"}},
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "reactorId"},{ProtoField: "endpoint"},{ProtoField: "entrySubstationId"}},
                 },
                 {
                     RpcMethod:      "GuildMembershipInvite",
@@ -509,6 +521,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "owner"}},
                  },
                  {
+                     RpcMethod:      "GuildUpdateEntryRank",
+                     Use:            "guild-update-entry-rank [new entry rank]",
+                     Short:          "Update the entry rank for your guild",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "newEntryRank"}},
+                 },
+                 {
                      RpcMethod:      "PermissionGrantOnObject",
                      Use:            "permission-grant-on-object [object id] [player id] [permissions]",
                      Short:          "Grant a set of permissions on an object to a player",
@@ -545,6 +563,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "address"},{ProtoField: "permissions"}},
                  },
                  {
+                     RpcMethod:      "PermissionGuildRankSet",
+                     Use:            "permission-guild-rank-set [object id] [guild id] [permission] [rank]",
+                     Short:          "Set guild rank requirement for a permission on an object",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "objectId"},{ProtoField: "guildId"},{ProtoField: "permission"},{ProtoField: "rank"}},
+                 },
+                 {
+                     RpcMethod:      "PermissionGuildRankRevoke",
+                     Use:            "permission-guild-rank-revoke [object id] [guild id] [permission]",
+                     Short:          "Revoke guild rank permission on an object",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "objectId"},{ProtoField: "guildId"},{ProtoField: "permission"}},
+                 },
+                 {
                      RpcMethod:      "PlanetExplore",
                      Use:            "planet-explore [player id]",
                      Short:          "Explore a new planet",
@@ -563,10 +593,16 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "primaryAddress"}},
                  },
                  {
+                     RpcMethod:      "PlayerUpdateGuildRank",
+                     Use:            "player-update-guild-rank [player id] [guild rank]",
+                     Short:          "Update the guild rank of a player in your guild",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "guildRank"}},
+                 },
+                 {
                     RpcMethod:      "PlayerSend",
-                    Use:            "player-send [player id] [from address] [to address] [1coin, 2coin, ...coin]",
+                    Use:            "player-send [from address] [to address] [1coin, 2coin, ...coin]",
                     Short:          "Send tokens from any player-owned address",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "player_id"},{ProtoField: "from_address"},{ProtoField: "to_address"},{ProtoField: "amount"}},
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "from_address"},{ProtoField: "to_address"},{ProtoField: "amount"}},
                  },
                  {
                     RpcMethod:      "ProviderCreate",
@@ -579,18 +615,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     Use:            "provider-delete [provider id]",
                     Short:          "Delete an Energy Provider and Cancel all Agreements",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"}},
-                 },
-                 {
-                    RpcMethod:      "ProviderGuildGrant",
-                    Use:            "provider-guild-grant [provider id] [guild Id, guild Id 2,...]",
-                    Short:          "Grant a list of Guilds access to open Agreements with a Provider",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "guildId"}},
-                 },
-                 {
-                    RpcMethod:      "ProviderGuildRevoke",
-                    Use:            "provider-guild-revoke [provider id] [guild Id, guild Id 2,...]",
-                    Short:          "Revoke a list of Guilds from being able to open Agreements with a Provider",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "guildId"}},
                  },
                  {
                     RpcMethod:      "ProviderUpdateAccessPolicy",

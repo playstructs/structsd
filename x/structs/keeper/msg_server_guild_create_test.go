@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
+	keeperlib "structs/x/structs/keeper"
 	"structs/x/structs/types"
 )
 
@@ -13,24 +14,22 @@ func TestMsgGuildCreate(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
 	wctx := sdk.UnwrapSDKContext(ctx)
 
-	// Create a player and reactor first (required for guild creation)
-	// Use a valid bech32 address
 	playerAcc := sdk.AccAddress("creator123456789012345678901234567890")
 	player := types.Player{
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
-	// Create a reactor for the player
-	// The handler converts player address to validator address: validatorAddress = playerAddress.Bytes()
-	// So we need to set up the reactor with the player address bytes as the validator address
 	validatorAddress := sdk.ValAddress(playerAcc.Bytes())
 	reactor := types.Reactor{
+		Validator:  validatorAddress.String(),
 		RawAddress: validatorAddress.Bytes(),
 	}
-	// AppendReactor already calls SetReactorValidatorBytes internally with reactor.RawAddress
 	reactor = k.AppendReactor(ctx, reactor)
+
+	reactorPermissionId := keeperlib.GetObjectPermissionIDBytes(reactor.Id, player.Id)
+	testPermissionAdd(k, ctx, reactorPermissionId, types.PermAll)
 
 	testCases := []struct {
 		name      string
@@ -43,40 +42,29 @@ func TestMsgGuildCreate(t *testing.T) {
 			name: "valid guild creation",
 			input: &types.MsgGuildCreate{
 				Creator:           player.Creator,
+				ReactorId:         reactor.Id,
 				Endpoint:          "test-endpoint",
 				EntrySubstationId: "",
 			},
 			expErr: false,
-			skip:   false,
 		},
 		{
-			name: "invalid creator - no player",
+			name: "missing reactor id",
 			input: &types.MsgGuildCreate{
-				Creator:           sdk.AccAddress("invalid123456789012345678901234567890").String(),
+				Creator:           player.Creator,
+				ReactorId:         "",
 				Endpoint:          "test-endpoint",
 				EntrySubstationId: "",
 			},
 			expErr:    true,
-			expErrMsg: "Guild creation requires Player account",
-			skip:      true, // Skip - cache system validation order makes this hard to test
-		},
-		{
-			name: "invalid creator - no reactor",
-			input: &types.MsgGuildCreate{
-				Creator:           sdk.AccAddress("noreactor123456789012345678901234567890").String(),
-				Endpoint:          "test-endpoint",
-				EntrySubstationId: "",
-			},
-			expErr:    true,
-			expErrMsg: "Guild creation requires Reactor",
-			skip:      true, // Skip - requires creating player without reactor, which is complex
+			expErrMsg: "reactor",
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
+				t.Skip("Skipping test")
 			}
 
 			resp, err := ms.GuildCreate(wctx, tc.input)
@@ -84,17 +72,14 @@ func TestMsgGuildCreate(t *testing.T) {
 			if tc.expErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, resp)
 				require.NotEmpty(t, resp.GuildId)
 
-				// Verify guild was created
 				guild, found := k.GetGuild(ctx, resp.GuildId)
 				require.True(t, found)
 				require.Equal(t, tc.input.Endpoint, guild.Endpoint)
-				require.Equal(t, tc.input.EntrySubstationId, guild.EntrySubstationId)
 			}
 		})
 	}

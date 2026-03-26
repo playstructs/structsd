@@ -7,6 +7,7 @@ import (
 )
 
 func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocationCreate) (*types.MsgAllocationCreateResponse, error) {
+    emptyResponse := &types.MsgAllocationCreateResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -14,32 +15,24 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return emptyResponse, err
+    }
+
     // If no controller set, then make it the Creator
     if (msg.Controller == ""){
-        msg.Controller = msg.Creator
+        msg.Controller = callingPlayer.GetPlayerId()
     }
 
-    player, playerErr := cc.GetPlayerByAddress(msg.Creator)
-    if playerErr != nil {
-        return &types.MsgAllocationCreateResponse{}, types.NewPlayerRequiredError(msg.Creator, "allocation_create")
+    sourceObject := cc.GetPermissionedObject(msg.SourceObjectId)
+    if sourceObject == nil {
+        return emptyResponse, types.NewAllocationError(msg.SourceObjectId, "unacceptable_source")
     }
 
-    sourceObjectPermissionId := GetObjectPermissionIDBytes(msg.SourceObjectId, player.GetPlayerId())
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-
-    // Ignore the one case where it's a player creating an allocation on themselves.
-    // Surely that doesn't need a lookup.
-    if (player.GetPlayerId() != msg.SourceObjectId) {
-        // check that the player has permissions
-        if (!cc.PermissionHasOneOf(sourceObjectPermissionId, types.PermissionAssets)) {
-            return &types.MsgAllocationCreateResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "allocation", msg.SourceObjectId, uint64(types.PermissionAssets), "allocation_create")
-        }
-    }
-
-
-    // check that the account has energy management permissions
-    if (!cc.PermissionHasOneOf(addressPermissionId, types.Permission(types.PermissionAssets))) {
-        return &types.MsgAllocationCreateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "energy_management")
+    permissionErr := sourceObject.CanAllocateAsSourceBy(callingPlayer)
+    if permissionErr != nil {
+            return emptyResponse, permissionErr
     }
 
     allocation, err := cc.NewAllocation(
@@ -50,10 +43,34 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
     	msg.Controller,
     	msg.Power,
     )
+    if err != nil {
+        return emptyResponse, err
+    }
+
+    var creatorPermissions types.Permission
+    if allocation.IsAutomated() {
+        creatorPermissions = types.PermDelete 
+    }
+
+    if allocation.IsDynamic() {
+        creatorPermissions = types.PermUpdate | types.PermDelete
+    }
+
+    if callingPlayer.ID() == msg.Controller {
+        creatorPermissions = creatorPermissions | types.PermAllocationConnection | types.PermAdmin
+    } else {
+        allocationPermissionId := GetObjectPermissionIDBytes(allocation.ID(), msg.Controller)
+        cc.SetPermissions(allocationPermissionId, types.PermAllocationConnection | types.PermAdmin)
+    }
+
+    if creatorPermissions != types.Permissionless {
+        allocationPermissionId := GetObjectPermissionIDBytes(allocation.ID(), callingPlayer.ID())
+        cc.SetPermissions(allocationPermissionId, creatorPermissions)
+    }
 
 	cc.CommitAll()
 	return &types.MsgAllocationCreateResponse{
 		AllocationId: allocation.GetAllocationId(),
-	}, err
+	}, nil
 
 }

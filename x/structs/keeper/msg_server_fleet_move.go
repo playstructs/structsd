@@ -7,6 +7,7 @@ import (
 )
 
 func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*types.MsgFleetMoveResponse, error) {
+    emptyResponse := &types.MsgFleetMoveResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -14,28 +15,32 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+        return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "fleet_move")
+    }
 
     // Load the fleet
     fleet, fleetLookupErr := cc.GetFleetById(msg.FleetId)
     if (fleetLookupErr != nil) {
-        return &types.MsgFleetMoveResponse{}, fleetLookupErr
+        return emptyResponse, fleetLookupErr
     }
 
     // Check address play permissions
-    permissionError := fleet.GetOwner().CanBePlayedBy(msg.Creator)
+    permissionError := fleet.GetOwner().CanBePlayedBy(activePlayer)
     if (permissionError != nil) {
-        return &types.MsgFleetMoveResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     destination := cc.GetPlanet(msg.DestinationLocationId)
     if (!destination.LoadPlanet()) {
-        return &types.MsgFleetMoveResponse{}, types.NewObjectNotFoundError("planet", msg.DestinationLocationId)
+        return emptyResponse, types.NewObjectNotFoundError("planet", msg.DestinationLocationId)
     }
 
     // Is the Fleet able to move?
     readinessError := fleet.PlanetMoveReadinessCheck()
     if (readinessError != nil) {
-        return &types.MsgFleetMoveResponse{}, readinessError
+        return emptyResponse, readinessError
     }
 
     if fleet.GetLocationId() != msg.DestinationLocationId {

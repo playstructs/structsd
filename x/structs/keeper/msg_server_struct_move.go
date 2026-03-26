@@ -28,30 +28,36 @@ message MsgStructMove {
 
 */
 func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (*types.MsgStructStatusResponse, error) {
-    ctx := sdk.UnwrapSDKContext(goCtx)
+    emptyResponse := &types.MsgStructStatusResponse{}
+	ctx := sdk.UnwrapSDKContext(goCtx)
     cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
     k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return emptyResponse, err
+    }
+
     structure := cc.GetStruct(msg.StructId)
 
     // Check to see if the caller has permissions to proceed
-    permissionError := structure.CanBePlayedBy(msg.Creator)
+    permissionError := structure.CanBePlayedBy(callingPlayer)
     if (permissionError != nil) {
-        return &types.MsgStructStatusResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     // Check Player Charge
     if structure.GetOwner().GetCharge() < structure.GetStructType().MoveCharge {
         err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().MoveCharge, structure.GetOwner().GetCharge(), "move").WithStructType(structure.GetTypeId())
-        return &types.MsgStructStatusResponse{}, err
+        return emptyResponse, err
     }
 
-    err := structure.AttemptMove( msg.LocationType, msg.Ambit, msg.Slot)
-    if (err != nil) {
-        return &types.MsgStructStatusResponse{}, err
+    moveErr := structure.AttemptMove( msg.LocationType, msg.Ambit, msg.Slot)
+    if (moveErr != nil) {
+        return emptyResponse, moveErr
     }
 
     structure.GetOwner().Discharge()

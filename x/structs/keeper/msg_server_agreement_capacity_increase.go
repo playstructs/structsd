@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) AgreementCapacityIncrease(goCtx context.Context, msg *types.MsgAgreementCapacityIncrease) (*types.MsgAgreementResponse, error) {
+    emptyResponse := &types.MsgAgreementResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -20,7 +21,7 @@ func (k msgServer) AgreementCapacityIncrease(goCtx context.Context, msg *types.M
 
     permissionError := agreement.CanUpdate(activePlayer)
     if (permissionError != nil) {
-        return &types.MsgAgreementResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     // Checkpoint

@@ -53,7 +53,7 @@ func (cache *GuildMembershipApplicationCache) ID() string {
 }
 
 func (cache *GuildMembershipApplicationCache) LoadGuildMembershipApplication() bool {
-    	guildMembershipApplication, guildMembershipApplicationFound := cache.CC.k.GetGuildMembershipApplicationById(cache.CC.ctx, cache.ID())
+    	guildMembershipApplication, guildMembershipApplicationFound := cache.CC.k.GetGuildMembershipApplicationById(cache.CC.ctx, cache.GuildMembershipApplicationId)
 
     	if guildMembershipApplicationFound {
     		cache.GuildMembershipApplication = guildMembershipApplication
@@ -125,7 +125,7 @@ func (cache *GuildMembershipApplicationCache) SetSubstationIdOverride(substation
 			return types.NewObjectNotFoundError("substation", substationId)
 		}
 
-		substationPermissionError := substation.CanManagePlayerConnections(cache.CallingPlayer)
+		substationPermissionError := substation.CanManageConnectionsBy(cache.CallingPlayer)
 		if substationPermissionError != nil {
 			return substationPermissionError
 		}
@@ -138,30 +138,19 @@ func (cache *GuildMembershipApplicationCache) SetSubstationIdOverride(substation
 }
 
 func (cache *GuildMembershipApplicationCache) VerifyInviteAsGuild() error {
-	guildPermissionError := cache.GetGuild().CanInviteMembers(cache.CallingPlayer)
-	if guildPermissionError != nil {
-		return guildPermissionError
-	}
-
 	if cache.GetJoinType() != types.GuildJoinType_invite {
 		return types.NewGuildMembershipError(cache.GetGuildId(), cache.GetPlayerId(), "wrong_join_type").WithJoinType("invite")
 	}
 
-	return nil
+	return cache.GetGuild().CanInviteMembers(cache.CallingPlayer)
 }
 
 func (cache *GuildMembershipApplicationCache) VerifyInviteAsPlayer() error {
-	if cache.GetPlayerId() != cache.CallingPlayer.GetPlayerId() {
-		if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetPlayerId(), cache.CallingPlayer.GetPlayerId()), types.PermissionAssociations) {
-			return types.NewPermissionError("player", cache.CallingPlayer.GetPlayerId(), "player", cache.GetPlayerId(), uint64(types.PermissionAssociations), "guild_register")
-		}
-	}
-
 	if cache.GetJoinType() != types.GuildJoinType_invite {
 		return types.NewGuildMembershipError(cache.GetGuildId(), cache.GetPlayerId(), "wrong_join_type").WithJoinType("invite")
 	}
 
-	return nil
+    return cache.CC.PermissionCheck(cache.GetPlayer(), cache.CallingPlayer, types.PermGuildMembership)
 }
 
 func (cache *GuildMembershipApplicationCache) ApproveInvite() error {
@@ -188,30 +177,19 @@ func (cache *GuildMembershipApplicationCache) RevokeInvite() error {
 }
 
 func (cache *GuildMembershipApplicationCache) VerifyRequestAsGuild() error {
-	guildPermissionError := cache.GetGuild().CanApproveMembershipRequest(cache.CallingPlayer)
-	if guildPermissionError != nil {
-		return guildPermissionError
-	}
-
 	if cache.GetJoinType() != types.GuildJoinType_request {
 		return types.NewGuildMembershipError(cache.GetGuildId(), cache.GetPlayerId(), "wrong_join_type").WithJoinType("request")
 	}
 
-	return nil
+	return cache.GetGuild().CanApproveMembershipRequest(cache.CallingPlayer)
 }
 
 func (cache *GuildMembershipApplicationCache) VerifyRequestAsPlayer() error {
-	if cache.GetPlayerId() != cache.CallingPlayer.GetPlayerId() {
-		if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetPlayerId(), cache.CallingPlayer.GetPlayerId()), types.PermissionAssociations) {
-			return types.NewPermissionError("player", cache.CallingPlayer.GetPlayerId(), "player", cache.GetPlayerId(), uint64(types.PermissionAssociations), "guild_register")
-		}
-	}
-
 	if cache.GetJoinType() != types.GuildJoinType_request {
 		return types.NewGuildMembershipError(cache.GetGuildId(), cache.GetPlayerId(), "wrong_join_type").WithJoinType("request")
 	}
 
-	return nil
+	return cache.CC.PermissionCheck(cache.GetPlayer(), cache.CallingPlayer, types.PermGuildMembership)
 }
 
 func (cache *GuildMembershipApplicationCache) ApproveRequest() error {
@@ -240,10 +218,8 @@ func (cache *GuildMembershipApplicationCache) RevokeRequest() error {
 func (cache *GuildMembershipApplicationCache) Kick() error {
 	cache.GetPlayer().LeaveGuild()
 
-	substationPermissionCheck := cache.GetPlayer().GetSubstation().CanManagePlayerConnections(cache.CallingPlayer)
+	substationPermissionCheck := cache.GetPlayer().GetSubstation().CanManageConnectionsBy(cache.CallingPlayer)
 	if substationPermissionCheck == nil {
-		cache.GetPlayer().DisconnectSubstation()
-	} else if cache.GetPlayer().GetSubstation().GetOwnerId() == cache.GetGuild().GetOwnerId() {
 		cache.GetPlayer().DisconnectSubstation()
 	}
 
@@ -253,12 +229,7 @@ func (cache *GuildMembershipApplicationCache) Kick() error {
 }
 
 func (cache *GuildMembershipApplicationCache) VerifyDirectJoin() error {
-	if cache.GetPlayerId() != cache.CallingPlayer.GetPlayerId() {
-		if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetPlayerId(), cache.CallingPlayer.GetPlayerId()), types.PermissionAssociations) {
-			return types.NewPermissionError("player", cache.CallingPlayer.GetPlayerId(), "player", cache.GetPlayerId(), uint64(types.PermissionAssociations), "guild_register")
-		}
-	}
-	return nil
+    return cache.CC.PermissionCheck(cache.GetPlayer(), cache.CallingPlayer, types.PermGuildMembership)
 }
 
 func (cache *GuildMembershipApplicationCache) DirectJoin() error {

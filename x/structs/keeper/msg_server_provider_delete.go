@@ -8,7 +8,8 @@ import (
 )
 
 func (k msgServer) ProviderDelete(goCtx context.Context, msg *types.MsgProviderDelete) (*types.MsgProviderResponse, error) {
-    ctx := sdk.UnwrapSDKContext(goCtx)
+    emptyResponse := &types.MsgProviderResponse{}
+	ctx := sdk.UnwrapSDKContext(goCtx)
     cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
@@ -18,14 +19,14 @@ func (k msgServer) ProviderDelete(goCtx context.Context, msg *types.MsgProviderD
 
     provider := cc.GetProvider(msg.ProviderId)
 
-    permissionError := provider.CanDelete(activePlayer)
+    permissionError := provider.CanBeDeletedBy(activePlayer)
     if (permissionError != nil) {
-        return &types.MsgProviderResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     paramErr := provider.Delete()
     if paramErr != nil {
-        return &types.MsgProviderResponse{}, paramErr
+        return emptyResponse, paramErr
     }
 
 	cc.CommitAll()

@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"context"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,101 +12,121 @@ import (
 )
 
 func TestMsgGuildMembershipInviteDeny(t *testing.T) {
-	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
-
-	// Create players
-	inviterAcc := sdk.AccAddress("inviter123456789012345678901234567890")
-	inviter := types.Player{
-		Creator:        inviterAcc.String(),
-		PrimaryAddress: inviterAcc.String(),
-	}
-	inviter = k.AppendPlayer(ctx, inviter)
-
-	targetAcc := sdk.AccAddress("target123456789012345678901234567890")
-	targetPlayer := types.Player{
-		Creator:        targetAcc.String(),
-		PrimaryAddress: targetAcc.String(),
-	}
-	targetPlayer = k.AppendPlayer(ctx, targetPlayer)
-
-	// Create reactor and guild
-	validatorAddress := sdk.ValAddress(inviterAcc.Bytes())
-	reactor := types.Reactor{
-		RawAddress: validatorAddress.Bytes(),
-	}
-	// AppendReactor already calls SetReactorValidatorBytes internally
-	reactor = k.AppendReactor(ctx, reactor)
-
-	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, inviter)
-	inviter.GuildId = guild.Id
-	k.SetPlayer(ctx, inviter)
-
-	// Configure guild to allow invitations (set bypass level to member so all members can invite)
-	guildCache := k.GetGuildCacheFromId(ctx, guild.Id)
-	guildCache.LoadGuild()
-	guildCache.Guild.JoinInfusionMinimumBypassByInvite = types.GuildJoinBypassLevel_member
-	k.SetGuild(ctx, guildCache.Guild)
-
-	// Grant permissions
-	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(targetPlayer.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssociations)
-
 	testCases := []struct {
-		name      string
-		input     *types.MsgGuildMembershipInviteDeny
-		expErr    bool
-		expErrMsg string
-		skip      bool
+		name string
+		run  func(t *testing.T, k keeperlib.Keeper, ms types.MsgServer, ctx context.Context, wctx sdk.Context, gs testGuildSetup)
 	}{
 		{
 			name: "valid invite deny",
-			input: &types.MsgGuildMembershipInviteDeny{
-				Creator:  targetPlayer.Creator,
-				GuildId:  guild.Id,
-				PlayerId: targetPlayer.Id,
+			run: func(t *testing.T, k keeperlib.Keeper, ms types.MsgServer, ctx context.Context, wctx sdk.Context, gs testGuildSetup) {
+				targetAcc := sdk.AccAddress("invite_deny_target00")
+				target := types.Player{
+					Creator:        targetAcc.String(),
+					PrimaryAddress: targetAcc.String(),
+				}
+				target = testAppendPlayer(k, ctx, target)
+
+				_, err := ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+					Creator:  gs.GuildOwner.Creator,
+					GuildId:  gs.Guild.Id,
+					PlayerId: target.Id,
+				})
+				require.NoError(t, err)
+
+				resp, err := ms.GuildMembershipInviteDeny(wctx, &types.MsgGuildMembershipInviteDeny{
+					Creator:  target.Creator,
+					GuildId:  gs.Guild.Id,
+					PlayerId: target.Id,
+				})
+				require.NoError(t, err)
+				require.NotNil(t, resp)
+				require.NotNil(t, resp.GuildMembershipApplication)
+				require.Equal(t, types.RegistrationStatus_denied, resp.GuildMembershipApplication.RegistrationStatus)
+
+				player, _ := k.GetPlayer(ctx, target.Id)
+				require.NotEqual(t, gs.Guild.Id, player.GuildId)
 			},
-			expErr: false,
 		},
 		{
-			name: "no permissions",
-			input: &types.MsgGuildMembershipInviteDeny{
-				Creator:  sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				GuildId:  guild.Id,
-				PlayerId: targetPlayer.Id,
+			name: "no pending invite",
+			run: func(t *testing.T, k keeperlib.Keeper, ms types.MsgServer, ctx context.Context, wctx sdk.Context, gs testGuildSetup) {
+				targetAcc := sdk.AccAddress("invite_deny_no_inv00")
+				target := types.Player{
+					Creator:        targetAcc.String(),
+					PrimaryAddress: targetAcc.String(),
+				}
+				target = testAppendPlayer(k, ctx, target)
+
+				_, err := ms.GuildMembershipInviteDeny(wctx, &types.MsgGuildMembershipInviteDeny{
+					Creator:  target.Creator,
+					GuildId:  gs.Guild.Id,
+					PlayerId: target.Id,
+				})
+				require.Error(t, err)
+				require.Contains(t, err.Error(), "not a member")
 			},
-			expErr:    true,
-			expErrMsg: "has no",
-			skip:      true, // Skip - GetPlayerCacheFromAddress might create player
+		},
+		{
+			name: "join type mismatch",
+			run: func(t *testing.T, k keeperlib.Keeper, ms types.MsgServer, ctx context.Context, wctx sdk.Context, gs testGuildSetup) {
+				targetAcc := sdk.AccAddress("invite_deny_mismatch0")
+				target := types.Player{
+					Creator:        targetAcc.String(),
+					PrimaryAddress: targetAcc.String(),
+				}
+				target = testAppendPlayer(k, ctx, target)
+
+				_, err := ms.GuildMembershipRequest(wctx, &types.MsgGuildMembershipRequest{
+					Creator:  target.Creator,
+					GuildId:  gs.Guild.Id,
+					PlayerId: target.Id,
+				})
+				require.NoError(t, err)
+
+				_, err = ms.GuildMembershipInviteDeny(wctx, &types.MsgGuildMembershipInviteDeny{
+					Creator:  target.Creator,
+					GuildId:  gs.Guild.Id,
+					PlayerId: target.Id,
+				})
+				require.Error(t, err)
+				require.Contains(t, err.Error(), "join_type_mismatch")
+			},
+		},
+		{
+			name: "unregistered creator",
+			run: func(t *testing.T, k keeperlib.Keeper, ms types.MsgServer, ctx context.Context, wctx sdk.Context, gs testGuildSetup) {
+				targetAcc := sdk.AccAddress("invite_deny_target01")
+				target := types.Player{
+					Creator:        targetAcc.String(),
+					PrimaryAddress: targetAcc.String(),
+				}
+				target = testAppendPlayer(k, ctx, target)
+
+				_, err := ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+					Creator:  gs.GuildOwner.Creator,
+					GuildId:  gs.Guild.Id,
+					PlayerId: target.Id,
+				})
+				require.NoError(t, err)
+
+				unregAddr := sdk.AccAddress("unregistered_deny_addr").String()
+				_, err = ms.GuildMembershipInviteDeny(wctx, &types.MsgGuildMembershipInviteDeny{
+					Creator:  unregAddr,
+					GuildId:  gs.Guild.Id,
+					PlayerId: target.Id,
+				})
+				require.Error(t, err)
+				require.Contains(t, err.Error(), "not associated")
+			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
-			}
-
-			// Create invite first
-			inviterAddressPermissionId := keeperlib.GetAddressPermissionIDBytes(inviter.Creator)
-			k.PermissionAdd(ctx, inviterAddressPermissionId, types.PermissionAssociations)
-			_, _ = ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
-				Creator:  inviter.Creator,
-				GuildId:  guild.Id,
-				PlayerId: targetPlayer.Id,
-			})
-
-			resp, err := ms.GuildMembershipInviteDeny(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, resp)
-				require.NotNil(t, resp.GuildMembershipApplication)
-			}
+			k, ms, ctx := setupMsgServer(t)
+			wctx := sdk.UnwrapSDKContext(ctx)
+			gs := testCreateGuild(k, ctx)
+			tc.run(t, k, ms, ctx, wctx, gs)
 		})
 	}
 }

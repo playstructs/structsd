@@ -22,6 +22,7 @@ message Guild {
 
   string primaryReactorId    = 9;
   string entrySubstationId   = 10;
+  uint64 entryRank           = 11;
 }
 
 

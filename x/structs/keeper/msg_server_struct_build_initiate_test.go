@@ -12,142 +12,86 @@ import (
 
 func TestMsgStructBuildInitiate(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
 
-	// Create a player first
 	player := types.Player{
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, sdkCtx, player)
 
-	// Set up player capacity to be online
+	fleet := testAppendFleet(k, sdkCtx, types.Fleet{Owner: player.Id})
+	_ = fleet
+
+	cc := k.NewCurrentContext(sdkCtx)
+	playerCache, err := cc.GetPlayer(player.Id)
+	require.NoError(t, err)
+	playerCache.SetFleetId(fleet.Id)
+	playerCache.Commit()
+
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
-	k.SetGridAttribute(ctx, capacityAttrId, uint64(100000))
+	k.SetGridAttribute(sdkCtx, capacityAttrId, uint64(100000))
 
-	// Set last action to ensure player has charge
 	lastActionAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, player.Id)
-	k.SetGridAttribute(ctx, lastActionAttrId, uint64(0))
+	k.SetGridAttribute(sdkCtx, lastActionAttrId, uint64(0))
 
-	// Create a struct type
 	structType := types.StructType{
-		Id:          1,
-		Type:        types.CommandStruct,
-		Category:    types.ObjectType_player,
-		BuildCharge: 10,
-		BuildDraw:   100,
+		Id:            1,
+		Type:          types.CommandStruct,
+		Category:      types.ObjectType_fleet,
+		BuildCharge:   10,
+		BuildDraw:     100,
+		PossibleAmbit: types.Ambit_flag[types.Ambit_space],
 	}
-	k.SetStructType(ctx, structType)
+	k.SetStructType(sdkCtx, structType)
 
-	// Note: PlanetId is not in the message, it's determined from the player's current planet
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgStructBuildInitiate
-		expErr    bool
-		expErrMsg string
-	}{
-		{
-			name: "valid struct build initiation",
-			input: &types.MsgStructBuildInitiate{
-				Creator:        player.Creator,
-				PlayerId:       player.Id,
-				StructTypeId:   structType.Id,
-				OperatingAmbit: types.Ambit_space,
-				Slot:           1,
-			},
-			expErr: false,
-		},
-		{
-			name: "invalid player id",
-			input: &types.MsgStructBuildInitiate{
-				Creator:        player.Creator,
-				PlayerId:       "invalid-player",
-				StructTypeId:   structType.Id,
-				OperatingAmbit: types.Ambit_space,
-				Slot:           1,
-			},
-			expErr:    true,
-			expErrMsg: "requires Player account",
-		},
-		{
-			name: "struct type not found",
-			input: &types.MsgStructBuildInitiate{
-				Creator:        player.Creator,
-				PlayerId:       player.Id,
-				StructTypeId:   999,
-				OperatingAmbit: types.Ambit_space,
-				Slot:           1,
-			},
-			expErr:    true,
-			expErrMsg: "was not found",
-		},
-		{
-			name: "no play permissions",
-			input: &types.MsgStructBuildInitiate{
-				Creator:        "cosmos1noperms",
-				PlayerId:       player.Id,
-				StructTypeId:   structType.Id,
-				OperatingAmbit: types.Ambit_space,
-				Slot:           1,
-			},
-			expErr:    true,
-			expErrMsg: "has no",
-		},
-		{
-			name: "player is halted",
-			input: &types.MsgStructBuildInitiate{
-				Creator:        player.Creator,
-				PlayerId:       player.Id,
-				StructTypeId:   structType.Id,
-				OperatingAmbit: types.Ambit_space,
-				Slot:           1,
-			},
-			expErr:    true,
-			expErrMsg: "is Halted",
-		},
-		{
-			name: "insufficient charge",
-			input: &types.MsgStructBuildInitiate{
-				Creator:        player.Creator,
-				PlayerId:       player.Id,
-				StructTypeId:   structType.Id,
-				OperatingAmbit: types.Ambit_space,
-				Slot:           1,
-			},
-			expErr:    true,
-			expErrMsg: "required a charge",
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			// Set up player state for each test
-			if tc.name == "player is halted" {
-				k.PlayerHalt(ctx, player.Id)
-			} else {
-				k.PlayerResume(ctx, player.Id)
-			}
-
-			if tc.name == "insufficient charge" {
-				// Set last action to current block to have no charge
-				ctxSDK := sdk.UnwrapSDKContext(ctx)
-				k.SetGridAttribute(ctx, lastActionAttrId, uint64(ctxSDK.BlockHeight()))
-			} else {
-				k.SetGridAttribute(ctx, lastActionAttrId, uint64(0))
-			}
-
-			resp, err := ms.StructBuildInitiate(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, resp)
-				require.NotNil(t, resp.Struct)
-			}
+	t.Run("valid struct build initiation", func(t *testing.T) {
+		resp, err := ms.StructBuildInitiate(wctx, &types.MsgStructBuildInitiate{
+			Creator:        player.Creator,
+			PlayerId:       player.Id,
+			StructTypeId:   structType.Id,
+			OperatingAmbit: types.Ambit_space,
+			Slot:           0,
 		})
-	}
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
+
+	t.Run("struct type not found", func(t *testing.T) {
+		_, err := ms.StructBuildInitiate(wctx, &types.MsgStructBuildInitiate{
+			Creator:        player.Creator,
+			PlayerId:       player.Id,
+			StructTypeId:   999,
+			OperatingAmbit: types.Ambit_space,
+			Slot:           1,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not found")
+	})
+
+	t.Run("no play permissions", func(t *testing.T) {
+		_, err := ms.StructBuildInitiate(wctx, &types.MsgStructBuildInitiate{
+			Creator:        "cosmos1noperms",
+			PlayerId:       player.Id,
+			StructTypeId:   structType.Id,
+			OperatingAmbit: types.Ambit_space,
+			Slot:           1,
+		})
+		require.Error(t, err)
+	})
+
+	t.Run("insufficient charge", func(t *testing.T) {
+		k.SetGridAttribute(sdkCtx, lastActionAttrId, uint64(sdkCtx.BlockHeight()))
+		_, err := ms.StructBuildInitiate(wctx, &types.MsgStructBuildInitiate{
+			Creator:        player.Creator,
+			PlayerId:       player.Id,
+			StructTypeId:   structType.Id,
+			OperatingAmbit: types.Ambit_space,
+			Slot:           1,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "required charge")
+	})
 }

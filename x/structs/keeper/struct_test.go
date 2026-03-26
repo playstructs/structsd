@@ -21,7 +21,7 @@ func createNStruct(keeper keeper.Keeper, ctx sdk.Context, n int) []types.Struct 
 			Owner:   "cosmos1owner" + string(rune(i)),
 			Type:    uint64(i % 3), // Different types for variety
 		}
-		items[i] = keeper.AppendStruct(ctx, items[i])
+		items[i] = testAppendStruct(keeper, ctx, items[i])
 	}
 	return items
 }
@@ -77,7 +77,7 @@ func TestStructAttributes(t *testing.T) {
 		Owner:   "cosmos1owner",
 		Type:    1,
 	}
-	struct1 = keeper.AppendStruct(ctx, struct1)
+	struct1 = testAppendStruct(keeper, ctx, struct1)
 
 	// Test setting and getting attributes
 	healthAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, struct1.Id)
@@ -91,26 +91,23 @@ func TestStructAttributes(t *testing.T) {
 	// Delta calculation: if oldAmount < currentAmount, resetAmount = currentAmount - oldAmount
 	// Otherwise resetAmount = 0. Then amount = resetAmount + newAmount
 	// Here: current=100, old=100, new=50 -> resetAmount=0, amount=0+50=50
-	newHealth, err := keeper.SetStructAttributeDelta(ctx, healthAttrId, 100, 50)
-	require.NoError(t, err)
+	newHealth := testSetStructAttributeDelta(keeper, ctx, healthAttrId, 100, 50)
 	require.Equal(t, uint64(50), newHealth)
 
 	// Test delta with oldAmount < currentAmount
 	keeper.SetStructAttribute(ctx, healthAttrId, 200)
-	newHealth, err = keeper.SetStructAttributeDelta(ctx, healthAttrId, 150, 100)
-	require.NoError(t, err)
+	newHealth = testSetStructAttributeDelta(keeper, ctx, healthAttrId, 150, 100)
 	// current=200, old=150, new=100 -> resetAmount=200-150=50, amount=50+100=150
 	require.Equal(t, uint64(150), newHealth)
 
 	// Test SetStructAttributeDecrement
 	// Reset to a known value first
 	keeper.SetStructAttribute(ctx, healthAttrId, 150)
-	newHealth, err = keeper.SetStructAttributeDecrement(ctx, healthAttrId, 30)
-	require.NoError(t, err)
+	newHealth = testSetStructAttributeDecrement(keeper, ctx, healthAttrId, 30)
 	require.Equal(t, uint64(120), newHealth)
 
 	// Test SetStructAttributeIncrement
-	newHealth = keeper.SetStructAttributeIncrement(ctx, healthAttrId, 80)
+	newHealth = testSetStructAttributeIncrement(keeper, ctx, healthAttrId, 80)
 	require.Equal(t, uint64(200), newHealth)
 
 	// Test ClearStructAttribute
@@ -119,13 +116,13 @@ func TestStructAttributes(t *testing.T) {
 
 	// Test flag operations
 	materializedFlag := uint64(types.StructStateMaterialized)
-	keeper.SetStructAttributeFlagAdd(ctx, statusAttrId, materializedFlag)
-	require.True(t, keeper.StructAttributeFlagHasAll(ctx, statusAttrId, materializedFlag))
-	require.True(t, keeper.StructAttributeFlagHasOneOf(ctx, statusAttrId, materializedFlag))
+	testSetStructAttributeFlagAdd(keeper, ctx, statusAttrId, materializedFlag)
+	require.True(t, testStructAttributeFlagHasAll(keeper, ctx, statusAttrId, materializedFlag))
+	require.True(t, testStructAttributeFlagHasOneOf(keeper, ctx, statusAttrId, materializedFlag))
 
-	keeper.SetStructAttributeFlagRemove(ctx, statusAttrId, materializedFlag)
-	require.False(t, keeper.StructAttributeFlagHasAll(ctx, statusAttrId, materializedFlag))
-	require.False(t, keeper.StructAttributeFlagHasOneOf(ctx, statusAttrId, materializedFlag))
+	testSetStructAttributeFlagRemove(keeper, ctx, statusAttrId, materializedFlag)
+	require.False(t, testStructAttributeFlagHasAll(keeper, ctx, statusAttrId, materializedFlag))
+	require.False(t, testStructAttributeFlagHasOneOf(keeper, ctx, statusAttrId, materializedFlag))
 }
 
 func TestStructDefender(t *testing.T) {
@@ -137,14 +134,14 @@ func TestStructDefender(t *testing.T) {
 		Owner:   "cosmos1owner1",
 		Type:    1,
 	}
-	protectedStruct = keeper.AppendStruct(ctx, protectedStruct)
+	protectedStruct = testAppendStruct(keeper, ctx, protectedStruct)
 
 	defenderStruct := types.Struct{
 		Creator: "cosmos1creator2",
 		Owner:   "cosmos1owner2",
 		Type:    2,
 	}
-	defenderStruct = keeper.AppendStruct(ctx, defenderStruct)
+	defenderStruct = testAppendStruct(keeper, ctx, defenderStruct)
 
 	// Test SetStructDefender
 	defender := keeper.SetStructDefender(ctx, protectedStruct.Id, protectedStruct.Index, defenderStruct.Id)
@@ -182,14 +179,14 @@ func TestStructDestructionQueue(t *testing.T) {
 		Owner:   "cosmos1owner1",
 		Type:    1,
 	}
-	struct1 = keeper.AppendStruct(ctx, struct1)
+	struct1 = testAppendStruct(keeper, ctx, struct1)
 
 	struct2 := types.Struct{
 		Creator: "cosmos1creator2",
 		Owner:   "cosmos1owner2",
 		Type:    2,
 	}
-	struct2 = keeper.AppendStruct(ctx, struct2)
+	struct2 = testAppendStruct(keeper, ctx, struct2)
 
 	// Add structs to destruction queue
 	// Note: AppendStructDestructionQueue adds to blockHeight + StructSweepDelay

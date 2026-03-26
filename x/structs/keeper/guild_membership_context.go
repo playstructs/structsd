@@ -118,6 +118,14 @@ func (cc *CurrentContext) GetGuildMembershipKickCache(callingPlayer *PlayerCache
 		return &GuildMembershipApplicationCache{}, guildPermissionError
 	}
 
+	if callingPlayer.GetGuildRank() >= targetPlayer.GetGuildRank() {
+		return &GuildMembershipApplicationCache{}, types.NewPermissionError(
+			"player", callingPlayer.GetPlayerId(),
+			"guild", guildId,
+			uint64(types.PermGuildMembership), "guild_membership_kick",
+		)
+	}
+
 	guildMembershipApplication.GuildMembershipApplication.Proposer = callingPlayer.GetPlayerId()
 	guildMembershipApplication.GuildMembershipApplication.PlayerId = playerId
 	guildMembershipApplication.GuildMembershipApplication.GuildId = guildId

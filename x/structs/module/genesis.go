@@ -124,13 +124,18 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, provider := range genState.ProviderList {
 		cc.GenesisImportProvider(provider)
 	}
-	for _, elem := range genState.ProviderGuildAccessList {
-		k.ProviderGrantGuild(ctx, elem.ProviderId, elem.GuildId)
-	}
 
 	// Permissions
 	for _, elem := range genState.PermissionList {
 		cc.GenesisImportPermission([]byte(elem.PermissionId), types.Permission(elem.Value))
+	}
+
+	// Guild rank permissions (store only, no events; EventAllGenesis will emit)
+	for _, rec := range genState.GuildRankPermissionList {
+		if rec == nil {
+			continue
+		}
+		k.SetGuildRankPermissionStoreOnly(ctx, rec.ObjectId, rec.GuildId, types.Permission(rec.Permissions), rec.Rank)
 	}
 
 	// Addresses
@@ -250,6 +255,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.GridCascadeQueue = k.GetGridCascadeQueueExport(ctx)
 
 	genesis.PermissionList = k.GetAllPermissionExport(ctx)
+	genesis.GuildRankPermissionList = k.GetAllGuildRankPermissionExport(ctx)
 
 	// this line is used by starport scaffolding # genesis/module/export
 

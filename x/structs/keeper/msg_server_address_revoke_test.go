@@ -19,7 +19,7 @@ func TestMsgAddressRevoke(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Register another address for the player
 	secondaryAddress := "cosmos1secondary"
@@ -27,11 +27,11 @@ func TestMsgAddressRevoke(t *testing.T) {
 
 	// Grant permissions to the secondary address
 	secondaryPermissionId := keeperlib.GetAddressPermissionIDBytes(secondaryAddress)
-	k.PermissionAdd(ctx, secondaryPermissionId, types.PermissionAll)
+	testPermissionAdd(k, ctx, secondaryPermissionId, types.PermAll)
 
 	// Grant delete permissions to creator
 	creatorPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, creatorPermissionId, types.PermissionDelete)
+	testPermissionAdd(k, ctx, creatorPermissionId, types.PermDelete)
 
 	testCases := []struct {
 		name      string
@@ -89,7 +89,7 @@ func TestMsgAddressRevoke(t *testing.T) {
 
 			// Re-register address if needed for each test
 			k.SetPlayerIndexForAddress(ctx, secondaryAddress, player.Index)
-			k.PermissionAdd(ctx, secondaryPermissionId, types.PermissionAll)
+			testPermissionAdd(k, ctx, secondaryPermissionId, types.PermAll)
 
 			resp, err := ms.AddressRevoke(wctx, tc.input)
 

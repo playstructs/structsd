@@ -11,6 +11,7 @@ import (
 )
 
 func (k msgServer) GuildBankConfiscateAndBurn(goCtx context.Context, msg *types.MsgGuildBankConfiscateAndBurn) (*types.MsgGuildBankConfiscateAndBurnResponse, error) {
+    emptyResponse := &types.MsgGuildBankConfiscateAndBurnResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -21,20 +22,20 @@ func (k msgServer) GuildBankConfiscateAndBurn(goCtx context.Context, msg *types.
 
     activePlayer, lookupErr := cc.GetPlayerByAddress(msg.Creator)
     if lookupErr != nil {
-        return &types.MsgGuildBankConfiscateAndBurnResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_bank_confiscate")
+        return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_bank_confiscate")
     }
 
     guild := cc.GetGuild(activePlayer.GetGuildId())
 
-    permissionError := guild.CanAdministrateBank(activePlayer)
+    permissionError := guild.CanBurnTokenBy(activePlayer)
     if (permissionError != nil) {
-        return &types.MsgGuildBankConfiscateAndBurnResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     amountTokenInt := math.NewIntFromUint64(msg.AmountToken)
     err := guild.BankConfiscateAndBurn(amountTokenInt, msg.Address)
     if err != nil {
-        return &types.MsgGuildBankConfiscateAndBurnResponse{}, err
+        return emptyResponse, err
     }
 
 	cc.CommitAll()

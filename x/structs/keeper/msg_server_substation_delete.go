@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) SubstationDelete(goCtx context.Context, msg *types.MsgSubstationDelete) (*types.MsgSubstationDeleteResponse, error) {
+    emptyResponse := &types.MsgSubstationDeleteResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -15,29 +16,30 @@ func (k msgServer) SubstationDelete(goCtx context.Context, msg *types.MsgSubstat
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, err := cc.GetPlayerByAddress(msg.Creator)
+	callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return &types.MsgSubstationDeleteResponse{}, err
+        return emptyResponse, err
     }
 
     substation := cc.GetSubstation(msg.SubstationId)
     if substation.CheckSubstation() != nil {
-        return &types.MsgSubstationDeleteResponse{}, substation.CheckSubstation()
+        return emptyResponse, substation.CheckSubstation()
     }
 
-    permissionErr := substation.CanBeDeleteDBy(player)
+    permissionErr := substation.CanBeDeleteDBy(callingPlayer)
     if permissionErr != nil {
-        return &types.MsgSubstationDeleteResponse{}, permissionErr
+        return emptyResponse, permissionErr
     }
 
     if (msg.MigrationSubstationId != "") {
         migrationSubstation := cc.GetSubstation(msg.MigrationSubstationId)
         if migrationSubstation.CheckSubstation() != nil {
-            return &types.MsgSubstationDeleteResponse{}, migrationSubstation.CheckSubstation()
+            return emptyResponse, migrationSubstation.CheckSubstation()
         }
 
-        if migrationSubstation.CanManagePlayerConnections(player) != nil {
-            return &types.MsgSubstationDeleteResponse{}, migrationSubstation.CanManagePlayerConnections(player)
+        substationPermissionErr := migrationSubstation.CanManageConnectionsBy(callingPlayer)
+        if substationPermissionErr != nil {
+            return emptyResponse, substationPermissionErr
         }
         substation.Delete(msg.MigrationSubstationId)
     } else {

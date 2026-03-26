@@ -9,6 +9,7 @@ import (
 )
 
 func (k msgServer) GuildMembershipInviteDeny(goCtx context.Context, msg *types.MsgGuildMembershipInviteDeny) (*types.MsgGuildMembershipResponse, error) {
+    emptyResponse := &types.MsgGuildMembershipResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -18,13 +19,7 @@ func (k msgServer) GuildMembershipInviteDeny(goCtx context.Context, msg *types.M
 
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return &types.MsgGuildMembershipResponse{}, err
-    }
-
-    // Use cache permission methods
-    callingPlayerPermissionError := callingPlayer.CanBeAdministratedBy(msg.Creator, types.PermissionAssociations)
-    if callingPlayerPermissionError != nil {
-        return &types.MsgGuildMembershipResponse{}, callingPlayerPermissionError
+        return emptyResponse, err
     }
 
     if (msg.PlayerId == "") {
@@ -37,12 +32,12 @@ func (k msgServer) GuildMembershipInviteDeny(goCtx context.Context, msg *types.M
 
     guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
-        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
+        return emptyResponse, guildMembershipApplicationError
     }
 
     guildMembershipApplicationError = guildMembershipApplication.VerifyInviteAsPlayer()
     if guildMembershipApplicationError != nil {
-        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
+        return emptyResponse, guildMembershipApplicationError
     }
 
     guildMembershipApplicationError = guildMembershipApplication.DenyInvite()

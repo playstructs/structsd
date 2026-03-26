@@ -10,6 +10,7 @@ import (
 )
 
 func (k msgServer) ReactorBeginMigration(goCtx context.Context, msg *types.MsgReactorBeginMigration) (*types.MsgReactorBeginMigrationResponse, error) {
+    emptyResponse := &types.MsgReactorBeginMigrationResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -17,59 +18,63 @@ func (k msgServer) ReactorBeginMigration(goCtx context.Context, msg *types.MsgRe
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return emptyResponse, err
+    }
+
     // Load the player related to the specified address
     // Normally the address specified should be the PrimaryAddress
     player, err := cc.GetPlayerByAddress(msg.DelegatorAddress)
     if err != nil {
-       return &types.MsgReactorBeginMigrationResponse{}, err
+       return emptyResponse, err
     }
 
-    // Check if msg.Creator has PermissionAssets on the Address and Account
-    err = player.CanBeAdministratedBy(msg.Creator, types.PermissionAssets)
+    err = player.CanMigrateTokensBy(callingPlayer)
     if err != nil {
-       return &types.MsgReactorBeginMigrationResponse{}, err
+       return emptyResponse, err
     }
 
     valSrcAddr, valSrcErr := sdk.ValAddressFromBech32(msg.ValidatorSrcAddress)
 	if valSrcErr != nil {
-		return &types.MsgReactorBeginMigrationResponse{}, types.NewAddressValidationError(msg.ValidatorSrcAddress, "invalid_validator")
+		return emptyResponse, types.NewAddressValidationError(msg.ValidatorSrcAddress, "invalid_validator")
 	}
 
     valDstAddr, valDstErr := sdk.ValAddressFromBech32(msg.ValidatorDstAddress)
 	if valDstErr != nil {
-		return &types.MsgReactorBeginMigrationResponse{}, types.NewAddressValidationError(msg.ValidatorDstAddress, "invalid_validator")
+		return emptyResponse, types.NewAddressValidationError(msg.ValidatorDstAddress, "invalid_validator")
 	}
 
     delegatorAddress, delegatorAddressErr := sdk.AccAddressFromBech32(msg.DelegatorAddress)
  	if delegatorAddressErr != nil {
- 		return &types.MsgReactorBeginMigrationResponse{}, types.NewAddressValidationError(msg.DelegatorAddress, "invalid_delegator")
+ 		return emptyResponse, types.NewAddressValidationError(msg.DelegatorAddress, "invalid_delegator")
  	}
 
 	if !msg.Amount.IsValid() || !msg.Amount.Amount.IsPositive() {
-		return &types.MsgReactorBeginMigrationResponse{}, types.NewReactorError("begin_migration", "invalid_amount")
+		return emptyResponse, types.NewReactorError("begin_migration", "invalid_amount")
 	}
 
 	shares, err := k.stakingKeeper.ValidateUnbondAmount(
 		ctx, delegatorAddress, valSrcAddr, msg.Amount.Amount,
 	)
 	if err != nil {
-		return &types.MsgReactorBeginMigrationResponse{}, err
+		return emptyResponse, err
 	}
 
 	bondDenom, err := k.stakingKeeper.BondDenom(ctx)
 	if err != nil {
-		return &types.MsgReactorBeginMigrationResponse{}, err
+		return emptyResponse, err
 	}
 
 	if msg.Amount.Denom != bondDenom {
-        return &types.MsgReactorBeginMigrationResponse{}, types.NewReactorError("begin_migration", "invalid_denom").WithDenom(msg.Amount.Denom, bondDenom)
+        return emptyResponse, types.NewReactorError("begin_migration", "invalid_denom").WithDenom(msg.Amount.Denom, bondDenom)
     }
 
 	completionTime, err := k.stakingKeeper.BeginRedelegation(
 		ctx, delegatorAddress, valSrcAddr, valDstAddr, shares,
 	)
 	if err != nil {
-		return &types.MsgReactorBeginMigrationResponse{}, err
+		return emptyResponse, err
 	}
 
 

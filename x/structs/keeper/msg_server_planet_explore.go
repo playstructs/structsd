@@ -7,6 +7,7 @@ import (
 )
 
 func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExplore) (*types.MsgPlanetExploreResponse, error) {
+    emptyResponse := &types.MsgPlanetExploreResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -14,22 +15,27 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+        return emptyResponse, err
+    }
+
     // Load the Player record
     player, playerLookupErr := cc.GetPlayer(msg.PlayerId)
     if (playerLookupErr != nil) {
-        return &types.MsgPlanetExploreResponse{}, playerLookupErr
+        return emptyResponse, playerLookupErr
     }
 
     // Check address play permissions
-    permissionError := player.CanBePlayedBy(msg.Creator)
+    permissionError := player.CanBePlayedBy(callingPlayer)
     if (permissionError != nil) {
-        return &types.MsgPlanetExploreResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     // Is the Player online?
     readinessError := player.ReadinessCheck()
     if (readinessError != nil) {
-        return &types.MsgPlanetExploreResponse{}, readinessError
+        return emptyResponse, readinessError
     }
 
     // check if there is a planet currently
@@ -38,13 +44,13 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
     if (player.HasPlanet()){
         planetCompletionError := player.GetPlanet().AttemptComplete()
         if (planetCompletionError != nil) {
-            return &types.MsgPlanetExploreResponse{}, planetCompletionError
+            return emptyResponse, planetCompletionError
         }
     }
 
     planetExploreError := player.AttemptPlanetExplore()
     if (planetExploreError != nil) {
-        return &types.MsgPlanetExploreResponse{}, planetExploreError
+        return emptyResponse, planetExploreError
     }
 
     player.GetFleet().MigrateToNewPlanet(player.GetPlanet())

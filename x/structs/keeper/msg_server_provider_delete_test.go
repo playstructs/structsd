@@ -21,7 +21,7 @@ func TestMsgProviderDelete(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Create a substation
 	sourceObjectId := "source-object"
@@ -32,17 +32,17 @@ func TestMsgProviderDelete(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller:     player.Creator,
+		Controller: player.Id,
 	}
-	createdAllocation, _, err := k.AppendAllocation(ctx, allocation, 100)
+	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
 
-	substation, _, err := k.AppendSubstation(ctx, createdAllocation, player)
+	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, player)
 	require.NoError(t, err)
 
 	// Grant permissions on substation for provider operations
 	substationPermissionId := keeperlib.GetObjectPermissionIDBytes(substation.Id, player.Id)
-	k.PermissionAdd(ctx, substationPermissionId, types.PermissionDelete)
+	testPermissionAdd(k, ctx, substationPermissionId, types.PermDelete)
 
 	// Create a provider
 	provider := types.Provider{
@@ -58,7 +58,7 @@ func TestMsgProviderDelete(t *testing.T) {
 		ProviderCancellationPenalty: math.LegacyNewDec(1),
 		ConsumerCancellationPenalty: math.LegacyNewDec(1),
 	}
-	provider, _ = k.AppendProvider(ctx, provider)
+	provider = testAppendProvider(k, ctx, provider)
 
 	testCases := []struct {
 		name      string
@@ -105,7 +105,7 @@ func TestMsgProviderDelete(t *testing.T) {
 
 			// Recreate provider if needed
 			if tc.name == "valid provider deletion" {
-				newProvider, _ := k.AppendProvider(ctx, provider)
+				newProvider := testAppendProvider(k, ctx, provider)
 				tc.input.ProviderId = newProvider.Id
 			}
 

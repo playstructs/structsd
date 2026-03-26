@@ -4,14 +4,14 @@ import (
 	"context"
 	"strconv"
 
-	//"fmt"
-
 	"structs/x/structs/types"
 
+	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgStructOreMinerComplete) (*types.MsgStructOreMinerStatusResponse, error) {
+    emptyResponse := &types.MsgStructOreMinerStatusResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -19,35 +19,43 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return emptyResponse, err
+    }
+
 	structure := cc.GetStruct(msg.StructId)
 
 	// Check to see if the caller has permissions to proceed
-	/*
-	   callerID, isOwner, permissionError := structure.CanBeHashedBy(msg.Creator)
-	   if (permissionError != nil) {
-	       return &types.MsgStructOreMinerStatusResponse{}, permissionError
-	   }
-	*/
+    permissionError := structure.GetOwner().CanMineHashedBy(callingPlayer)
+    if (permissionError != nil) {
+       return emptyResponse, permissionError
+    }
 
 	// Is the Struct & Owner online?
 	readinessError := structure.ReadinessCheck()
 	if readinessError != nil {
-		return &types.MsgStructOreMinerStatusResponse{}, readinessError
+		return emptyResponse, readinessError
 	}
 
 	miningReadinessError := structure.CanOreMinePlanet()
 	if miningReadinessError != nil {
-		return &types.MsgStructOreMinerStatusResponse{}, miningReadinessError
+		return emptyResponse, miningReadinessError
 	}
 
 	activeOreMiningSystemBlockString := strconv.FormatUint(structure.GetBlockStartOreMine(), 10)
 	hashInput := msg.StructId + "MINE" + activeOreMiningSystemBlockString + "NONCE" + msg.Nonce
 
-	currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreMine()
+	blockHeight := uint64(ctx.BlockHeight())
+	blockStart := structure.GetBlockStartOreMine()
+	if blockHeight < blockStart {
+		return emptyResponse, sdkerrors.Wrapf(types.ErrInvalidParameters, "block height %d precedes start block %d", blockHeight, blockStart)
+	}
+	currentAge := blockHeight - blockStart
 
 	valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().OreMiningDifficulty);
 	if !valid {
-		return &types.MsgStructOreMinerStatusResponse{}, types.NewWorkFailureError("mine", structure.StructId, hashInput)
+		return emptyResponse, types.NewWorkFailureError("mine", structure.StructId, hashInput)
 	}
 
 	// Got this far, let's reward the player with some Ore

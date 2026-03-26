@@ -64,7 +64,7 @@ func (cc *CurrentContext) NewSubstation(creatorAddress string, owner *PlayerCach
     }
 
     permissionId := GetObjectPermissionIDBytes(substationId, owner.ID())
-    cc.PermissionAdd(permissionId, types.PermissionAll)
+    cc.PermissionAdd(permissionId, types.PermSubstationAll)
 
     return cc.substations[substationId], nil
 }

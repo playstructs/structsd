@@ -144,11 +144,6 @@ func (cc *CurrentContext) InitialCommandShipStruct(fleet *FleetCache) *StructCac
 	cc.SetStructAttribute(cc.structs[structId].HealthAttributeId, structType.GetStructType().MaxHealth)
 	cc.SetStructAttribute(cc.structs[structId].StatusAttributeId, uint64(structStatus))
 
-    // Set the Permissions
-    permissionId := GetObjectPermissionIDBytes(structure.Id, structure.Owner)
-    cc.PermissionAdd(permissionId, types.PermissionAll)
-
-
 	return cc.structs[structId]
 }
 
@@ -240,10 +235,6 @@ func (cc *CurrentContext) InitiateStruct(creatorAddress string, owner *PlayerCac
 
     ctxSDK := sdk.UnwrapSDKContext(cc.ctx)
     cc.SetStructAttribute(cc.structs[structId].BlockStartBuildAttributeId, uint64(ctxSDK.BlockHeight()))
-
-    // Set the Permissions
-    permissionId := GetObjectPermissionIDBytes(structure.Id, structure.Owner)
-    cc.PermissionAdd(permissionId, types.PermissionAll)
 
 	return cc.structs[structId], nil
 }

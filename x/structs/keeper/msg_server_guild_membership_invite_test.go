@@ -14,89 +14,186 @@ func TestMsgGuildMembershipInvite(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
 	wctx := sdk.UnwrapSDKContext(ctx)
 
-	// Create players
-	inviterAcc := sdk.AccAddress("inviter123456789012345678901234567890")
-	inviter := types.Player{
-		Creator:        inviterAcc.String(),
-		PrimaryAddress: inviterAcc.String(),
-	}
-	inviter = k.AppendPlayer(ctx, inviter)
+	gs := testCreateGuild(k, ctx)
 
-	targetAcc := sdk.AccAddress("target123456789012345678901234567890")
-	targetPlayer := types.Player{
-		Creator:        targetAcc.String(),
-		PrimaryAddress: targetAcc.String(),
-	}
-	targetPlayer = k.AppendPlayer(ctx, targetPlayer)
+	t.Run("valid invite", func(t *testing.T) {
+		target := types.Player{
+			Creator:        sdk.AccAddress("inv_valid_target_pad").String(),
+			PrimaryAddress: sdk.AccAddress("inv_valid_target_pad").String(),
+		}
+		target = testAppendPlayer(k, ctx, target)
 
-	// Create reactor and guild for inviter
-	validatorAddress := sdk.ValAddress(inviterAcc.Bytes())
-	reactor := types.Reactor{
-		RawAddress: validatorAddress.Bytes(),
-	}
-	// AppendReactor already calls SetReactorValidatorBytes internally
-	reactor = k.AppendReactor(ctx, reactor)
-
-	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, inviter)
-	inviter.GuildId = guild.Id
-	k.SetPlayer(ctx, inviter)
-
-	// Configure guild to allow invitations (set bypass level to member so all members can invite)
-	guildCache := k.GetGuildCacheFromId(ctx, guild.Id)
-	guildCache.LoadGuild()
-	guildCache.Guild.JoinInfusionMinimumBypassByInvite = types.GuildJoinBypassLevel_member
-	k.SetGuild(ctx, guildCache.Guild)
-
-	// Grant permissions
-	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(inviter.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssociations)
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgGuildMembershipInvite
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid invite",
-			input: &types.MsgGuildMembershipInvite{
-				Creator:  inviter.Creator,
-				GuildId:  guild.Id,
-				PlayerId: targetPlayer.Id,
-			},
-			expErr: false,
-		},
-		{
-			name: "no permissions",
-			input: &types.MsgGuildMembershipInvite{
-				Creator:  sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				GuildId:  guild.Id,
-				PlayerId: targetPlayer.Id,
-			},
-			expErr:    true,
-			expErrMsg: "has no",
-			skip:      true, // Skip - GetPlayerCacheFromAddress might create player
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
-			}
-
-			resp, err := ms.GuildMembershipInvite(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, resp)
-				require.NotNil(t, resp.GuildMembershipApplication)
-			}
+		resp, err := ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:  gs.GuildOwner.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: target.Id,
 		})
-	}
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NotNil(t, resp.GuildMembershipApplication)
+		require.Equal(t, types.RegistrationStatus_proposed, resp.GuildMembershipApplication.RegistrationStatus)
+		require.Equal(t, types.GuildJoinType_invite, resp.GuildMembershipApplication.JoinType)
+	})
+
+	t.Run("guild not found", func(t *testing.T) {
+		target := types.Player{
+			Creator:        sdk.AccAddress("inv_gnf_target_pad01").String(),
+			PrimaryAddress: sdk.AccAddress("inv_gnf_target_pad01").String(),
+		}
+		target = testAppendPlayer(k, ctx, target)
+
+		_, err := ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:  gs.GuildOwner.Creator,
+			GuildId:  "0-999",
+			PlayerId: target.Id,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not found")
+	})
+
+	t.Run("target already a member", func(t *testing.T) {
+		member := types.Player{
+			Creator:        sdk.AccAddress("inv_already_memb_pad").String(),
+			PrimaryAddress: sdk.AccAddress("inv_already_memb_pad").String(),
+			GuildId:        gs.Guild.Id,
+		}
+		member = testAppendPlayer(k, ctx, member)
+
+		_, err := ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:  gs.GuildOwner.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: member.Id,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "already a member")
+	})
+
+	t.Run("invites closed", func(t *testing.T) {
+		target := types.Player{
+			Creator:        sdk.AccAddress("inv_closed_target_pa").String(),
+			PrimaryAddress: sdk.AccAddress("inv_closed_target_pa").String(),
+		}
+		target = testAppendPlayer(k, ctx, target)
+
+		guildObj, _ := k.GetGuild(ctx, gs.Guild.Id)
+		guildObj.JoinInfusionMinimumBypassByInvite = types.GuildJoinBypassLevel_closed
+		k.SetGuild(ctx, guildObj)
+		defer func() {
+			guildObj.JoinInfusionMinimumBypassByInvite = types.GuildJoinBypassLevel_member
+			k.SetGuild(ctx, guildObj)
+		}()
+
+		_, err := ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:  gs.GuildOwner.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: target.Id,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not currently allowing")
+	})
+
+	t.Run("non-member tries to invite at member bypass", func(t *testing.T) {
+		outsider := types.Player{
+			Creator:        sdk.AccAddress("inv_outsider_pad_pad").String(),
+			PrimaryAddress: sdk.AccAddress("inv_outsider_pad_pad").String(),
+		}
+		outsider = testAppendPlayer(k, ctx, outsider)
+
+		target := types.Player{
+			Creator:        sdk.AccAddress("inv_nm_target_padpad").String(),
+			PrimaryAddress: sdk.AccAddress("inv_nm_target_padpad").String(),
+		}
+		target = testAppendPlayer(k, ctx, target)
+
+		_, err := ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:  outsider.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: target.Id,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not a member")
+	})
+
+	t.Run("unregistered creator", func(t *testing.T) {
+		unregAddr := sdk.AccAddress("inv_unreg_creator_pa").String()
+		_, err := ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:  unregAddr,
+			GuildId:  gs.Guild.Id,
+			PlayerId: "1-0",
+		})
+		require.Error(t, err)
+	})
+
+	t.Run("invalid substation override", func(t *testing.T) {
+		target := types.Player{
+			Creator:        sdk.AccAddress("inv_sub_override_pad").String(),
+			PrimaryAddress: sdk.AccAddress("inv_sub_override_pad").String(),
+		}
+		target = testAppendPlayer(k, ctx, target)
+
+		_, err := ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:      gs.GuildOwner.Creator,
+			GuildId:      gs.Guild.Id,
+			PlayerId:     target.Id,
+			SubstationId: "4-999",
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not found")
+	})
+
+	t.Run("cross-guild invite succeeds", func(t *testing.T) {
+		gsB := testCreateGuild(k, ctx)
+
+		playerInA := types.Player{
+			Creator:        sdk.AccAddress("inv_crossguild_pad01").String(),
+			PrimaryAddress: sdk.AccAddress("inv_crossguild_pad01").String(),
+			GuildId:        gs.Guild.Id,
+		}
+		playerInA = testAppendPlayer(k, ctx, playerInA)
+
+		resp, err := ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:  gsB.GuildOwner.Creator,
+			GuildId:  gsB.Guild.Id,
+			PlayerId: playerInA.Id,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NotNil(t, resp.GuildMembershipApplication)
+		require.Equal(t, types.RegistrationStatus_proposed, resp.GuildMembershipApplication.RegistrationStatus)
+		require.Equal(t, types.GuildJoinType_invite, resp.GuildMembershipApplication.JoinType)
+	})
+
+	t.Run("permissioned bypass without permission", func(t *testing.T) {
+		member := types.Player{
+			Creator:        sdk.AccAddress("inv_perm_bypass_memb").String(),
+			PrimaryAddress: sdk.AccAddress("inv_perm_bypass_memb").String(),
+			GuildId:        gs.Guild.Id,
+			GuildRank:      50,
+		}
+		member = testAppendPlayer(k, ctx, member)
+
+		target := types.Player{
+			Creator:        sdk.AccAddress("inv_perm_bypass_targ").String(),
+			PrimaryAddress: sdk.AccAddress("inv_perm_bypass_targ").String(),
+		}
+		target = testAppendPlayer(k, ctx, target)
+
+		guildObj, _ := k.GetGuild(ctx, gs.Guild.Id)
+		guildObj.JoinInfusionMinimumBypassByInvite = types.GuildJoinBypassLevel_permissioned
+		k.SetGuild(ctx, guildObj)
+		defer func() {
+			guildObj.JoinInfusionMinimumBypassByInvite = types.GuildJoinBypassLevel_member
+			k.SetGuild(ctx, guildObj)
+		}()
+
+		memberPermId := keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id, member.Id)
+		testPermissionRemove(k, ctx, memberPermId, types.PermGuildMembership)
+
+		_, err := ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:  member.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: target.Id,
+		})
+		require.Error(t, err)
+	})
 }
