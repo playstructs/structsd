@@ -3,11 +3,14 @@ package keeper_test
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	keeperlib "structs/x/structs/keeper"
+	keepertest "structs/testutil/keeper"
 	"structs/x/structs/types"
 )
 
@@ -159,6 +162,32 @@ func testSetStructAttributeDelta(k keeperlib.Keeper, ctx context.Context, struct
 	amount := resetAmount + newAmount
 	k.SetStructAttribute(ctx, structAttributeId, amount)
 	return amount
+}
+
+// testFindProof brute-forces a nonce whose SHA-256 hash has the required leading zeros.
+// hashTemplate should contain "%s" where the nonce is inserted.
+func testFindProof(hashTemplate string, difficulty int) (nonce string, proof string) {
+	for i := 0; ; i++ {
+		nonce = strconv.Itoa(i)
+		input := fmt.Sprintf(hashTemplate, nonce)
+		hash := types.HashBuild(input)
+		valid := true
+		for j := 0; j < difficulty; j++ {
+			if hash[j] != '0' {
+				valid = false
+				break
+			}
+		}
+		if valid {
+			return nonce, hash
+		}
+	}
+}
+
+// testAddValidator registers a bonded validator in the mock staking keeper.
+func testAddValidator(k keeperlib.Keeper, valAddr sdk.ValAddress, tokens math.Int) {
+	mock := k.StakingKeeper().(*keepertest.MockStakingKeeper)
+	mock.AddValidator(valAddr, tokens)
 }
 
 type testGuildSetup struct {

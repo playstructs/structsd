@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"fmt"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,104 +13,88 @@ import (
 
 func TestMsgPlanetRaidComplete(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1_000_000_000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
 
-	// Create a player first
-	playerAcc := sdk.AccAddress("creator123456789012345678901234567890")
-	player := types.Player{
-		Creator:        playerAcc.String(),
-		PrimaryAddress: playerAcc.String(),
+	// Attacker player
+	attackerAcc := sdk.AccAddress("attacker1234567890123456789012345678")
+	attacker := types.Player{
+		Creator:        attackerAcc.String(),
+		PrimaryAddress: attackerAcc.String(),
 	}
-	player = testAppendPlayer(k, ctx, player)
+	attacker = testAppendPlayer(k, sdkCtx, attacker)
+	attackerCapAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, attacker.Id)
+	k.SetGridAttribute(sdkCtx, attackerCapAttrId, uint64(100000))
 
-	// Set up player capacity to be online
-	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
-	k.SetGridAttribute(ctx, capacityAttrId, uint64(100000))
+	// Attacker's home planet
+	homePlanet := testAppendPlanet(k, sdkCtx, types.Planet{Creator: attacker.Creator, Owner: attacker.Id})
+	attacker.PlanetId = homePlanet.Id
+	k.SetPlayer(sdkCtx, attacker)
 
-	// Create fleet
-	fleet := testAppendFleet(k, ctx, types.Fleet{Owner: player.Id})
-
-	// Note: Planet is determined from the fleet's location
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgPlanetRaidComplete
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid raid complete",
-			input: &types.MsgPlanetRaidComplete{
-				Creator: player.Creator,
-				FleetId: fleet.Id,
-				Nonce:   "test-nonce",
-				Proof:   "test-proof",
-			},
-			expErr: false,
-		},
-		{
-			name: "fleet not found",
-			input: &types.MsgPlanetRaidComplete{
-				Creator: player.Creator,
-				FleetId: "invalid-fleet",
-				Nonce:   "test-nonce",
-				Proof:   "test-proof",
-			},
-			expErr:    true,
-			expErrMsg: "not found",
-			skip:      true, // Skip - cache system validation order
-		},
-		{
-			name: "fleet on station",
-			input: &types.MsgPlanetRaidComplete{
-				Creator: player.Creator,
-				FleetId: fleet.Id,
-				Nonce:   "test-nonce",
-				Proof:   "test-proof",
-			},
-			expErr:    true,
-			expErrMsg: "while On Station",
-			skip:      true, // Skip - fleet location setup may be complex
-		},
-		{
-			name: "no play permissions",
-			input: &types.MsgPlanetRaidComplete{
-				Creator: sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				FleetId: fleet.Id,
-				Nonce:   "test-nonce",
-				Proof:   "test-proof",
-			},
-			expErr:    true,
-			expErrMsg: "has no",
-			skip:      true, // Skip - GetPlayerCacheFromAddress might create player
-		},
+	// Target player with planet
+	targetAcc := sdk.AccAddress("target12345678901234567890123456789")
+	target := types.Player{
+		Creator:        targetAcc.String(),
+		PrimaryAddress: targetAcc.String(),
 	}
+	target = testAppendPlayer(k, sdkCtx, target)
+	targetCapAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, target.Id)
+	k.SetGridAttribute(sdkCtx, targetCapAttrId, uint64(100000))
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
-			}
+	targetPlanet := testAppendPlanet(k, sdkCtx, types.Planet{Creator: target.Creator, Owner: target.Id})
+	target.PlanetId = targetPlanet.Id
+	k.SetPlayer(sdkCtx, target)
 
-			// Recreate fleet if needed
-			if tc.name == "valid raid complete" {
-				fleet = testAppendFleet(k, ctx, types.Fleet{Owner: player.Id})
-				tc.input.FleetId = fleet.Id
-			}
+	// Give target player some ore to steal
+	targetOreAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_ore, target.Id)
+	k.SetGridAttribute(sdkCtx, targetOreAttrId, uint64(50))
 
-			resp, err := ms.PlanetRaidComplete(wctx, tc.input)
+	// Set BlockStartRaid on the target planet
+	blockStartRaidAttrId := keeperlib.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockStartRaid, targetPlanet.Id)
+	k.SetPlanetAttribute(sdkCtx, blockStartRaidAttrId, uint64(1))
 
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				// Note: This test may fail if proof validation fails
-				// The actual proof generation is complex
-				_ = resp
-				_ = err
-			}
+	// Create attacker's fleet at the target planet
+	fleet := testAppendFleet(k, sdkCtx, types.Fleet{
+		Owner:        attacker.Id,
+		LocationId:   targetPlanet.Id,
+		LocationType: types.ObjectType_planet,
+		Status:       types.FleetStatus_away,
+	})
+	attacker.FleetId = fleet.Id
+	k.SetPlayer(sdkCtx, attacker)
+
+	t.Run("valid raid complete", func(t *testing.T) {
+		hashTemplate := fmt.Sprintf("%s@%sRAID1NONCE%%s", fleet.Id, targetPlanet.Id)
+		nonce, proof := testFindProof(hashTemplate, 1)
+
+		resp, err := ms.PlanetRaidComplete(wctx, &types.MsgPlanetRaidComplete{
+			Creator: attacker.Creator,
+			FleetId: fleet.Id,
+			Nonce:   nonce,
+			Proof:   proof,
 		})
-	}
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
+
+	t.Run("fleet not found", func(t *testing.T) {
+		_, err := ms.PlanetRaidComplete(wctx, &types.MsgPlanetRaidComplete{
+			Creator: attacker.Creator,
+			FleetId: "invalid-fleet",
+			Nonce:   "test-nonce",
+			Proof:   "test-proof",
+		})
+		require.Error(t, err)
+	})
+
+	t.Run("no play permissions", func(t *testing.T) {
+		_, err := ms.PlanetRaidComplete(wctx, &types.MsgPlanetRaidComplete{
+			Creator: "cosmos1noperms",
+			FleetId: fleet.Id,
+			Nonce:   "test-nonce",
+			Proof:   "test-proof",
+		})
+		require.Error(t, err)
+	})
 }

@@ -23,20 +23,21 @@ func TestMsgReactorBeginMigration(t *testing.T) {
 	}
 	player = testAppendPlayer(k, ctx, player)
 
-	// Create reactors
+	// Create reactors and register validators
 	validatorAddress1 := sdk.ValAddress(playerAcc.Bytes())
+	testAddValidator(k, validatorAddress1, math.NewInt(1000000))
 	reactor1 := types.Reactor{
+		Validator:  validatorAddress1.String(),
 		RawAddress: validatorAddress1.Bytes(),
 	}
-	// AppendReactor already calls SetReactorValidatorBytes internally
 	reactor1 = k.AppendReactor(ctx, reactor1)
 
-	// Create second reactor
 	validatorAddress2 := sdk.ValAddress([]byte("validator2"))
+	testAddValidator(k, validatorAddress2, math.NewInt(1000000))
 	reactor2 := types.Reactor{
+		Validator:  validatorAddress2.String(),
 		RawAddress: validatorAddress2.Bytes(),
 	}
-	// AppendReactor already calls SetReactorValidatorBytes internally
 	reactor2 = k.AppendReactor(ctx, reactor2)
 
 	// Grant permissions
@@ -118,6 +119,18 @@ func TestMsgReactorBeginMigration(t *testing.T) {
 		},
 	}
 
+	// Infuse to source validator first so there is a delegation to migrate
+	coins := sdk.NewCoins(sdk.NewCoin(bondDenom, math.NewInt(1000)))
+	k.BankKeeper().MintCoins(ctx, types.ModuleName, coins)
+	k.BankKeeper().SendCoinsFromModuleToAccount(ctx, types.ModuleName, playerAcc, coins)
+	_, infuseErr := ms.ReactorInfuse(wctx, &types.MsgReactorInfuse{
+		Creator:          player.Creator,
+		DelegatorAddress: player.Creator,
+		ValidatorAddress: reactor1.Validator,
+		Amount:           sdk.NewCoin(bondDenom, math.NewInt(500)),
+	})
+	require.NoError(t, infuseErr)
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.skip {
@@ -126,16 +139,14 @@ func TestMsgReactorBeginMigration(t *testing.T) {
 
 			resp, err := ms.ReactorBeginMigration(wctx, tc.input)
 
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				// Note: This test may fail if there's no delegation to migrate
-				// The actual migration requires an existing delegation
-				_ = resp
-				_ = err
-			}
+		if tc.expErr {
+			require.Error(t, err)
+			require.Contains(t, err.Error(), tc.expErrMsg)
+			require.Nil(t, resp)
+		} else {
+			require.NoError(t, err)
+			require.NotNil(t, resp)
+		}
 		})
 	}
 }

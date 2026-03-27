@@ -1970,25 +1970,28 @@ section "PHASE 4e: Permission System"
 # SourceAllocation=256, GuildMembership=512, SubstationConnection=1024, AllocationConnection=2048
 
 # ─── permission-grant-on-object: grant Player 5 Grid permission on substation ───
+VAL_BEFORE_GRANT=$(get_permission_value_for_player "${SUBSTATION_ID}" "${PLAYER_5_ID}")
 run_tx "Granting Player 5 Grid permission (32) on substation ${SUBSTATION_ID}" \
     tx structs permission-grant-on-object "${SUBSTATION_ID}" "${PLAYER_5_ID}" 32 --from alice
 
-PERM_JSON=$(query query structs permission-by-object "${SUBSTATION_ID}" 2>/dev/null || echo '{}')
-info "Permissions on substation after grant:"
-echo "${PERM_JSON}" | jq -r '.permissionRecord[]? | "  player=\(.objectId) val=\(.value)"' 2>/dev/null || echo "  (no records)"
+VAL_AFTER_GRANT=$(get_permission_value_for_player "${SUBSTATION_ID}" "${PLAYER_5_ID}")
+EXPECTED_AFTER_GRANT=$(( VAL_BEFORE_GRANT | 32 ))
+assert_eq "Permission on substation after grant includes Grid" "${EXPECTED_AFTER_GRANT}" "${VAL_AFTER_GRANT}"
 
 # ─── permission-revoke-on-object ───
 run_tx "Revoking Player 5 Grid permission on substation" \
     tx structs permission-revoke-on-object "${SUBSTATION_ID}" "${PLAYER_5_ID}" 32 --from alice
 
+VAL_AFTER_REVOKE=$(get_permission_value_for_player "${SUBSTATION_ID}" "${PLAYER_5_ID}")
+EXPECTED_AFTER_REVOKE=$(( EXPECTED_AFTER_GRANT & ~32 ))
+assert_eq "Permission on substation after revoke removes Grid" "${EXPECTED_AFTER_REVOKE}" "${VAL_AFTER_REVOKE}"
+
 # ─── permission-set-on-object: set a specific permission set ───
 run_tx "Setting Player 5 permissions on substation to Assets+Grid (40)" \
     tx structs permission-set-on-object "${SUBSTATION_ID}" "${PLAYER_5_ID}" 40 --from alice
 
-# Verify with query
-PERM_JSON=$(query query structs permission-by-object "${SUBSTATION_ID}" 2>/dev/null || echo '{}')
-info "Permissions on substation after set:"
-echo "${PERM_JSON}" | jq -r '.permissionRecord[]? | "  player=\(.objectId) val=\(.value)"' 2>/dev/null || echo "  (no records)"
+VAL_AFTER_SET=$(get_permission_value_for_player "${SUBSTATION_ID}" "${PLAYER_5_ID}")
+assert_eq "Permission on substation after set (40)" "40" "${VAL_AFTER_SET}"
 
 # Clean up: revoke all from Player 5
 run_tx "Clearing Player 5 permissions on substation" \
@@ -2635,6 +2638,9 @@ run_tx "Granting Player 5 PermSubstationConnection on substation for connection 
 run_tx "Connecting Player 5 allocation to substation" \
     tx structs substation-allocation-connect "${P5_ALLOC_ID}" "${SUBSTATION_ID}" --from player_5
 
+ALLOC_JSON=$(query query structs allocation "${P5_ALLOC_ID}")
+assert_eq "Allocation connected to substation" "${SUBSTATION_ID}" "$(jqr "${ALLOC_JSON}" '.Allocation.destinationId' '')"
+
 # ─── substation-allocation-disconnect ───
 run_tx "Disconnecting Player 5 allocation from substation" \
     tx structs substation-allocation-disconnect "${P5_ALLOC_ID}" --from player_5
@@ -2646,6 +2652,9 @@ assert_eq "Allocation disconnected" "" "${ALLOC_DST}"
 # Reconnect for later use
 run_tx "Reconnecting Player 5 allocation" \
     tx structs substation-allocation-connect "${P5_ALLOC_ID}" "${SUBSTATION_ID}" --from player_5
+
+ALLOC_JSON=$(query query structs allocation "${P5_ALLOC_ID}")
+assert_eq "Allocation reconnected to substation" "${SUBSTATION_ID}" "$(jqr "${ALLOC_JSON}" '.Allocation.destinationId' '')"
 
 # ─── Dual-path disconnect: substation owner disconnects player's allocation ───
 # CanBeDisconnectedBy checks PermAllocationConnection on allocation first,
@@ -2846,6 +2855,11 @@ run_tx "Proxy joining guild for external address" \
     031b16cabd6c322e1a9ec4ead0240e70be7b2deb7b71e167a380fe405e3adaf99b \
     0c1623a753074f49bc20c6e8bb9e6572903b90e386598c4baa34e056e468e53076938ec4ab411f5889adb771f63b2be9b15912d5e1e70a97d1b091926181c8ae01 \
     --from alice
+
+# Verify proxy join created a player for the target address
+PROXY_JOIN_JSON=$(query query structs address structs1wfs4s5er9lpkxlcrh8ezdqayewjnudkrlwpxqc)
+PROXY_PLAYER=$(jqr "${PROXY_JOIN_JSON}" '.playerId')
+assert_not_empty "Proxy joined player ID" "${PROXY_PLAYER}"
 
 fi # phase 5
 
@@ -3566,8 +3580,8 @@ if [ -n "${STEALTH_BOMBER_ID}" ]; then
         tx structs struct-stealth-activate "${STEALTH_BOMBER_ID}" --from player_3
 
     SB_JSON=$(query query structs struct "${STEALTH_BOMBER_ID}" 2>/dev/null || echo '{}')
-    SB_HIDDEN=$(jqr "${SB_JSON}" '.Struct.status' '')
-    info "Stealth Bomber status after activate: '${SB_HIDDEN}'"
+    SB_HIDDEN=$(jqr "${SB_JSON}" '.structAttributes.isHidden' 'false')
+    assert_eq "Stealth Bomber hidden after activate" "true" "${SB_HIDDEN}"
 
     # ─── struct-stealth-deactivate ───
     wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
@@ -3575,8 +3589,8 @@ if [ -n "${STEALTH_BOMBER_ID}" ]; then
         tx structs struct-stealth-deactivate "${STEALTH_BOMBER_ID}" --from player_3
 
     SB_JSON=$(query query structs struct "${STEALTH_BOMBER_ID}" 2>/dev/null || echo '{}')
-    SB_HIDDEN_AFTER=$(jqr "${SB_JSON}" '.Struct.status' '')
-    info "Stealth Bomber status after deactivate: '${SB_HIDDEN_AFTER}'"
+    SB_HIDDEN_AFTER=$(jqr "${SB_JSON}" '.structAttributes.isHidden' 'false')
+    assert_eq "Stealth Bomber visible after deactivate" "false" "${SB_HIDDEN_AFTER}"
 
     # struct-attribute query coverage
     info "Struct attribute query coverage:"

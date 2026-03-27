@@ -114,6 +114,11 @@ func (k Keeper) BankKeeper() types.BankKeeper {
 	return k.bankKeeper
 }
 
+// StakingKeeper returns the staking keeper
+func (k Keeper) StakingKeeper() types.StakingKeeper {
+	return k.stakingKeeper
+}
+
 // AccountKeeper returns the account keeper
 func (k Keeper) AccountKeeper() types.AccountKeeper {
 	return k.accountKeeper

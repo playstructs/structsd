@@ -23,7 +23,10 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 	// Look up requesting account
-	proxyPlayer := cc.UpsertPlayer(msg.Creator)
+	proxyPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+	if err != nil {
+		return emptyResponse, err
+	}
 
 	// look up destination guild
 	guild := cc.GetGuild(proxyPlayer.GetGuildId())

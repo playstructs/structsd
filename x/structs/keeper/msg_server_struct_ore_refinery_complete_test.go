@@ -12,26 +12,36 @@ import (
 
 func TestMsgStructOreRefineryComplete(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1_000_000_000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
 
+	playerAcc := sdk.AccAddress("refiner_pad_1234567890123456789012")
 	player := types.Player{
-		Creator:        "cosmos1creator",
-		PrimaryAddress: "cosmos1creator",
+		Creator:        playerAcc.String(),
+		PrimaryAddress: playerAcc.String(),
 	}
-	player = testAppendPlayer(k, ctx, player)
+	player = testAppendPlayer(k, sdkCtx, player)
 
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
-	k.SetGridAttribute(ctx, capacityAttrId, uint64(100000))
+	k.SetGridAttribute(sdkCtx, capacityAttrId, uint64(100000))
 
-	planet := testAppendPlanet(k, ctx, types.Planet{Creator: player.Creator, Owner: player.Id})
+	planet := testAppendPlanet(k, sdkCtx, types.Planet{Creator: player.Creator, Owner: player.Id})
+	player.PlanetId = planet.Id
+	k.SetPlayer(sdkCtx, player)
+
+	// Give the player stored ore so CanOreRefine passes
+	oreAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_ore, player.Id)
+	k.SetGridAttribute(sdkCtx, oreAttrId, uint64(100))
 
 	structType := types.StructType{
 		Id:                    1,
-		Type:                  types.CommandStruct,
-		Category:              types.ObjectType_player,
-		OreRefiningDifficulty: 1,
+		Type:                  "Refinery",
+		Category:              types.ObjectType_planet,
+		PlanetaryRefinery:     1,
+		OreRefiningDifficulty: 2,
 	}
-	k.SetStructType(ctx, structType)
+	k.SetStructType(sdkCtx, structType)
 
 	structObj := types.Struct{
 		Creator:      player.Creator,
@@ -40,24 +50,27 @@ func TestMsgStructOreRefineryComplete(t *testing.T) {
 		LocationId:   planet.Id,
 		LocationType: types.ObjectType_planet,
 	}
-	structObj = testAppendStruct(k, ctx, structObj)
+	structObj = testAppendStruct(k, sdkCtx, structObj)
 
 	statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structObj.Id)
-	testSetStructAttributeFlagAdd(k, ctx, statusAttrId, uint64(types.StructStateBuilt))
-	testSetStructAttributeFlagAdd(k, ctx, statusAttrId, uint64(types.StructStateOnline))
+	testSetStructAttributeFlagAdd(k, sdkCtx, statusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, statusAttrId, uint64(types.StructStateOnline))
 
 	blockStartAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structObj.Id)
-	k.SetStructAttribute(ctx, blockStartAttrId, uint64(1))
+	k.SetStructAttribute(sdkCtx, blockStartAttrId, uint64(1))
 
 	t.Run("valid ore refinery complete", func(t *testing.T) {
+		hashTemplate := structObj.Id + "REFINE1NONCE%s"
+		nonce, proof := testFindProof(hashTemplate, 1)
+
 		resp, err := ms.StructOreRefineryComplete(wctx, &types.MsgStructOreRefineryComplete{
 			Creator:  player.Creator,
 			StructId: structObj.Id,
-			Nonce:    "test-nonce",
-			Proof:    "test-proof",
+			Nonce:    nonce,
+			Proof:    proof,
 		})
-		_ = resp
-		_ = err
+		require.NoError(t, err)
+		require.NotNil(t, resp)
 	})
 
 	t.Run("struct not found", func(t *testing.T) {

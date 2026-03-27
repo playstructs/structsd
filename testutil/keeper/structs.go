@@ -183,11 +183,40 @@ func (m *MockBankKeeper) BurnCoins(ctx context.Context, moduleName string, amt s
 	return nil
 }
 
-// MockStakingKeeper is a mock implementation of the StakingKeeper interface
-type MockStakingKeeper struct{}
+// delegationKey uniquely identifies a delegation by delegator+validator.
+type delegationKey struct {
+	Delegator string
+	Validator string
+}
+
+// MockStakingKeeper is a stateful mock of the StakingKeeper interface.
+// It tracks validators, delegations, and unbonding delegations so that
+// reactor infuse/defuse/migrate/cancel tests can exercise the full handler path.
+type MockStakingKeeper struct {
+	validators   map[string]stakingtypes.Validator
+	delegations  map[delegationKey]stakingtypes.Delegation
+	unbondings   map[delegationKey]stakingtypes.UnbondingDelegation
+	nextUnbondID uint64
+}
 
 func NewMockStakingKeeper() *MockStakingKeeper {
-	return &MockStakingKeeper{}
+	return &MockStakingKeeper{
+		validators:   make(map[string]stakingtypes.Validator),
+		delegations:  make(map[delegationKey]stakingtypes.Delegation),
+		unbondings:   make(map[delegationKey]stakingtypes.UnbondingDelegation),
+		nextUnbondID: 1,
+	}
+}
+
+// AddValidator registers a bonded validator with 1:1 token-to-share ratio.
+func (m *MockStakingKeeper) AddValidator(operatorAddr sdk.ValAddress, tokens math.Int) {
+	val := stakingtypes.Validator{
+		OperatorAddress: operatorAddr.String(),
+		Status:          stakingtypes.Bonded,
+		Tokens:          tokens,
+		DelegatorShares: math.LegacyNewDecFromInt(tokens),
+	}
+	m.validators[operatorAddr.String()] = val
 }
 
 func (m *MockStakingKeeper) ConsensusAddressCodec() address.Codec {
@@ -199,70 +228,212 @@ func (m *MockStakingKeeper) ValidatorByConsAddr(ctx context.Context, consAddr sd
 }
 
 func (m *MockStakingKeeper) GetValidator(ctx context.Context, addr sdk.ValAddress) (stakingtypes.Validator, error) {
-	return stakingtypes.Validator{}, nil
+	val, ok := m.validators[addr.String()]
+	if !ok {
+		return stakingtypes.Validator{}, stakingtypes.ErrNoValidatorFound
+	}
+	return val, nil
 }
 
 func (m *MockStakingKeeper) GetAllValidators(ctx context.Context) ([]stakingtypes.Validator, error) {
-	return nil, nil
+	vals := make([]stakingtypes.Validator, 0, len(m.validators))
+	for _, v := range m.validators {
+		vals = append(vals, v)
+	}
+	return vals, nil
 }
 
 func (m *MockStakingKeeper) GetValidators(ctx context.Context, maxRetrieve uint32) ([]stakingtypes.Validator, error) {
-	return nil, nil
+	return m.GetAllValidators(ctx)
 }
 
 func (m *MockStakingKeeper) GetValidatorDelegations(ctx context.Context, valAddr sdk.ValAddress) ([]stakingtypes.Delegation, error) {
-	return nil, nil
+	var result []stakingtypes.Delegation
+	for k, d := range m.delegations {
+		if k.Validator == valAddr.String() {
+			result = append(result, d)
+		}
+	}
+	return result, nil
 }
 
 func (m *MockStakingKeeper) GetDelegation(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (stakingtypes.Delegation, error) {
-	return stakingtypes.Delegation{}, nil
+	dk := delegationKey{Delegator: delAddr.String(), Validator: valAddr.String()}
+	del, ok := m.delegations[dk]
+	if !ok {
+		return stakingtypes.Delegation{}, stakingtypes.ErrNoDelegation
+	}
+	return del, nil
 }
 
 func (m *MockStakingKeeper) GetUnbondingDelegation(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (stakingtypes.UnbondingDelegation, error) {
-	return stakingtypes.UnbondingDelegation{}, nil
+	dk := delegationKey{Delegator: delAddr.String(), Validator: valAddr.String()}
+	ubd, ok := m.unbondings[dk]
+	if !ok {
+		return stakingtypes.UnbondingDelegation{}, stakingtypes.ErrNoUnbondingDelegation
+	}
+	return ubd, nil
 }
 
 func (m *MockStakingKeeper) GetUnbondingDelegationByUnbondingID(ctx context.Context, id uint64) (stakingtypes.UnbondingDelegation, error) {
-	return stakingtypes.UnbondingDelegation{}, nil
+	for _, ubd := range m.unbondings {
+		for _, entry := range ubd.Entries {
+			if entry.UnbondingId == id {
+				return ubd, nil
+			}
+		}
+	}
+	return stakingtypes.UnbondingDelegation{}, stakingtypes.ErrNoUnbondingDelegation
 }
 
 func (m *MockStakingKeeper) GetDelegatorDelegations(ctx context.Context, delegator sdk.AccAddress, maxRetrieve uint16) ([]stakingtypes.Delegation, error) {
-	return nil, nil
+	var result []stakingtypes.Delegation
+	for k, d := range m.delegations {
+		if k.Delegator == delegator.String() {
+			result = append(result, d)
+			if uint16(len(result)) >= maxRetrieve {
+				break
+			}
+		}
+	}
+	return result, nil
 }
 
 func (m *MockStakingKeeper) SetDelegation(ctx context.Context, delegation stakingtypes.Delegation) error {
+	dk := delegationKey{Delegator: delegation.DelegatorAddress, Validator: delegation.ValidatorAddress}
+	m.delegations[dk] = delegation
 	return nil
 }
 
 func (m *MockStakingKeeper) RemoveDelegation(ctx context.Context, delegation stakingtypes.Delegation) error {
+	dk := delegationKey{Delegator: delegation.DelegatorAddress, Validator: delegation.ValidatorAddress}
+	delete(m.delegations, dk)
 	return nil
 }
 
+// ValidateUnbondAmount returns the shares corresponding to amt using a 1:1 ratio.
+// Returns an error if no delegation exists or the amount exceeds delegated shares.
 func (m *MockStakingKeeper) ValidateUnbondAmount(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, amt math.Int) (math.LegacyDec, error) {
-	return math.LegacyZeroDec(), nil
+	dk := delegationKey{Delegator: delAddr.String(), Validator: valAddr.String()}
+	del, ok := m.delegations[dk]
+	if !ok {
+		return math.LegacyZeroDec(), stakingtypes.ErrNoDelegation
+	}
+	shares := math.LegacyNewDecFromInt(amt)
+	if shares.GT(del.Shares) {
+		return math.LegacyZeroDec(), stakingtypes.ErrNotEnoughDelegationShares
+	}
+	return shares, nil
 }
 
 func (m *MockStakingKeeper) BeginRedelegation(ctx context.Context, delAddr sdk.AccAddress, valSrcAddr, valDstAddr sdk.ValAddress, sharesAmount math.LegacyDec) (time.Time, error) {
-	return time.Now(), nil
+	srcKey := delegationKey{Delegator: delAddr.String(), Validator: valSrcAddr.String()}
+	srcDel, ok := m.delegations[srcKey]
+	if !ok {
+		return time.Time{}, stakingtypes.ErrNoDelegation
+	}
+	if sharesAmount.GT(srcDel.Shares) {
+		return time.Time{}, stakingtypes.ErrNotEnoughDelegationShares
+	}
+	srcDel.Shares = srcDel.Shares.Sub(sharesAmount)
+	if srcDel.Shares.IsZero() {
+		delete(m.delegations, srcKey)
+	} else {
+		m.delegations[srcKey] = srcDel
+	}
+	dstKey := delegationKey{Delegator: delAddr.String(), Validator: valDstAddr.String()}
+	dstDel, exists := m.delegations[dstKey]
+	if !exists {
+		dstDel = stakingtypes.Delegation{
+			DelegatorAddress: delAddr.String(),
+			ValidatorAddress: valDstAddr.String(),
+			Shares:           math.LegacyZeroDec(),
+		}
+	}
+	dstDel.Shares = dstDel.Shares.Add(sharesAmount)
+	m.delegations[dstKey] = dstDel
+	return time.Now().Add(21 * 24 * time.Hour), nil
 }
 
 func (m *MockStakingKeeper) BondDenom(ctx context.Context) (string, error) {
 	return "stake", nil
 }
 
+// Delegate creates or adds to a delegation using a 1:1 token-to-share ratio.
 func (m *MockStakingKeeper) Delegate(ctx context.Context, delAddr sdk.AccAddress, bondAmt math.Int, tokenSrc stakingtypes.BondStatus, validator stakingtypes.Validator, subtractAccount bool) (math.LegacyDec, error) {
-	return math.LegacyZeroDec(), nil
+	dk := delegationKey{Delegator: delAddr.String(), Validator: validator.OperatorAddress}
+	del, exists := m.delegations[dk]
+	if !exists {
+		del = stakingtypes.Delegation{
+			DelegatorAddress: delAddr.String(),
+			ValidatorAddress: validator.OperatorAddress,
+			Shares:           math.LegacyZeroDec(),
+		}
+	}
+	newShares := math.LegacyNewDecFromInt(bondAmt)
+	del.Shares = del.Shares.Add(newShares)
+	m.delegations[dk] = del
+
+	if val, ok := m.validators[validator.OperatorAddress]; ok {
+		val.Tokens = val.Tokens.Add(bondAmt)
+		val.DelegatorShares = val.DelegatorShares.Add(newShares)
+		m.validators[validator.OperatorAddress] = val
+	}
+	return newShares, nil
 }
 
+// Undelegate removes shares from a delegation and creates an unbonding entry.
 func (m *MockStakingKeeper) Undelegate(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, sharesAmount math.LegacyDec) (time.Time, math.Int, error) {
-	return time.Now(), math.ZeroInt(), nil
+	dk := delegationKey{Delegator: delAddr.String(), Validator: valAddr.String()}
+	del, ok := m.delegations[dk]
+	if !ok {
+		return time.Time{}, math.ZeroInt(), stakingtypes.ErrNoDelegation
+	}
+	if sharesAmount.GT(del.Shares) {
+		return time.Time{}, math.ZeroInt(), stakingtypes.ErrNotEnoughDelegationShares
+	}
+	del.Shares = del.Shares.Sub(sharesAmount)
+	if del.Shares.IsZero() {
+		delete(m.delegations, dk)
+	} else {
+		m.delegations[dk] = del
+	}
+
+	returnAmount := sharesAmount.TruncateInt()
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	completionTime := sdkCtx.BlockTime().Add(21 * 24 * time.Hour)
+
+	ubd, exists := m.unbondings[dk]
+	if !exists {
+		ubd = stakingtypes.UnbondingDelegation{
+			DelegatorAddress: delAddr.String(),
+			ValidatorAddress: valAddr.String(),
+		}
+	}
+	id := m.nextUnbondID
+	m.nextUnbondID++
+	ubd.Entries = append(ubd.Entries, stakingtypes.UnbondingDelegationEntry{
+		CreationHeight:          sdkCtx.BlockHeight(),
+		CompletionTime:          completionTime,
+		InitialBalance:          returnAmount,
+		Balance:                 returnAmount,
+		UnbondingId:             id,
+		UnbondingOnHoldRefCount: 0,
+	})
+	m.unbondings[dk] = ubd
+
+	return completionTime, returnAmount, nil
 }
 
 func (m *MockStakingKeeper) RemoveUnbondingDelegation(ctx context.Context, ubd stakingtypes.UnbondingDelegation) error {
+	dk := delegationKey{Delegator: ubd.DelegatorAddress, Validator: ubd.ValidatorAddress}
+	delete(m.unbondings, dk)
 	return nil
 }
 
 func (m *MockStakingKeeper) SetUnbondingDelegation(ctx context.Context, ubd stakingtypes.UnbondingDelegation) error {
+	dk := delegationKey{Delegator: ubd.DelegatorAddress, Validator: ubd.ValidatorAddress}
+	m.unbondings[dk] = ubd
 	return nil
 }
 

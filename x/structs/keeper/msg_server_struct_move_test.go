@@ -29,17 +29,29 @@ func TestMsgStructMove(t *testing.T) {
 	k.SetGridAttribute(sdkCtx, lastActionAttrId, uint64(0))
 
 	structType := types.StructType{
-		Id:         1,
-		Type:       types.CommandStruct,
-		Category:   types.ObjectType_player,
-		MoveCharge: 10,
+		Id:            1,
+		Type:          "Test Struct",
+		Category:      types.ObjectType_planet,
+		MoveCharge:    10,
+		PossibleAmbit: 1<<uint64(types.Ambit_land) | 1<<uint64(types.Ambit_space),
 	}
 	k.SetStructType(sdkCtx, structType)
 
+	planet := testAppendPlanet(k, sdkCtx, types.Planet{
+		Creator:   player.Creator,
+		Owner:     player.Id,
+		LandSlots: 2,
+		Land:      []string{"", ""},
+	})
+	player.PlanetId = planet.Id
+	k.SetPlayer(sdkCtx, player)
+
 	structObj := types.Struct{
-		Creator: player.Creator,
-		Owner:   player.Id,
-		Type:    structType.Id,
+		Creator:      player.Creator,
+		Owner:        player.Id,
+		Type:         structType.Id,
+		LocationId:   planet.Id,
+		LocationType: types.ObjectType_planet,
 	}
 	structObj = testAppendStruct(k, sdkCtx, structObj)
 
@@ -53,11 +65,11 @@ func TestMsgStructMove(t *testing.T) {
 			Creator:      player.Creator,
 			StructId:     structObj.Id,
 			LocationType: types.ObjectType_planet,
-			Ambit:        types.Ambit_space,
-			Slot:         1,
+			Ambit:        types.Ambit_land,
+			Slot:         0,
 		})
-		_ = resp
-		_ = err
+		require.NoError(t, err)
+		require.NotNil(t, resp)
 	})
 
 	t.Run("struct not found", func(t *testing.T) {

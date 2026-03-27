@@ -23,8 +23,9 @@ func TestMsgReactorInfuse(t *testing.T) {
 	}
 	player = testAppendPlayer(k, ctx, player)
 
-	// Create reactor
+	// Create reactor and register validator in mock staking keeper
 	validatorAddress := sdk.ValAddress(playerAcc.Bytes())
+	testAddValidator(k, validatorAddress, math.NewInt(1000000))
 	reactor := types.Reactor{
 		Validator:  validatorAddress.String(),
 		RawAddress: validatorAddress.Bytes(),

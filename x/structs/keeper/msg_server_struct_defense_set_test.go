@@ -12,36 +12,76 @@ import (
 
 func TestMsgStructDefenseSet(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
 
 	player := types.Player{
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = testAppendPlayer(k, ctx, player)
+	player = testAppendPlayer(k, sdkCtx, player)
 
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
-	k.SetGridAttribute(ctx, capacityAttrId, uint64(100000))
+	k.SetGridAttribute(sdkCtx, capacityAttrId, uint64(100000))
 
 	lastActionAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, player.Id)
-	k.SetGridAttribute(ctx, lastActionAttrId, uint64(0))
+	k.SetGridAttribute(sdkCtx, lastActionAttrId, uint64(0))
+
+	planet := testAppendPlanet(k, sdkCtx, types.Planet{
+		Creator:   player.Creator,
+		Owner:     player.Id,
+		LandSlots: 4,
+		Land:      []string{"", "", "", ""},
+	})
+	player.PlanetId = planet.Id
+	k.SetPlayer(sdkCtx, player)
 
 	structType := types.StructType{
 		Id:                 1,
-		Type:               types.CommandStruct,
-		Category:           types.ObjectType_player,
+		Type:               "Defender",
+		Category:           types.ObjectType_planet,
 		DefendChangeCharge: 10,
+		PossibleAmbit:      1 << uint64(types.Ambit_land),
 	}
-	k.SetStructType(ctx, structType)
+	k.SetStructType(sdkCtx, structType)
+
+	defenderStruct := types.Struct{
+		Creator:      player.Creator,
+		Owner:        player.Id,
+		Type:         structType.Id,
+		LocationId:   planet.Id,
+		LocationType: types.ObjectType_planet,
+	}
+	defenderStruct = testAppendStruct(k, sdkCtx, defenderStruct)
+	defStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, defenderStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, defStatusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, defStatusAttrId, uint64(types.StructStateOnline))
+
+	protectedStruct := types.Struct{
+		Creator:      player.Creator,
+		Owner:        player.Id,
+		Type:         structType.Id,
+		LocationId:   planet.Id,
+		LocationType: types.ObjectType_planet,
+	}
+	protectedStruct = testAppendStruct(k, sdkCtx, protectedStruct)
+	protStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, protectedStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, protStatusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, protStatusAttrId, uint64(types.StructStateOnline))
+
+	t.Run("valid defense set", func(t *testing.T) {
+		k.SetGridAttribute(sdkCtx, lastActionAttrId, uint64(0))
+		resp, err := ms.StructDefenseSet(wctx, &types.MsgStructDefenseSet{
+			Creator:           player.Creator,
+			DefenderStructId:  defenderStruct.Id,
+			ProtectedStructId: protectedStruct.Id,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
 
 	t.Run("defender struct not found", func(t *testing.T) {
-		protectedStruct := types.Struct{
-			Creator: player.Creator,
-			Owner:   player.Id,
-			Type:    structType.Id,
-		}
-		protectedStruct = testAppendStruct(k, ctx, protectedStruct)
-
 		_, err := ms.StructDefenseSet(wctx, &types.MsgStructDefenseSet{
 			Creator:           player.Creator,
 			DefenderStructId:  "invalid-struct",
@@ -53,8 +93,8 @@ func TestMsgStructDefenseSet(t *testing.T) {
 	t.Run("no play permissions", func(t *testing.T) {
 		_, err := ms.StructDefenseSet(wctx, &types.MsgStructDefenseSet{
 			Creator:           "cosmos1noperms",
-			DefenderStructId:  "5-1",
-			ProtectedStructId: "5-2",
+			DefenderStructId:  defenderStruct.Id,
+			ProtectedStructId: protectedStruct.Id,
 		})
 		require.Error(t, err)
 	})

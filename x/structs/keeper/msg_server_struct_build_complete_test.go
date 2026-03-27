@@ -12,36 +12,52 @@ import (
 
 func TestMsgStructBuildComplete(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1_000_000_000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
 
 	player := types.Player{
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = testAppendPlayer(k, ctx, player)
+	player = testAppendPlayer(k, sdkCtx, player)
 
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
-	k.SetGridAttribute(ctx, capacityAttrId, uint64(100000))
+	k.SetGridAttribute(sdkCtx, capacityAttrId, uint64(100000))
 
 	structType := types.StructType{
 		Id:              1,
-		Type:            types.CommandStruct,
-		Category:        types.ObjectType_player,
+		Type:            "Test Build",
+		Category:        types.ObjectType_planet,
 		BuildDraw:       100,
 		PassiveDraw:     50,
-		BuildDifficulty: 1,
+		BuildDifficulty: 2,
 	}
-	k.SetStructType(ctx, structType)
+	k.SetStructType(sdkCtx, structType)
 
 	structObj := types.Struct{
 		Creator: player.Creator,
 		Owner:   player.Id,
 		Type:    structType.Id,
 	}
-	structObj = testAppendStruct(k, ctx, structObj)
+	structObj = testAppendStruct(k, sdkCtx, structObj)
 
 	blockStartAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structObj.Id)
-	k.SetStructAttribute(ctx, blockStartAttrId, uint64(1))
+	k.SetStructAttribute(sdkCtx, blockStartAttrId, uint64(1))
+
+	t.Run("valid build complete", func(t *testing.T) {
+		hashTemplate := structObj.Id + "BUILD1NONCE%s"
+		nonce, proof := testFindProof(hashTemplate, 1)
+
+		resp, err := ms.StructBuildComplete(wctx, &types.MsgStructBuildComplete{
+			Creator:  player.Creator,
+			StructId: structObj.Id,
+			Nonce:    nonce,
+			Proof:    proof,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
 
 	t.Run("struct not found", func(t *testing.T) {
 		_, err := ms.StructBuildComplete(wctx, &types.MsgStructBuildComplete{
@@ -54,9 +70,6 @@ func TestMsgStructBuildComplete(t *testing.T) {
 	})
 
 	t.Run("struct already built", func(t *testing.T) {
-		statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structObj.Id)
-		testSetStructAttributeFlagAdd(k, ctx, statusAttrId, uint64(types.StructStateBuilt))
-
 		_, err := ms.StructBuildComplete(wctx, &types.MsgStructBuildComplete{
 			Creator:  player.Creator,
 			StructId: structObj.Id,

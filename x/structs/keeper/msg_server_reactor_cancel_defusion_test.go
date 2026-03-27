@@ -13,7 +13,10 @@ import (
 
 func TestMsgReactorCancelDefusion(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(10)
+	wctx := sdk.WrapSDKContext(sdkCtx)
+	ctx = wctx
 
 	// Create a player first
 	playerAcc := sdk.AccAddress("creator123456789012345678901234567890")
@@ -23,20 +26,38 @@ func TestMsgReactorCancelDefusion(t *testing.T) {
 	}
 	player = testAppendPlayer(k, ctx, player)
 
-	// Create reactor
+	// Create reactor and register validator
 	validatorAddress := sdk.ValAddress(playerAcc.Bytes())
+	testAddValidator(k, validatorAddress, math.NewInt(1000000))
 	reactor := types.Reactor{
+		Validator:  validatorAddress.String(),
 		RawAddress: validatorAddress.Bytes(),
 	}
-	// AppendReactor already calls SetReactorValidatorBytes internally
 	reactor = k.AppendReactor(ctx, reactor)
 
 	// Grant permissions
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
 	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
 
-	// Use default bond denom for testing
+	// Infuse then defuse to create an unbonding delegation
 	bondDenom := "stake"
+	coins := sdk.NewCoins(sdk.NewCoin(bondDenom, math.NewInt(1000)))
+	k.BankKeeper().MintCoins(sdkCtx, types.ModuleName, coins)
+	k.BankKeeper().SendCoinsFromModuleToAccount(sdkCtx, types.ModuleName, playerAcc, coins)
+	_, infuseErr := ms.ReactorInfuse(wctx, &types.MsgReactorInfuse{
+		Creator:          player.Creator,
+		DelegatorAddress: player.Creator,
+		ValidatorAddress: reactor.Validator,
+		Amount:           sdk.NewCoin(bondDenom, math.NewInt(500)),
+	})
+	require.NoError(t, infuseErr)
+	_, defuseErr := ms.ReactorDefuse(wctx, &types.MsgReactorDefuse{
+		Creator:          player.Creator,
+		DelegatorAddress: player.Creator,
+		ValidatorAddress: reactor.Validator,
+		Amount:           sdk.NewCoin(bondDenom, math.NewInt(200)),
+	})
+	require.NoError(t, defuseErr)
 
 	testCases := []struct {
 		name      string
@@ -52,7 +73,7 @@ func TestMsgReactorCancelDefusion(t *testing.T) {
 				DelegatorAddress: player.Creator,
 				ValidatorAddress: reactor.Validator,
 				Amount:           sdk.NewCoin(bondDenom, math.NewInt(100)),
-				CreationHeight:   1,
+				CreationHeight:   10,
 			},
 			expErr: false,
 		},
@@ -131,16 +152,14 @@ func TestMsgReactorCancelDefusion(t *testing.T) {
 
 			resp, err := ms.ReactorCancelDefusion(wctx, tc.input)
 
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				// Note: This test may fail if there's no unbonding delegation
-				// The actual cancel defusion requires an existing unbonding delegation
-				_ = resp
-				_ = err
-			}
+		if tc.expErr {
+			require.Error(t, err)
+			require.Contains(t, err.Error(), tc.expErrMsg)
+			require.Nil(t, resp)
+		} else {
+			require.NoError(t, err)
+			require.NotNil(t, resp)
+		}
 		})
 	}
 }

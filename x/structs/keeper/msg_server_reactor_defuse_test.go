@@ -23,13 +23,13 @@ func TestMsgReactorDefuse(t *testing.T) {
 	}
 	player = testAppendPlayer(k, ctx, player)
 
-	// Create reactor
+	// Create reactor and register validator in mock staking keeper
 	validatorAddress := sdk.ValAddress(playerAcc.Bytes())
+	testAddValidator(k, validatorAddress, math.NewInt(1000000))
 	reactor := types.Reactor{
 		Validator:  validatorAddress.String(),
 		RawAddress: validatorAddress.Bytes(),
 	}
-	// AppendReactor already calls SetReactorValidatorBytes internally
 	reactor = k.AppendReactor(ctx, reactor)
 
 	// Grant permissions
@@ -130,16 +130,14 @@ func TestMsgReactorDefuse(t *testing.T) {
 
 			resp, err := ms.ReactorDefuse(wctx, tc.input)
 
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				// Note: This test may fail if there's no delegation to defuse
-				// The actual defuse requires an existing delegation
-				_ = resp
-				_ = err
-			}
+		if tc.expErr {
+			require.Error(t, err)
+			require.Contains(t, err.Error(), tc.expErrMsg)
+			require.Nil(t, resp)
+		} else {
+			require.NoError(t, err)
+			require.NotNil(t, resp)
+		}
 		})
 	}
 }
