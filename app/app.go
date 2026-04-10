@@ -75,6 +75,7 @@ import (
 	structsmodulekeeper "structs/x/structs/keeper"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
+	structsante "structs/app/ante"
 	"structs/docs"
 )
 
@@ -307,6 +308,9 @@ func New(
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
+	// Set custom ante handler (replaces the default SDK chain)
+	app.setAnteHandler(app.txConfig)
+
 	// Register legacy modules
 	app.registerIBCModules()
 
@@ -344,6 +348,21 @@ func New(
 	}
 
 	return app, nil
+}
+
+func (app *App) setAnteHandler(txConfig client.TxConfig) {
+	anteHandler, err := structsante.NewAnteHandler(structsante.HandlerOptions{
+		AccountKeeper:  app.AccountKeeper,
+		BankKeeper:     app.BankKeeper,
+		FeegrantKeeper: app.FeeGrantKeeper,
+		SignModeHandler: txConfig.SignModeHandler(),
+		CircuitKeeper:  &app.CircuitBreakerKeeper,
+		StructsKeeper:  app.StructsKeeper,
+	})
+	if err != nil {
+		panic(err)
+	}
+	app.SetAnteHandler(anteHandler)
 }
 
 // LegacyAmino returns App's amino codec.
