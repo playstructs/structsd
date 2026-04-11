@@ -47,11 +47,14 @@ func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, 
 			return ctx, fmt.Errorf("structs ante: unknown structs message type %s, update ante maps", typeURL)
 		}
 
-		cg, ok := msg.(creatorGetter)
-		if !ok {
-			return ctx, fmt.Errorf("structs ante: message %s does not implement GetCreator()", typeURL)
+		var creator string
+		if cg, ok := msg.(creatorGetter); ok {
+			creator = cg.GetCreator()
+		} else if extractor, hasExtractor := CreatorExtractors[typeURL]; hasExtractor {
+			creator = extractor(msg)
+		} else {
+			return ctx, fmt.Errorf("structs ante: message %s has no creator accessor", typeURL)
 		}
-		creator := cg.GetCreator()
 
 		playerIndex, cached := addressCache[creator]
 		if !cached {

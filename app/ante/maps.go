@@ -255,6 +255,26 @@ var SignatureMessages = map[string]bool{
 	"/structs.structs.MsgGuildMembershipJoinProxy": true,
 }
 
+// CreatorExtractors provides direct field access for messages that have
+// goproto_getters = false and therefore lack a GetCreator() method.
+var CreatorExtractors = map[string]func(sdk.Msg) string{
+	"/structs.structs.MsgReactorInfuse": func(msg sdk.Msg) string {
+		return msg.(*types.MsgReactorInfuse).Creator
+	},
+	"/structs.structs.MsgReactorDefuse": func(msg sdk.Msg) string {
+		return msg.(*types.MsgReactorDefuse).Creator
+	},
+	"/structs.structs.MsgReactorBeginMigration": func(msg sdk.Msg) string {
+		return msg.(*types.MsgReactorBeginMigration).Creator
+	},
+	"/structs.structs.MsgReactorCancelDefusion": func(msg sdk.Msg) string {
+		return msg.(*types.MsgReactorCancelDefusion).Creator
+	},
+	"/structs.structs.MsgPlayerSend": func(msg sdk.Msg) string {
+		return msg.(*types.MsgPlayerSend).Creator
+	},
+}
+
 // ThrottleKeyExtractors maps message type URLs to functions that return the
 // transient store throttle key for per-object-per-block rate limiting.
 var ThrottleKeyExtractors = map[string]func(sdk.Msg) string{
