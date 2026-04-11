@@ -258,3 +258,22 @@ func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlaye
 
 	return types.NewPermissionError("player", activePlayer.GetPlayerId(), "object", object.ID(), uint64(permission), "administrate")
 }
+
+func (cc *CurrentContext) UGCPermissionCheck(object PermissionedObject, activePlayer *PlayerCache) error {
+	if err := cc.PermissionCheck(object, activePlayer, types.PermUpdate); err == nil {
+		return nil
+	}
+
+	owner := object.GetOwner()
+	if owner == nil {
+		return types.NewPermissionError("player", activePlayer.GetPlayerId(), "object", object.ID(), uint64(types.PermGuildUGCUpdate), "ugc update")
+	}
+
+	ownerGuildId := owner.GetGuildId()
+	if ownerGuildId == "" {
+		return types.NewPermissionError("player", activePlayer.GetPlayerId(), "object", object.ID(), uint64(types.PermGuildUGCUpdate), "ugc update")
+	}
+
+	guild := cc.GetGuild(ownerGuildId)
+	return cc.PermissionCheck(guild, activePlayer, types.PermGuildUGCUpdate)
+}

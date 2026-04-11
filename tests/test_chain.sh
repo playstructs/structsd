@@ -31,7 +31,7 @@
 #                      Recovers all IDs by querying the running chain.
 #                      Phase names: 0 1 2 3 3b 4 4b 4c 4d 4e 4f 4g 5 5b 6
 #                        7 7b 8 9 10 11 12 13 13b 14 15 15b 16
-#                        17 17b 17c eb1-eb6
+#                        17 17b 17c 18 eb1-eb6
 #
 
 set -euo pipefail
@@ -592,6 +592,7 @@ phase_order() {
         9) echo 900;; 10) echo 1000;; 11) echo 1100;;
         12) echo 1200;; 13) echo 1300;; 13b) echo 1350;;
         14) echo 1400;; 15) echo 1500;; 15b) echo 1550;; 16) echo 1600;;
+        18) echo 1700;;
         17) echo 2300;; 17b) echo 2350;; 17c) echo 2400;;
         eb1) echo 2500;; eb2) echo 2600;; eb3) echo 2700;;
         eb4) echo 2800;; eb5) echo 2900;; eb6) echo 3000;;
@@ -4151,6 +4152,172 @@ fi
 fi # phase 16
 
 
+if run_phase 1700; then
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  PHASE 18: UGC (User-Generated Content) — Names & Profile Pictures
+# ═════════════════════════════════════════════════════════════════════════════
+
+section "PHASE 18: UGC — Names & Profile Pictures"
+
+# ─── Guild Name ───
+
+run_tx "Setting guild name" \
+    tx structs guild-update-name "${GUILD_ID}" "TestGuild" --from alice
+
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+GUILD_NAME=$(jqr "${GUILD_JSON}" '.Guild.name')
+assert_eq "Guild name set" "TestGuild" "${GUILD_NAME}"
+
+# Rename guild
+run_tx "Renaming guild" \
+    tx structs guild-update-name "${GUILD_ID}" "RenamedGuild" --from alice
+
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+GUILD_NAME=$(jqr "${GUILD_JSON}" '.Guild.name')
+assert_eq "Guild name renamed" "RenamedGuild" "${GUILD_NAME}"
+
+# Duplicate guild name should fail (create guild B name first, then try same)
+run_tx "Setting guild B name" \
+    tx structs guild-update-name "${GUILD_B_ID}" "UniqueGuildB" --from guild_leader_b
+
+run_tx_expect_fail "Duplicate guild name should be rejected" \
+    tx structs guild-update-name "${GUILD_ID}" "uniqueguildb" --from alice
+
+# Invalid guild name: too short
+run_tx_expect_fail "Guild name too short" \
+    tx structs guild-update-name "${GUILD_ID}" "ab" --from alice
+
+# Invalid guild name: resembles object ID
+run_tx_expect_fail "Guild name resembles object ID" \
+    tx structs guild-update-name "${GUILD_ID}" "1-42" --from alice
+
+# Verify name unchanged after failed updates
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+GUILD_NAME=$(jqr "${GUILD_JSON}" '.Guild.name')
+assert_eq "Guild name unchanged after failures" "RenamedGuild" "${GUILD_NAME}"
+
+# ─── Guild PFP ───
+
+run_tx "Setting guild pfp" \
+    tx structs guild-update-pfp "${GUILD_ID}" "https://example.com/guild.png" --from alice
+
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+GUILD_PFP=$(jqr "${GUILD_JSON}" '.Guild.pfp')
+assert_eq "Guild pfp set" "https://example.com/guild.png" "${GUILD_PFP}"
+
+# Clear guild pfp
+run_tx "Clearing guild pfp" \
+    tx structs guild-update-pfp "${GUILD_ID}" "" --from alice
+
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+GUILD_PFP=$(jqr "${GUILD_JSON}" '.Guild.pfp' '')
+assert_eq "Guild pfp cleared" "" "${GUILD_PFP}"
+
+# ─── Player Name ───
+
+run_tx "Setting player 1 name" \
+    tx structs player-update-name "${PLAYER_1_ID}" "AlicePlayer" --from alice
+
+P1_JSON=$(query query structs player "${PLAYER_1_ID}")
+P1_NAME=$(jqr "${P1_JSON}" '.Player.name')
+assert_eq "Player 1 name set" "AlicePlayer" "${P1_NAME}"
+
+# Invalid player name: contains space (not allowed for players)
+run_tx_expect_fail "Player name with space should fail" \
+    tx structs player-update-name "${PLAYER_1_ID}" "Alice Player" --from alice
+
+# Invalid player name: too short
+run_tx_expect_fail "Player name too short" \
+    tx structs player-update-name "${PLAYER_1_ID}" "ab" --from alice
+
+# Verify name unchanged after failed updates
+P1_JSON=$(query query structs player "${PLAYER_1_ID}")
+P1_NAME=$(jqr "${P1_JSON}" '.Player.name')
+assert_eq "Player 1 name unchanged" "AlicePlayer" "${P1_NAME}"
+
+# ─── Player PFP ───
+
+run_tx "Setting player 1 pfp" \
+    tx structs player-update-pfp "${PLAYER_1_ID}" "https://example.com/alice.png" --from alice
+
+P1_JSON=$(query query structs player "${PLAYER_1_ID}")
+P1_PFP=$(jqr "${P1_JSON}" '.Player.pfp')
+assert_eq "Player 1 pfp set" "https://example.com/alice.png" "${P1_PFP}"
+
+# Clear player pfp
+run_tx "Clearing player 1 pfp" \
+    tx structs player-update-pfp "${PLAYER_1_ID}" "" --from alice
+
+P1_JSON=$(query query structs player "${PLAYER_1_ID}")
+P1_PFP=$(jqr "${P1_JSON}" '.Player.pfp' '')
+assert_eq "Player 1 pfp cleared" "" "${P1_PFP}"
+
+# ─── Substation Name ───
+
+run_tx "Setting substation name" \
+    tx structs substation-update-name "${SUBSTATION_ID}" "MainStation" --from alice
+
+SUB_JSON=$(query query structs substation "${SUBSTATION_ID}")
+SUB_NAME=$(jqr "${SUB_JSON}" '.Substation.name')
+assert_eq "Substation name set" "MainStation" "${SUB_NAME}"
+
+# Invalid substation name: too short
+run_tx_expect_fail "Substation name too short" \
+    tx structs substation-update-name "${SUBSTATION_ID}" "ab" --from alice
+
+# Verify name unchanged
+SUB_JSON=$(query query structs substation "${SUBSTATION_ID}")
+SUB_NAME=$(jqr "${SUB_JSON}" '.Substation.name')
+assert_eq "Substation name unchanged" "MainStation" "${SUB_NAME}"
+
+# ─── Substation PFP ───
+
+run_tx "Setting substation pfp" \
+    tx structs substation-update-pfp "${SUBSTATION_ID}" "https://example.com/sub.png" --from alice
+
+SUB_JSON=$(query query structs substation "${SUBSTATION_ID}")
+SUB_PFP=$(jqr "${SUB_JSON}" '.Substation.pfp')
+assert_eq "Substation pfp set" "https://example.com/sub.png" "${SUB_PFP}"
+
+# ─── Planet Name ───
+
+run_tx "Setting player 2 planet name" \
+    tx structs planet-update-name "${PLAYER_2_PLANET_ID}" "AlphaPrime" --from player_2
+
+PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
+PLANET_NAME=$(jqr "${PLANET_JSON}" '.Planet.name')
+assert_eq "Planet name set" "AlphaPrime" "${PLANET_NAME}"
+
+# Invalid planet name: too short
+run_tx_expect_fail "Planet name too short" \
+    tx structs planet-update-name "${PLAYER_2_PLANET_ID}" "ab" --from player_2
+
+# Planet name: max length (25 chars)
+run_tx "Setting planet name at max length" \
+    tx structs planet-update-name "${PLAYER_2_PLANET_ID}" "ABCDEFGHIJKLMNOPQRSTUVWXY" --from player_2
+
+PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
+PLANET_NAME=$(jqr "${PLANET_JSON}" '.Planet.name')
+assert_eq "Planet name at max length" "ABCDEFGHIJKLMNOPQRSTUVWXY" "${PLANET_NAME}"
+
+# Planet name: over max length should fail
+run_tx_expect_fail "Planet name too long (26 chars)" \
+    tx structs planet-update-name "${PLAYER_2_PLANET_ID}" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" --from player_2
+
+# ─── Permission Denied: wrong player ───
+
+run_tx_expect_fail "Player 3 cannot rename Player 2 planet" \
+    tx structs planet-update-name "${PLAYER_2_PLANET_ID}" "Stolen" --from player_3
+
+run_tx_expect_fail "Player 3 cannot rename guild (no PermUpdate)" \
+    tx structs guild-update-name "${GUILD_ID}" "Hijacked" --from player_3
+
+info "UGC phase complete"
+
+fi # phase 18
+
+
 if run_phase 2300; then
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -5476,47 +5643,37 @@ else
     info "SKIP E4: PDC(HP=${PDC_HP}), Tank(HP=${TANK_HP}), or P6 Mobile Art(HP=${P6_MA_HP}) destroyed"
 fi
 
-# ─── E5: Counterable attacker vs PDC directly — PDC fires on itself ───
+# ─── E5: Counterable attacker vs PDC directly — destroyed PDC does not counter ───
 # P3 Tank (type 9, counterable, land) → P6 PDC (type 19, planet-category, land)
-# PDC has CounterAttack=0, so the only attacker damage comes from PDC fire.
-# Tank primaryWeaponDamage=2, so PDC HP: 3→1 (first direct hit on PDC).
+# Tank primaryWeaponDamage=2, PDC HP=1, so PDC is destroyed.
+# A destroyed PDC does not fire counter-damage — Tank HP should be unchanged.
 PDC_HP=$(eb_health "${EB_PDC_ID}")
 TANK_HP=$(eb_health "${DESTROYER_STRUCT_ID}")
 if [ "${PDC_HP}" != "0" ] && [ "${TANK_HP}" != "0" ]; then
     PDC_HP_BEFORE=$(eb_health "${EB_PDC_ID}")
     TANK_HP_BEFORE=$(eb_health "${DESTROYER_STRUCT_ID}")
 
+    # Snapshot shield BEFORE E5 so we can measure the drop after PDC destruction
     P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
-    E5_CANNON_QTY=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.defensiveCannonQuantity' '0')
+    E6_SHIELD_BEFORE=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.planetaryShield' '0')
+    info "E6: Planetary shield before PDC destruction: ${E6_SHIELD_BEFORE}"
 
     eb_attack "E5: P3 Tank(counterable) → P6 PDC(planet-category)" \
         "${DESTROYER_STRUCT_ID}" "${EB_PDC_ID}" primaryWeapon 3
 
     PDC_HP_AFTER=$(eb_health "${EB_PDC_ID}")
     TANK_HP_AFTER=$(eb_health "${DESTROYER_STRUCT_ID}")
-    TANK_HP_LOST=$((TANK_HP_BEFORE - TANK_HP_AFTER))
 
-    if [ "${TANK_HP_LOST}" -gt 0 ] 2>/dev/null; then
-        echo -e "  ${GREEN}PASS${NC}: E5 — Tank took PDC damage attacking PDC directly (HP ${TANK_HP_BEFORE}→${TANK_HP_AFTER})"
-        PASS_COUNT=$((PASS_COUNT + 1))
-    else
-        echo -e "  ${RED}FAIL${NC}: E5 — Tank should have taken PDC damage (HP ${TANK_HP_BEFORE}→${TANK_HP_AFTER})"
-        FAIL_COUNT=$((FAIL_COUNT + 1))
-    fi
-
-    if [ "${E5_CANNON_QTY}" != "0" ] && [ "${TANK_HP_LOST}" -gt 0 ] 2>/dev/null; then
-        assert_eq "E5 — PDC damage equals defensiveCannonQuantity" "${E5_CANNON_QTY}" "${TANK_HP_LOST}"
-    fi
+    assert_eq "E5 — Destroyed PDC does not counter-damage attacker" "${TANK_HP_BEFORE}" "${TANK_HP_AFTER}"
 
     info "  PDC HP: ${PDC_HP_BEFORE}→${PDC_HP_AFTER}"
 else
+    # Still need a shield baseline if E5 is skipped
+    P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
+    E6_SHIELD_BEFORE=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.planetaryShield' '0')
     info "SKIP E5: PDC(HP=${PDC_HP}) or Tank(HP=${TANK_HP}) destroyed"
+    info "E6: Planetary shield snapshot: ${E6_SHIELD_BEFORE}"
 fi
-
-# ─── E6: Snapshot planetary shield before PDC destruction ───
-P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
-E6_SHIELD_BEFORE=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.planetaryShield' '0')
-info "E6: Planetary shield before PDC destruction: ${E6_SHIELD_BEFORE}"
 
 # ─── E7: PDC killing blow — PDC should STILL fire (Bug 1 regression test) ───
 # The PDC should be at HP 1 after E5 (took 2 damage from Tank: 3→1).

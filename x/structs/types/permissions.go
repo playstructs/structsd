@@ -57,6 +57,9 @@ const (
 	PermHashMine   // Ore miner completion
 	PermHashRefine // Ore refinery completion
 	PermHashRaid   // Planet raid completion
+
+	// Guild — UGC (User Generated Content)
+	PermGuildUGCUpdate // Update name/pfp on guild-owned objects
 )
 
 // ── Composites ──────────────────────────────────────────
@@ -73,7 +76,7 @@ const (
 
     PermGuildAll = PermAdmin | PermUpdate | PermDelete | PermGuildMembership |
                     PermGuildEndpointUpdate | PermGuildJoinConstraintsUpdate | PermGuildSubstationUpdate |
-                    PermGuildTokenBurn | PermGuildTokenMint | PermProviderOpen
+                    PermGuildTokenBurn | PermGuildTokenMint | PermProviderOpen | PermGuildUGCUpdate
 
     PermSubstationAll = PermAdmin | PermUpdate | PermDelete | PermSubstationConnection | PermSourceAllocation
 
@@ -82,7 +85,7 @@ const (
     PermAllocationAll = PermAdmin | PermUpdate | PermDelete | PermAllocationConnection
 
 
-    // 2^24 - 1 (16,777,215)
+    // 2^25 - 1 (33,554,431)
 	PermAll = PermPlay | PermAdmin | PermUpdate | PermDelete |
 		PermTokenTransfer | PermTokenInfuse | PermTokenMigrate | PermTokenDefuse |
 		PermSourceAllocation | PermGuildMembership | PermSubstationConnection |
@@ -91,7 +94,8 @@ const (
 		PermGuildEndpointUpdate | PermGuildJoinConstraintsUpdate | PermGuildSubstationUpdate |
 		PermProviderWithdraw | PermProviderOpen |
 		PermReactorGuildCreate |
-		PermHashBuild | PermHashMine | PermHashRefine | PermHashRaid
+		PermHashBuild | PermHashMine | PermHashRefine | PermHashRaid |
+		PermGuildUGCUpdate
 
     PermPlayerAll = PermAll
 
@@ -123,6 +127,7 @@ var PermissionLabel = map[Permission]string{
 	PermHashMine:                   "hash_mine",
 	PermHashRefine:                 "hash_refine",
 	PermHashRaid:                   "hash_raid",
+	PermGuildUGCUpdate:             "guild_ugc_update",
 	PermAll:                        "all",
 }
 
@@ -158,5 +163,6 @@ var Permission_enum = map[string]Permission{
 	"hash_mine":                     PermHashMine,
 	"hash_refine":                   PermHashRefine,
 	"hash_raid":                     PermHashRaid,
+	"guild_ugc_update":              PermGuildUGCUpdate,
 	"all":                           PermAll,
 }

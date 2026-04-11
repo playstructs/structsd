@@ -437,3 +437,37 @@ func (cache *GuildCache) SetEntryRank(entryRank uint64) {
     cache.Changed = true
 }
 
+func (cache *GuildCache) GetName() string {
+    if !cache.GuildLoaded {
+        cache.LoadGuild()
+    }
+    return cache.Guild.Name
+}
+
+func (cache *GuildCache) GetPfp() string {
+    if !cache.GuildLoaded {
+        cache.LoadGuild()
+    }
+    return cache.Guild.Pfp
+}
+
+func (cache *GuildCache) SetName(name string) {
+    if !cache.GuildLoaded {
+        cache.LoadGuild()
+    }
+    cache.Guild.Name = name
+    cache.Changed = true
+}
+
+func (cache *GuildCache) SetPfp(pfp string) {
+    if !cache.GuildLoaded {
+        cache.LoadGuild()
+    }
+    cache.Guild.Pfp = pfp
+    cache.Changed = true
+}
+
+func (cache *GuildCache) CanUpdateUGCBy(activePlayer *PlayerCache) error {
+    return cache.CC.UGCPermissionCheck(cache, activePlayer)
+}
+

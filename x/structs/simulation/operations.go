@@ -3997,3 +3997,98 @@ func SimulateMsgGuildUpdateEntryRank(
 		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
+
+func SimulateMsgGuildUpdateName(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		if account == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateName{}), "account not found"), nil, nil
+		}
+
+		player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, simAccount.Address.String()))
+		if !playerFound {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateName{}), "player not found"), nil, nil
+		}
+
+		allGuilds := k.GetAllGuild(ctx)
+		validGuilds := make([]types.Guild, 0)
+		for _, guild := range allGuilds {
+			guildObjectPermissionId := keeper.GetObjectPermissionIDBytes(guild.Id, player.Id)
+			addressPermissionId := keeper.GetAddressPermissionIDBytes(simAccount.Address.String())
+			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermUpdate) &&
+				cc.PermissionHasOneOf(addressPermissionId, types.PermAssetsAll) {
+				validGuilds = append(validGuilds, guild)
+			}
+		}
+
+		if len(validGuilds) == 0 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateName{}), "no updatable guilds"), nil, nil
+		}
+
+		guild := validGuilds[r.Intn(len(validGuilds))]
+		name := fmt.Sprintf("guild-%d", r.Int63n(100000))
+
+		msg := &types.MsgGuildUpdateName{
+			Creator: simAccount.Address.String(),
+			GuildId: guild.Id,
+			Name:    name,
+		}
+
+		msgServer := keeper.NewMsgServerImpl(k)
+		_, err := msgServer.GuildUpdateName(sdk.WrapSDKContext(ctx), msg)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
+func SimulateMsgPlayerUpdateName(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		if account == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerUpdateName{}), "account not found"), nil, nil
+		}
+
+		playerIndex := k.GetPlayerIndexFromAddress(ctx, simAccount.Address.String())
+		if playerIndex == 0 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerUpdateName{}), "player not found"), nil, nil
+		}
+		player, found := k.GetPlayerFromIndex(ctx, playerIndex)
+		if !found {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerUpdateName{}), "player not found"), nil, nil
+		}
+
+		name := fmt.Sprintf("player_%d", r.Int63n(100000))
+
+		msg := &types.MsgPlayerUpdateName{
+			Creator:  simAccount.Address.String(),
+			PlayerId: player.Id,
+			Name:     name,
+		}
+
+		msgServer := keeper.NewMsgServerImpl(k)
+		_, err := msgServer.PlayerUpdateName(sdk.WrapSDKContext(ctx), msg)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}

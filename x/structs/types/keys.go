@@ -76,8 +76,8 @@ const (
     PermissionKey = "Permission/value/"
     PermissionGuildRank = "Permission/guildRank/"
 
-    PermissionBitCount     = 24
-    PermissionRegisterSize = PermissionBitCount * 8 // 192 bytes
+    PermissionBitCount     = 25
+    PermissionRegisterSize = PermissionBitCount * 8 // 200 bytes
 )
 
 const (
@@ -123,6 +123,7 @@ const (
 	GuildKey      = "Guild/value/"
 	GuildCountKey = "Guild/count/"
 	GuildMembershipApplicationKey = "Guild/membershipApplication/"
+	GuildNameKey  = "Guild/name/"
 
 	GuildBankCollateralPool = "structs/Guild/Collateral/"
 )

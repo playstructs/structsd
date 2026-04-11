@@ -13,5 +13,8 @@ message Substation {
 
     string owner                        = 2;
     string creator                      = 3;
+
+    string name                         = 4;
+    string pfp                          = 5;
 }
 

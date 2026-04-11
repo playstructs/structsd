@@ -527,6 +527,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "newEntryRank"}},
                  },
                  {
+                     RpcMethod:      "GuildUpdateName",
+                     Use:            "guild-update-name [guild id] [name]",
+                     Short:          "Update the cosmetic name of a guild",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "name"}},
+                 },
+                 {
+                     RpcMethod:      "GuildUpdatePfp",
+                     Use:            "guild-update-pfp [guild id] [pfp]",
+                     Short:          "Update the profile picture of a guild",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "pfp"}},
+                 },
+                 {
                      RpcMethod:      "PermissionGrantOnObject",
                      Use:            "permission-grant-on-object [object id] [player id] [permissions]",
                      Short:          "Grant a set of permissions on an object to a player",
@@ -575,6 +587,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "objectId"},{ProtoField: "guildId"},{ProtoField: "permission"}},
                  },
                  {
+                     RpcMethod:      "PlanetUpdateName",
+                     Use:            "planet-update-name [planet id] [name]",
+                     Short:          "Update the cosmetic name of a planet",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "planetId"},{ProtoField: "name"}},
+                 },
+                 {
                      RpcMethod:      "PlanetExplore",
                      Use:            "planet-explore [player id]",
                      Short:          "Explore a new planet",
@@ -597,6 +615,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      Use:            "player-update-guild-rank [player id] [guild rank]",
                      Short:          "Update the guild rank of a player in your guild",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "guildRank"}},
+                 },
+                 {
+                     RpcMethod:      "PlayerUpdateName",
+                     Use:            "player-update-name [player id] [name]",
+                     Short:          "Update the cosmetic name of a player",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "name"}},
+                 },
+                 {
+                     RpcMethod:      "PlayerUpdatePfp",
+                     Use:            "player-update-pfp [player id] [pfp]",
+                     Short:          "Update the profile picture of a player",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "pfp"}},
                  },
                  {
                     RpcMethod:      "PlayerSend",
@@ -771,6 +801,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      Use:            "substation-allocation-disconnect [allocation id]",
                      Short:          "Disconnect an Allocation from a Substation",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "allocationId"}},
+                 },
+                 {
+                     RpcMethod:      "SubstationUpdateName",
+                     Use:            "substation-update-name [substation id] [name]",
+                     Short:          "Update the cosmetic name of a substation",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "substationId"},{ProtoField: "name"}},
+                 },
+                 {
+                     RpcMethod:      "SubstationUpdatePfp",
+                     Use:            "substation-update-pfp [substation id] [pfp]",
+                     Short:          "Update the profile picture of a substation",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "substationId"},{ProtoField: "pfp"}},
                  },
                  {
                      RpcMethod:      "SubstationCreate",

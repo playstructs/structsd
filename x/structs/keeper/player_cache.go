@@ -482,3 +482,37 @@ func (cache *PlayerCache) LeaveGuild() {
 	cache.Player.GuildId = ""
 	cache.Changed = true
 }
+
+func (cache *PlayerCache) GetName() string {
+	if !cache.PlayerLoaded {
+		cache.LoadPlayer()
+	}
+	return cache.Player.Name
+}
+
+func (cache *PlayerCache) GetPfp() string {
+	if !cache.PlayerLoaded {
+		cache.LoadPlayer()
+	}
+	return cache.Player.Pfp
+}
+
+func (cache *PlayerCache) SetName(name string) {
+	if !cache.PlayerLoaded {
+		cache.LoadPlayer()
+	}
+	cache.Player.Name = name
+	cache.Changed = true
+}
+
+func (cache *PlayerCache) SetPfp(pfp string) {
+	if !cache.PlayerLoaded {
+		cache.LoadPlayer()
+	}
+	cache.Player.Pfp = pfp
+	cache.Changed = true
+}
+
+func (cache *PlayerCache) CanUpdateUGCBy(activePlayer *PlayerCache) error {
+	return cache.CC.UGCPermissionCheck(cache, activePlayer)
+}

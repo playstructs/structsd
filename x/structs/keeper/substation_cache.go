@@ -178,4 +178,28 @@ func (cache *SubstationCache) PlayerDecrease(){
     cache.ConnectionCountDecrement(1)
 }
 
+func (cache *SubstationCache) GetName() string {
+    if !cache.SubstationLoaded { cache.LoadSubstation() }
+    return cache.Substation.Name
+}
 
+func (cache *SubstationCache) GetPfp() string {
+    if !cache.SubstationLoaded { cache.LoadSubstation() }
+    return cache.Substation.Pfp
+}
+
+func (cache *SubstationCache) SetName(name string) {
+    if !cache.SubstationLoaded { cache.LoadSubstation() }
+    cache.Substation.Name = name
+    cache.Changed = true
+}
+
+func (cache *SubstationCache) SetPfp(pfp string) {
+    if !cache.SubstationLoaded { cache.LoadSubstation() }
+    cache.Substation.Pfp = pfp
+    cache.Changed = true
+}
+
+func (cache *SubstationCache) CanUpdateUGCBy(activePlayer *PlayerCache) error {
+    return cache.CC.UGCPermissionCheck(cache, activePlayer)
+}

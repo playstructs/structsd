@@ -194,6 +194,7 @@ var (
 	ErrGuildOwnerKick             = sdkerrors.Register(ModuleName, 1506, "cannot kick guild owner")
 	ErrGuildMinimumNotMet         = sdkerrors.Register(ModuleName, 1507, "guild join minimum not met")
 	ErrInvalidGuildJoinBypassLevel = sdkerrors.Register(ModuleName, 1508, "invalid guild join bypass level")
+	ErrGuildNameTaken              = sdkerrors.Register(ModuleName, 1509, "guild name already taken")
 )
 
 // -----------------------------------------------------------------------------
