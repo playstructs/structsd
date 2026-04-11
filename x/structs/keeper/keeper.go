@@ -49,7 +49,7 @@ func NewKeeper(
 		panic(fmt.Sprintf("invalid authority address: %s", authority))
 	}
 
-	return Keeper{
+	k := Keeper{
 		cdc:                   cdc,
 		storeService:          storeService,
 		transientStoreService: transientStoreService,
@@ -61,6 +61,12 @@ func NewKeeper(
 		stakingKeeper: stakingKeeper,
 		accountKeeper: accountKeeper,
 	}
+
+	if transientStoreService == nil {
+		k.logger.Warn("structs keeper initialized WITHOUT transient store — ante throttle features disabled")
+	}
+
+	return k
 }
 
 // GetAuthority returns the module's authority.

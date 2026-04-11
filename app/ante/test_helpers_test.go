@@ -21,21 +21,27 @@ func newTestCtx() sdk.Context {
 
 // mockAnteKeeper implements StructsAnteKeeper for testing.
 type mockAnteKeeper struct {
-	playerIndexes map[string]uint64
-	permissions   map[string]types.Permission
-	gridAttrs     map[string]uint64
-	msgCounts     map[string]uint64
-	throttleKeys  map[string]bool
+	playerIndexes    map[string]uint64
+	permissions      map[string]types.Permission
+	gridAttrs        map[string]uint64
+	msgCounts        map[string]uint64
+	throttleKeys     map[string]bool
+	hasTransientStore bool
 }
 
 func newMockAnteKeeper() *mockAnteKeeper {
 	return &mockAnteKeeper{
-		playerIndexes: make(map[string]uint64),
-		permissions:   make(map[string]types.Permission),
-		gridAttrs:     make(map[string]uint64),
-		msgCounts:     make(map[string]uint64),
-		throttleKeys:  make(map[string]bool),
+		playerIndexes:    make(map[string]uint64),
+		permissions:      make(map[string]types.Permission),
+		gridAttrs:        make(map[string]uint64),
+		msgCounts:        make(map[string]uint64),
+		throttleKeys:     make(map[string]bool),
+		hasTransientStore: true,
 	}
+}
+
+func (m *mockAnteKeeper) HasTransientStore() bool {
+	return m.hasTransientStore
 }
 
 func (m *mockAnteKeeper) GetPlayerIndexFromAddress(_ context.Context, address string) uint64 {

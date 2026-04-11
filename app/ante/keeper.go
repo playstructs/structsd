@@ -15,7 +15,12 @@ type StructsAnteKeeper interface {
 	GetPermissionsByBytes(ctx context.Context, permissionId []byte) types.Permission
 	GetGridAttribute(ctx context.Context, gridAttributeId string) uint64
 
-	// Transient store operations (per-block throttling)
+	// Transient store availability check
+	HasTransientStore() bool
+
+	// Transient store operations (per-block throttling).
+	// All are safe to call even when HasTransientStore() is false — they
+	// degrade gracefully (counts return 0, throttle keys return false).
 	IncrementPlayerMsgCount(ctx context.Context, playerId string, delta uint64) uint64
 	GetPlayerMsgCount(ctx context.Context, playerId string) uint64
 	HasThrottleKey(ctx context.Context, throttleKey string) bool
