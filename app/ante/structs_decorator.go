@@ -52,6 +52,9 @@ func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, 
 			creator = cg.GetCreator()
 		} else if extractor, hasExtractor := CreatorExtractors[typeURL]; hasExtractor {
 			creator = extractor(msg)
+			if creator == "" {
+				return ctx, fmt.Errorf("structs ante: type assertion failed for %s -- message type mismatch", typeURL)
+			}
 		} else {
 			return ctx, fmt.Errorf("structs ante: message %s has no creator accessor", typeURL)
 		}

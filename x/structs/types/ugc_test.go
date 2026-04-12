@@ -107,17 +107,46 @@ func TestValidatePfp(t *testing.T) {
 	}{
 		{"empty string", "", false},
 		{"valid url", "https://example.com/image.png", false},
-		{"max length", strings.Repeat("a", MaxPfpLength), false},
-		{"exceeds max length", strings.Repeat("a", MaxPfpLength+1), true},
+		{"valid http url", "http://example.com/avatar.jpg", false},
+		{"valid ipfs cid", "ipfs://QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ", false},
+		{"max length ascii", strings.Repeat("a", MaxPfpLength), false},
+		{"exceeds max length ascii", strings.Repeat("a", MaxPfpLength+1), true},
+		{"max length multibyte runes", strings.Repeat("日", MaxPfpLength), false},
+		{"exceeds max runes multibyte", strings.Repeat("日", MaxPfpLength+1), true},
+		{"under rune limit but over byte limit", strings.Repeat("日", 100), false},
+
+		// Control character rejection
+		{"null byte", "https://example.com/\x00img.png", true},
+		{"tab character", "https://example.com/\timg.png", true},
+		{"newline", "https://example.com/\nimg.png", true},
+		{"carriage return", "https://example.com/\rimg.png", true},
+		{"DEL character", "https://example.com/\x7Fimg.png", true},
+
+		// HTML/template injection
+		{"angle bracket open", "<script>alert(1)</script>", true},
+		{"angle bracket close", "img src=x onerror=alert(1)>", true},
+		{"backtick", "https://example.com/`inject`", true},
+
+		// Dangerous URI schemes
+		{"javascript scheme", "javascript:alert(1)", true},
+		{"javascript uppercase", "JavaScript:alert(1)", true},
+		{"javascript mixed case", "JaVaScRiPt:alert(1)", true},
+		{"data scheme", "data:text/html,<script>alert(1)</script>", true},
+		{"data image", "data:image/png;base64,abc", true},
+		{"vbscript scheme", "vbscript:msgbox", true},
+
+		// Valid edge cases
+		{"plain text identifier", "avatar-12345", false},
+		{"hash identifier", "abc123def456", false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := ValidatePfp(tt.input)
 			if tt.wantErr {
-				require.Error(t, err)
+				require.Error(t, err, "expected error for input: %q", tt.input)
 			} else {
-				require.NoError(t, err)
+				require.NoError(t, err, "unexpected error for input: %q", tt.input)
 			}
 		})
 	}

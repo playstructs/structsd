@@ -248,16 +248,28 @@ var ChargeMessages = map[string]bool{
 // store. The extractor returns the object ID used as the throttle key.
 var ProofMessages = map[string]func(sdk.Msg) string{
 	"/structs.structs.MsgStructBuildComplete": func(msg sdk.Msg) string {
-		return msg.(*types.MsgStructBuildComplete).StructId
+		if m, ok := msg.(*types.MsgStructBuildComplete); ok {
+			return m.StructId
+		}
+		return ""
 	},
 	"/structs.structs.MsgStructOreMinerComplete": func(msg sdk.Msg) string {
-		return msg.(*types.MsgStructOreMinerComplete).StructId
+		if m, ok := msg.(*types.MsgStructOreMinerComplete); ok {
+			return m.StructId
+		}
+		return ""
 	},
 	"/structs.structs.MsgStructOreRefineryComplete": func(msg sdk.Msg) string {
-		return msg.(*types.MsgStructOreRefineryComplete).StructId
+		if m, ok := msg.(*types.MsgStructOreRefineryComplete); ok {
+			return m.StructId
+		}
+		return ""
 	},
 	"/structs.structs.MsgPlanetRaidComplete": func(msg sdk.Msg) string {
-		return msg.(*types.MsgPlanetRaidComplete).FleetId
+		if m, ok := msg.(*types.MsgPlanetRaidComplete); ok {
+			return m.FleetId
+		}
+		return ""
 	},
 }
 
@@ -273,19 +285,34 @@ var SignatureMessages = map[string]bool{
 // goproto_getters = false and therefore lack a GetCreator() method.
 var CreatorExtractors = map[string]func(sdk.Msg) string{
 	"/structs.structs.MsgReactorInfuse": func(msg sdk.Msg) string {
-		return msg.(*types.MsgReactorInfuse).Creator
+		if m, ok := msg.(*types.MsgReactorInfuse); ok {
+			return m.Creator
+		}
+		return ""
 	},
 	"/structs.structs.MsgReactorDefuse": func(msg sdk.Msg) string {
-		return msg.(*types.MsgReactorDefuse).Creator
+		if m, ok := msg.(*types.MsgReactorDefuse); ok {
+			return m.Creator
+		}
+		return ""
 	},
 	"/structs.structs.MsgReactorBeginMigration": func(msg sdk.Msg) string {
-		return msg.(*types.MsgReactorBeginMigration).Creator
+		if m, ok := msg.(*types.MsgReactorBeginMigration); ok {
+			return m.Creator
+		}
+		return ""
 	},
 	"/structs.structs.MsgReactorCancelDefusion": func(msg sdk.Msg) string {
-		return msg.(*types.MsgReactorCancelDefusion).Creator
+		if m, ok := msg.(*types.MsgReactorCancelDefusion); ok {
+			return m.Creator
+		}
+		return ""
 	},
 	"/structs.structs.MsgPlayerSend": func(msg sdk.Msg) string {
-		return msg.(*types.MsgPlayerSend).Creator
+		if m, ok := msg.(*types.MsgPlayerSend); ok {
+			return m.Creator
+		}
+		return ""
 	},
 }
 
@@ -293,13 +320,22 @@ var CreatorExtractors = map[string]func(sdk.Msg) string{
 // transient store throttle key for per-object-per-block rate limiting.
 var ThrottleKeyExtractors = map[string]func(sdk.Msg) string{
 	"/structs.structs.MsgFleetMove": func(msg sdk.Msg) string {
-		return "fleet/" + msg.(*types.MsgFleetMove).FleetId
+		if m, ok := msg.(*types.MsgFleetMove); ok {
+			return "fleet/" + m.FleetId
+		}
+		return ""
 	},
 	"/structs.structs.MsgPlanetExplore": func(msg sdk.Msg) string {
-		return "explore/" + msg.(*types.MsgPlanetExplore).PlayerId
+		if m, ok := msg.(*types.MsgPlanetExplore); ok {
+			return "explore/" + m.PlayerId
+		}
+		return ""
 	},
 	"/structs.structs.MsgAddressRegister": func(msg sdk.Msg) string {
-		return "register/" + msg.(*types.MsgAddressRegister).PlayerId
+		if m, ok := msg.(*types.MsgAddressRegister); ok {
+			return "register/" + m.PlayerId
+		}
+		return ""
 	},
 }
 

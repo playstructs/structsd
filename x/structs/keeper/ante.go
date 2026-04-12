@@ -11,17 +11,16 @@ const (
 )
 
 // HasTransientStore reports whether the keeper was initialized with a
-// transient store. All throttle methods are no-ops when this returns false,
-// which allows the chain to start safely even if depinject does not provide
-// a TransientStoreService for this module.
+// transient store. NewKeeper panics if the transient store is nil, so this
+// should always return true in production.
 func (k Keeper) HasTransientStore() bool {
 	return k.transientStoreService != nil
 }
 
 // IncrementPlayerMsgCount atomically reads, adds delta, and writes the
 // per-player message count in the transient store. Returns the new total.
-// Returns 0 (no enforcement) if the transient store is unavailable.
 func (k Keeper) IncrementPlayerMsgCount(ctx context.Context, playerId string, delta uint64) uint64 {
+	// Defensive: unreachable since NewKeeper panics if transientStoreService is nil
 	if k.transientStoreService == nil {
 		return 0
 	}
@@ -44,8 +43,8 @@ func (k Keeper) IncrementPlayerMsgCount(ctx context.Context, playerId string, de
 
 // GetPlayerMsgCount reads the current per-player message count from the
 // transient store without modifying it.
-// Returns 0 if the transient store is unavailable.
 func (k Keeper) GetPlayerMsgCount(ctx context.Context, playerId string) uint64 {
+	// Defensive: unreachable since NewKeeper panics if transientStoreService is nil
 	if k.transientStoreService == nil {
 		return 0
 	}
@@ -60,8 +59,8 @@ func (k Keeper) GetPlayerMsgCount(ctx context.Context, playerId string) uint64 {
 }
 
 // HasThrottleKey checks whether a throttle key exists in the transient store.
-// Returns false if the transient store is unavailable.
 func (k Keeper) HasThrottleKey(ctx context.Context, throttleKey string) bool {
+	// Defensive: unreachable since NewKeeper panics if transientStoreService is nil
 	if k.transientStoreService == nil {
 		return false
 	}
@@ -72,8 +71,8 @@ func (k Keeper) HasThrottleKey(ctx context.Context, throttleKey string) bool {
 
 // SetThrottleKey writes a throttle key to the transient store. The value is
 // a single byte (presence marker). Auto-clears at block boundary.
-// No-op if the transient store is unavailable.
 func (k Keeper) SetThrottleKey(ctx context.Context, throttleKey string) {
+	// Defensive: unreachable since NewKeeper panics if transientStoreService is nil
 	if k.transientStoreService == nil {
 		return
 	}

@@ -38,46 +38,65 @@ func initCometBFTConfig() *cmtcfg.Config {
 	return cfg
 }
 
+// StructsAnteConfig holds tuning knobs for the custom Structs ante handler
+// chain. Zero values fall back to built-in defaults in each decorator.
+type StructsAnteConfig struct {
+	MaxFreeTxSize  int    `mapstructure:"max-free-tx-size"`
+	MaxMsgCount    int    `mapstructure:"max-msg-count"`
+	FreeGasCap     uint64 `mapstructure:"free-gas-cap"`
+	PlayerMsgCap   uint64 `mapstructure:"player-msg-cap"`
+	CheckTxAddrCap uint64 `mapstructure:"checktx-addr-cap"`
+}
+
+func defaultStructsAnteConfig() StructsAnteConfig {
+	return StructsAnteConfig{
+		MaxFreeTxSize:  32768,
+		MaxMsgCount:    40,
+		FreeGasCap:     20_000_000,
+		PlayerMsgCap:   40,
+		CheckTxAddrCap: 5,
+	}
+}
+
 // initAppConfig helps to override default appConfig template and configs.
 // return "", nil if no custom configuration is required for the application.
 func initAppConfig() (string, interface{}) {
-	// The following code snippet is just for reference.
 	type CustomAppConfig struct {
 		serverconfig.Config `mapstructure:",squash"`
+		StructsAnte         StructsAnteConfig `mapstructure:"structs-ante"`
 	}
 
-	// Optionally allow the chain developer to overwrite the SDK's default
-	// server config.
 	srvCfg := serverconfig.DefaultConfig()
-	// The SDK's default minimum gas price is set to "" (empty value) inside
-	// app.toml. If left empty by validators, the node will halt on startup.
-	// However, the chain developer can set a default app.toml value for their
-	// validators here.
-	//
-	// In summary:
-	// - if you leave srvCfg.MinGasPrices = "", all validators MUST tweak their
-	//   own app.toml config,
-	// - if you set srvCfg.MinGasPrices non-empty, validators CAN tweak their
-	//   own app.toml to override, or use this default value.
-	//
-	// In tests, we set the min gas prices to 0.
-	// srvCfg.MinGasPrices = "0stake"
-	// srvCfg.BaseConfig.IAVLDisableFastNode = true // disable fastnode by default
 
 	customAppConfig := CustomAppConfig{
-		Config: *srvCfg,
+		Config:      *srvCfg,
+		StructsAnte: defaultStructsAnteConfig(),
 	}
 
-	customAppTemplate := serverconfig.DefaultConfigTemplate
-	// Edit the default template file
-	//
-	// customAppTemplate := serverconfig.DefaultConfigTemplate + `
-	// [wasm]
-	// # This is the maximum sdk gas (wasm and storage) that we allow for any x/wasm "smart" queries
-	// query_gas_limit = 300000
-	// # This is the number of wasm vm instances we keep cached in memory for speed-up
-	// # Warning: this is currently unstable and may lead to crashes, best to keep for 0 unless testing locally
-	// lru_size = 0`
+	customAppTemplate := serverconfig.DefaultConfigTemplate + `
+###############################################################################
+###                       Structs Ante Handler                              ###
+###############################################################################
+
+[structs-ante]
+
+# Maximum transaction size in bytes for free Structs gameplay transactions.
+# Transactions exceeding this are rejected before any state reads.
+max-free-tx-size = 32768
+
+# Maximum number of messages allowed in a single transaction.
+max-msg-count = 40
+
+# Gas cap for the free gas meter used by Structs gameplay transactions.
+free-gas-cap = 20000000
+
+# Maximum Structs messages a single player can submit per block (DeliverTx only).
+player-msg-cap = 40
+
+# Maximum free Structs transactions a single address can submit per block
+# during CheckTx (mempool admission). Node-local, not consensus.
+checktx-addr-cap = 5
+`
 
 	return customAppTemplate, customAppConfig
 }

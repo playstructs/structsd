@@ -138,3 +138,70 @@ func TestStructsDecorator_ChargeCheckPassesDifferentBlock(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, *called)
 }
+
+func TestStructsDecorator_PlayerMsgCapExceeded(t *testing.T) {
+	mk := newMockAnteKeeper()
+	mk.playerIndexes["structs1alice"] = 1
+	addrPermId := fmt.Sprintf("%d-%s@0", types.ObjectType_address, "structs1alice")
+	mk.permissions[addrPermId] = types.PermPlay
+
+	cap := uint64(3)
+	dec := sante.NewStructsDecorator(mk, cap)
+	next, _ := identityHandler()
+
+	msgs := make([]sdk.Msg, 4)
+	for i := range msgs {
+		msgs[i] = &types.MsgFleetMove{Creator: "structs1alice", FleetId: fmt.Sprintf("2-%d", i), DestinationLocationId: "7-1"}
+	}
+	tx := mockTx{msgs: msgs}
+
+	// DeliverTx context: not CheckTx, not simulate
+	ctx := freeCtx().WithBlockHeight(100)
+	_, err := dec.AnteHandle(ctx, tx, false, next)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "exceeded per-block message cap")
+}
+
+func TestStructsDecorator_PlayerMsgCapPassesUnderLimit(t *testing.T) {
+	mk := newMockAnteKeeper()
+	mk.playerIndexes["structs1alice"] = 1
+	addrPermId := fmt.Sprintf("%d-%s@0", types.ObjectType_address, "structs1alice")
+	mk.permissions[addrPermId] = types.PermPlay
+
+	dec := sante.NewStructsDecorator(mk, 40)
+	next, called := identityHandler()
+
+	msgs := make([]sdk.Msg, 5)
+	for i := range msgs {
+		msgs[i] = &types.MsgFleetMove{Creator: "structs1alice", FleetId: fmt.Sprintf("2-%d", i), DestinationLocationId: "7-1"}
+	}
+	tx := mockTx{msgs: msgs}
+
+	ctx := freeCtx().WithBlockHeight(100)
+	_, err := dec.AnteHandle(ctx, tx, false, next)
+	require.NoError(t, err)
+	require.True(t, *called)
+}
+
+func TestStructsDecorator_PlayerMsgCapSkippedDuringCheckTx(t *testing.T) {
+	mk := newMockAnteKeeper()
+	mk.playerIndexes["structs1alice"] = 1
+	addrPermId := fmt.Sprintf("%d-%s@0", types.ObjectType_address, "structs1alice")
+	mk.permissions[addrPermId] = types.PermPlay
+
+	cap := uint64(2)
+	dec := sante.NewStructsDecorator(mk, cap)
+	next, called := identityHandler()
+
+	msgs := make([]sdk.Msg, 5)
+	for i := range msgs {
+		msgs[i] = &types.MsgFleetMove{Creator: "structs1alice", FleetId: fmt.Sprintf("2-%d", i), DestinationLocationId: "7-1"}
+	}
+	tx := mockTx{msgs: msgs}
+
+	// CheckTx: msg cap enforcement is skipped
+	ctx := freeCtx().WithBlockHeight(100).WithIsCheckTx(true)
+	_, err := dec.AnteHandle(ctx, tx, false, next)
+	require.NoError(t, err)
+	require.True(t, *called)
+}

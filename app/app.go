@@ -314,7 +314,7 @@ func New(
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
 	// Set custom ante handler (replaces the default SDK chain)
-	app.setAnteHandler(app.txConfig)
+	app.setAnteHandler(app.txConfig, appOpts)
 
 	// Register legacy modules
 	app.registerIBCModules()
@@ -346,7 +346,28 @@ func New(
 	return app, nil
 }
 
-func (app *App) setAnteHandler(txConfig client.TxConfig) {
+func (app *App) setAnteHandler(txConfig client.TxConfig, appOpts servertypes.AppOptions) {
+	getInt := func(key string) int {
+		if v, ok := appOpts.Get(key).(int); ok {
+			return v
+		}
+		return 0
+	}
+	getUint64 := func(key string) uint64 {
+		switch v := appOpts.Get(key).(type) {
+		case uint64:
+			return v
+		case int64:
+			return uint64(v)
+		case int:
+			return uint64(v)
+		case float64:
+			return uint64(v)
+		default:
+			return 0
+		}
+	}
+
 	anteHandler, err := structsante.NewAnteHandler(structsante.HandlerOptions{
 		AccountKeeper:  app.AccountKeeper,
 		BankKeeper:     app.BankKeeper,
@@ -354,6 +375,12 @@ func (app *App) setAnteHandler(txConfig client.TxConfig) {
 		SignModeHandler: txConfig.SignModeHandler(),
 		CircuitKeeper:  &app.CircuitBreakerKeeper,
 		StructsKeeper:  app.StructsKeeper,
+
+		MaxFreeTxSize:  getInt("structs-ante.max-free-tx-size"),
+		MaxMsgCount:    getInt("structs-ante.max-msg-count"),
+		FreeGasCap:     getUint64("structs-ante.free-gas-cap"),
+		PlayerMsgCap:   getUint64("structs-ante.player-msg-cap"),
+		CheckTxAddrCap: getUint64("structs-ante.checktx-addr-cap"),
 	})
 	if err != nil {
 		panic(err)

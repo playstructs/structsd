@@ -63,7 +63,7 @@ func NewKeeper(
 	}
 
 	if transientStoreService == nil {
-		k.logger.Warn("structs keeper initialized WITHOUT transient store — ante throttle features disabled")
+		panic("structs keeper requires a transient store service for ante throttle features")
 	}
 
 	return k

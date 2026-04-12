@@ -21,10 +21,11 @@ type HandlerOptions struct {
 	CircuitKeeper   circuitante.CircuitBreaker
 	StructsKeeper   StructsAnteKeeper
 
-	MaxFreeTxSize int
-	MaxMsgCount   int
-	FreeGasCap    uint64
-	PlayerMsgCap  uint64
+	MaxFreeTxSize  int
+	MaxMsgCount    int
+	FreeGasCap     uint64
+	PlayerMsgCap   uint64
+	CheckTxAddrCap uint64
 }
 
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
@@ -67,16 +68,19 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, ante.DefaultSigVerificationGasConsumer),
 		ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
 
-		// 16: Nonce increment (prevents replay attacks)
+		// 16: Per-address CheckTx rate limit (after sig verify so signer is authenticated)
+		NewCheckTxThrottleDecorator(options.CheckTxAddrCap),
+
+		// 17: Nonce increment (prevents replay attacks)
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 
-		// 17: PubKey derivation check for signature-bearing Structs messages
+		// 18: PubKey derivation check for signature-bearing Structs messages
 		NewPubKeyDerivationDecorator(),
 
-		// 18: Structs-specific checks (player lookup, permissions, charge, msg cap)
+		// 19: Structs-specific checks (player lookup, permissions, charge, msg cap)
 		NewStructsDecorator(options.StructsKeeper, options.PlayerMsgCap),
 
-		// 19: Per-object throttles (proof, fleet, explore, register)
+		// 20: Per-object throttles (proof, fleet, explore, register, charge)
 		NewThrottleDecorator(options.StructsKeeper),
 	}
 
