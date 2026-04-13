@@ -347,12 +347,6 @@ func New(
 }
 
 func (app *App) setAnteHandler(txConfig client.TxConfig, appOpts servertypes.AppOptions) {
-	getInt := func(key string) int {
-		if v, ok := appOpts.Get(key).(int); ok {
-			return v
-		}
-		return 0
-	}
 	getUint64 := func(key string) uint64 {
 		switch v := appOpts.Get(key).(type) {
 		case uint64:
@@ -376,10 +370,12 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, appOpts servertypes.App
 		CircuitKeeper:  &app.CircuitBreakerKeeper,
 		StructsKeeper:  app.StructsKeeper,
 
-		MaxFreeTxSize:  getInt("structs-ante.max-free-tx-size"),
-		MaxMsgCount:    getInt("structs-ante.max-msg-count"),
-		FreeGasCap:     getUint64("structs-ante.free-gas-cap"),
-		PlayerMsgCap:   getUint64("structs-ante.player-msg-cap"),
+		// Consensus-critical limits are binary-deterministic defaults, not local config.
+		MaxFreeTxSize:  structsante.DefaultMaxFreeTxSize,
+		MaxMsgCount:    structsante.DefaultMaxMsgCount,
+		FreeGasCap:     structsante.DefaultFreeGasCap,
+		PlayerMsgCap:   structsante.DefaultPlayerMsgCap,
+		// CheckTx throttling is node-local and intentionally configurable.
 		CheckTxAddrCap: getUint64("structs-ante.checktx-addr-cap"),
 	})
 	if err != nil {

@@ -49,3 +49,16 @@ func TestGasRouterDecorator_UpdateParamsNotFree(t *testing.T) {
 	require.True(t, *called)
 	require.False(t, sante.IsFreeTx(newCtx))
 }
+
+func TestGasRouterDecorator_DefaultCapApplied(t *testing.T) {
+	dec := sante.NewGasRouterDecorator(0)
+	next, called := identityHandler()
+
+	msg := &types.MsgFleetMove{Creator: "structs1test", FleetId: "2-1", DestinationLocationId: "7-1"}
+	tx := mockTx{msgs: []sdk.Msg{msg}}
+
+	newCtx, err := dec.AnteHandle(newTestCtx(), tx, false, next)
+	require.NoError(t, err)
+	require.True(t, *called)
+	require.EqualValues(t, sante.DefaultFreeGasCap, newCtx.GasMeter().Limit())
+}

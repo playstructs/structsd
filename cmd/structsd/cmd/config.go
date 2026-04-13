@@ -38,22 +38,14 @@ func initCometBFTConfig() *cmtcfg.Config {
 	return cfg
 }
 
-// StructsAnteConfig holds tuning knobs for the custom Structs ante handler
-// chain. Zero values fall back to built-in defaults in each decorator.
+// StructsAnteConfig holds node-local tuning knobs for the custom Structs ante
+// handler chain.
 type StructsAnteConfig struct {
-	MaxFreeTxSize  int    `mapstructure:"max-free-tx-size"`
-	MaxMsgCount    int    `mapstructure:"max-msg-count"`
-	FreeGasCap     uint64 `mapstructure:"free-gas-cap"`
-	PlayerMsgCap   uint64 `mapstructure:"player-msg-cap"`
 	CheckTxAddrCap uint64 `mapstructure:"checktx-addr-cap"`
 }
 
 func defaultStructsAnteConfig() StructsAnteConfig {
 	return StructsAnteConfig{
-		MaxFreeTxSize:  32768,
-		MaxMsgCount:    40,
-		FreeGasCap:     20_000_000,
-		PlayerMsgCap:   40,
 		CheckTxAddrCap: 5,
 	}
 }
@@ -80,22 +72,12 @@ func initAppConfig() (string, interface{}) {
 
 [structs-ante]
 
-# Maximum transaction size in bytes for free Structs gameplay transactions.
-# Transactions exceeding this are rejected before any state reads.
-max-free-tx-size = 32768
-
-# Maximum number of messages allowed in a single transaction.
-max-msg-count = 40
-
-# Gas cap for the free gas meter used by Structs gameplay transactions.
-free-gas-cap = 20000000
-
-# Maximum Structs messages a single player can submit per block (DeliverTx only).
-player-msg-cap = 40
-
 # Maximum free Structs transactions a single address can submit per block
 # during CheckTx (mempool admission). Node-local, not consensus.
 checktx-addr-cap = 5
+
+# Deprecated/ignored in this binary: max-free-tx-size, max-msg-count,
+# free-gas-cap, and player-msg-cap. Those limits are deterministic defaults.
 `
 
 	return customAppTemplate, customAppConfig

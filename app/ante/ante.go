@@ -59,28 +59,31 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		// 10: Gas for tx size (counts toward free meter cap)
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
 
-		// 11: Conditional fee deduction (skip for free Structs txs)
+		// 11: Conditional mempool fee check (skip for free Structs txs)
+		NewConditionalMempoolFeeDecorator(),
+
+		// 12: Conditional fee deduction (skip for free Structs txs)
 		NewConditionalFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper),
 
-		// 12-15: Signature handling
+		// 13-16: Signature handling
 		ante.NewSetPubKeyDecorator(options.AccountKeeper),
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, ante.DefaultSigVerificationGasConsumer),
 		ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
 
-		// 16: Per-address CheckTx rate limit (after sig verify so signer is authenticated)
+		// 17: Per-address CheckTx rate limit (after sig verify so signer is authenticated)
 		NewCheckTxThrottleDecorator(options.CheckTxAddrCap),
 
-		// 17: Nonce increment (prevents replay attacks)
+		// 18: Nonce increment (prevents replay attacks)
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 
-		// 18: PubKey derivation check for signature-bearing Structs messages
+		// 19: PubKey derivation check for signature-bearing Structs messages
 		NewPubKeyDerivationDecorator(),
 
-		// 19: Structs-specific checks (player lookup, permissions, charge, msg cap)
+		// 20: Structs-specific checks (player lookup, permissions, charge, msg cap)
 		NewStructsDecorator(options.StructsKeeper, options.PlayerMsgCap),
 
-		// 20: Per-object throttles (proof, fleet, explore, register, charge)
+		// 21: Per-object throttles (proof, fleet, explore, register, charge)
 		NewThrottleDecorator(options.StructsKeeper),
 	}
 
