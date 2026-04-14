@@ -25,6 +25,7 @@ func CreateUpgradeHandler(
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		migrateUGCPermissions(ctx, keepers)
+		migrateStructTypes(ctx, keepers)
 		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
 }
@@ -55,6 +56,12 @@ func migrateUGCPermissions(ctx context.Context, keepers *upgrades.Keepers) {
 		register := k.ReadGuildRankRegister(ctx, guild.Id, guild.Id)
 		register[UGCBitIndex] = 1
 		k.WriteGuildRankRegister(ctx, guild.Id, guild.Id, register)
+	}
+}
+
+func migrateStructTypes(ctx context.Context, keepers *upgrades.Keepers) {
+	for _, st := range types.CreateStructTypeGenesis() {
+		keepers.StructsKeeper.SetStructType(ctx, st)
 	}
 }
 

@@ -158,6 +158,17 @@ func (structType StructType) GetWeaponRecoilDamage(weaponSystem TechWeaponSystem
     return weaponRecoilDamage
 }
 
+func (structType StructType) GetWeaponGuaranteedShots(weaponSystem TechWeaponSystem) (weaponGuaranteedShots uint64) {
+    switch weaponSystem {
+        case TechWeaponSystem_primaryWeapon:
+            weaponGuaranteedShots = structType.PrimaryWeaponGuaranteedShots
+
+        case TechWeaponSystem_secondaryWeapon:
+            weaponGuaranteedShots = structType.SecondaryWeaponGuaranteedShots
+    }
+    return weaponGuaranteedShots
+}
+
 func (structType StructType) GetWeaponShotSuccessRate(weaponSystem TechWeaponSystem) (weaponShotSuccessRate fraction.Fraction) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:

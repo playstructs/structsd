@@ -25574,6 +25574,12 @@ paths:
 
                         but I really don't feel like renumbering this entire
                         thing again.
+                    primaryWeaponGuaranteedShots:
+                      type: string
+                      format: uint64
+                    secondaryWeaponGuaranteedShots:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -25996,6 +26002,12 @@ paths:
 
                       but I really don't feel like renumbering this entire thing
                       again.
+                  primaryWeaponGuaranteedShots:
+                    type: string
+                    format: uint64
+                  secondaryWeaponGuaranteedShots:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -41324,6 +41336,12 @@ definitions:
 
                 but I really don't feel like renumbering this entire thing
                 again.
+            primaryWeaponGuaranteedShots:
+              type: string
+              format: uint64
+            secondaryWeaponGuaranteedShots:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -42587,6 +42605,12 @@ definitions:
             description: |-
               I wish this was higher up in a different area of the definition
               but I really don't feel like renumbering this entire thing again.
+          primaryWeaponGuaranteedShots:
+            type: string
+            format: uint64
+          secondaryWeaponGuaranteedShots:
+            type: string
+            format: uint64
   structs.structs.QueryGetSubstationResponse:
     type: object
     properties:
@@ -43171,6 +43195,12 @@ definitions:
         description: |-
           I wish this was higher up in a different area of the definition
           but I really don't feel like renumbering this entire thing again.
+      primaryWeaponGuaranteedShots:
+        type: string
+        format: uint64
+      secondaryWeaponGuaranteedShots:
+        type: string
+        format: uint64
   structs.structs.Substation:
     type: object
     properties:

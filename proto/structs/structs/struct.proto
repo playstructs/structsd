@@ -133,6 +133,9 @@ message StructType {
   // I wish this was higher up in a different area of the definition
   // but I really don't feel like renumbering this entire thing again.
   bool triggerRaidDefeatByDestruction = 62;
+
+  uint64 primaryWeaponGuaranteedShots   = 67;
+  uint64 secondaryWeaponGuaranteedShots = 68;
 }
 
 message StructDefender {

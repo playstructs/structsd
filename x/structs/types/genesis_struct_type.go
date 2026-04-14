@@ -224,6 +224,7 @@ structType = StructType{
  SecondaryWeaponRecoilDamage:0,                              
  SecondaryWeaponShotSuccessRateNumerator: 1,   
  SecondaryWeaponShotSuccessRateDenominator: 3, 
+ SecondaryWeaponGuaranteedShots: 1,
             
  PassiveWeaponry: TechPassiveWeaponry_counterAttack,           
  UnitDefenses: TechUnitDefenses_noUnitDefenses,                    

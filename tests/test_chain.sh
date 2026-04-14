@@ -648,7 +648,7 @@ recover_state() {
         fi
     done
 
-    GUILD_ID=$(query query structs guild-all 2>/dev/null | jq -r '.Guild[0].id // empty' 2>/dev/null || echo "")
+    GUILD_ID=$(query query structs player "${PLAYER_1_ID}" 2>/dev/null | jq -r '.Player.guildId // empty' 2>/dev/null || echo "")
     REACTOR_ID=$(query query structs reactor-all 2>/dev/null | jq -r '.Reactor[0].id // empty' 2>/dev/null || echo "")
     SUBSTATION_ID=$(query query structs substation-all 2>/dev/null | jq -r '.Substation[0].id // empty' 2>/dev/null || echo "")
     GUILD_TOKEN_DENOM="uguild.${GUILD_ID}"
@@ -669,10 +669,8 @@ recover_state() {
             echo "  Guild Leader ${LSUFFIX_UPPER}: ${LPID} (${LADDR})"
         fi
     done
-    local GUILD_ALL_JSON
-    GUILD_ALL_JSON=$(query query structs guild-all 2>/dev/null || echo '{}')
-    GUILD_B_ID=$(echo "${GUILD_ALL_JSON}" | jq -r --arg ga "${GUILD_ID}" '[.Guild[] | select(.id != $ga)] | .[0].id // empty' 2>/dev/null || echo "")
-    GUILD_C_ID=$(echo "${GUILD_ALL_JSON}" | jq -r --arg ga "${GUILD_ID}" --arg gb "${GUILD_B_ID:-}" '[.Guild[] | select(.id != $ga and .id != $gb)] | .[0].id // empty' 2>/dev/null || echo "")
+    GUILD_B_ID=$(query query structs player "${GUILD_LEADER_B_ID:-}" 2>/dev/null | jq -r '.Player.guildId // empty' 2>/dev/null || echo "")
+    GUILD_C_ID=$(query query structs player "${GUILD_LEADER_C_ID:-}" 2>/dev/null | jq -r '.Player.guildId // empty' 2>/dev/null || echo "")
     echo "  Guild B: ${GUILD_B_ID:-?}  Guild C: ${GUILD_C_ID:-?}"
 
     for PLAYER_NUM in 2 3 4; do
@@ -902,9 +900,9 @@ assert_eq "Reactor validator matches" "${VALIDATOR_ADDRESS}" "${REACTOR_VAL}"
 run_tx "Creating Guild" \
     tx structs guild-create "${REACTOR_ID}" "oh.energy" "${SUBSTATION_ID}" --from alice
 
-# Discover guild ID
-GUILD_ALL_JSON=$(query query structs guild-all)
-GUILD_ID=$(jqr "${GUILD_ALL_JSON}" '.Guild[0].id')
+# Discover guild ID from Alice's player record (reliable regardless of genesis guilds)
+P1_JSON=$(query query structs player "${PLAYER_1_ID}")
+GUILD_ID=$(jqr "${P1_JSON}" '.Player.guildId')
 assert_not_empty "Guild ID" "${GUILD_ID}"
 echo "  Guild ID: ${GUILD_ID}"
 
@@ -1057,8 +1055,7 @@ run_tx "Granting PermSubstationConnection on substation to Guild Leader C" \
 run_tx "Guild Leader B creates Guild B" \
     tx structs guild-create "${REACTOR_ID}" "guild-b.energy" "${SUBSTATION_ID}" --from guild_leader_b
 
-GUILD_ALL_JSON=$(query query structs guild-all)
-GUILD_B_ID=$(echo "${GUILD_ALL_JSON}" | jq -r --arg ga "${GUILD_ID}" '[.Guild[] | select(.id != $ga)] | .[0].id // empty' 2>/dev/null || echo "")
+GUILD_B_ID=$(query query structs player "${GUILD_LEADER_B_ID}" | jq -r '.Player.guildId // empty' 2>/dev/null || echo "")
 assert_not_empty "Guild B ID" "${GUILD_B_ID}"
 echo "  Guild B ID: ${GUILD_B_ID}"
 
@@ -1066,8 +1063,7 @@ echo "  Guild B ID: ${GUILD_B_ID}"
 run_tx "Guild Leader C creates Guild C" \
     tx structs guild-create "${REACTOR_ID}" "guild-c.energy" "${SUBSTATION_ID}" --from guild_leader_c
 
-GUILD_ALL_JSON=$(query query structs guild-all)
-GUILD_C_ID=$(echo "${GUILD_ALL_JSON}" | jq -r --arg ga "${GUILD_ID}" --arg gb "${GUILD_B_ID}" '[.Guild[] | select(.id != $ga and .id != $gb)] | .[0].id // empty' 2>/dev/null || echo "")
+GUILD_C_ID=$(query query structs player "${GUILD_LEADER_C_ID}" | jq -r '.Player.guildId // empty' 2>/dev/null || echo "")
 assert_not_empty "Guild C ID" "${GUILD_C_ID}"
 echo "  Guild C ID: ${GUILD_C_ID}"
 

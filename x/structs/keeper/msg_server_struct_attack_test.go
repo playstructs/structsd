@@ -155,3 +155,148 @@ func TestMsgStructAttack(t *testing.T) {
 		require.Error(t, err)
 	})
 }
+
+func TestMsgStructAttackGuaranteedShots(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
+
+	attackerPlayer := types.Player{
+		Creator:        "cosmos1gsattacker",
+		PrimaryAddress: "cosmos1gsattacker",
+	}
+	attackerPlayer = testAppendPlayer(k, sdkCtx, attackerPlayer)
+	attackerCapAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, attackerPlayer.Id)
+	k.SetGridAttribute(sdkCtx, attackerCapAttrId, uint64(100000))
+	attackerLastActionAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, attackerPlayer.Id)
+	k.SetGridAttribute(sdkCtx, attackerLastActionAttrId, uint64(0))
+
+	targetPlayer := types.Player{
+		Creator:        "cosmos1gstarget",
+		PrimaryAddress: "cosmos1gstarget",
+	}
+	targetPlayer = testAppendPlayer(k, sdkCtx, targetPlayer)
+	targetCapAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, targetPlayer.Id)
+	k.SetGridAttribute(sdkCtx, targetCapAttrId, uint64(100000))
+
+	planet := testAppendPlanet(k, sdkCtx, types.Planet{
+		Creator:   targetPlayer.Creator,
+		Owner:     targetPlayer.Id,
+		LandSlots: 4,
+		Land:      []string{"", "", "", ""},
+	})
+	targetPlayer.PlanetId = planet.Id
+	k.SetPlayer(sdkCtx, targetPlayer)
+
+	cmdStructType := types.StructType{
+		Id:       10,
+		Type:     types.CommandStruct,
+		Category: types.ObjectType_fleet,
+	}
+	k.SetStructType(sdkCtx, cmdStructType)
+
+	// 3 shots, 1 damage each, near-zero success rate, but 1 guaranteed shot.
+	// The guaranteed shot always hits, so damage should always be >= 1.
+	guaranteedShotType := types.StructType{
+		Id:                                      11,
+		Type:                                    "AttackRunner",
+		Category:                                types.ObjectType_fleet,
+		PrimaryWeapon:                           types.TechActiveWeaponry_attackRun,
+		PrimaryWeaponControl:                    types.TechWeaponControl_unguided,
+		PrimaryWeaponCharge:                     1,
+		PrimaryWeaponTargets:                    1,
+		PrimaryWeaponAmbits:                     0xFFFF,
+		PrimaryWeaponShots:                      3,
+		PrimaryWeaponDamage:                     1,
+		PrimaryWeaponBlockable:                  true,
+		PrimaryWeaponGuaranteedShots:            1,
+		PrimaryWeaponShotSuccessRateNumerator:   1,
+		PrimaryWeaponShotSuccessRateDenominator: 100,
+		PossibleAmbit:                           1 << uint64(types.Ambit_space),
+	}
+	k.SetStructType(sdkCtx, guaranteedShotType)
+
+	targetStructType := types.StructType{
+		Id:            12,
+		Type:          "TargetDummy",
+		Category:      types.ObjectType_planet,
+		MaxHealth:     10,
+		PossibleAmbit: 1 << uint64(types.Ambit_land),
+	}
+	k.SetStructType(sdkCtx, targetStructType)
+
+	fleet := testAppendFleet(k, sdkCtx, types.Fleet{
+		Owner:      attackerPlayer.Id,
+		LocationId: planet.Id,
+		Status:     types.FleetStatus_away,
+	})
+
+	cmdStruct := types.Struct{
+		Creator:        attackerPlayer.Creator,
+		Owner:          attackerPlayer.Id,
+		Type:           cmdStructType.Id,
+		LocationId:     fleet.Id,
+		LocationType:   types.ObjectType_fleet,
+		OperatingAmbit: types.Ambit_space,
+	}
+	cmdStruct = testAppendStruct(k, sdkCtx, cmdStruct)
+	cmdStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, cmdStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, cmdStatusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, cmdStatusAttrId, uint64(types.StructStateOnline))
+
+	fleet.CommandStruct = cmdStruct.Id
+	k.SetFleet(sdkCtx, fleet)
+	attackerPlayer.FleetId = fleet.Id
+	k.SetPlayer(sdkCtx, attackerPlayer)
+
+	attackerStruct := types.Struct{
+		Creator:        attackerPlayer.Creator,
+		Owner:          attackerPlayer.Id,
+		Type:           guaranteedShotType.Id,
+		LocationId:     fleet.Id,
+		LocationType:   types.ObjectType_fleet,
+		OperatingAmbit: types.Ambit_space,
+	}
+	attackerStruct = testAppendStruct(k, sdkCtx, attackerStruct)
+	atkStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, attackerStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, atkStatusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, atkStatusAttrId, uint64(types.StructStateOnline))
+
+	targetStruct := types.Struct{
+		Creator:        targetPlayer.Creator,
+		Owner:          targetPlayer.Id,
+		Type:           targetStructType.Id,
+		LocationId:     planet.Id,
+		LocationType:   types.ObjectType_planet,
+		OperatingAmbit: types.Ambit_land,
+	}
+	targetStruct = testAppendStruct(k, sdkCtx, targetStruct)
+	tgtStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, targetStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, tgtStatusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, tgtStatusAttrId, uint64(types.StructStateOnline))
+
+	tgtHealthAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, targetStruct.Id)
+	k.SetStructAttribute(sdkCtx, tgtHealthAttrId, uint64(10))
+
+	t.Run("guaranteed shot always deals at least 1 damage", func(t *testing.T) {
+		for i := 0; i < 10; i++ {
+			k.SetStructAttribute(sdkCtx, tgtHealthAttrId, uint64(10))
+			testSetStructAttributeFlagRemove(k, sdkCtx, tgtStatusAttrId, uint64(types.StructStateDestroyed))
+			testSetStructAttributeFlagAdd(k, sdkCtx, tgtStatusAttrId, uint64(types.StructStateOnline))
+			k.SetGridAttribute(sdkCtx, attackerLastActionAttrId, uint64(0))
+
+			resp, err := ms.StructAttack(wctx, &types.MsgStructAttack{
+				Creator:           attackerPlayer.Creator,
+				OperatingStructId: attackerStruct.Id,
+				WeaponSystem:      "primaryWeapon",
+				TargetStructId:    []string{targetStruct.Id},
+			})
+			require.NoError(t, err)
+			require.NotNil(t, resp)
+
+			healthAfter := k.GetStructAttribute(sdkCtx, tgtHealthAttrId)
+			require.Less(t, healthAfter, uint64(10), "guaranteed shot should always deal damage (iteration %d)", i)
+		}
+	})
+}
