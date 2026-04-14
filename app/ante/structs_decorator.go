@@ -28,7 +28,7 @@ func NewStructsDecorator(keeper StructsAnteKeeper, playerMsgCap uint64) StructsD
 }
 
 func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
-	if !IsFreeTx(ctx) {
+	if !IsFreeTx(ctx) || IsFreeStakingTx(ctx) {
 		return next(ctx, tx, simulate)
 	}
 

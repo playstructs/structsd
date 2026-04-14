@@ -21,7 +21,7 @@ func NewTxSizeDecorator(maxSize int) TxSizeDecorator {
 
 func (d TxSizeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
 	msgs := tx.GetMsgs()
-	if !IsFreeTransaction(msgs) {
+	if !IsAnyFreeTransaction(msgs) {
 		return next(ctx, tx, simulate)
 	}
 

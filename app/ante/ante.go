@@ -21,11 +21,12 @@ type HandlerOptions struct {
 	CircuitKeeper   circuitante.CircuitBreaker
 	StructsKeeper   StructsAnteKeeper
 
-	MaxFreeTxSize  int
-	MaxMsgCount    int
-	FreeGasCap     uint64
-	PlayerMsgCap   uint64
-	CheckTxAddrCap uint64
+	MaxFreeTxSize     int
+	MaxMsgCount       int
+	FreeGasCap        uint64
+	FreeStakingGasCap uint64
+	PlayerMsgCap      uint64
+	CheckTxAddrCap    uint64
 }
 
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
@@ -44,8 +45,8 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		// 3: SDK SetUpContext creates the initial gas meter from block gas limit
 		ante.NewSetUpContextDecorator(),
 
-		// 4: Replace gas meter with free meter for pure-Structs txs (MUST be after SetUpContext)
-		NewGasRouterDecorator(options.FreeGasCap),
+		// 4: Replace gas meter with free meter for pure-Structs or pure-staking txs
+		NewGasRouterDecorator(options.FreeGasCap, options.FreeStakingGasCap),
 
 		// 5: Circuit breaker (governance can disable message types)
 		circuitante.NewCircuitBreakerDecorator(options.CircuitKeeper),
@@ -85,6 +86,9 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 
 		// 21: Per-object throttles (proof, fleet, explore, register, charge)
 		NewThrottleDecorator(options.StructsKeeper),
+
+		// 22: Per-address staking throttle (1 free staking tx per address per block)
+		NewStakingThrottleDecorator(options.StructsKeeper),
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil

@@ -49,15 +49,17 @@ func (d CheckTxThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 
 	addresses := make(map[string]bool)
 	for _, msg := range msgs {
-		var creator string
-		if cg, ok := msg.(creatorGetter); ok {
-			creator = cg.GetCreator()
-		} else if extractor, hasExtractor := CreatorExtractors[sdk.MsgTypeURL(msg)]; hasExtractor {
-			creator = extractor(msg)
+		typeURL := sdk.MsgTypeURL(msg)
+		var addr string
+		if extractor, ok := StakingSignerExtractors[typeURL]; ok {
+			addr = extractor(msg)
+		} else if cg, ok := msg.(creatorGetter); ok {
+			addr = cg.GetCreator()
+		} else if extractor, hasExtractor := CreatorExtractors[typeURL]; hasExtractor {
+			addr = extractor(msg)
 		}
-		// If extraction fails, pass through; StructsDecorator will catch it
-		if creator != "" {
-			addresses[creator] = true
+		if addr != "" {
+			addresses[addr] = true
 		}
 	}
 

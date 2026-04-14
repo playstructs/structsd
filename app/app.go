@@ -371,10 +371,11 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, appOpts servertypes.App
 		StructsKeeper:  app.StructsKeeper,
 
 		// Consensus-critical limits are binary-deterministic defaults, not local config.
-		MaxFreeTxSize:  structsante.DefaultMaxFreeTxSize,
-		MaxMsgCount:    structsante.DefaultMaxMsgCount,
-		FreeGasCap:     structsante.DefaultFreeGasCap,
-		PlayerMsgCap:   structsante.DefaultPlayerMsgCap,
+		MaxFreeTxSize:     structsante.DefaultMaxFreeTxSize,
+		MaxMsgCount:       structsante.DefaultMaxMsgCount,
+		FreeGasCap:        structsante.DefaultFreeGasCap,
+		FreeStakingGasCap: structsante.DefaultFreeStakingGasCap,
+		PlayerMsgCap:      structsante.DefaultPlayerMsgCap,
 		// CheckTx throttling is node-local and intentionally configurable.
 		CheckTxAddrCap: getUint64("structs-ante.checktx-addr-cap"),
 	})

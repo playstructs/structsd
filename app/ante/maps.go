@@ -2,6 +2,7 @@ package ante
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"structs/x/structs/types"
 )
@@ -339,10 +340,29 @@ var ThrottleKeyExtractors = map[string]func(sdk.Msg) string{
 	},
 }
 
+// FreeStakingMessages enumerates the x/staking message type URLs that receive
+// free gas treatment. These are the operations players must perform to
+// participate in the network — delegation is how they power gameplay.
+var FreeStakingMessages = map[string]bool{
+	"/cosmos.staking.v1beta1.MsgDelegate":                  true,
+	"/cosmos.staking.v1beta1.MsgUndelegate":                true,
+	"/cosmos.staking.v1beta1.MsgBeginRedelegate":           true,
+	"/cosmos.staking.v1beta1.MsgCancelUnbondingDelegation": true,
+	"/cosmos.staking.v1beta1.MsgCreateValidator":           true,
+	"/cosmos.staking.v1beta1.MsgEditValidator":             true,
+}
+
+const StakingMessageTypeURLPrefix = "/cosmos.staking.v1beta1.Msg"
+
 // IsStructsMessage checks if a message type URL belongs to the Structs module.
 func IsStructsMessage(typeURL string) bool {
 	return len(typeURL) > len(StructsMessageTypeURLPrefix) &&
 		typeURL[:len(StructsMessageTypeURLPrefix)] == StructsMessageTypeURLPrefix
+}
+
+// IsStakingMessage checks if a message type URL is a known free staking message.
+func IsStakingMessage(typeURL string) bool {
+	return FreeStakingMessages[typeURL]
 }
 
 // IsFreeTransaction returns true if all messages in the tx are Structs gameplay
@@ -358,4 +378,47 @@ func IsFreeTransaction(msgs []sdk.Msg) bool {
 		}
 	}
 	return true
+}
+
+// IsFreeStakingTransaction returns true if all messages in the tx are known
+// free staking messages. Does not allow mixing with Structs messages.
+func IsFreeStakingTransaction(msgs []sdk.Msg) bool {
+	if len(msgs) == 0 {
+		return false
+	}
+	for _, msg := range msgs {
+		if !FreeStakingMessages[sdk.MsgTypeURL(msg)] {
+			return false
+		}
+	}
+	return true
+}
+
+// IsAnyFreeTransaction returns true if the tx qualifies for free gas treatment
+// (either pure-Structs or pure-staking).
+func IsAnyFreeTransaction(msgs []sdk.Msg) bool {
+	return IsFreeTransaction(msgs) || IsFreeStakingTransaction(msgs)
+}
+
+// StakingSignerExtractors provides direct field access for the signer address
+// of each free staking message type (goproto_getters = false on all of them).
+var StakingSignerExtractors = map[string]func(sdk.Msg) string{
+	"/cosmos.staking.v1beta1.MsgDelegate": func(msg sdk.Msg) string {
+		return msg.(*stakingtypes.MsgDelegate).DelegatorAddress
+	},
+	"/cosmos.staking.v1beta1.MsgUndelegate": func(msg sdk.Msg) string {
+		return msg.(*stakingtypes.MsgUndelegate).DelegatorAddress
+	},
+	"/cosmos.staking.v1beta1.MsgBeginRedelegate": func(msg sdk.Msg) string {
+		return msg.(*stakingtypes.MsgBeginRedelegate).DelegatorAddress
+	},
+	"/cosmos.staking.v1beta1.MsgCancelUnbondingDelegation": func(msg sdk.Msg) string {
+		return msg.(*stakingtypes.MsgCancelUnbondingDelegation).DelegatorAddress
+	},
+	"/cosmos.staking.v1beta1.MsgCreateValidator": func(msg sdk.Msg) string {
+		return msg.(*stakingtypes.MsgCreateValidator).ValidatorAddress
+	},
+	"/cosmos.staking.v1beta1.MsgEditValidator": func(msg sdk.Msg) string {
+		return msg.(*stakingtypes.MsgEditValidator).ValidatorAddress
+	},
 }

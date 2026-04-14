@@ -21,7 +21,7 @@ func NewThrottleDecorator(keeper StructsAnteKeeper) ThrottleDecorator {
 }
 
 func (d ThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
-	if !IsFreeTx(ctx) {
+	if !IsFreeTx(ctx) || IsFreeStakingTx(ctx) {
 		return next(ctx, tx, simulate)
 	}
 

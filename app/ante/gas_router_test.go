@@ -9,10 +9,12 @@ import (
 
 	sante "structs/app/ante"
 	"structs/x/structs/types"
+
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 func TestGasRouterDecorator_FreeTx(t *testing.T) {
-	dec := sante.NewGasRouterDecorator(10_000_000)
+	dec := sante.NewGasRouterDecorator(10_000_000, 0)
 	next, called := identityHandler()
 
 	msg := &types.MsgFleetMove{Creator: "structs1test", FleetId: "2-1", DestinationLocationId: "7-1"}
@@ -22,13 +24,13 @@ func TestGasRouterDecorator_FreeTx(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, *called)
 	require.True(t, sante.IsFreeTx(newCtx))
+	require.False(t, sante.IsFreeStakingTx(newCtx))
 }
 
 func TestGasRouterDecorator_PaidTx(t *testing.T) {
-	dec := sante.NewGasRouterDecorator(10_000_000)
+	dec := sante.NewGasRouterDecorator(10_000_000, 0)
 	next, called := identityHandler()
 
-	// Use a real Structs UpdateParams (routed to paid) as a proxy for non-free
 	tx := mockTx{msgs: []sdk.Msg{&types.MsgUpdateParams{}}}
 
 	newCtx, err := dec.AnteHandle(newTestCtx(), tx, false, next)
@@ -38,7 +40,7 @@ func TestGasRouterDecorator_PaidTx(t *testing.T) {
 }
 
 func TestGasRouterDecorator_UpdateParamsNotFree(t *testing.T) {
-	dec := sante.NewGasRouterDecorator(10_000_000)
+	dec := sante.NewGasRouterDecorator(10_000_000, 0)
 	next, called := identityHandler()
 
 	msg := &types.MsgUpdateParams{}
@@ -51,7 +53,7 @@ func TestGasRouterDecorator_UpdateParamsNotFree(t *testing.T) {
 }
 
 func TestGasRouterDecorator_DefaultCapApplied(t *testing.T) {
-	dec := sante.NewGasRouterDecorator(0)
+	dec := sante.NewGasRouterDecorator(0, 0)
 	next, called := identityHandler()
 
 	msg := &types.MsgFleetMove{Creator: "structs1test", FleetId: "2-1", DestinationLocationId: "7-1"}
@@ -61,4 +63,34 @@ func TestGasRouterDecorator_DefaultCapApplied(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, *called)
 	require.EqualValues(t, sante.DefaultFreeGasCap, newCtx.GasMeter().Limit())
+}
+
+func TestGasRouterDecorator_StakingFreeTx(t *testing.T) {
+	dec := sante.NewGasRouterDecorator(0, 0)
+	next, called := identityHandler()
+
+	msg := &stakingtypes.MsgDelegate{DelegatorAddress: "structs1test", ValidatorAddress: "structsvaloper1test"}
+	tx := mockTx{msgs: []sdk.Msg{msg}}
+
+	newCtx, err := dec.AnteHandle(newTestCtx(), tx, false, next)
+	require.NoError(t, err)
+	require.True(t, *called)
+	require.True(t, sante.IsFreeTx(newCtx))
+	require.True(t, sante.IsFreeStakingTx(newCtx))
+	require.EqualValues(t, sante.DefaultFreeStakingGasCap, newCtx.GasMeter().Limit())
+}
+
+func TestGasRouterDecorator_MixedStakingStructsNotFree(t *testing.T) {
+	dec := sante.NewGasRouterDecorator(0, 0)
+	next, called := identityHandler()
+
+	tx := mockTx{msgs: []sdk.Msg{
+		&types.MsgFleetMove{Creator: "structs1test", FleetId: "2-1", DestinationLocationId: "7-1"},
+		&stakingtypes.MsgDelegate{DelegatorAddress: "structs1test", ValidatorAddress: "structsvaloper1test"},
+	}}
+
+	newCtx, err := dec.AnteHandle(newTestCtx(), tx, false, next)
+	require.NoError(t, err)
+	require.True(t, *called)
+	require.False(t, sante.IsFreeTx(newCtx))
 }
