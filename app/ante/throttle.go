@@ -65,16 +65,21 @@ func (d ThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool,
 			} else if extractor, hasExtractor := CreatorExtractors[typeURL]; hasExtractor {
 				creator = extractor(msg)
 			}
-			if creator != "" {
-				playerIndex := d.keeper.GetPlayerIndexFromAddress(ctx, creator)
-				if playerIndex != 0 {
-					playerId := fmt.Sprintf("%d-%d", types.ObjectType_player, playerIndex)
-					throttleKey := "charge/" + playerId
-					if d.keeper.HasThrottleKey(ctx, throttleKey) {
-						return ctx, fmt.Errorf("structs ante: player %s already used charge action this block", playerId)
-					}
-					d.keeper.SetThrottleKey(ctx, throttleKey)
+			if creator == "" {
+				// Charge-throttled messages must always resolve to a creator address.
+				// Empty creator means a CreatorExtractors entry is missing or the
+				// message type changed shape. Fail closed to surface the regression
+				// rather than silently dropping the charge throttle.
+				return ctx, fmt.Errorf("structs ante: %s declared in ChargeMessages but creator could not be resolved", typeURL)
+			}
+			playerIndex := d.keeper.GetPlayerIndexFromAddress(ctx, creator)
+			if playerIndex != 0 {
+				playerId := fmt.Sprintf("%d-%d", types.ObjectType_player, playerIndex)
+				throttleKey := "charge/" + playerId
+				if d.keeper.HasThrottleKey(ctx, throttleKey) {
+					return ctx, fmt.Errorf("structs ante: player %s already used charge action this block", playerId)
 				}
+				d.keeper.SetThrottleKey(ctx, throttleKey)
 			}
 		}
 	}

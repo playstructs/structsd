@@ -33,7 +33,9 @@ func (k msgServer) PlayerUpdatePfp(goCtx context.Context, msg *types.MsgPlayerUp
 		return emptyResponse, err
 	}
 
+	oldPfp := player.GetPfp()
 	player.SetPfp(msg.Pfp)
+	emitUGCModerationEventIfActorIsNotOwner(ctx, player, activePlayer, types.UGCFieldPfp, oldPfp, msg.Pfp)
 
 	cc.CommitAll()
 	return &types.MsgPlayerUpdateResponse{}, nil

@@ -36,7 +36,9 @@ func (k msgServer) PlanetUpdateName(goCtx context.Context, msg *types.MsgPlanetU
 		return emptyResponse, err
 	}
 
+	oldName := planet.GetName()
 	planet.SetName(msg.Name)
+	emitUGCModerationEventIfActorIsNotOwner(ctx, planet, player, types.UGCFieldName, oldName, msg.Name)
 
 	cc.CommitAll()
 	return &types.MsgPlanetUpdateResponse{}, nil

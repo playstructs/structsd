@@ -33,7 +33,9 @@ func (k msgServer) SubstationUpdateName(goCtx context.Context, msg *types.MsgSub
 		return emptyResponse, err
 	}
 
+	oldName := substation.GetName()
 	substation.SetName(msg.Name)
+	emitUGCModerationEventIfActorIsNotOwner(ctx, substation, player, types.UGCFieldName, oldName, msg.Name)
 
 	cc.CommitAll()
 	return &types.MsgSubstationUpdateResponse{}, nil

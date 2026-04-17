@@ -45,6 +45,7 @@ func (k msgServer) GuildUpdateName(goCtx context.Context, msg *types.MsgGuildUpd
 
 	guild.SetName(msg.Name)
 	k.SetGuildNameIndex(ctx, msg.Name, msg.GuildId)
+	emitUGCModerationEventIfActorIsNotOwner(ctx, guild, player, types.UGCFieldName, oldName, msg.Name)
 
 	cc.CommitAll()
 	return &types.MsgGuildUpdateResponse{}, nil

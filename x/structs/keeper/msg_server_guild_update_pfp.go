@@ -33,7 +33,9 @@ func (k msgServer) GuildUpdatePfp(goCtx context.Context, msg *types.MsgGuildUpda
 		return emptyResponse, err
 	}
 
+	oldPfp := guild.GetPfp()
 	guild.SetPfp(msg.Pfp)
+	emitUGCModerationEventIfActorIsNotOwner(ctx, guild, player, types.UGCFieldPfp, oldPfp, msg.Pfp)
 
 	cc.CommitAll()
 	return &types.MsgGuildUpdateResponse{}, nil

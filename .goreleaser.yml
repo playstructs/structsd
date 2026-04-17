@@ -57,9 +57,10 @@ changelog:
       - Merge branch
 
 release:
-  github:
-    owner: playstructs
-    name: structsd
+  # github owner/name intentionally omitted so goreleaser auto-detects from the
+  # `origin` git remote (or GITHUB_REPOSITORY in CI). This keeps forks usable
+  # without editing the file and avoids accidentally pushing fork releases to
+  # the upstream repo.
   name_template: "v{{ .Version }}"
   draft: false
   prerelease: auto

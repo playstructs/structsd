@@ -33,11 +33,19 @@ func (k Keeper) GuildRankPermissionByObject(goCtx context.Context, req *types.Qu
 
 	var records []*types.GuildRankPermissionRecord
 	pageRes, err := query.Paginate(prefixStore, req.Pagination, func(key []byte, value []byte) error {
-		if len(value) != types.PermissionRegisterSize {
+		// Accept any value whose length is a multiple of 8, decoding as many
+		// slots as are present and treating missing trailing slots as zero
+		// (rank 0 = no record). This matches ReadGuildRankRegister semantics
+		// and is forward/backward compatible across PermissionRegisterSize bumps.
+		if len(value) < 8 {
 			return nil
 		}
+		storedSlots := len(value) / 8
+		if storedSlots > types.PermissionBitCount {
+			storedSlots = types.PermissionBitCount
+		}
 		guildId := string(key)
-		for bit := 0; bit < types.PermissionBitCount; bit++ {
+		for bit := 0; bit < storedSlots; bit++ {
 			rank := binary.BigEndian.Uint64(value[bit*8 : bit*8+8])
 			if rank != 0 {
 				records = append(records, &types.GuildRankPermissionRecord{

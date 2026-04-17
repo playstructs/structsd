@@ -33,7 +33,9 @@ func (k msgServer) PlayerUpdateName(goCtx context.Context, msg *types.MsgPlayerU
 		return emptyResponse, err
 	}
 
+	oldName := player.GetName()
 	player.SetName(msg.Name)
+	emitUGCModerationEventIfActorIsNotOwner(ctx, player, activePlayer, types.UGCFieldName, oldName, msg.Name)
 
 	cc.CommitAll()
 	return &types.MsgPlayerUpdateResponse{}, nil

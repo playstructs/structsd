@@ -33,7 +33,9 @@ func (k msgServer) SubstationUpdatePfp(goCtx context.Context, msg *types.MsgSubs
 		return emptyResponse, err
 	}
 
+	oldPfp := substation.GetPfp()
 	substation.SetPfp(msg.Pfp)
+	emitUGCModerationEventIfActorIsNotOwner(ctx, substation, player, types.UGCFieldPfp, oldPfp, msg.Pfp)
 
 	cc.CommitAll()
 	return &types.MsgSubstationUpdateResponse{}, nil

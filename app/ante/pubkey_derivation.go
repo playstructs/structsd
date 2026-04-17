@@ -33,7 +33,12 @@ func (d PubKeyDerivationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simula
 
 		pkMsg, ok := msg.(pubKeyMessage)
 		if !ok {
-			continue
+			// SignatureMessages declares this type URL as needing pubkey
+			// derivation, but the concrete type doesn't satisfy the
+			// pubKeyMessage interface. This is always a maintainer bug
+			// (SignatureMessages drift) -- fail closed rather than skip
+			// the cryptographic pre-check.
+			return ctx, fmt.Errorf("structs ante: %s declared in SignatureMessages but does not implement pubKeyMessage", typeURL)
 		}
 
 		pubKeyHex := pkMsg.GetProofPubKey()
