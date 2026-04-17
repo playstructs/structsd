@@ -40,6 +40,8 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateJoinInfusionMinimumBypassByRequest{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateOwnerId{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateEntryRank{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateName{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdatePfp{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildMembershipInvite{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildMembershipInviteApprove{},)
@@ -64,9 +66,12 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlanetExplore{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlanetRaidComplete{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlanetUpdateName{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdatePrimaryAddress{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdateGuildRank{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdateName{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdatePfp{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerSend{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderCreate{},)
@@ -110,6 +115,8 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationCreate{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationDelete{}, )
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationUpdateName{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationUpdatePfp{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationAllocationConnect{}, )
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationAllocationDisconnect{}, )
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationPlayerConnect{}, )

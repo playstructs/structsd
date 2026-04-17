@@ -16,9 +16,10 @@ import (
 
 type (
 	Keeper struct {
-		cdc          codec.BinaryCodec
-		storeService store.KVStoreService
-		logger       log.Logger
+		cdc                   codec.BinaryCodec
+		storeService          store.KVStoreService
+		transientStoreService store.TransientStoreService
+		logger                log.Logger
 
 		// the address capable of executing a MsgUpdateParams message. Typically, this
 		// should be the x/gov module account.
@@ -35,6 +36,7 @@ type (
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeService store.KVStoreService,
+	transientStoreService store.TransientStoreService,
 	logger log.Logger,
 	authority string,
 	ibcKeeperFn func() *ibckeeper.Keeper,
@@ -47,17 +49,24 @@ func NewKeeper(
 		panic(fmt.Sprintf("invalid authority address: %s", authority))
 	}
 
-	return Keeper{
-		cdc:          cdc,
-		storeService: storeService,
-		authority:    authority,
-		logger:       logger.With("module", "structs"),
-		ibcKeeperFn:  ibcKeeperFn,
+	k := Keeper{
+		cdc:                   cdc,
+		storeService:          storeService,
+		transientStoreService: transientStoreService,
+		authority:             authority,
+		logger:                logger.With("module", "structs"),
+		ibcKeeperFn:           ibcKeeperFn,
 
 		bankKeeper:    bankKeeper,
 		stakingKeeper: stakingKeeper,
 		accountKeeper: accountKeeper,
 	}
+
+	if transientStoreService == nil {
+		panic("structs keeper requires a transient store service for ante throttle features")
+	}
+
+	return k
 }
 
 // GetAuthority returns the module's authority.

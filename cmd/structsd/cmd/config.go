@@ -38,46 +38,47 @@ func initCometBFTConfig() *cmtcfg.Config {
 	return cfg
 }
 
+// StructsAnteConfig holds node-local tuning knobs for the custom Structs ante
+// handler chain.
+type StructsAnteConfig struct {
+	CheckTxAddrCap uint64 `mapstructure:"checktx-addr-cap"`
+}
+
+func defaultStructsAnteConfig() StructsAnteConfig {
+	return StructsAnteConfig{
+		CheckTxAddrCap: 5,
+	}
+}
+
 // initAppConfig helps to override default appConfig template and configs.
 // return "", nil if no custom configuration is required for the application.
 func initAppConfig() (string, interface{}) {
-	// The following code snippet is just for reference.
 	type CustomAppConfig struct {
 		serverconfig.Config `mapstructure:",squash"`
+		StructsAnte         StructsAnteConfig `mapstructure:"structs-ante"`
 	}
 
-	// Optionally allow the chain developer to overwrite the SDK's default
-	// server config.
 	srvCfg := serverconfig.DefaultConfig()
-	// The SDK's default minimum gas price is set to "" (empty value) inside
-	// app.toml. If left empty by validators, the node will halt on startup.
-	// However, the chain developer can set a default app.toml value for their
-	// validators here.
-	//
-	// In summary:
-	// - if you leave srvCfg.MinGasPrices = "", all validators MUST tweak their
-	//   own app.toml config,
-	// - if you set srvCfg.MinGasPrices non-empty, validators CAN tweak their
-	//   own app.toml to override, or use this default value.
-	//
-	// In tests, we set the min gas prices to 0.
-	// srvCfg.MinGasPrices = "0stake"
-	// srvCfg.BaseConfig.IAVLDisableFastNode = true // disable fastnode by default
 
 	customAppConfig := CustomAppConfig{
-		Config: *srvCfg,
+		Config:      *srvCfg,
+		StructsAnte: defaultStructsAnteConfig(),
 	}
 
-	customAppTemplate := serverconfig.DefaultConfigTemplate
-	// Edit the default template file
-	//
-	// customAppTemplate := serverconfig.DefaultConfigTemplate + `
-	// [wasm]
-	// # This is the maximum sdk gas (wasm and storage) that we allow for any x/wasm "smart" queries
-	// query_gas_limit = 300000
-	// # This is the number of wasm vm instances we keep cached in memory for speed-up
-	// # Warning: this is currently unstable and may lead to crashes, best to keep for 0 unless testing locally
-	// lru_size = 0`
+	customAppTemplate := serverconfig.DefaultConfigTemplate + `
+###############################################################################
+###                       Structs Ante Handler                              ###
+###############################################################################
+
+[structs-ante]
+
+# Maximum free Structs transactions a single address can submit per block
+# during CheckTx (mempool admission). Node-local, not consensus.
+checktx-addr-cap = 5
+
+# Deprecated/ignored in this binary: max-free-tx-size, max-msg-count,
+# free-gas-cap, and player-msg-cap. Those limits are deterministic defaults.
+`
 
 	return customAppTemplate, customAppConfig
 }

@@ -22,6 +22,8 @@ message Player {
 
   uint64 guildRank      = 9;
 
+  string name           = 10;
+  string pfp            = 11;
 }
 
 message PlayerInventory {

@@ -160,10 +160,14 @@ func (k Keeper) ReadGuildRankRegister(ctx context.Context, objectId string, guil
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	var register [types.PermissionBitCount]uint64
 	data := store.Get(GuildRankRegisterKey(objectId, guildId))
-	if data == nil || len(data) != types.PermissionRegisterSize {
+	if data == nil || len(data) < 8 {
 		return register
 	}
-	for i := 0; i < types.PermissionBitCount; i++ {
+	storedSlots := len(data) / 8
+	if storedSlots > types.PermissionBitCount {
+		storedSlots = types.PermissionBitCount
+	}
+	for i := 0; i < storedSlots; i++ {
 		register[i] = binary.BigEndian.Uint64(data[i*8 : i*8+8])
 	}
 	return register
@@ -243,8 +247,12 @@ func (k Keeper) ClearPermissionGuildRankByObject(ctx context.Context, objectId s
 		guildId := strings.TrimPrefix(string(kCopy), string(prefixBytes))
 		var reg [types.PermissionBitCount]uint64
 		data := iterator.Value()
-		if len(data) == types.PermissionRegisterSize {
-			for i := 0; i < types.PermissionBitCount; i++ {
+		if len(data) >= 8 {
+			storedSlots := len(data) / 8
+			if storedSlots > types.PermissionBitCount {
+				storedSlots = types.PermissionBitCount
+			}
+			for i := 0; i < storedSlots; i++ {
 				reg[i] = binary.BigEndian.Uint64(data[i*8 : i*8+8])
 			}
 		}
@@ -279,7 +287,7 @@ func (k Keeper) GetAllGuildRankPermissionExport(ctx context.Context) (list []*ty
 	for ; iterator.Valid(); iterator.Next() {
 		key := string(iterator.Key())
 		data := iterator.Value()
-		if len(data) != types.PermissionRegisterSize {
+		if len(data) < 8 {
 			continue
 		}
 
@@ -290,7 +298,11 @@ func (k Keeper) GetAllGuildRankPermissionExport(ctx context.Context) (list []*ty
 		objectId := key[:slash]
 		guildId := key[slash+1:]
 
-		for bit := 0; bit < types.PermissionBitCount; bit++ {
+		storedSlots := len(data) / 8
+		if storedSlots > types.PermissionBitCount {
+			storedSlots = types.PermissionBitCount
+		}
+		for bit := 0; bit < storedSlots; bit++ {
 			rank := binary.BigEndian.Uint64(data[bit*8 : bit*8+8])
 			if rank != 0 {
 				list = append(list, &types.GuildRankPermissionRecord{

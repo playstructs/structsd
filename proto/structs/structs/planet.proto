@@ -31,6 +31,7 @@ message Planet {
   string locationListStart  = 14; // First in line to battle planet
   string locationListLast   = 15; // End of the line
 
+  string name               = 16;
 }
 
 message PlanetAttributeRecord {

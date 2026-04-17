@@ -463,3 +463,18 @@ func (cache *PlanetCache) AttemptComplete() (error) {
 func (cache *PlanetCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
     return types.NewAllocationError(cache.ID(), "unacceptable_source")
 }
+
+func (cache *PlanetCache) GetName() string {
+    if !cache.PlanetLoaded { cache.LoadPlanet() }
+    return cache.Planet.Name
+}
+
+func (cache *PlanetCache) SetName(name string) {
+    if !cache.PlanetLoaded { cache.LoadPlanet() }
+    cache.Planet.Name = name
+    cache.Changed = true
+}
+
+func (cache *PlanetCache) CanUpdateUGCBy(activePlayer *PlayerCache) error {
+    return cache.CC.UGCPermissionCheck(cache, activePlayer)
+}

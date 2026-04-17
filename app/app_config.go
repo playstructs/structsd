@@ -230,10 +230,10 @@ var (
 				Name:   paramstypes.ModuleName,
 				Config: appconfig.WrapAny(&paramsmodulev1.Module{}),
 			},
-			{
-				Name:   "tx",
-				Config: appconfig.WrapAny(&txconfigv1.Config{}),
-			},
+		{
+			Name:   "tx",
+			Config: appconfig.WrapAny(&txconfigv1.Config{}),
+		},
 			{
 				Name:   genutiltypes.ModuleName,
 				Config: appconfig.WrapAny(&genutilmodulev1.Module{}),

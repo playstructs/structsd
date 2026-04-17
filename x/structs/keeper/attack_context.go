@@ -267,8 +267,10 @@ func (ac *AttackContext) resolveVolleyDamageOn(target *StructCache, isBlocker bo
 
 	shots := make([]ShotOutcome, n)
 	var rolled uint64
+	guaranteedShots := int(attacker.GetStructType().GetWeaponGuaranteedShots(ac.WeaponSystem))
 	for i := 0; i < n; i++ {
-		if attacker.IsSuccessful(attacker.GetStructType().GetWeaponShotSuccessRate(ac.WeaponSystem)) {
+		hit := i < guaranteedShots || attacker.IsSuccessful(attacker.GetStructType().GetWeaponShotSuccessRate(ac.WeaponSystem))
+		if hit {
 			d := attacker.GetStructType().GetWeaponDamage(ac.WeaponSystem)
 			shots[i] = ShotOutcome{Hit: true, Damage: d}
 			rolled += d

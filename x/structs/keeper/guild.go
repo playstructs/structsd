@@ -139,6 +139,25 @@ func (k Keeper) RemoveGuild(ctx context.Context, guildId string) {
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ObjectId: guildId})
 }
 
+func (k Keeper) SetGuildNameIndex(ctx context.Context, name string, guildId string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildNameKey))
+	store.Set([]byte(types.NormalizeName(name)), []byte(guildId))
+}
+
+func (k Keeper) RemoveGuildNameIndex(ctx context.Context, name string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildNameKey))
+	store.Delete([]byte(types.NormalizeName(name)))
+}
+
+func (k Keeper) GetGuildIdByName(ctx context.Context, name string) (string, bool) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildNameKey))
+	bz := store.Get([]byte(types.NormalizeName(name)))
+	if bz == nil {
+		return "", false
+	}
+	return string(bz), true
+}
+
 // GetAllGuild returns all guild
 func (k Keeper) GetAllGuild(ctx context.Context) (list []types.Guild) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildKey))

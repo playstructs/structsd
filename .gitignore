@@ -1,6 +1,8 @@
 vue/node_modules
 vue/dist
 release/
+build/
+dist/
 web/
 ts/
 .idea/
@@ -8,3 +10,4 @@ ts/
 .DS_Store
 structs.sh
 keeper.test
+coverage.txt

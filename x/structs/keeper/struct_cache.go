@@ -436,14 +436,15 @@ func (cache *StructCache) IsSuccessful(successRate fraction.Fraction) bool {
 	buf := bytes.NewBuffer(uctx.BlockHeader().AppHash)
 	binary.Read(buf, binary.BigEndian, &seed)
 
-	seedOffset := seed + cache.GetOwner().GetNextNonce()
+	nonceOffset := cache.GetOwner().GetNextNonce()
+	seedOffset := seed + nonceOffset
 
 	randomnessOrb := rand.New(rand.NewSource(seedOffset))
 	min := 1
 	max := int(successRate.Denominator())
 
 	randomnessCheck := ((randomnessOrb.Intn(max-min+1) + min) <= int(successRate.Numerator()))
-	cache.CC.k.logger.Info("Struct Success-Check Randomness", "structId", cache.GetStructId(), "seed", seed, "offset", cache.GetOwner().GetNextNonce(), "seedOffset", seedOffset, "numerator", successRate.Numerator(), "denominator", successRate.Denominator(), "success", randomnessCheck)
+	cache.CC.k.logger.Debug("Struct Success-Check Randomness", "structId", cache.GetStructId(), "seed", seed, "offset", nonceOffset, "seedOffset", seedOffset, "numerator", successRate.Numerator(), "denominator", successRate.Denominator(), "success", randomnessCheck)
 
 	return randomnessCheck
 }

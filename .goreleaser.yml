@@ -1,0 +1,66 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - main: ./cmd/structsd
+    binary: structsd
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X github.com/cosmos/cosmos-sdk/version.Name=structs
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=structsd
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
+      - -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
+      - -X github.com/cometbft/cometbft/version.TMCoreSemVer={{ .Env.TM_VERSION }}
+    tags:
+      - netgo
+      - ledger
+    flags:
+      - -mod=readonly
+      - -trimpath
+
+archives:
+  - format: tar.gz
+    name_template: "structsd-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "^chore:"
+      - Merge pull request
+      - Merge branch
+
+release:
+  # github owner/name intentionally omitted so goreleaser auto-detects from the
+  # `origin` git remote (or GITHUB_REPOSITORY in CI). This keeps forks usable
+  # without editing the file and avoids accidentally pushing fork releases to
+  # the upstream repo.
+  name_template: "v{{ .Version }}"
+  draft: false
+  prerelease: auto

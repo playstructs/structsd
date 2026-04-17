@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -75,7 +76,12 @@ import (
 	structsmodulekeeper "structs/x/structs/keeper"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
+	structsante "structs/app/ante"
+	"structs/app/upgrades"
+	v0_16_0 "structs/app/upgrades/v0_16_0"
 	"structs/docs"
+
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 )
 
 const (
@@ -307,6 +313,9 @@ func New(
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
+	// Set custom ante handler (replaces the default SDK chain)
+	app.setAnteHandler(app.txConfig, appOpts)
+
 	// Register legacy modules
 	app.registerIBCModules()
 
@@ -328,22 +337,90 @@ func New(
 	app.sm = module.NewSimulationManagerFromAppModules(app.ModuleManager.Modules, overrideModules)
 	app.sm.RegisterStoreDecoders()
 
-	// A custom InitChainer can be set if extra pre-init-genesis logic is required.
-	// By default, when using app wiring enabled module, this is not required.
-	// For instance, the upgrade module will set automatically the module version map in its init genesis thanks to app wiring.
-	// However, when registering a module manually (i.e. that does not support app wiring), the module version map
-	// must be set manually as follow. The upgrade module will de-duplicate the module version map.
-	//
-	// app.SetInitChainer(func(ctx sdk.Context, req *abci.RequestInitChain) (*abci.ResponseInitChain, error) {
-	// 	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.ModuleManager.GetVersionMap())
-	// 	return app.App.InitChainer(ctx, req)
-	// })
+	app.RegisterUpgradeHandlers()
 
 	if err := app.Load(loadLatest); err != nil {
 		return nil, err
 	}
 
 	return app, nil
+}
+
+func (app *App) setAnteHandler(txConfig client.TxConfig, appOpts servertypes.AppOptions) {
+	getUint64 := func(key string) uint64 {
+		switch v := appOpts.Get(key).(type) {
+		case uint64:
+			return v
+		case int64:
+			return uint64(v)
+		case int:
+			return uint64(v)
+		case float64:
+			return uint64(v)
+		default:
+			return 0
+		}
+	}
+
+	anteHandler, err := structsante.NewAnteHandler(structsante.HandlerOptions{
+		AccountKeeper:  app.AccountKeeper,
+		BankKeeper:     app.BankKeeper,
+		FeegrantKeeper: app.FeeGrantKeeper,
+		SignModeHandler: txConfig.SignModeHandler(),
+		CircuitKeeper:  &app.CircuitBreakerKeeper,
+		StructsKeeper:  app.StructsKeeper,
+
+		// Consensus-critical limits are binary-deterministic defaults, not local config.
+		MaxFreeTxSize:     structsante.DefaultMaxFreeTxSize,
+		MaxMsgCount:       structsante.DefaultMaxMsgCount,
+		FreeGasCap:        structsante.DefaultFreeGasCap,
+		FreeStakingGasCap: structsante.DefaultFreeStakingGasCap,
+		PlayerMsgCap:      structsante.DefaultPlayerMsgCap,
+		// CheckTx throttling is node-local and intentionally configurable.
+		CheckTxAddrCap: getUint64("structs-ante.checktx-addr-cap"),
+	})
+	if err != nil {
+		panic(err)
+	}
+	app.SetAnteHandler(anteHandler)
+}
+
+// RegisterUpgradeHandlers registers all upgrade handlers for named on-chain upgrades
+// and configures the store loader for any pending upgrade that requires store key changes.
+func (app *App) RegisterUpgradeHandlers() {
+	upgradeKeepers := &upgrades.Keepers{
+		UpgradeKeeper: app.UpgradeKeeper,
+		StructsKeeper: app.StructsKeeper,
+		AccountKeeper: app.AccountKeeper,
+		BankKeeper:    app.BankKeeper,
+		StakingKeeper: app.StakingKeeper,
+	}
+
+	upgradesList := []upgrades.Upgrade{
+		v0_16_0.NewUpgrade(),
+	}
+
+	for _, upgrade := range upgradesList {
+		app.UpgradeKeeper.SetUpgradeHandler(
+			upgrade.UpgradeName,
+			upgrade.CreateUpgradeHandler(app.ModuleManager, app.Configurator(), upgradeKeepers),
+		)
+	}
+
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Sprintf("failed to read upgrade info from disk: %s", err))
+	}
+
+	if app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		return
+	}
+
+	for _, upgrade := range upgradesList {
+		if upgradeInfo.Name == upgrade.UpgradeName {
+			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &upgrade.StoreUpgrades))
+		}
+	}
 }
 
 // LegacyAmino returns App's amino codec.

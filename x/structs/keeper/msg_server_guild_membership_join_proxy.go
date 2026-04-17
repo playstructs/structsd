@@ -156,6 +156,20 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 		player.MigrateSubstation(substation.GetSubstationId())
 	}
 
+	if msg.PlayerName != "" {
+		if err := types.ValidatePlayerName(msg.PlayerName); err != nil {
+			return emptyResponse, err
+		}
+		player.SetName(msg.PlayerName)
+	}
+
+	if msg.PlayerPfp != "" {
+		if err := types.ValidatePfp(msg.PlayerPfp); err != nil {
+			return emptyResponse, err
+		}
+		player.SetPfp(msg.PlayerPfp)
+	}
+
 	// The proxy join has completely mostly successfully at this point
 	// Increase the nonce of the player account to prevent replay of this signed message
 	cc.SetGridAttributeIncrement(GetGridAttributeIDByObjectId(types.GridAttributeType_proxyNonce, player.GetPlayerId()), 1)

@@ -23,10 +23,16 @@ genesis:
       constant_fee:
         denom: ualpha
     gov:
-      deposit_params:
+      params:
         min_deposit:
-        - amount: "100000000"
+        - amount: "10000000"
           denom: ualpha
+        expedited_min_deposit:
+        - amount: "50000000"
+          denom: ualpha
+        max_deposit_period: "120s"
+        voting_period: "120s"
+        expedited_voting_period: "60s"
     staking:
       params:
         bond_denom: ualpha

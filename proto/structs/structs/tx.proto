@@ -53,6 +53,8 @@ service Msg {
   rpc GuildUpdateJoinInfusionMinimumBypassByInvite  (MsgGuildUpdateJoinInfusionMinimumBypassByInvite  ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateJoinInfusionMinimumBypassByRequest (MsgGuildUpdateJoinInfusionMinimumBypassByRequest ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateEntryRank                          (MsgGuildUpdateEntryRank                          ) returns (MsgGuildUpdateResponse );
+  rpc GuildUpdateName                               (MsgGuildUpdateName                               ) returns (MsgGuildUpdateResponse );
+  rpc GuildUpdatePfp                                (MsgGuildUpdatePfp                                ) returns (MsgGuildUpdateResponse );
 
   rpc GuildMembershipInvite           (MsgGuildMembershipInvite        ) returns (MsgGuildMembershipResponse );
   rpc GuildMembershipInviteApprove    (MsgGuildMembershipInviteApprove ) returns (MsgGuildMembershipResponse );
@@ -77,12 +79,15 @@ service Msg {
   rpc PermissionGuildRankRevoke      (MsgPermissionGuildRankRevoke      ) returns (MsgPermissionResponse);
 
 
+  rpc PlanetUpdateName               (MsgPlanetUpdateName              ) returns (MsgPlanetUpdateResponse                 );
   rpc PlanetExplore                  (MsgPlanetExplore                 ) returns (MsgPlanetExploreResponse                );
   rpc PlanetRaidComplete             (MsgPlanetRaidComplete            ) returns (MsgPlanetRaidCompleteResponse           );
 
   rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse   );
 
   rpc PlayerUpdateGuildRank          (MsgPlayerUpdateGuildRank         ) returns (MsgPlayerUpdateGuildRankResponse);
+  rpc PlayerUpdateName               (MsgPlayerUpdateName              ) returns (MsgPlayerUpdateResponse);
+  rpc PlayerUpdatePfp                (MsgPlayerUpdatePfp               ) returns (MsgPlayerUpdateResponse);
   rpc PlayerSend                     (MsgPlayerSend                    ) returns (MsgPlayerSendResponse);
 
   rpc ProviderCreate                 (MsgProviderCreate                ) returns (MsgProviderResponse);
@@ -131,6 +136,8 @@ service Msg {
   //  rpc StructStorageRecall            (MsgStructStorageRecall           ) returns (MsgStructStatusResponse                  );
 
 
+  rpc SubstationUpdateName           (MsgSubstationUpdateName          ) returns (MsgSubstationUpdateResponse              );
+  rpc SubstationUpdatePfp            (MsgSubstationUpdatePfp           ) returns (MsgSubstationUpdateResponse              );
   rpc SubstationCreate               (MsgSubstationCreate              ) returns (MsgSubstationCreateResponse              );
   rpc SubstationDelete               (MsgSubstationDelete              ) returns (MsgSubstationDeleteResponse              );
   rpc SubstationAllocationConnect    (MsgSubstationAllocationConnect   ) returns (MsgSubstationAllocationConnectResponse   );
@@ -353,6 +360,22 @@ message MsgGuildUpdateEntryRank {
 
 message MsgGuildUpdateResponse{}
 
+message MsgGuildUpdateName {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator  = 1;
+  string guildId  = 2;
+  string name     = 3;
+}
+
+message MsgGuildUpdatePfp {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator  = 1;
+  string guildId  = 2;
+  string pfp      = 3;
+}
+
 
 message MsgGuildMembershipInvite {
   option (cosmos.msg.v1.signer) = "creator";
@@ -409,6 +432,9 @@ message MsgGuildMembershipJoinProxy {
 
   string proofPubKey       = 4;
   string proofSignature    = 5;
+
+  string playerName        = 6;
+  string playerPfp         = 7;
 }
 
 message MsgGuildMembershipKick {
@@ -557,6 +583,16 @@ message MsgPlanetRaidCompleteResponse {
   uint64 oreStolen = 3;
 }
 
+message MsgPlanetUpdateName {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator  = 1;
+  string planetId = 2;
+  string name     = 3;
+}
+
+message MsgPlanetUpdateResponse {}
+
 message MsgPlayerUpdatePrimaryAddress {
   option (cosmos.msg.v1.signer) = "creator";
 
@@ -584,6 +620,24 @@ message MsgPlayerUpdateGuildRank {
 }
 
 message MsgPlayerUpdateGuildRankResponse {}
+
+message MsgPlayerUpdateName {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator  = 1;
+  string playerId = 2;
+  string name     = 3;
+}
+
+message MsgPlayerUpdatePfp {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator  = 1;
+  string playerId = 2;
+  string pfp      = 3;
+}
+
+message MsgPlayerUpdateResponse {}
 
 
 // MsgReactorInfuse defines a SDK message for performing a delegation of coins
@@ -914,6 +968,24 @@ message MsgSubstationPlayerMigrate {
   repeated string playerId  = 3;
 }
 message MsgSubstationPlayerMigrateResponse {}
+
+message MsgSubstationUpdateName {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string substationId = 2;
+  string name         = 3;
+}
+
+message MsgSubstationUpdatePfp {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string substationId = 2;
+  string pfp          = 3;
+}
+
+message MsgSubstationUpdateResponse {}
 
 
 
