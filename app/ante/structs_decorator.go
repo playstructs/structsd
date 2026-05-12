@@ -3,6 +3,7 @@ package ante
 import (
 	"fmt"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"structs/x/structs/types"
@@ -44,7 +45,8 @@ func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, 
 		typeURL := sdk.MsgTypeURL(msg)
 
 		if !KnownStructsMessages[typeURL] {
-			return ctx, fmt.Errorf("structs ante: unknown structs message type %s, update ante maps", typeURL)
+			return ctx, observeReject(ctx, "StructsDecorator",
+				errorsmod.Wrapf(ErrUnknownStructsMessage, "%s (update ante maps)", typeURL))
 		}
 
 		var creator string
@@ -53,17 +55,20 @@ func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, 
 		} else if extractor, hasExtractor := CreatorExtractors[typeURL]; hasExtractor {
 			creator = extractor(msg)
 			if creator == "" {
-				return ctx, fmt.Errorf("structs ante: type assertion failed for %s -- message type mismatch", typeURL)
+				return ctx, observeReject(ctx, "StructsDecorator",
+					errorsmod.Wrapf(ErrMissingCreator, "type assertion failed for %s", typeURL))
 			}
 		} else {
-			return ctx, fmt.Errorf("structs ante: message %s has no creator accessor", typeURL)
+			return ctx, observeReject(ctx, "StructsDecorator",
+				errorsmod.Wrapf(ErrMissingCreator, "%s has no creator accessor", typeURL))
 		}
 
 		playerIndex, cached := addressCache[creator]
 		if !cached {
 			playerIndex = d.keeper.GetPlayerIndexFromAddress(ctx, creator)
 			if playerIndex == 0 {
-				return ctx, fmt.Errorf("structs ante: address %s not registered as player", creator)
+				return ctx, observeReject(ctx, "StructsDecorator",
+					errorsmod.Wrapf(ErrUnregisteredAddress, "%s for %s", creator, typeURL))
 			}
 			addressCache[creator] = playerIndex
 		}
@@ -77,7 +82,8 @@ func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, 
 				addrPermId := []byte(fmt.Sprintf("%d-%s@0", types.ObjectType_address, creator))
 				currentPerm := d.keeper.GetPermissionsByBytes(ctx, addrPermId)
 				if currentPerm&requiredPerm != requiredPerm {
-					return ctx, fmt.Errorf("structs ante: address %s lacks permission %d for %s (has %d)", creator, requiredPerm, typeURL, currentPerm)
+					return ctx, observeReject(ctx, "StructsDecorator",
+						errorsmod.Wrapf(ErrMissingPermission, "address %s wants %d for %s (has %d)", creator, requiredPerm, typeURL, currentPerm))
 				}
 			}
 		}
@@ -88,19 +94,29 @@ func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, 
 			lastAction := d.keeper.GetGridAttribute(ctx, lastActionAttrId)
 			currentBlock := uint64(ctx.BlockHeight())
 			if currentBlock > 0 && lastAction >= currentBlock {
-				return ctx, fmt.Errorf("structs ante: player %s has zero charge (discharged this block) for %s", playerId, typeURL)
+				return ctx, observeReject(ctx, "StructsDecorator",
+					errorsmod.Wrapf(ErrPlayerDischargedThisBlock, "player %s for %s", playerId, typeURL))
 			}
 		}
 
 		playerMsgCounts[playerId]++
 	}
 
-	// Per-player-per-block message cap (only during DeliverTx, not CheckTx/simulate)
+	// SKIP_RATIONALE: the per-player-per-block message cap aggregates across
+	// every tx in the block, so it can only be evaluated authoritatively in
+	// DeliverTx (the SDK's per-block player msg counter only increments
+	// during DeliverTx). Running it during CheckTx would double-count
+	// because the same tx is re-evaluated when it's later DeliverTx'd, and
+	// running it during ReCheckTx would evict txs admitted under a stale
+	// counter value. Same-tx duplicate-charge rejection is handled by
+	// ThrottleDecorator's per-tx in-memory dedup, which DOES run in every
+	// phase. See docs/incident-2026-05-ante.md.
 	if !ctx.IsCheckTx() && !ctx.IsReCheckTx() && !simulate {
 		for playerId, count := range playerMsgCounts {
 			newTotal := d.keeper.IncrementPlayerMsgCount(ctx, playerId, count)
 			if newTotal > d.playerMsgCap {
-				return ctx, fmt.Errorf("structs ante: player %s exceeded per-block message cap (%d/%d)", playerId, newTotal, d.playerMsgCap)
+				return ctx, observeReject(ctx, "StructsDecorator",
+					errorsmod.Wrapf(ErrPlayerMsgCapExceeded, "player %s: %d/%d", playerId, newTotal, d.playerMsgCap))
 			}
 		}
 	}

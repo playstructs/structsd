@@ -1,14 +1,26 @@
 package ante
 
 import (
-	"fmt"
-
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // StakingThrottleDecorator enforces a per-address-per-block rate limit on free
-// staking transactions via the transient store. Each address may submit at most
-// one free staking tx per block. Only active during DeliverTx.
+// staking transactions. Each address may submit at most one free staking tx
+// per block.
+//
+// It runs in every transaction phase (CheckTx, ReCheckTx, DeliverTx, and
+// simulation):
+//
+//  1. Per-tx in-memory deduplication: a free staking tx may not bundle multiple
+//     staking messages from the same address (this would let one tx burn
+//     several "free" quotas in one shot).
+//  2. Cross-tx transient-store check: at most one free staking tx per address
+//     per block, enforced across all transactions admitted in the block.
+//
+// Both layers run in CheckTx for the same reason as ThrottleDecorator: txs
+// that will fail at DeliverTx must also fail at CheckTx so the mempool can
+// evict them via ReCheckTx instead of holding them indefinitely.
 type StakingThrottleDecorator struct {
 	keeper StructsAnteKeeper
 }
@@ -22,34 +34,34 @@ func (d StakingThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 		return next(ctx, tx, simulate)
 	}
 
-	if ctx.IsCheckTx() || ctx.IsReCheckTx() || simulate {
-		return next(ctx, tx, simulate)
-	}
+	hasStore := d.keeper.HasTransientStore()
 
-	if !d.keeper.HasTransientStore() {
-		return next(ctx, tx, simulate)
-	}
-
-	seen := make(map[string]bool)
+	seen := make(map[string]struct{}, len(tx.GetMsgs()))
 	for _, msg := range tx.GetMsgs() {
 		typeURL := sdk.MsgTypeURL(msg)
 		extractor, ok := StakingSignerExtractors[typeURL]
 		if !ok {
-			return ctx, fmt.Errorf("structs ante: unknown free staking message %s", typeURL)
+			return ctx, observeReject(ctx, "StakingThrottleDecorator",
+				errorsmod.Wrapf(ErrUnknownStructsMessage, "unknown free staking message %s", typeURL))
 		}
 		addr := extractor(msg)
 		if addr == "" {
-			return ctx, fmt.Errorf("structs ante: could not extract signer from %s", typeURL)
+			return ctx, observeReject(ctx, "StakingThrottleDecorator",
+				errorsmod.Wrapf(ErrMissingCreator, "could not extract signer from %s", typeURL))
 		}
-		seen[addr] = true
-	}
-
-	for addr := range seen {
 		throttleKey := "staking/" + addr
-		if d.keeper.HasThrottleKey(ctx, throttleKey) {
-			return ctx, fmt.Errorf("structs ante: address %s already submitted a free staking tx this block", addr)
+		if _, dup := seen[throttleKey]; dup {
+			return ctx, observeReject(ctx, "StakingThrottleDecorator",
+				errorsmod.Wrapf(ErrDuplicateStakingInTx, "address %s in %s", addr, typeURL))
 		}
-		d.keeper.SetThrottleKey(ctx, throttleKey)
+		seen[throttleKey] = struct{}{}
+		if hasStore && d.keeper.HasThrottleKey(ctx, throttleKey) {
+			return ctx, observeReject(ctx, "StakingThrottleDecorator",
+				errorsmod.Wrapf(ErrStakingAlreadySubmittedThisBlock, "address %s", addr))
+		}
+		if hasStore {
+			d.keeper.SetThrottleKey(ctx, throttleKey)
+		}
 	}
 
 	return next(ctx, tx, simulate)

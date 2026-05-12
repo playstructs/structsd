@@ -45,6 +45,14 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
         return emptyResponse, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().ActivateCharge, structure.GetOwner().GetCharge(), "activate").WithStructType(structure.GetTypeId()).WithStructId(msg.StructId)
     }
 
+    // MsgStructActivate is registered in app/ante/maps.go::ChargeMessages, which
+    // means the ante chain reserves the player's per-block charge slot for this
+    // transaction. The handler must therefore Discharge() to actually consume
+    // it; otherwise the player's `lastAction` is never updated and the ante's
+    // charge floor check (StructsDecorator) silently disagrees with the ante's
+    // per-tx dedup (ThrottleDecorator) about whether the slot was used.
+    structure.GetOwner().Discharge()
+
     structure.GoOnline()
 
 	cc.CommitAll()

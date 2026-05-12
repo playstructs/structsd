@@ -6,11 +6,17 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	sante "structs/app/ante"
 	"structs/x/structs/types"
 )
+
+// integErrIs is a local helper mirroring throttle_test.go's errIs.
+func integErrIs(err error, target *errorsmod.Error) bool {
+	return err != nil && target != nil && target.Is(err)
+}
 
 func structsSubChain(mk *mockAnteKeeper) sdk.AnteHandler {
 	decorators := []sdk.AnteDecorator{
@@ -59,7 +65,7 @@ func TestIntegration_ThrottleRejectsSecondFleetMove(t *testing.T) {
 
 	_, err = handler(ctx, mockTx{msgs: []sdk.Msg{msg2}}, false)
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "throttled this block")
+	require.True(t, integErrIs(err, sante.ErrObjectThrottledThisBlock))
 }
 
 func TestIntegration_ChargeThrottleBlocksSecondChargeAction(t *testing.T) {
@@ -78,7 +84,12 @@ func TestIntegration_ChargeThrottleBlocksSecondChargeAction(t *testing.T) {
 	attack := &types.MsgStructAttack{Creator: "structs1alice", OperatingStructId: "5-2"}
 	_, err = handler(ctx, mockTx{msgs: []sdk.Msg{attack}}, false)
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "already used charge action this block")
+	// Either the ThrottleDecorator (charge throttle) or StructsDecorator
+	// (charge floor check) may catch this, depending on chain ordering. The
+	// throttle runs second and sees the transient-store key from the first
+	// tx, which produces ErrChargeAlreadyUsedThisBlock. We assert on the
+	// typed error rather than position.
+	require.True(t, integErrIs(err, sante.ErrChargeAlreadyUsedThisBlock))
 }
 
 func TestIntegration_CheckTxThrottleEnforced(t *testing.T) {
@@ -107,7 +118,7 @@ func TestIntegration_CheckTxThrottleEnforced(t *testing.T) {
 	msg := &types.MsgFleetMove{Creator: "structs1alice", FleetId: "2-99", DestinationLocationId: "7-1"}
 	_, err := handler(ctx, mockTx{msgs: []sdk.Msg{msg}}, false)
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "exceeded CheckTx free-tx cap")
+	require.True(t, integErrIs(err, sante.ErrCheckTxAddrCapExceeded))
 }
 
 func TestIntegration_CheckTxThrottleResetsOnNewBlock(t *testing.T) {
@@ -133,7 +144,12 @@ func TestIntegration_CheckTxThrottleResetsOnNewBlock(t *testing.T) {
 	_, err = handler(ctx100, mockTx{msgs: []sdk.Msg{msg}}, false)
 	require.Error(t, err)
 
-	// New block: counter resets
+	// New block: simulate SDK's per-block transient-store reset (the mock
+	// keeper holds a flat map; the real chain wipes it at block boundary).
+	// CheckTxThrottle's internal counter resets via its own ctx.BlockHeight()
+	// check; ThrottleDecorator's throttle keys live in the transient store
+	// which the SDK resets, so we mirror that here.
+	mk.throttleKeys = map[string]bool{}
 	ctx101 := freeCtx().WithBlockHeight(101).WithIsCheckTx(true)
 	_, err = handler(ctx101, mockTx{msgs: []sdk.Msg{msg}}, false)
 	require.NoError(t, err)

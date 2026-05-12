@@ -21,8 +21,12 @@ func (d ConditionalMempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, s
 		return next(ctx, tx, simulate)
 	}
 
-	// Min-gas-price checks are node-local mempool policy and should only run
-	// during initial CheckTx admission.
+	// SKIP_RATIONALE: min-gas-price checks are node-local mempool policy
+	// (each node operator can set their own min-gas-prices) and are not
+	// part of consensus state. They should only run during initial CheckTx
+	// admission; running them in ReCheckTx/DeliverTx would risk evicting
+	// txs that were admitted under a different operator's policy. Simulate
+	// is a wallet-side estimate, not real admission.
 	if !ctx.IsCheckTx() || ctx.IsReCheckTx() || simulate {
 		return next(ctx, tx, simulate)
 	}
