@@ -420,6 +420,16 @@ func (ac *AttackContext) ResolveDefenders(skipBlock bool) {
 
 		defenderReadinessError := defender.ReadinessCheck()
 		if defenderReadinessError == nil {
+			// StructDefender registrations are sticky across fleet moves, so
+			// re-validate the inRange rule that MsgStructDefenseSet enforces
+			// at registration time. Without this, a defender whose fleet has
+			// moved away after registration could still counter or block for
+			// a target it is no longer co-located with.
+			if !defender.IsProtecting(ac.Target) {
+				ac.Attacker.CC.k.logger.Debug("Defender no longer in range of protected target", "defender", defender.GetStructId(), "target", ac.Target.GetStructId())
+				continue
+			}
+
 			ac.Attacker.CC.k.logger.Debug("Defender seems ready to defend")
 
 			if weaponCounterable {

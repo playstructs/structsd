@@ -499,3 +499,209 @@ func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
 	require.Equal(t, tgtType.MaxHealth, k.GetStructAttribute(sdkCtx, tgtHAttr),
 		"target HP should be unchanged when attacker is destroyed before volley")
 }
+
+// TestMsgStructAttackDefenderFleetMovedNoSupport reproduces the "fleet away on
+// a raid" scenario: a defender registered via SetStructDefender when its fleet
+// was at the target's planet should NOT be able to counter or block once its
+// fleet has moved to a different planet. Pre-fix, the block path had no range
+// check at all (only ambit), so the relocated defender would still intercept
+// the volley and take blocker damage. The IsProtecting filter in
+// ResolveDefenders re-validates the registration-time inRange rule at action
+// time and skips stale defenders.
+func TestMsgStructAttackDefenderFleetMovedNoSupport(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
+
+	// --- players ---
+	atkPlayer := types.Player{Creator: "cosmos1mvatk", PrimaryAddress: "cosmos1mvatk"}
+	atkPlayer = testAppendPlayer(k, sdkCtx, atkPlayer)
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, atkPlayer.Id), uint64(100000))
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, atkPlayer.Id), uint64(0))
+
+	defPlayer := types.Player{Creator: "cosmos1mvdef", PrimaryAddress: "cosmos1mvdef"}
+	defPlayer = testAppendPlayer(k, sdkCtx, defPlayer)
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, defPlayer.Id), uint64(100000))
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, defPlayer.Id), uint64(0))
+
+	// Target player owns the home planet (planet A) where the target lives.
+	tgtPlayer := types.Player{Creator: "cosmos1mvtgt", PrimaryAddress: "cosmos1mvtgt"}
+	tgtPlayer = testAppendPlayer(k, sdkCtx, tgtPlayer)
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, tgtPlayer.Id), uint64(100000))
+
+	// --- planets ---
+	planetA := testAppendPlanet(k, sdkCtx, types.Planet{
+		Creator: tgtPlayer.Creator, Owner: tgtPlayer.Id, LandSlots: 4,
+		Land: []string{"", "", "", ""},
+	})
+	tgtPlayer.PlanetId = planetA.Id
+	k.SetPlayer(sdkCtx, tgtPlayer)
+
+	planetB := testAppendPlanet(k, sdkCtx, types.Planet{
+		Creator: defPlayer.Creator, Owner: defPlayer.Id, LandSlots: 4,
+		Land: []string{"", "", "", ""},
+	})
+
+	// --- struct types ---
+	cmdStructType := types.StructType{
+		Id:       400,
+		Type:     types.CommandStruct,
+		Category: types.ObjectType_fleet,
+	}
+	k.SetStructType(sdkCtx, cmdStructType)
+
+	landAmbitFlag := uint64(1) << uint64(types.Ambit_land)
+
+	// Attacker: enough HP to survive any counter (no counter actually fires
+	// here, but make it large so the test is robust against unrelated changes).
+	atkType := types.StructType{
+		Id:                                      401,
+		Type:                                    "TankAttackerMoved",
+		Category:                                types.ObjectType_fleet,
+		MaxHealth:                               10,
+		PossibleAmbit:                           landAmbitFlag,
+		PrimaryWeapon:                           types.TechActiveWeaponry_unguidedWeaponry,
+		PrimaryWeaponControl:                    types.TechWeaponControl_unguided,
+		PrimaryWeaponCharge:                     1,
+		PrimaryWeaponTargets:                    1,
+		PrimaryWeaponShots:                      1,
+		PrimaryWeaponDamage:                     2,
+		PrimaryWeaponAmbits:                     landAmbitFlag,
+		PrimaryWeaponBlockable:                  true,
+		PrimaryWeaponCounterable:                true,
+		PrimaryWeaponShotSuccessRateNumerator:   1,
+		PrimaryWeaponShotSuccessRateDenominator: 1,
+		AttackCounterable:                       true,
+	}
+	k.SetStructType(sdkCtx, atkType)
+
+	tgtType := types.StructType{
+		Id:              402,
+		Type:            "TankTargetMoved",
+		Category:        types.ObjectType_planet,
+		MaxHealth:       3,
+		PossibleAmbit:   landAmbitFlag,
+		AttackReduction: 1,
+	}
+	k.SetStructType(sdkCtx, tgtType)
+
+	defType := types.StructType{
+		Id:                     403,
+		Type:                   "TankDefenderMoved",
+		Category:               types.ObjectType_fleet,
+		MaxHealth:              3,
+		PossibleAmbit:          landAmbitFlag,
+		PrimaryWeaponAmbits:    landAmbitFlag,
+		AttackReduction:        1,
+		AttackCounterable:      true,
+		PassiveWeaponry:        types.TechPassiveWeaponry_counterAttack,
+		CounterAttack:          1,
+		CounterAttackSameAmbit: 1,
+	}
+	k.SetStructType(sdkCtx, defType)
+
+	// --- attacker fleet + command struct, parked at planet A ---
+	afleet := testAppendFleet(k, sdkCtx, types.Fleet{
+		Owner: atkPlayer.Id, LocationId: planetA.Id, Status: types.FleetStatus_away,
+	})
+	acmd := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator: atkPlayer.Creator, Owner: atkPlayer.Id, Type: cmdStructType.Id,
+		LocationId: afleet.Id, LocationType: types.ObjectType_fleet, OperatingAmbit: types.Ambit_land,
+	})
+	acmdSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, acmd.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, acmdSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, acmdSAttr, uint64(types.StructStateOnline))
+	afleet.CommandStruct = acmd.Id
+	k.SetFleet(sdkCtx, afleet)
+	atkPlayer.FleetId = afleet.Id
+	k.SetPlayer(sdkCtx, atkPlayer)
+
+	// --- defender fleet + command struct, initially at planet A ---
+	dfleet := testAppendFleet(k, sdkCtx, types.Fleet{
+		Owner: defPlayer.Id, LocationId: planetA.Id, Status: types.FleetStatus_away,
+	})
+	dcmd := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator: defPlayer.Creator, Owner: defPlayer.Id, Type: cmdStructType.Id,
+		LocationId: dfleet.Id, LocationType: types.ObjectType_fleet, OperatingAmbit: types.Ambit_land,
+	})
+	dcmdSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, dcmd.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, dcmdSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, dcmdSAttr, uint64(types.StructStateOnline))
+	dfleet.CommandStruct = dcmd.Id
+	k.SetFleet(sdkCtx, dfleet)
+	defPlayer.FleetId = dfleet.Id
+	k.SetPlayer(sdkCtx, defPlayer)
+
+	// Planet A's fleet list head points at the attacker fleet so the attacker's
+	// CanAttack passes the isReachable check from a planet-side target.
+	planetA.LocationListStart = afleet.Id
+	k.SetPlanet(sdkCtx, planetA)
+
+	// --- attacker struct on attacker fleet ---
+	atkStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator: atkPlayer.Creator, Owner: atkPlayer.Id, Type: atkType.Id,
+		LocationId: afleet.Id, LocationType: types.ObjectType_fleet, OperatingAmbit: types.Ambit_land,
+	})
+	atkSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, atkStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, atkSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, atkSAttr, uint64(types.StructStateOnline))
+	atkHAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, atkStruct.Id)
+	k.SetStructAttribute(sdkCtx, atkHAttr, atkType.MaxHealth)
+
+	// --- target struct on planet A ---
+	tgtStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator: tgtPlayer.Creator, Owner: tgtPlayer.Id, Type: tgtType.Id,
+		LocationId: planetA.Id, LocationType: types.ObjectType_planet, OperatingAmbit: types.Ambit_land,
+	})
+	tgtSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, tgtStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, tgtSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, tgtSAttr, uint64(types.StructStateOnline))
+	tgtHAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, tgtStruct.Id)
+	k.SetStructAttribute(sdkCtx, tgtHAttr, tgtType.MaxHealth)
+
+	// --- defender struct on defender fleet (initially at planet A) ---
+	defStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator: defPlayer.Creator, Owner: defPlayer.Id, Type: defType.Id,
+		LocationId: dfleet.Id, LocationType: types.ObjectType_fleet, OperatingAmbit: types.Ambit_land,
+	})
+	defSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, defStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, defSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, defSAttr, uint64(types.StructStateOnline))
+	defHAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, defStruct.Id)
+	k.SetStructAttribute(sdkCtx, defHAttr, defType.MaxHealth)
+
+	// Register the defender while its fleet is still at planet A.
+	k.SetStructDefender(sdkCtx, tgtStruct.Id, tgtStruct.Index, defStruct.Id)
+
+	// Now move the defender's fleet to planet B (simulating "fleet away on a
+	// raid") without clearing the defender registration — that's the current
+	// behavior of FleetCache.SetLocationToPlanet.
+	dfleet.LocationId = planetB.Id
+	k.SetFleet(sdkCtx, dfleet)
+
+	// --- act ---
+	_, err := ms.StructAttack(wctx, &types.MsgStructAttack{
+		Creator:           atkPlayer.Creator,
+		OperatingStructId: atkStruct.Id,
+		WeaponSystem:      "primaryWeapon",
+		TargetStructId:    []string{tgtStruct.Id},
+	})
+	require.NoError(t, err)
+
+	// --- assert ---
+	// Defender no longer in range, so it cannot block. Pre-fix the defender
+	// would have lost 1 HP from intercepting the volley (2 dmg - AttackReduction 1).
+	require.Equal(t, defType.MaxHealth, k.GetStructAttribute(sdkCtx, defHAttr),
+		"defender HP should be unchanged when its fleet has moved away from the protected target")
+
+	// With no block in the way, the volley should land on the target. Pre-fix
+	// the block intercepted it and the target took no damage.
+	require.Less(t, k.GetStructAttribute(sdkCtx, tgtHAttr), tgtType.MaxHealth,
+		"target should take volley damage when the registered defender is out of range and cannot block")
+
+	// And the (relocated) defender cannot counter either, so the attacker is
+	// unharmed.
+	require.Equal(t, atkType.MaxHealth, k.GetStructAttribute(sdkCtx, atkHAttr),
+		"attacker HP should be unchanged when no defender is in range to counter")
+}

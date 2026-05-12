@@ -68,37 +68,19 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
 
 
     //load target
-    protectedStructure, protectedStructureFound := k.GetStruct(ctx,  msg.ProtectedStructId)
-    if (!protectedStructureFound) {
+    protectedStructure := cc.GetStruct(msg.ProtectedStructId)
+    if !protectedStructure.LoadStruct() {
         return emptyResponse, types.NewObjectNotFoundError("struct", msg.ProtectedStructId)
     }
 
-    // Are they within defensive range
-        // Are they at the same location - great
-        // Is defender on a fleet and protected on a planet and fleet is at the planet - perf
-        // is protected on a fleet and defender on a planet and fleet is at the planet - lfg
-    inRange := false
-    if (protectedStructure.LocationId == structure.GetLocationId()) {
-        inRange = true
-    } else {
-       if (structure.GetLocationType() == types.ObjectType_fleet) && (protectedStructure.LocationType == types.ObjectType_planet){
-            structureFleet, _ := k.GetFleet(ctx, structure.GetLocationId())
-            if (structureFleet.LocationId == protectedStructure.LocationId) {
-                inRange = true
-            }
-       } else if (structure.GetLocationType() == types.ObjectType_planet) && (protectedStructure.LocationType == types.ObjectType_fleet){
-            protectedStructureFleet, _ := k.GetFleet(ctx, protectedStructure.LocationId)
-            if (protectedStructureFleet.LocationId == structure.GetLocationId()) {
-                inRange = true
-            }
-       }
-    }
-
-    if (!inRange) {
+    // Are they within defensive range? Single source of truth on StructCache so
+    // the runtime defender filter in ResolveDefenders enforces the exact same
+    // rule we register against here.
+    if !structure.IsProtecting(protectedStructure) {
         return emptyResponse, types.NewStructLocationError(structure.GetStructType().Id, "", "not_in_range").WithStruct(structure.GetStructId()).WithLocation("struct", msg.ProtectedStructId)
     }
 
-    k.SetStructDefender(ctx, msg.ProtectedStructId, protectedStructure.Index, structure.GetStructId())
+    k.SetStructDefender(ctx, msg.ProtectedStructId, protectedStructure.GetStruct().Index, structure.GetStructId())
 
     structure.GetOwner().Discharge()
 

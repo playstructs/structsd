@@ -540,6 +540,50 @@ func (cache *StructCache) isReachable(targetLocationId string, targetPlanetId st
 	}
 }
 
+// IsProtecting reports whether this struct is currently positioned to
+// defensively support the given target struct. Mirrors the inRange rule
+// enforced by MsgStructDefenseSet at registration time so a defender whose
+// fleet has since moved no longer qualifies for counter or block actions.
+//
+// Three accepted topologies (same as MsgStructDefenseSet):
+//  1. Defender and target share a LocationId (same planet, or same fleet).
+//  2. Defender on a fleet, target on a planet, defender's fleet docked at
+//     that planet.
+//  3. Defender on a planet, target on a fleet, target's fleet docked at
+//     that planet.
+//
+// Note: this is intentionally a different concept from isReachable, which
+// expresses weapon-targeting topology (location-list neighbors, head-of-list
+// rules). isReachable is correct for "can my projectile hit the attacker";
+// IsProtecting is correct for "is this defender still co-located with the
+// target it registered to protect".
+func (cache *StructCache) IsProtecting(target *StructCache) bool {
+	if cache.GetLocationId() == target.GetLocationId() {
+		return true
+	}
+
+	defenderLocType := cache.GetLocationType()
+	targetLocType := target.GetLocationType()
+
+	if defenderLocType == types.ObjectType_fleet && targetLocType == types.ObjectType_planet {
+		defenderFleet, err := cache.CC.GetFleetById(cache.GetLocationId())
+		if err != nil {
+			return false
+		}
+		return defenderFleet.GetLocationId() == target.GetLocationId()
+	}
+
+	if defenderLocType == types.ObjectType_planet && targetLocType == types.ObjectType_fleet {
+		targetFleet, err := cache.CC.GetFleetById(target.GetLocationId())
+		if err != nil {
+			return false
+		}
+		return targetFleet.GetLocationId() == cache.GetLocationId()
+	}
+
+	return false
+}
+
 func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem types.TechWeaponSystem) (err error) {
 	if targetStruct.IsDestroyed() {
 		return types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "destroyed")
