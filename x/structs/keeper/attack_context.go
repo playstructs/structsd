@@ -224,7 +224,15 @@ func (ac *AttackContext) resolveCounterDamage(counterStruct *StructCache, isTarg
 
 // resolveBlock attempts a block by the defender. Returns true if the block succeeded.
 func (ac *AttackContext) resolveBlock(defender *StructCache) bool {
-	if !defender.Ready || !ac.Attacker.Ready {
+	// A block requires both structs to still be alive and online. Use a live
+	// status check here, not the cached Ready flag: the defender's own
+	// counter-attack may have just destroyed the attacker in this same loop
+	// iteration. Without this guard the destroyed attacker would still inflict
+	// blocker damage. See dd52108 for the original counter-then-block reorder.
+	if defender.IsDestroyed() || !defender.IsOnline() {
+		return false
+	}
+	if ac.Attacker.IsDestroyed() || !ac.Attacker.IsOnline() {
 		return false
 	}
 	if defender.GetOperatingAmbit() != ac.Target.GetOperatingAmbit() {
@@ -253,6 +261,14 @@ func (ac *AttackContext) resolveVolleyDamage() {
 // resolveVolleyDamageOn rolls shots and applies damage to the given struct.
 func (ac *AttackContext) resolveVolleyDamageOn(target *StructCache, isBlocker bool) {
 	attacker := ac.Attacker
+
+	// A destroyed attacker cannot fire. Mirrors the IsDestroyed guards in
+	// resolveCounterDamage, resolveRecoil, and resolvePlanetaryDefense, and
+	// hardens the volley path against any caller that didn't already check.
+	if attacker.IsDestroyed() {
+		ac.Volley = &VolleyResult{IsBlocker: isBlocker, HealthAfter: target.GetHealth()}
+		return
+	}
 
 	if target.IsDestroyed() {
 		ac.Volley = &VolleyResult{IsBlocker: isBlocker, HealthAfter: 0}
@@ -414,6 +430,14 @@ func (ac *AttackContext) ResolveDefenders(skipBlock bool) {
 					cr := ac.resolveCounterDamage(defender, false)
 					ac.DefenderCounters = append(ac.DefenderCounters, cr)
 				}
+			}
+
+			// If the attacker was destroyed by this defender's counter, stop
+			// processing further defenders. No block can land for a dead
+			// attacker, and any subsequent defender's counter would already be
+			// rejected by CanCounterAttack's IsDestroyed check.
+			if ac.Attacker.IsDestroyed() {
+				break
 			}
 
 			if !blocked && !skipBlock && weaponBlockable {
