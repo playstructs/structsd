@@ -41,6 +41,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.1
+	github.com/hashicorp/go-metrics v0.5.4
 	github.com/nethruster/go-fraction v0.0.0-20221224165113-1b5f693330ad
 	github.com/spf13/cobra v1.10.1
 	github.com/spf13/pflag v1.0.10
@@ -53,6 +54,7 @@ require (
 	google.golang.org/grpc v1.75.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.5.1
 	google.golang.org/protobuf v1.36.10
+	pgregory.net/rapid v1.2.0
 )
 
 require (
@@ -190,7 +192,6 @@ require (
 	github.com/hashicorp/go-getter v1.7.8 // indirect
 	github.com/hashicorp/go-hclog v1.6.3 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
-	github.com/hashicorp/go-metrics v0.5.4 // indirect
 	github.com/hashicorp/go-plugin v1.6.3 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.7.0 // indirect
@@ -315,7 +316,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/v3 v3.5.2 // indirect
 	nhooyr.io/websocket v1.8.11 // indirect
-	pgregory.net/rapid v1.2.0 // indirect
 	pluginrpc.com/pluginrpc v0.5.0 // indirect
 	rsc.io/qr v0.2.0 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
