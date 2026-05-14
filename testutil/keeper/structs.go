@@ -219,6 +219,33 @@ func (m *MockStakingKeeper) AddValidator(operatorAddr sdk.ValAddress, tokens mat
 	m.validators[operatorAddr.String()] = val
 }
 
+// JailValidator marks an existing validator as jailed (and unbonded).
+// Used by tests for the guild primary-reactor recovery handler.
+func (m *MockStakingKeeper) JailValidator(operatorAddr sdk.ValAddress) {
+	val, ok := m.validators[operatorAddr.String()]
+	if !ok {
+		return
+	}
+	val.Jailed = true
+	val.Status = stakingtypes.Unbonded
+	m.validators[operatorAddr.String()] = val
+}
+
+// RemoveValidator deletes a validator from the mock. Used by tests that
+// simulate a permanently retired validator (the recovery scenario for
+// MsgGuildUpdatePrimaryReactor).
+func (m *MockStakingKeeper) RemoveValidator(operatorAddr sdk.ValAddress) {
+	delete(m.validators, operatorAddr.String())
+}
+
+// MatureUnbondingDelegation removes the UBD record for a (delegator, validator)
+// pair to simulate Cosmos SDK's silent EndBlocker maturity completion. Used
+// by tests for the structs-side maturity-sweep mechanism.
+func (m *MockStakingKeeper) MatureUnbondingDelegation(delAddr sdk.AccAddress, valAddr sdk.ValAddress) {
+	dk := delegationKey{Delegator: delAddr.String(), Validator: valAddr.String()}
+	delete(m.unbondings, dk)
+}
+
 func (m *MockStakingKeeper) ConsensusAddressCodec() address.Codec {
 	return nil
 }

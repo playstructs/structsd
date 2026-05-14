@@ -39,11 +39,67 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 	 */
 	cc.GridCascade()
 
+    /* Reconcile any infusions whose unbonding-delegation entries matured this
+     * block. Cosmos SDK v0.53 silently completes UBDs in x/staking's EndBlocker
+     * (which runs before ours) and fires no hook, so we walk the structs-side
+     * maturity queue to clear stale Defusing values. Empty infusions get
+     * enqueued for destruction by the reconciliation helper, then processed in
+     * the immediately-following ProcessInfusionDestructionQueue.
+     */
+    k.ProcessInfusionMaturitySweep(ctx)
+
     cc.ProcessInfusionDestructionQueue()
 
     k.logger.Debug("End Block Complete")
 
 	return []abci.ValidatorUpdate{}, nil
+}
+
+// ProcessInfusionMaturitySweep drains every InfusionMaturitySweepQueue row whose
+// CompletionTime <= the current block time and reconciles each affected
+// infusion against the live Cosmos staking state. This is the structs-module
+// substitute for the missing AfterUnbondingComplete hook in Cosmos SDK v0.53.
+func (k *Keeper) ProcessInfusionMaturitySweep(ctx context.Context) {
+    ctxSDK := sdk.UnwrapSDKContext(ctx)
+    blockTime := ctxSDK.HeaderInfo().Time
+
+    matured := k.DequeueMatureInfusionSweeps(ctx, blockTime)
+    if len(matured) == 0 {
+        return
+    }
+
+    k.logger.Info("Infusion maturity sweep", "count", len(matured), "blockTime", blockTime)
+
+    for _, infusionId := range matured {
+        infusion, found := k.GetInfusionByID(ctx, infusionId)
+        if !found {
+            // Infusion was already destroyed (e.g. by a reactor-cancel-defusion
+            // followed by destruction queue processing). Nothing to reconcile.
+            continue
+        }
+        if infusion.DestinationType != types.ObjectType_reactor {
+            continue
+        }
+
+        reactor, reactorFound := k.GetReactor(ctx, infusion.DestinationId)
+        if !reactorFound {
+            k.logger.Warn("Infusion maturity sweep: reactor missing", "infusionId", infusionId, "reactorId", infusion.DestinationId)
+            continue
+        }
+
+        playerAddress, err := sdk.AccAddressFromBech32(infusion.Address)
+        if err != nil {
+            k.logger.Warn("Infusion maturity sweep: invalid delegator address", "infusionId", infusionId, "address", infusion.Address, "error", err)
+            continue
+        }
+        validatorAddress, err := sdk.ValAddressFromBech32(reactor.Validator)
+        if err != nil {
+            k.logger.Warn("Infusion maturity sweep: invalid validator address", "infusionId", infusionId, "validator", reactor.Validator, "error", err)
+            continue
+        }
+
+        k.ReconcileInfusionForDelegation(ctx, playerAddress, validatorAddress)
+    }
 }
 
 func (k Keeper) EmitEventTime(ctx context.Context) {

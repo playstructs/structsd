@@ -39,6 +39,7 @@ const (
 	Msg_GuildUpdateOwnerId_FullMethodName                            = "/structs.structs.Msg/GuildUpdateOwnerId"
 	Msg_GuildUpdateEntrySubstationId_FullMethodName                  = "/structs.structs.Msg/GuildUpdateEntrySubstationId"
 	Msg_GuildUpdateEndpoint_FullMethodName                           = "/structs.structs.Msg/GuildUpdateEndpoint"
+	Msg_GuildUpdatePrimaryReactor_FullMethodName                     = "/structs.structs.Msg/GuildUpdatePrimaryReactor"
 	Msg_GuildUpdateJoinInfusionMinimum_FullMethodName                = "/structs.structs.Msg/GuildUpdateJoinInfusionMinimum"
 	Msg_GuildUpdateJoinInfusionMinimumBypassByInvite_FullMethodName  = "/structs.structs.Msg/GuildUpdateJoinInfusionMinimumBypassByInvite"
 	Msg_GuildUpdateJoinInfusionMinimumBypassByRequest_FullMethodName = "/structs.structs.Msg/GuildUpdateJoinInfusionMinimumBypassByRequest"
@@ -137,6 +138,7 @@ type MsgClient interface {
 	GuildUpdateOwnerId(ctx context.Context, in *MsgGuildUpdateOwnerId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEntrySubstationId(ctx context.Context, in *MsgGuildUpdateEntrySubstationId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEndpoint(ctx context.Context, in *MsgGuildUpdateEndpoint, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
+	GuildUpdatePrimaryReactor(ctx context.Context, in *MsgGuildUpdatePrimaryReactor, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimum(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimum, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByInvite(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimumBypassByInvite, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByRequest(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimumBypassByRequest, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
@@ -409,6 +411,16 @@ func (c *msgClient) GuildUpdateEndpoint(ctx context.Context, in *MsgGuildUpdateE
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgGuildUpdateResponse)
 	err := c.cc.Invoke(ctx, Msg_GuildUpdateEndpoint_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildUpdatePrimaryReactor(ctx context.Context, in *MsgGuildUpdatePrimaryReactor, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgGuildUpdateResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildUpdatePrimaryReactor_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1123,6 +1135,7 @@ type MsgServer interface {
 	GuildUpdateOwnerId(context.Context, *MsgGuildUpdateOwnerId) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEntrySubstationId(context.Context, *MsgGuildUpdateEntrySubstationId) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEndpoint(context.Context, *MsgGuildUpdateEndpoint) (*MsgGuildUpdateResponse, error)
+	GuildUpdatePrimaryReactor(context.Context, *MsgGuildUpdatePrimaryReactor) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimum(context.Context, *MsgGuildUpdateJoinInfusionMinimum) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByInvite(context.Context, *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByRequest(context.Context, *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) (*MsgGuildUpdateResponse, error)
@@ -1260,6 +1273,9 @@ func (UnimplementedMsgServer) GuildUpdateEntrySubstationId(context.Context, *Msg
 }
 func (UnimplementedMsgServer) GuildUpdateEndpoint(context.Context, *MsgGuildUpdateEndpoint) (*MsgGuildUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildUpdateEndpoint not implemented")
+}
+func (UnimplementedMsgServer) GuildUpdatePrimaryReactor(context.Context, *MsgGuildUpdatePrimaryReactor) (*MsgGuildUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildUpdatePrimaryReactor not implemented")
 }
 func (UnimplementedMsgServer) GuildUpdateJoinInfusionMinimum(context.Context, *MsgGuildUpdateJoinInfusionMinimum) (*MsgGuildUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildUpdateJoinInfusionMinimum not implemented")
@@ -1842,6 +1858,24 @@ func _Msg_GuildUpdateEndpoint_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).GuildUpdateEndpoint(ctx, req.(*MsgGuildUpdateEndpoint))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildUpdatePrimaryReactor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildUpdatePrimaryReactor)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildUpdatePrimaryReactor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildUpdatePrimaryReactor_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildUpdatePrimaryReactor(ctx, req.(*MsgGuildUpdatePrimaryReactor))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3156,6 +3190,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GuildUpdateEndpoint",
 			Handler:    _Msg_GuildUpdateEndpoint_Handler,
+		},
+		{
+			MethodName: "GuildUpdatePrimaryReactor",
+			Handler:    _Msg_GuildUpdatePrimaryReactor_Handler,
 		},
 		{
 			MethodName: "GuildUpdateJoinInfusionMinimum",

@@ -12956,6 +12956,554 @@ func (x *fastReflection_MsgGuildUpdateEndpoint) ProtoMethods() *protoiface.Metho
 }
 
 var (
+	md_MsgGuildUpdatePrimaryReactor           protoreflect.MessageDescriptor
+	fd_MsgGuildUpdatePrimaryReactor_creator   protoreflect.FieldDescriptor
+	fd_MsgGuildUpdatePrimaryReactor_guildId   protoreflect.FieldDescriptor
+	fd_MsgGuildUpdatePrimaryReactor_reactorId protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_tx_proto_init()
+	md_MsgGuildUpdatePrimaryReactor = File_structs_structs_tx_proto.Messages().ByName("MsgGuildUpdatePrimaryReactor")
+	fd_MsgGuildUpdatePrimaryReactor_creator = md_MsgGuildUpdatePrimaryReactor.Fields().ByName("creator")
+	fd_MsgGuildUpdatePrimaryReactor_guildId = md_MsgGuildUpdatePrimaryReactor.Fields().ByName("guildId")
+	fd_MsgGuildUpdatePrimaryReactor_reactorId = md_MsgGuildUpdatePrimaryReactor.Fields().ByName("reactorId")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgGuildUpdatePrimaryReactor)(nil)
+
+type fastReflection_MsgGuildUpdatePrimaryReactor MsgGuildUpdatePrimaryReactor
+
+func (x *MsgGuildUpdatePrimaryReactor) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgGuildUpdatePrimaryReactor)(x)
+}
+
+func (x *MsgGuildUpdatePrimaryReactor) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_tx_proto_msgTypes[27]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgGuildUpdatePrimaryReactor_messageType fastReflection_MsgGuildUpdatePrimaryReactor_messageType
+var _ protoreflect.MessageType = fastReflection_MsgGuildUpdatePrimaryReactor_messageType{}
+
+type fastReflection_MsgGuildUpdatePrimaryReactor_messageType struct{}
+
+func (x fastReflection_MsgGuildUpdatePrimaryReactor_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgGuildUpdatePrimaryReactor)(nil)
+}
+func (x fastReflection_MsgGuildUpdatePrimaryReactor_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgGuildUpdatePrimaryReactor)
+}
+func (x fastReflection_MsgGuildUpdatePrimaryReactor_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgGuildUpdatePrimaryReactor
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgGuildUpdatePrimaryReactor
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) Type() protoreflect.MessageType {
+	return _fastReflection_MsgGuildUpdatePrimaryReactor_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) New() protoreflect.Message {
+	return new(fastReflection_MsgGuildUpdatePrimaryReactor)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) Interface() protoreflect.ProtoMessage {
+	return (*MsgGuildUpdatePrimaryReactor)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Creator != "" {
+		value := protoreflect.ValueOfString(x.Creator)
+		if !f(fd_MsgGuildUpdatePrimaryReactor_creator, value) {
+			return
+		}
+	}
+	if x.GuildId != "" {
+		value := protoreflect.ValueOfString(x.GuildId)
+		if !f(fd_MsgGuildUpdatePrimaryReactor_guildId, value) {
+			return
+		}
+	}
+	if x.ReactorId != "" {
+		value := protoreflect.ValueOfString(x.ReactorId)
+		if !f(fd_MsgGuildUpdatePrimaryReactor_reactorId, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.creator":
+		return x.Creator != ""
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.guildId":
+		return x.GuildId != ""
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.reactorId":
+		return x.ReactorId != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdatePrimaryReactor"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgGuildUpdatePrimaryReactor does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.creator":
+		x.Creator = ""
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.guildId":
+		x.GuildId = ""
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.reactorId":
+		x.ReactorId = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdatePrimaryReactor"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgGuildUpdatePrimaryReactor does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.creator":
+		value := x.Creator
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.guildId":
+		value := x.GuildId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.reactorId":
+		value := x.ReactorId
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdatePrimaryReactor"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgGuildUpdatePrimaryReactor does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.creator":
+		x.Creator = value.Interface().(string)
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.guildId":
+		x.GuildId = value.Interface().(string)
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.reactorId":
+		x.ReactorId = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdatePrimaryReactor"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgGuildUpdatePrimaryReactor does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.creator":
+		panic(fmt.Errorf("field creator of message structs.structs.MsgGuildUpdatePrimaryReactor is not mutable"))
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.guildId":
+		panic(fmt.Errorf("field guildId of message structs.structs.MsgGuildUpdatePrimaryReactor is not mutable"))
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.reactorId":
+		panic(fmt.Errorf("field reactorId of message structs.structs.MsgGuildUpdatePrimaryReactor is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdatePrimaryReactor"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgGuildUpdatePrimaryReactor does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.creator":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.guildId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.MsgGuildUpdatePrimaryReactor.reactorId":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdatePrimaryReactor"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgGuildUpdatePrimaryReactor does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildUpdatePrimaryReactor", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgGuildUpdatePrimaryReactor) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgGuildUpdatePrimaryReactor)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.Creator)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.GuildId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.ReactorId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgGuildUpdatePrimaryReactor)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.ReactorId) > 0 {
+			i -= len(x.ReactorId)
+			copy(dAtA[i:], x.ReactorId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ReactorId)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if len(x.GuildId) > 0 {
+			i -= len(x.GuildId)
+			copy(dAtA[i:], x.GuildId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.GuildId)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Creator) > 0 {
+			i -= len(x.Creator)
+			copy(dAtA[i:], x.Creator)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Creator)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgGuildUpdatePrimaryReactor)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgGuildUpdatePrimaryReactor: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgGuildUpdatePrimaryReactor: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Creator = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.GuildId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ReactorId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ReactorId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
 	md_MsgGuildUpdateJoinInfusionMinimum                     protoreflect.MessageDescriptor
 	fd_MsgGuildUpdateJoinInfusionMinimum_creator             protoreflect.FieldDescriptor
 	fd_MsgGuildUpdateJoinInfusionMinimum_guildId             protoreflect.FieldDescriptor
@@ -12979,7 +13527,7 @@ func (x *MsgGuildUpdateJoinInfusionMinimum) ProtoReflect() protoreflect.Message 
 }
 
 func (x *MsgGuildUpdateJoinInfusionMinimum) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[27]
+	mi := &file_structs_structs_tx_proto_msgTypes[28]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13511,7 +14059,7 @@ func (x *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) ProtoReflect() protor
 }
 
 func (x *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[28]
+	mi := &file_structs_structs_tx_proto_msgTypes[29]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14043,7 +14591,7 @@ func (x *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) ProtoReflect() protore
 }
 
 func (x *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[29]
+	mi := &file_structs_structs_tx_proto_msgTypes[30]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14573,7 +15121,7 @@ func (x *MsgGuildUpdateEntryRank) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildUpdateEntryRank) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[30]
+	mi := &file_structs_structs_tx_proto_msgTypes[31]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15037,7 +15585,7 @@ func (x *MsgGuildUpdateResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildUpdateResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[31]
+	mi := &file_structs_structs_tx_proto_msgTypes[32]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15399,7 +15947,7 @@ func (x *MsgGuildUpdateName) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildUpdateName) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[32]
+	mi := &file_structs_structs_tx_proto_msgTypes[33]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15947,7 +16495,7 @@ func (x *MsgGuildUpdatePfp) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildUpdatePfp) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[33]
+	mi := &file_structs_structs_tx_proto_msgTypes[34]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16497,7 +17045,7 @@ func (x *MsgGuildMembershipInvite) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildMembershipInvite) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[34]
+	mi := &file_structs_structs_tx_proto_msgTypes[35]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17109,7 +17657,7 @@ func (x *MsgGuildMembershipInviteApprove) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildMembershipInviteApprove) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[35]
+	mi := &file_structs_structs_tx_proto_msgTypes[36]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17719,7 +18267,7 @@ func (x *MsgGuildMembershipInviteDeny) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildMembershipInviteDeny) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[36]
+	mi := &file_structs_structs_tx_proto_msgTypes[37]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18267,7 +18815,7 @@ func (x *MsgGuildMembershipInviteRevoke) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildMembershipInviteRevoke) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[37]
+	mi := &file_structs_structs_tx_proto_msgTypes[38]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18865,7 +19413,7 @@ func (x *MsgGuildMembershipJoin) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildMembershipJoin) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[38]
+	mi := &file_structs_structs_tx_proto_msgTypes[39]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19559,7 +20107,7 @@ func (x *MsgGuildMembershipJoinProxy) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildMembershipJoinProxy) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[39]
+	mi := &file_structs_structs_tx_proto_msgTypes[40]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20355,7 +20903,7 @@ func (x *MsgGuildMembershipKick) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildMembershipKick) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[40]
+	mi := &file_structs_structs_tx_proto_msgTypes[41]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20905,7 +21453,7 @@ func (x *MsgGuildMembershipRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildMembershipRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[41]
+	mi := &file_structs_structs_tx_proto_msgTypes[42]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21517,7 +22065,7 @@ func (x *MsgGuildMembershipRequestApprove) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildMembershipRequestApprove) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[42]
+	mi := &file_structs_structs_tx_proto_msgTypes[43]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22127,7 +22675,7 @@ func (x *MsgGuildMembershipRequestDeny) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildMembershipRequestDeny) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[43]
+	mi := &file_structs_structs_tx_proto_msgTypes[44]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22675,7 +23223,7 @@ func (x *MsgGuildMembershipRequestRevoke) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildMembershipRequestRevoke) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[44]
+	mi := &file_structs_structs_tx_proto_msgTypes[45]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23219,7 +23767,7 @@ func (x *MsgGuildMembershipResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGuildMembershipResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[45]
+	mi := &file_structs_structs_tx_proto_msgTypes[46]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23660,7 +24208,7 @@ func (x *MsgPermissionGrantOnObject) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPermissionGrantOnObject) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[46]
+	mi := &file_structs_structs_tx_proto_msgTypes[47]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24254,7 +24802,7 @@ func (x *MsgPermissionGrantOnAddress) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPermissionGrantOnAddress) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[47]
+	mi := &file_structs_structs_tx_proto_msgTypes[48]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24788,7 +25336,7 @@ func (x *MsgPermissionRevokeOnObject) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPermissionRevokeOnObject) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[48]
+	mi := &file_structs_structs_tx_proto_msgTypes[49]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25382,7 +25930,7 @@ func (x *MsgPermissionRevokeOnAddress) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPermissionRevokeOnAddress) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[49]
+	mi := &file_structs_structs_tx_proto_msgTypes[50]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25916,7 +26464,7 @@ func (x *MsgPermissionSetOnObject) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPermissionSetOnObject) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[50]
+	mi := &file_structs_structs_tx_proto_msgTypes[51]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26510,7 +27058,7 @@ func (x *MsgPermissionSetOnAddress) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPermissionSetOnAddress) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[51]
+	mi := &file_structs_structs_tx_proto_msgTypes[52]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27046,7 +27594,7 @@ func (x *MsgPermissionGuildRankSet) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPermissionGuildRankSet) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[52]
+	mi := &file_structs_structs_tx_proto_msgTypes[53]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27688,7 +28236,7 @@ func (x *MsgPermissionGuildRankRevoke) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPermissionGuildRankRevoke) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[53]
+	mi := &file_structs_structs_tx_proto_msgTypes[54]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28276,7 +28824,7 @@ func (x *MsgPermissionResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPermissionResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[54]
+	mi := &file_structs_structs_tx_proto_msgTypes[55]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28636,7 +29184,7 @@ func (x *MsgPlanetExplore) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlanetExplore) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[55]
+	mi := &file_structs_structs_tx_proto_msgTypes[56]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29118,7 +29666,7 @@ func (x *MsgPlanetExploreResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlanetExploreResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[56]
+	mi := &file_structs_structs_tx_proto_msgTypes[57]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29559,7 +30107,7 @@ func (x *MsgPlanetRaidComplete) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlanetRaidComplete) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[57]
+	mi := &file_structs_structs_tx_proto_msgTypes[58]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -30169,7 +30717,7 @@ func (x *MsgPlanetRaidCompleteResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlanetRaidCompleteResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[58]
+	mi := &file_structs_structs_tx_proto_msgTypes[59]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -30731,7 +31279,7 @@ func (x *MsgPlanetUpdateName) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlanetUpdateName) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[59]
+	mi := &file_structs_structs_tx_proto_msgTypes[60]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -31273,7 +31821,7 @@ func (x *MsgPlanetUpdateResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlanetUpdateResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[60]
+	mi := &file_structs_structs_tx_proto_msgTypes[61]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -31633,7 +32181,7 @@ func (x *MsgPlayerUpdatePrimaryAddress) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlayerUpdatePrimaryAddress) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[61]
+	mi := &file_structs_structs_tx_proto_msgTypes[62]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -32113,7 +32661,7 @@ func (x *MsgPlayerUpdatePrimaryAddressResponse) ProtoReflect() protoreflect.Mess
 }
 
 func (x *MsgPlayerUpdatePrimaryAddressResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[62]
+	mi := &file_structs_structs_tx_proto_msgTypes[63]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -32473,7 +33021,7 @@ func (x *MsgPlayerResume) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlayerResume) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[63]
+	mi := &file_structs_structs_tx_proto_msgTypes[64]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -32953,7 +33501,7 @@ func (x *MsgPlayerResumeResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlayerResumeResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[64]
+	mi := &file_structs_structs_tx_proto_msgTypes[65]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -33315,7 +33863,7 @@ func (x *MsgPlayerUpdateGuildRank) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlayerUpdateGuildRank) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[65]
+	mi := &file_structs_structs_tx_proto_msgTypes[66]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -33841,7 +34389,7 @@ func (x *MsgPlayerUpdateGuildRankResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlayerUpdateGuildRankResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[66]
+	mi := &file_structs_structs_tx_proto_msgTypes[67]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -34203,7 +34751,7 @@ func (x *MsgPlayerUpdateName) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlayerUpdateName) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[67]
+	mi := &file_structs_structs_tx_proto_msgTypes[68]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -34751,7 +35299,7 @@ func (x *MsgPlayerUpdatePfp) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlayerUpdatePfp) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[68]
+	mi := &file_structs_structs_tx_proto_msgTypes[69]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -35293,7 +35841,7 @@ func (x *MsgPlayerUpdateResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlayerUpdateResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[69]
+	mi := &file_structs_structs_tx_proto_msgTypes[70]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -35657,7 +36205,7 @@ func (x *MsgReactorInfuse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgReactorInfuse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[70]
+	mi := &file_structs_structs_tx_proto_msgTypes[71]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -36276,7 +36824,7 @@ func (x *MsgReactorInfuseResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgReactorInfuseResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[71]
+	mi := &file_structs_structs_tx_proto_msgTypes[72]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -36642,7 +37190,7 @@ func (x *MsgReactorBeginMigration) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgReactorBeginMigration) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[72]
+	mi := &file_structs_structs_tx_proto_msgTypes[73]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -37325,7 +37873,7 @@ func (x *MsgReactorBeginMigrationResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgReactorBeginMigrationResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[73]
+	mi := &file_structs_structs_tx_proto_msgTypes[74]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -37766,7 +38314,7 @@ func (x *MsgReactorDefuse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgReactorDefuse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[74]
+	mi := &file_structs_structs_tx_proto_msgTypes[75]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -38389,7 +38937,7 @@ func (x *MsgReactorDefuseResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgReactorDefuseResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[75]
+	mi := &file_structs_structs_tx_proto_msgTypes[76]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -38909,7 +39457,7 @@ func (x *MsgReactorCancelDefusion) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgReactorCancelDefusion) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[76]
+	mi := &file_structs_structs_tx_proto_msgTypes[77]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -39574,7 +40122,7 @@ func (x *MsgReactorCancelDefusionResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgReactorCancelDefusionResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[77]
+	mi := &file_structs_structs_tx_proto_msgTypes[78]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -39932,7 +40480,7 @@ func (x *MsgStructStatusResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructStatusResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[78]
+	mi := &file_structs_structs_tx_proto_msgTypes[79]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -40369,7 +40917,7 @@ func (x *MsgStructActivate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructActivate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[79]
+	mi := &file_structs_structs_tx_proto_msgTypes[80]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -40853,7 +41401,7 @@ func (x *MsgStructDeactivate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructDeactivate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[80]
+	mi := &file_structs_structs_tx_proto_msgTypes[81]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -41343,7 +41891,7 @@ func (x *MsgStructBuildInitiate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructBuildInitiate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[81]
+	mi := &file_structs_structs_tx_proto_msgTypes[82]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -41969,7 +42517,7 @@ func (x *MsgStructBuildComplete) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructBuildComplete) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[82]
+	mi := &file_structs_structs_tx_proto_msgTypes[83]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -42577,7 +43125,7 @@ func (x *MsgStructBuildCancel) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructBuildCancel) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[83]
+	mi := &file_structs_structs_tx_proto_msgTypes[84]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -43071,7 +43619,7 @@ func (x *MsgStructBuildCompleteAndStash) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructBuildCompleteAndStash) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[84]
+	mi := &file_structs_structs_tx_proto_msgTypes[85]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -43835,7 +44383,7 @@ func (x *MsgStructDefenseSet) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructDefenseSet) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[85]
+	mi := &file_structs_structs_tx_proto_msgTypes[86]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -44381,7 +44929,7 @@ func (x *MsgStructDefenseClear) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructDefenseClear) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[86]
+	mi := &file_structs_structs_tx_proto_msgTypes[87]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -44871,7 +45419,7 @@ func (x *MsgStructMove) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructMove) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[87]
+	mi := &file_structs_structs_tx_proto_msgTypes[88]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -45543,7 +46091,7 @@ func (x *MsgStructAttack) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructAttack) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[88]
+	mi := &file_structs_structs_tx_proto_msgTypes[89]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -46161,7 +46709,7 @@ func (x *MsgStructAttackResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructAttackResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[89]
+	mi := &file_structs_structs_tx_proto_msgTypes[90]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -46521,7 +47069,7 @@ func (x *MsgStructStealthActivate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructStealthActivate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[90]
+	mi := &file_structs_structs_tx_proto_msgTypes[91]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -47005,7 +47553,7 @@ func (x *MsgStructStealthDeactivate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructStealthDeactivate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[91]
+	mi := &file_structs_structs_tx_proto_msgTypes[92]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -47491,7 +48039,7 @@ func (x *MsgStructGeneratorInfuse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructGeneratorInfuse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[92]
+	mi := &file_structs_structs_tx_proto_msgTypes[93]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -48033,7 +48581,7 @@ func (x *MsgStructGeneratorStatusResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructGeneratorStatusResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[93]
+	mi := &file_structs_structs_tx_proto_msgTypes[94]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -48397,7 +48945,7 @@ func (x *MsgStructOreMinerComplete) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructOreMinerComplete) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[94]
+	mi := &file_structs_structs_tx_proto_msgTypes[95]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -49003,7 +49551,7 @@ func (x *MsgStructOreMinerStatusResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructOreMinerStatusResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[95]
+	mi := &file_structs_structs_tx_proto_msgTypes[96]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -49444,7 +49992,7 @@ func (x *MsgStructOreRefineryComplete) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructOreRefineryComplete) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[96]
+	mi := &file_structs_structs_tx_proto_msgTypes[97]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -50050,7 +50598,7 @@ func (x *MsgStructOreRefineryStatusResponse) ProtoReflect() protoreflect.Message
 }
 
 func (x *MsgStructOreRefineryStatusResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[97]
+	mi := &file_structs_structs_tx_proto_msgTypes[98]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -50493,7 +51041,7 @@ func (x *MsgStructStorageStash) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructStorageStash) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[98]
+	mi := &file_structs_structs_tx_proto_msgTypes[99]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -51139,7 +51687,7 @@ func (x *MsgStructStorageRecall) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructStorageRecall) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[99]
+	mi := &file_structs_structs_tx_proto_msgTypes[100]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -51831,7 +52379,7 @@ func (x *MsgSubstationCreate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationCreate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[100]
+	mi := &file_structs_structs_tx_proto_msgTypes[101]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -52375,7 +52923,7 @@ func (x *MsgSubstationCreateResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationCreateResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[101]
+	mi := &file_structs_structs_tx_proto_msgTypes[102]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -52799,7 +53347,7 @@ func (x *MsgSubstationDelete) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationDelete) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[102]
+	mi := &file_structs_structs_tx_proto_msgTypes[103]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -53341,7 +53889,7 @@ func (x *MsgSubstationDeleteResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationDeleteResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[103]
+	mi := &file_structs_structs_tx_proto_msgTypes[104]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -53703,7 +54251,7 @@ func (x *MsgSubstationAllocationConnect) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationAllocationConnect) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[104]
+	mi := &file_structs_structs_tx_proto_msgTypes[105]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -54245,7 +54793,7 @@ func (x *MsgSubstationAllocationConnectResponse) ProtoReflect() protoreflect.Mes
 }
 
 func (x *MsgSubstationAllocationConnectResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[105]
+	mi := &file_structs_structs_tx_proto_msgTypes[106]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -54605,7 +55153,7 @@ func (x *MsgSubstationAllocationDisconnect) ProtoReflect() protoreflect.Message 
 }
 
 func (x *MsgSubstationAllocationDisconnect) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[106]
+	mi := &file_structs_structs_tx_proto_msgTypes[107]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55085,7 +55633,7 @@ func (x *MsgSubstationAllocationDisconnectResponse) ProtoReflect() protoreflect.
 }
 
 func (x *MsgSubstationAllocationDisconnectResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[107]
+	mi := &file_structs_structs_tx_proto_msgTypes[108]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55447,7 +55995,7 @@ func (x *MsgSubstationPlayerConnect) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationPlayerConnect) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[108]
+	mi := &file_structs_structs_tx_proto_msgTypes[109]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55989,7 +56537,7 @@ func (x *MsgSubstationPlayerConnectResponse) ProtoReflect() protoreflect.Message
 }
 
 func (x *MsgSubstationPlayerConnectResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[109]
+	mi := &file_structs_structs_tx_proto_msgTypes[110]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56349,7 +56897,7 @@ func (x *MsgSubstationPlayerDisconnect) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationPlayerDisconnect) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[110]
+	mi := &file_structs_structs_tx_proto_msgTypes[111]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56829,7 +57377,7 @@ func (x *MsgSubstationPlayerDisconnectResponse) ProtoReflect() protoreflect.Mess
 }
 
 func (x *MsgSubstationPlayerDisconnectResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[111]
+	mi := &file_structs_structs_tx_proto_msgTypes[112]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57237,7 +57785,7 @@ func (x *MsgSubstationPlayerMigrate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationPlayerMigrate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[112]
+	mi := &file_structs_structs_tx_proto_msgTypes[113]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57793,7 +58341,7 @@ func (x *MsgSubstationPlayerMigrateResponse) ProtoReflect() protoreflect.Message
 }
 
 func (x *MsgSubstationPlayerMigrateResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[113]
+	mi := &file_structs_structs_tx_proto_msgTypes[114]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58155,7 +58703,7 @@ func (x *MsgSubstationUpdateName) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationUpdateName) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[114]
+	mi := &file_structs_structs_tx_proto_msgTypes[115]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58703,7 +59251,7 @@ func (x *MsgSubstationUpdatePfp) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationUpdatePfp) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[115]
+	mi := &file_structs_structs_tx_proto_msgTypes[116]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -59245,7 +59793,7 @@ func (x *MsgSubstationUpdateResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationUpdateResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[116]
+	mi := &file_structs_structs_tx_proto_msgTypes[117]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -59609,7 +60157,7 @@ func (x *MsgAgreementOpen) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgAgreementOpen) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[117]
+	mi := &file_structs_structs_tx_proto_msgTypes[118]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -60185,7 +60733,7 @@ func (x *MsgAgreementClose) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgAgreementClose) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[118]
+	mi := &file_structs_structs_tx_proto_msgTypes[119]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -60671,7 +61219,7 @@ func (x *MsgAgreementCapacityIncrease) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgAgreementCapacityIncrease) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[119]
+	mi := &file_structs_structs_tx_proto_msgTypes[120]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -61203,7 +61751,7 @@ func (x *MsgAgreementCapacityDecrease) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgAgreementCapacityDecrease) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[120]
+	mi := &file_structs_structs_tx_proto_msgTypes[121]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -61735,7 +62283,7 @@ func (x *MsgAgreementDurationIncrease) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgAgreementDurationIncrease) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[121]
+	mi := &file_structs_structs_tx_proto_msgTypes[122]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -62261,7 +62809,7 @@ func (x *MsgAgreementResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgAgreementResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[122]
+	mi := &file_structs_structs_tx_proto_msgTypes[123]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -62637,7 +63185,7 @@ func (x *MsgProviderCreate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgProviderCreate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[123]
+	mi := &file_structs_structs_tx_proto_msgTypes[124]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -63554,7 +64102,7 @@ func (x *MsgProviderWithdrawBalance) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgProviderWithdrawBalance) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[124]
+	mi := &file_structs_structs_tx_proto_msgTypes[125]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -64102,7 +64650,7 @@ func (x *MsgProviderUpdateCapacityMinimum) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgProviderUpdateCapacityMinimum) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[125]
+	mi := &file_structs_structs_tx_proto_msgTypes[126]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -64634,7 +65182,7 @@ func (x *MsgProviderUpdateCapacityMaximum) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgProviderUpdateCapacityMaximum) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[126]
+	mi := &file_structs_structs_tx_proto_msgTypes[127]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -65166,7 +65714,7 @@ func (x *MsgProviderUpdateDurationMinimum) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgProviderUpdateDurationMinimum) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[127]
+	mi := &file_structs_structs_tx_proto_msgTypes[128]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -65698,7 +66246,7 @@ func (x *MsgProviderUpdateDurationMaximum) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgProviderUpdateDurationMaximum) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[128]
+	mi := &file_structs_structs_tx_proto_msgTypes[129]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -66230,7 +66778,7 @@ func (x *MsgProviderUpdateAccessPolicy) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgProviderUpdateAccessPolicy) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[129]
+	mi := &file_structs_structs_tx_proto_msgTypes[130]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -66760,7 +67308,7 @@ func (x *MsgProviderDelete) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgProviderDelete) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[130]
+	mi := &file_structs_structs_tx_proto_msgTypes[131]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -67240,7 +67788,7 @@ func (x *MsgProviderResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgProviderResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[131]
+	mi := &file_structs_structs_tx_proto_msgTypes[132]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -67655,7 +68203,7 @@ func (x *MsgPlayerSend) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlayerSend) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[132]
+	mi := &file_structs_structs_tx_proto_msgTypes[133]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -68282,7 +68830,7 @@ func (x *MsgPlayerSendResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlayerSendResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[133]
+	mi := &file_structs_structs_tx_proto_msgTypes[134]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -69787,6 +70335,64 @@ func (x *MsgGuildUpdateEndpoint) GetEndpoint() string {
 	return ""
 }
 
+// MsgGuildUpdatePrimaryReactor reassigns a guild's primary reactor to a
+// different (delegate-able, non-jailed) validator's reactor. This is the
+// recovery path when the validator backing the current primary reactor has
+// been permanently retired and the guild can no longer accept token mints
+// or honor guild-bank operations tied to that reactor.
+//
+// Permission: PermAdmin on the guild object.
+type MsgGuildUpdatePrimaryReactor struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Creator   string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	GuildId   string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	ReactorId string `protobuf:"bytes,3,opt,name=reactorId,proto3" json:"reactorId,omitempty"`
+}
+
+func (x *MsgGuildUpdatePrimaryReactor) Reset() {
+	*x = MsgGuildUpdatePrimaryReactor{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_tx_proto_msgTypes[27]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgGuildUpdatePrimaryReactor) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgGuildUpdatePrimaryReactor) ProtoMessage() {}
+
+// Deprecated: Use MsgGuildUpdatePrimaryReactor.ProtoReflect.Descriptor instead.
+func (*MsgGuildUpdatePrimaryReactor) Descriptor() ([]byte, []int) {
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *MsgGuildUpdatePrimaryReactor) GetCreator() string {
+	if x != nil {
+		return x.Creator
+	}
+	return ""
+}
+
+func (x *MsgGuildUpdatePrimaryReactor) GetGuildId() string {
+	if x != nil {
+		return x.GuildId
+	}
+	return ""
+}
+
+func (x *MsgGuildUpdatePrimaryReactor) GetReactorId() string {
+	if x != nil {
+		return x.ReactorId
+	}
+	return ""
+}
+
 type MsgGuildUpdateJoinInfusionMinimum struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -69800,7 +70406,7 @@ type MsgGuildUpdateJoinInfusionMinimum struct {
 func (x *MsgGuildUpdateJoinInfusionMinimum) Reset() {
 	*x = MsgGuildUpdateJoinInfusionMinimum{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[27]
+		mi := &file_structs_structs_tx_proto_msgTypes[28]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -69814,7 +70420,7 @@ func (*MsgGuildUpdateJoinInfusionMinimum) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildUpdateJoinInfusionMinimum.ProtoReflect.Descriptor instead.
 func (*MsgGuildUpdateJoinInfusionMinimum) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{27}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *MsgGuildUpdateJoinInfusionMinimum) GetCreator() string {
@@ -69851,7 +70457,7 @@ type MsgGuildUpdateJoinInfusionMinimumBypassByRequest struct {
 func (x *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Reset() {
 	*x = MsgGuildUpdateJoinInfusionMinimumBypassByRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[28]
+		mi := &file_structs_structs_tx_proto_msgTypes[29]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -69865,7 +70471,7 @@ func (*MsgGuildUpdateJoinInfusionMinimumBypassByRequest) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildUpdateJoinInfusionMinimumBypassByRequest.ProtoReflect.Descriptor instead.
 func (*MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{28}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) GetCreator() string {
@@ -69902,7 +70508,7 @@ type MsgGuildUpdateJoinInfusionMinimumBypassByInvite struct {
 func (x *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Reset() {
 	*x = MsgGuildUpdateJoinInfusionMinimumBypassByInvite{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[29]
+		mi := &file_structs_structs_tx_proto_msgTypes[30]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -69916,7 +70522,7 @@ func (*MsgGuildUpdateJoinInfusionMinimumBypassByInvite) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildUpdateJoinInfusionMinimumBypassByInvite.ProtoReflect.Descriptor instead.
 func (*MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{29}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) GetCreator() string {
@@ -69952,7 +70558,7 @@ type MsgGuildUpdateEntryRank struct {
 func (x *MsgGuildUpdateEntryRank) Reset() {
 	*x = MsgGuildUpdateEntryRank{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[30]
+		mi := &file_structs_structs_tx_proto_msgTypes[31]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -69966,7 +70572,7 @@ func (*MsgGuildUpdateEntryRank) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildUpdateEntryRank.ProtoReflect.Descriptor instead.
 func (*MsgGuildUpdateEntryRank) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{30}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *MsgGuildUpdateEntryRank) GetCreator() string {
@@ -69992,7 +70598,7 @@ type MsgGuildUpdateResponse struct {
 func (x *MsgGuildUpdateResponse) Reset() {
 	*x = MsgGuildUpdateResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[31]
+		mi := &file_structs_structs_tx_proto_msgTypes[32]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70006,7 +70612,7 @@ func (*MsgGuildUpdateResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildUpdateResponse.ProtoReflect.Descriptor instead.
 func (*MsgGuildUpdateResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{31}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{32}
 }
 
 type MsgGuildUpdateName struct {
@@ -70022,7 +70628,7 @@ type MsgGuildUpdateName struct {
 func (x *MsgGuildUpdateName) Reset() {
 	*x = MsgGuildUpdateName{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[32]
+		mi := &file_structs_structs_tx_proto_msgTypes[33]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70036,7 +70642,7 @@ func (*MsgGuildUpdateName) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildUpdateName.ProtoReflect.Descriptor instead.
 func (*MsgGuildUpdateName) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{32}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *MsgGuildUpdateName) GetCreator() string {
@@ -70073,7 +70679,7 @@ type MsgGuildUpdatePfp struct {
 func (x *MsgGuildUpdatePfp) Reset() {
 	*x = MsgGuildUpdatePfp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[33]
+		mi := &file_structs_structs_tx_proto_msgTypes[34]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70087,7 +70693,7 @@ func (*MsgGuildUpdatePfp) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildUpdatePfp.ProtoReflect.Descriptor instead.
 func (*MsgGuildUpdatePfp) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{33}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *MsgGuildUpdatePfp) GetCreator() string {
@@ -70125,7 +70731,7 @@ type MsgGuildMembershipInvite struct {
 func (x *MsgGuildMembershipInvite) Reset() {
 	*x = MsgGuildMembershipInvite{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[34]
+		mi := &file_structs_structs_tx_proto_msgTypes[35]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70139,7 +70745,7 @@ func (*MsgGuildMembershipInvite) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildMembershipInvite.ProtoReflect.Descriptor instead.
 func (*MsgGuildMembershipInvite) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{34}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *MsgGuildMembershipInvite) GetCreator() string {
@@ -70184,7 +70790,7 @@ type MsgGuildMembershipInviteApprove struct {
 func (x *MsgGuildMembershipInviteApprove) Reset() {
 	*x = MsgGuildMembershipInviteApprove{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[35]
+		mi := &file_structs_structs_tx_proto_msgTypes[36]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70198,7 +70804,7 @@ func (*MsgGuildMembershipInviteApprove) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildMembershipInviteApprove.ProtoReflect.Descriptor instead.
 func (*MsgGuildMembershipInviteApprove) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{35}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *MsgGuildMembershipInviteApprove) GetCreator() string {
@@ -70242,7 +70848,7 @@ type MsgGuildMembershipInviteDeny struct {
 func (x *MsgGuildMembershipInviteDeny) Reset() {
 	*x = MsgGuildMembershipInviteDeny{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[36]
+		mi := &file_structs_structs_tx_proto_msgTypes[37]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70256,7 +70862,7 @@ func (*MsgGuildMembershipInviteDeny) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildMembershipInviteDeny.ProtoReflect.Descriptor instead.
 func (*MsgGuildMembershipInviteDeny) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{36}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *MsgGuildMembershipInviteDeny) GetCreator() string {
@@ -70293,7 +70899,7 @@ type MsgGuildMembershipInviteRevoke struct {
 func (x *MsgGuildMembershipInviteRevoke) Reset() {
 	*x = MsgGuildMembershipInviteRevoke{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[37]
+		mi := &file_structs_structs_tx_proto_msgTypes[38]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70307,7 +70913,7 @@ func (*MsgGuildMembershipInviteRevoke) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildMembershipInviteRevoke.ProtoReflect.Descriptor instead.
 func (*MsgGuildMembershipInviteRevoke) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{37}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *MsgGuildMembershipInviteRevoke) GetCreator() string {
@@ -70346,7 +70952,7 @@ type MsgGuildMembershipJoin struct {
 func (x *MsgGuildMembershipJoin) Reset() {
 	*x = MsgGuildMembershipJoin{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[38]
+		mi := &file_structs_structs_tx_proto_msgTypes[39]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70360,7 +70966,7 @@ func (*MsgGuildMembershipJoin) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildMembershipJoin.ProtoReflect.Descriptor instead.
 func (*MsgGuildMembershipJoin) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{38}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *MsgGuildMembershipJoin) GetCreator() string {
@@ -70415,7 +71021,7 @@ type MsgGuildMembershipJoinProxy struct {
 func (x *MsgGuildMembershipJoinProxy) Reset() {
 	*x = MsgGuildMembershipJoinProxy{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[39]
+		mi := &file_structs_structs_tx_proto_msgTypes[40]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70429,7 +71035,7 @@ func (*MsgGuildMembershipJoinProxy) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildMembershipJoinProxy.ProtoReflect.Descriptor instead.
 func (*MsgGuildMembershipJoinProxy) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{39}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *MsgGuildMembershipJoinProxy) GetCreator() string {
@@ -70494,7 +71100,7 @@ type MsgGuildMembershipKick struct {
 func (x *MsgGuildMembershipKick) Reset() {
 	*x = MsgGuildMembershipKick{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[40]
+		mi := &file_structs_structs_tx_proto_msgTypes[41]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70508,7 +71114,7 @@ func (*MsgGuildMembershipKick) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildMembershipKick.ProtoReflect.Descriptor instead.
 func (*MsgGuildMembershipKick) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{40}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *MsgGuildMembershipKick) GetCreator() string {
@@ -70546,7 +71152,7 @@ type MsgGuildMembershipRequest struct {
 func (x *MsgGuildMembershipRequest) Reset() {
 	*x = MsgGuildMembershipRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[41]
+		mi := &file_structs_structs_tx_proto_msgTypes[42]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70560,7 +71166,7 @@ func (*MsgGuildMembershipRequest) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildMembershipRequest.ProtoReflect.Descriptor instead.
 func (*MsgGuildMembershipRequest) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{41}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *MsgGuildMembershipRequest) GetCreator() string {
@@ -70605,7 +71211,7 @@ type MsgGuildMembershipRequestApprove struct {
 func (x *MsgGuildMembershipRequestApprove) Reset() {
 	*x = MsgGuildMembershipRequestApprove{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[42]
+		mi := &file_structs_structs_tx_proto_msgTypes[43]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70619,7 +71225,7 @@ func (*MsgGuildMembershipRequestApprove) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildMembershipRequestApprove.ProtoReflect.Descriptor instead.
 func (*MsgGuildMembershipRequestApprove) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{42}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *MsgGuildMembershipRequestApprove) GetCreator() string {
@@ -70663,7 +71269,7 @@ type MsgGuildMembershipRequestDeny struct {
 func (x *MsgGuildMembershipRequestDeny) Reset() {
 	*x = MsgGuildMembershipRequestDeny{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[43]
+		mi := &file_structs_structs_tx_proto_msgTypes[44]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70677,7 +71283,7 @@ func (*MsgGuildMembershipRequestDeny) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildMembershipRequestDeny.ProtoReflect.Descriptor instead.
 func (*MsgGuildMembershipRequestDeny) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{43}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *MsgGuildMembershipRequestDeny) GetCreator() string {
@@ -70714,7 +71320,7 @@ type MsgGuildMembershipRequestRevoke struct {
 func (x *MsgGuildMembershipRequestRevoke) Reset() {
 	*x = MsgGuildMembershipRequestRevoke{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[44]
+		mi := &file_structs_structs_tx_proto_msgTypes[45]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70728,7 +71334,7 @@ func (*MsgGuildMembershipRequestRevoke) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildMembershipRequestRevoke.ProtoReflect.Descriptor instead.
 func (*MsgGuildMembershipRequestRevoke) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{44}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *MsgGuildMembershipRequestRevoke) GetCreator() string {
@@ -70763,7 +71369,7 @@ type MsgGuildMembershipResponse struct {
 func (x *MsgGuildMembershipResponse) Reset() {
 	*x = MsgGuildMembershipResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[45]
+		mi := &file_structs_structs_tx_proto_msgTypes[46]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70777,7 +71383,7 @@ func (*MsgGuildMembershipResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgGuildMembershipResponse.ProtoReflect.Descriptor instead.
 func (*MsgGuildMembershipResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{45}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *MsgGuildMembershipResponse) GetGuildMembershipApplication() *GuildMembershipApplication {
@@ -70801,7 +71407,7 @@ type MsgPermissionGrantOnObject struct {
 func (x *MsgPermissionGrantOnObject) Reset() {
 	*x = MsgPermissionGrantOnObject{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[46]
+		mi := &file_structs_structs_tx_proto_msgTypes[47]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70815,7 +71421,7 @@ func (*MsgPermissionGrantOnObject) ProtoMessage() {}
 
 // Deprecated: Use MsgPermissionGrantOnObject.ProtoReflect.Descriptor instead.
 func (*MsgPermissionGrantOnObject) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{46}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *MsgPermissionGrantOnObject) GetCreator() string {
@@ -70859,7 +71465,7 @@ type MsgPermissionGrantOnAddress struct {
 func (x *MsgPermissionGrantOnAddress) Reset() {
 	*x = MsgPermissionGrantOnAddress{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[47]
+		mi := &file_structs_structs_tx_proto_msgTypes[48]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70873,7 +71479,7 @@ func (*MsgPermissionGrantOnAddress) ProtoMessage() {}
 
 // Deprecated: Use MsgPermissionGrantOnAddress.ProtoReflect.Descriptor instead.
 func (*MsgPermissionGrantOnAddress) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{47}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *MsgPermissionGrantOnAddress) GetCreator() string {
@@ -70911,7 +71517,7 @@ type MsgPermissionRevokeOnObject struct {
 func (x *MsgPermissionRevokeOnObject) Reset() {
 	*x = MsgPermissionRevokeOnObject{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[48]
+		mi := &file_structs_structs_tx_proto_msgTypes[49]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70925,7 +71531,7 @@ func (*MsgPermissionRevokeOnObject) ProtoMessage() {}
 
 // Deprecated: Use MsgPermissionRevokeOnObject.ProtoReflect.Descriptor instead.
 func (*MsgPermissionRevokeOnObject) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{48}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *MsgPermissionRevokeOnObject) GetCreator() string {
@@ -70969,7 +71575,7 @@ type MsgPermissionRevokeOnAddress struct {
 func (x *MsgPermissionRevokeOnAddress) Reset() {
 	*x = MsgPermissionRevokeOnAddress{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[49]
+		mi := &file_structs_structs_tx_proto_msgTypes[50]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -70983,7 +71589,7 @@ func (*MsgPermissionRevokeOnAddress) ProtoMessage() {}
 
 // Deprecated: Use MsgPermissionRevokeOnAddress.ProtoReflect.Descriptor instead.
 func (*MsgPermissionRevokeOnAddress) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{49}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *MsgPermissionRevokeOnAddress) GetCreator() string {
@@ -71021,7 +71627,7 @@ type MsgPermissionSetOnObject struct {
 func (x *MsgPermissionSetOnObject) Reset() {
 	*x = MsgPermissionSetOnObject{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[50]
+		mi := &file_structs_structs_tx_proto_msgTypes[51]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71035,7 +71641,7 @@ func (*MsgPermissionSetOnObject) ProtoMessage() {}
 
 // Deprecated: Use MsgPermissionSetOnObject.ProtoReflect.Descriptor instead.
 func (*MsgPermissionSetOnObject) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{50}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *MsgPermissionSetOnObject) GetCreator() string {
@@ -71079,7 +71685,7 @@ type MsgPermissionSetOnAddress struct {
 func (x *MsgPermissionSetOnAddress) Reset() {
 	*x = MsgPermissionSetOnAddress{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[51]
+		mi := &file_structs_structs_tx_proto_msgTypes[52]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71093,7 +71699,7 @@ func (*MsgPermissionSetOnAddress) ProtoMessage() {}
 
 // Deprecated: Use MsgPermissionSetOnAddress.ProtoReflect.Descriptor instead.
 func (*MsgPermissionSetOnAddress) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{51}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *MsgPermissionSetOnAddress) GetCreator() string {
@@ -71132,7 +71738,7 @@ type MsgPermissionGuildRankSet struct {
 func (x *MsgPermissionGuildRankSet) Reset() {
 	*x = MsgPermissionGuildRankSet{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[52]
+		mi := &file_structs_structs_tx_proto_msgTypes[53]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71146,7 +71752,7 @@ func (*MsgPermissionGuildRankSet) ProtoMessage() {}
 
 // Deprecated: Use MsgPermissionGuildRankSet.ProtoReflect.Descriptor instead.
 func (*MsgPermissionGuildRankSet) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{52}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *MsgPermissionGuildRankSet) GetCreator() string {
@@ -71198,7 +71804,7 @@ type MsgPermissionGuildRankRevoke struct {
 func (x *MsgPermissionGuildRankRevoke) Reset() {
 	*x = MsgPermissionGuildRankRevoke{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[53]
+		mi := &file_structs_structs_tx_proto_msgTypes[54]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71212,7 +71818,7 @@ func (*MsgPermissionGuildRankRevoke) ProtoMessage() {}
 
 // Deprecated: Use MsgPermissionGuildRankRevoke.ProtoReflect.Descriptor instead.
 func (*MsgPermissionGuildRankRevoke) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{53}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *MsgPermissionGuildRankRevoke) GetCreator() string {
@@ -71252,7 +71858,7 @@ type MsgPermissionResponse struct {
 func (x *MsgPermissionResponse) Reset() {
 	*x = MsgPermissionResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[54]
+		mi := &file_structs_structs_tx_proto_msgTypes[55]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71266,7 +71872,7 @@ func (*MsgPermissionResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgPermissionResponse.ProtoReflect.Descriptor instead.
 func (*MsgPermissionResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{54}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{55}
 }
 
 type MsgPlanetExplore struct {
@@ -71281,7 +71887,7 @@ type MsgPlanetExplore struct {
 func (x *MsgPlanetExplore) Reset() {
 	*x = MsgPlanetExplore{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[55]
+		mi := &file_structs_structs_tx_proto_msgTypes[56]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71295,7 +71901,7 @@ func (*MsgPlanetExplore) ProtoMessage() {}
 
 // Deprecated: Use MsgPlanetExplore.ProtoReflect.Descriptor instead.
 func (*MsgPlanetExplore) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{55}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *MsgPlanetExplore) GetCreator() string {
@@ -71323,7 +71929,7 @@ type MsgPlanetExploreResponse struct {
 func (x *MsgPlanetExploreResponse) Reset() {
 	*x = MsgPlanetExploreResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[56]
+		mi := &file_structs_structs_tx_proto_msgTypes[57]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71337,7 +71943,7 @@ func (*MsgPlanetExploreResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgPlanetExploreResponse.ProtoReflect.Descriptor instead.
 func (*MsgPlanetExploreResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{56}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *MsgPlanetExploreResponse) GetPlanet() *Planet {
@@ -71361,7 +71967,7 @@ type MsgPlanetRaidComplete struct {
 func (x *MsgPlanetRaidComplete) Reset() {
 	*x = MsgPlanetRaidComplete{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[57]
+		mi := &file_structs_structs_tx_proto_msgTypes[58]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71375,7 +71981,7 @@ func (*MsgPlanetRaidComplete) ProtoMessage() {}
 
 // Deprecated: Use MsgPlanetRaidComplete.ProtoReflect.Descriptor instead.
 func (*MsgPlanetRaidComplete) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{57}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *MsgPlanetRaidComplete) GetCreator() string {
@@ -71419,7 +72025,7 @@ type MsgPlanetRaidCompleteResponse struct {
 func (x *MsgPlanetRaidCompleteResponse) Reset() {
 	*x = MsgPlanetRaidCompleteResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[58]
+		mi := &file_structs_structs_tx_proto_msgTypes[59]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71433,7 +72039,7 @@ func (*MsgPlanetRaidCompleteResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgPlanetRaidCompleteResponse.ProtoReflect.Descriptor instead.
 func (*MsgPlanetRaidCompleteResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{58}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *MsgPlanetRaidCompleteResponse) GetFleet() *Fleet {
@@ -71470,7 +72076,7 @@ type MsgPlanetUpdateName struct {
 func (x *MsgPlanetUpdateName) Reset() {
 	*x = MsgPlanetUpdateName{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[59]
+		mi := &file_structs_structs_tx_proto_msgTypes[60]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71484,7 +72090,7 @@ func (*MsgPlanetUpdateName) ProtoMessage() {}
 
 // Deprecated: Use MsgPlanetUpdateName.ProtoReflect.Descriptor instead.
 func (*MsgPlanetUpdateName) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{59}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *MsgPlanetUpdateName) GetCreator() string {
@@ -71517,7 +72123,7 @@ type MsgPlanetUpdateResponse struct {
 func (x *MsgPlanetUpdateResponse) Reset() {
 	*x = MsgPlanetUpdateResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[60]
+		mi := &file_structs_structs_tx_proto_msgTypes[61]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71531,7 +72137,7 @@ func (*MsgPlanetUpdateResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgPlanetUpdateResponse.ProtoReflect.Descriptor instead.
 func (*MsgPlanetUpdateResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{60}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{61}
 }
 
 type MsgPlayerUpdatePrimaryAddress struct {
@@ -71546,7 +72152,7 @@ type MsgPlayerUpdatePrimaryAddress struct {
 func (x *MsgPlayerUpdatePrimaryAddress) Reset() {
 	*x = MsgPlayerUpdatePrimaryAddress{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[61]
+		mi := &file_structs_structs_tx_proto_msgTypes[62]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71560,7 +72166,7 @@ func (*MsgPlayerUpdatePrimaryAddress) ProtoMessage() {}
 
 // Deprecated: Use MsgPlayerUpdatePrimaryAddress.ProtoReflect.Descriptor instead.
 func (*MsgPlayerUpdatePrimaryAddress) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{61}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *MsgPlayerUpdatePrimaryAddress) GetCreator() string {
@@ -71586,7 +72192,7 @@ type MsgPlayerUpdatePrimaryAddressResponse struct {
 func (x *MsgPlayerUpdatePrimaryAddressResponse) Reset() {
 	*x = MsgPlayerUpdatePrimaryAddressResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[62]
+		mi := &file_structs_structs_tx_proto_msgTypes[63]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71600,7 +72206,7 @@ func (*MsgPlayerUpdatePrimaryAddressResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgPlayerUpdatePrimaryAddressResponse.ProtoReflect.Descriptor instead.
 func (*MsgPlayerUpdatePrimaryAddressResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{62}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{63}
 }
 
 type MsgPlayerResume struct {
@@ -71615,7 +72221,7 @@ type MsgPlayerResume struct {
 func (x *MsgPlayerResume) Reset() {
 	*x = MsgPlayerResume{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[63]
+		mi := &file_structs_structs_tx_proto_msgTypes[64]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71629,7 +72235,7 @@ func (*MsgPlayerResume) ProtoMessage() {}
 
 // Deprecated: Use MsgPlayerResume.ProtoReflect.Descriptor instead.
 func (*MsgPlayerResume) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{63}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *MsgPlayerResume) GetCreator() string {
@@ -71655,7 +72261,7 @@ type MsgPlayerResumeResponse struct {
 func (x *MsgPlayerResumeResponse) Reset() {
 	*x = MsgPlayerResumeResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[64]
+		mi := &file_structs_structs_tx_proto_msgTypes[65]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71669,7 +72275,7 @@ func (*MsgPlayerResumeResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgPlayerResumeResponse.ProtoReflect.Descriptor instead.
 func (*MsgPlayerResumeResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{64}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{65}
 }
 
 type MsgPlayerUpdateGuildRank struct {
@@ -71685,7 +72291,7 @@ type MsgPlayerUpdateGuildRank struct {
 func (x *MsgPlayerUpdateGuildRank) Reset() {
 	*x = MsgPlayerUpdateGuildRank{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[65]
+		mi := &file_structs_structs_tx_proto_msgTypes[66]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71699,7 +72305,7 @@ func (*MsgPlayerUpdateGuildRank) ProtoMessage() {}
 
 // Deprecated: Use MsgPlayerUpdateGuildRank.ProtoReflect.Descriptor instead.
 func (*MsgPlayerUpdateGuildRank) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{65}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *MsgPlayerUpdateGuildRank) GetCreator() string {
@@ -71732,7 +72338,7 @@ type MsgPlayerUpdateGuildRankResponse struct {
 func (x *MsgPlayerUpdateGuildRankResponse) Reset() {
 	*x = MsgPlayerUpdateGuildRankResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[66]
+		mi := &file_structs_structs_tx_proto_msgTypes[67]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71746,7 +72352,7 @@ func (*MsgPlayerUpdateGuildRankResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgPlayerUpdateGuildRankResponse.ProtoReflect.Descriptor instead.
 func (*MsgPlayerUpdateGuildRankResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{66}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{67}
 }
 
 type MsgPlayerUpdateName struct {
@@ -71762,7 +72368,7 @@ type MsgPlayerUpdateName struct {
 func (x *MsgPlayerUpdateName) Reset() {
 	*x = MsgPlayerUpdateName{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[67]
+		mi := &file_structs_structs_tx_proto_msgTypes[68]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71776,7 +72382,7 @@ func (*MsgPlayerUpdateName) ProtoMessage() {}
 
 // Deprecated: Use MsgPlayerUpdateName.ProtoReflect.Descriptor instead.
 func (*MsgPlayerUpdateName) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{67}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *MsgPlayerUpdateName) GetCreator() string {
@@ -71813,7 +72419,7 @@ type MsgPlayerUpdatePfp struct {
 func (x *MsgPlayerUpdatePfp) Reset() {
 	*x = MsgPlayerUpdatePfp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[68]
+		mi := &file_structs_structs_tx_proto_msgTypes[69]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71827,7 +72433,7 @@ func (*MsgPlayerUpdatePfp) ProtoMessage() {}
 
 // Deprecated: Use MsgPlayerUpdatePfp.ProtoReflect.Descriptor instead.
 func (*MsgPlayerUpdatePfp) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{68}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *MsgPlayerUpdatePfp) GetCreator() string {
@@ -71860,7 +72466,7 @@ type MsgPlayerUpdateResponse struct {
 func (x *MsgPlayerUpdateResponse) Reset() {
 	*x = MsgPlayerUpdateResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[69]
+		mi := &file_structs_structs_tx_proto_msgTypes[70]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71874,7 +72480,7 @@ func (*MsgPlayerUpdateResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgPlayerUpdateResponse.ProtoReflect.Descriptor instead.
 func (*MsgPlayerUpdateResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{69}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{70}
 }
 
 // MsgReactorInfuse defines a SDK message for performing a delegation of coins
@@ -71893,7 +72499,7 @@ type MsgReactorInfuse struct {
 func (x *MsgReactorInfuse) Reset() {
 	*x = MsgReactorInfuse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[70]
+		mi := &file_structs_structs_tx_proto_msgTypes[71]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71907,7 +72513,7 @@ func (*MsgReactorInfuse) ProtoMessage() {}
 
 // Deprecated: Use MsgReactorInfuse.ProtoReflect.Descriptor instead.
 func (*MsgReactorInfuse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{70}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *MsgReactorInfuse) GetCreator() string {
@@ -71948,7 +72554,7 @@ type MsgReactorInfuseResponse struct {
 func (x *MsgReactorInfuseResponse) Reset() {
 	*x = MsgReactorInfuseResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[71]
+		mi := &file_structs_structs_tx_proto_msgTypes[72]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71962,7 +72568,7 @@ func (*MsgReactorInfuseResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgReactorInfuseResponse.ProtoReflect.Descriptor instead.
 func (*MsgReactorInfuseResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{71}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{72}
 }
 
 // MsgReactorBeginMigration defines a SDK message for performing a redelegation
@@ -71982,7 +72588,7 @@ type MsgReactorBeginMigration struct {
 func (x *MsgReactorBeginMigration) Reset() {
 	*x = MsgReactorBeginMigration{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[72]
+		mi := &file_structs_structs_tx_proto_msgTypes[73]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -71996,7 +72602,7 @@ func (*MsgReactorBeginMigration) ProtoMessage() {}
 
 // Deprecated: Use MsgReactorBeginMigration.ProtoReflect.Descriptor instead.
 func (*MsgReactorBeginMigration) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{72}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *MsgReactorBeginMigration) GetCreator() string {
@@ -72046,7 +72652,7 @@ type MsgReactorBeginMigrationResponse struct {
 func (x *MsgReactorBeginMigrationResponse) Reset() {
 	*x = MsgReactorBeginMigrationResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[73]
+		mi := &file_structs_structs_tx_proto_msgTypes[74]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72060,7 +72666,7 @@ func (*MsgReactorBeginMigrationResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgReactorBeginMigrationResponse.ProtoReflect.Descriptor instead.
 func (*MsgReactorBeginMigrationResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{73}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *MsgReactorBeginMigrationResponse) GetCompletionTime() *timestamppb.Timestamp {
@@ -72086,7 +72692,7 @@ type MsgReactorDefuse struct {
 func (x *MsgReactorDefuse) Reset() {
 	*x = MsgReactorDefuse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[74]
+		mi := &file_structs_structs_tx_proto_msgTypes[75]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72100,7 +72706,7 @@ func (*MsgReactorDefuse) ProtoMessage() {}
 
 // Deprecated: Use MsgReactorDefuse.ProtoReflect.Descriptor instead.
 func (*MsgReactorDefuse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{74}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *MsgReactorDefuse) GetCreator() string {
@@ -72147,7 +72753,7 @@ type MsgReactorDefuseResponse struct {
 func (x *MsgReactorDefuseResponse) Reset() {
 	*x = MsgReactorDefuseResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[75]
+		mi := &file_structs_structs_tx_proto_msgTypes[76]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72161,7 +72767,7 @@ func (*MsgReactorDefuseResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgReactorDefuseResponse.ProtoReflect.Descriptor instead.
 func (*MsgReactorDefuseResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{75}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *MsgReactorDefuseResponse) GetCompletionTime() *timestamppb.Timestamp {
@@ -72198,7 +72804,7 @@ type MsgReactorCancelDefusion struct {
 func (x *MsgReactorCancelDefusion) Reset() {
 	*x = MsgReactorCancelDefusion{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[76]
+		mi := &file_structs_structs_tx_proto_msgTypes[77]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72212,7 +72818,7 @@ func (*MsgReactorCancelDefusion) ProtoMessage() {}
 
 // Deprecated: Use MsgReactorCancelDefusion.ProtoReflect.Descriptor instead.
 func (*MsgReactorCancelDefusion) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{76}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *MsgReactorCancelDefusion) GetCreator() string {
@@ -72262,7 +72868,7 @@ type MsgReactorCancelDefusionResponse struct {
 func (x *MsgReactorCancelDefusionResponse) Reset() {
 	*x = MsgReactorCancelDefusionResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[77]
+		mi := &file_structs_structs_tx_proto_msgTypes[78]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72276,7 +72882,7 @@ func (*MsgReactorCancelDefusionResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgReactorCancelDefusionResponse.ProtoReflect.Descriptor instead.
 func (*MsgReactorCancelDefusionResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{77}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{78}
 }
 
 type MsgStructStatusResponse struct {
@@ -72290,7 +72896,7 @@ type MsgStructStatusResponse struct {
 func (x *MsgStructStatusResponse) Reset() {
 	*x = MsgStructStatusResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[78]
+		mi := &file_structs_structs_tx_proto_msgTypes[79]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72304,7 +72910,7 @@ func (*MsgStructStatusResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgStructStatusResponse.ProtoReflect.Descriptor instead.
 func (*MsgStructStatusResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{78}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *MsgStructStatusResponse) GetStruct() *Struct {
@@ -72326,7 +72932,7 @@ type MsgStructActivate struct {
 func (x *MsgStructActivate) Reset() {
 	*x = MsgStructActivate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[79]
+		mi := &file_structs_structs_tx_proto_msgTypes[80]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72340,7 +72946,7 @@ func (*MsgStructActivate) ProtoMessage() {}
 
 // Deprecated: Use MsgStructActivate.ProtoReflect.Descriptor instead.
 func (*MsgStructActivate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{79}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *MsgStructActivate) GetCreator() string {
@@ -72369,7 +72975,7 @@ type MsgStructDeactivate struct {
 func (x *MsgStructDeactivate) Reset() {
 	*x = MsgStructDeactivate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[80]
+		mi := &file_structs_structs_tx_proto_msgTypes[81]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72383,7 +72989,7 @@ func (*MsgStructDeactivate) ProtoMessage() {}
 
 // Deprecated: Use MsgStructDeactivate.ProtoReflect.Descriptor instead.
 func (*MsgStructDeactivate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{80}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{81}
 }
 
 func (x *MsgStructDeactivate) GetCreator() string {
@@ -72416,7 +73022,7 @@ type MsgStructBuildInitiate struct {
 func (x *MsgStructBuildInitiate) Reset() {
 	*x = MsgStructBuildInitiate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[81]
+		mi := &file_structs_structs_tx_proto_msgTypes[82]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72430,7 +73036,7 @@ func (*MsgStructBuildInitiate) ProtoMessage() {}
 
 // Deprecated: Use MsgStructBuildInitiate.ProtoReflect.Descriptor instead.
 func (*MsgStructBuildInitiate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{81}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *MsgStructBuildInitiate) GetCreator() string {
@@ -72482,7 +73088,7 @@ type MsgStructBuildComplete struct {
 func (x *MsgStructBuildComplete) Reset() {
 	*x = MsgStructBuildComplete{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[82]
+		mi := &file_structs_structs_tx_proto_msgTypes[83]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72496,7 +73102,7 @@ func (*MsgStructBuildComplete) ProtoMessage() {}
 
 // Deprecated: Use MsgStructBuildComplete.ProtoReflect.Descriptor instead.
 func (*MsgStructBuildComplete) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{82}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{83}
 }
 
 func (x *MsgStructBuildComplete) GetCreator() string {
@@ -72539,7 +73145,7 @@ type MsgStructBuildCancel struct {
 func (x *MsgStructBuildCancel) Reset() {
 	*x = MsgStructBuildCancel{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[83]
+		mi := &file_structs_structs_tx_proto_msgTypes[84]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72553,7 +73159,7 @@ func (*MsgStructBuildCancel) ProtoMessage() {}
 
 // Deprecated: Use MsgStructBuildCancel.ProtoReflect.Descriptor instead.
 func (*MsgStructBuildCancel) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{83}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{84}
 }
 
 func (x *MsgStructBuildCancel) GetCreator() string {
@@ -72587,7 +73193,7 @@ type MsgStructBuildCompleteAndStash struct {
 func (x *MsgStructBuildCompleteAndStash) Reset() {
 	*x = MsgStructBuildCompleteAndStash{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[84]
+		mi := &file_structs_structs_tx_proto_msgTypes[85]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72601,7 +73207,7 @@ func (*MsgStructBuildCompleteAndStash) ProtoMessage() {}
 
 // Deprecated: Use MsgStructBuildCompleteAndStash.ProtoReflect.Descriptor instead.
 func (*MsgStructBuildCompleteAndStash) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{84}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{85}
 }
 
 func (x *MsgStructBuildCompleteAndStash) GetCreator() string {
@@ -72666,7 +73272,7 @@ type MsgStructDefenseSet struct {
 func (x *MsgStructDefenseSet) Reset() {
 	*x = MsgStructDefenseSet{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[85]
+		mi := &file_structs_structs_tx_proto_msgTypes[86]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72680,7 +73286,7 @@ func (*MsgStructDefenseSet) ProtoMessage() {}
 
 // Deprecated: Use MsgStructDefenseSet.ProtoReflect.Descriptor instead.
 func (*MsgStructDefenseSet) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{85}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{86}
 }
 
 func (x *MsgStructDefenseSet) GetCreator() string {
@@ -72716,7 +73322,7 @@ type MsgStructDefenseClear struct {
 func (x *MsgStructDefenseClear) Reset() {
 	*x = MsgStructDefenseClear{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[86]
+		mi := &file_structs_structs_tx_proto_msgTypes[87]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72730,7 +73336,7 @@ func (*MsgStructDefenseClear) ProtoMessage() {}
 
 // Deprecated: Use MsgStructDefenseClear.ProtoReflect.Descriptor instead.
 func (*MsgStructDefenseClear) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{86}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{87}
 }
 
 func (x *MsgStructDefenseClear) GetCreator() string {
@@ -72762,7 +73368,7 @@ type MsgStructMove struct {
 func (x *MsgStructMove) Reset() {
 	*x = MsgStructMove{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[87]
+		mi := &file_structs_structs_tx_proto_msgTypes[88]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72776,7 +73382,7 @@ func (*MsgStructMove) ProtoMessage() {}
 
 // Deprecated: Use MsgStructMove.ProtoReflect.Descriptor instead.
 func (*MsgStructMove) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{87}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{88}
 }
 
 func (x *MsgStructMove) GetCreator() string {
@@ -72828,7 +73434,7 @@ type MsgStructAttack struct {
 func (x *MsgStructAttack) Reset() {
 	*x = MsgStructAttack{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[88]
+		mi := &file_structs_structs_tx_proto_msgTypes[89]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72842,7 +73448,7 @@ func (*MsgStructAttack) ProtoMessage() {}
 
 // Deprecated: Use MsgStructAttack.ProtoReflect.Descriptor instead.
 func (*MsgStructAttack) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{88}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{89}
 }
 
 func (x *MsgStructAttack) GetCreator() string {
@@ -72882,7 +73488,7 @@ type MsgStructAttackResponse struct {
 func (x *MsgStructAttackResponse) Reset() {
 	*x = MsgStructAttackResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[89]
+		mi := &file_structs_structs_tx_proto_msgTypes[90]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72896,7 +73502,7 @@ func (*MsgStructAttackResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgStructAttackResponse.ProtoReflect.Descriptor instead.
 func (*MsgStructAttackResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{89}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{90}
 }
 
 type MsgStructStealthActivate struct {
@@ -72911,7 +73517,7 @@ type MsgStructStealthActivate struct {
 func (x *MsgStructStealthActivate) Reset() {
 	*x = MsgStructStealthActivate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[90]
+		mi := &file_structs_structs_tx_proto_msgTypes[91]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72925,7 +73531,7 @@ func (*MsgStructStealthActivate) ProtoMessage() {}
 
 // Deprecated: Use MsgStructStealthActivate.ProtoReflect.Descriptor instead.
 func (*MsgStructStealthActivate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{90}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{91}
 }
 
 func (x *MsgStructStealthActivate) GetCreator() string {
@@ -72954,7 +73560,7 @@ type MsgStructStealthDeactivate struct {
 func (x *MsgStructStealthDeactivate) Reset() {
 	*x = MsgStructStealthDeactivate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[91]
+		mi := &file_structs_structs_tx_proto_msgTypes[92]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -72968,7 +73574,7 @@ func (*MsgStructStealthDeactivate) ProtoMessage() {}
 
 // Deprecated: Use MsgStructStealthDeactivate.ProtoReflect.Descriptor instead.
 func (*MsgStructStealthDeactivate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{91}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{92}
 }
 
 func (x *MsgStructStealthDeactivate) GetCreator() string {
@@ -72998,7 +73604,7 @@ type MsgStructGeneratorInfuse struct {
 func (x *MsgStructGeneratorInfuse) Reset() {
 	*x = MsgStructGeneratorInfuse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[92]
+		mi := &file_structs_structs_tx_proto_msgTypes[93]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73012,7 +73618,7 @@ func (*MsgStructGeneratorInfuse) ProtoMessage() {}
 
 // Deprecated: Use MsgStructGeneratorInfuse.ProtoReflect.Descriptor instead.
 func (*MsgStructGeneratorInfuse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{92}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{93}
 }
 
 func (x *MsgStructGeneratorInfuse) GetCreator() string {
@@ -73045,7 +73651,7 @@ type MsgStructGeneratorStatusResponse struct {
 func (x *MsgStructGeneratorStatusResponse) Reset() {
 	*x = MsgStructGeneratorStatusResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[93]
+		mi := &file_structs_structs_tx_proto_msgTypes[94]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73059,7 +73665,7 @@ func (*MsgStructGeneratorStatusResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgStructGeneratorStatusResponse.ProtoReflect.Descriptor instead.
 func (*MsgStructGeneratorStatusResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{93}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{94}
 }
 
 type MsgStructOreMinerComplete struct {
@@ -73076,7 +73682,7 @@ type MsgStructOreMinerComplete struct {
 func (x *MsgStructOreMinerComplete) Reset() {
 	*x = MsgStructOreMinerComplete{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[94]
+		mi := &file_structs_structs_tx_proto_msgTypes[95]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73090,7 +73696,7 @@ func (*MsgStructOreMinerComplete) ProtoMessage() {}
 
 // Deprecated: Use MsgStructOreMinerComplete.ProtoReflect.Descriptor instead.
 func (*MsgStructOreMinerComplete) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{94}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{95}
 }
 
 func (x *MsgStructOreMinerComplete) GetCreator() string {
@@ -73132,7 +73738,7 @@ type MsgStructOreMinerStatusResponse struct {
 func (x *MsgStructOreMinerStatusResponse) Reset() {
 	*x = MsgStructOreMinerStatusResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[95]
+		mi := &file_structs_structs_tx_proto_msgTypes[96]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73146,7 +73752,7 @@ func (*MsgStructOreMinerStatusResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgStructOreMinerStatusResponse.ProtoReflect.Descriptor instead.
 func (*MsgStructOreMinerStatusResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{95}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{96}
 }
 
 func (x *MsgStructOreMinerStatusResponse) GetStruct() *Struct {
@@ -73170,7 +73776,7 @@ type MsgStructOreRefineryComplete struct {
 func (x *MsgStructOreRefineryComplete) Reset() {
 	*x = MsgStructOreRefineryComplete{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[96]
+		mi := &file_structs_structs_tx_proto_msgTypes[97]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73184,7 +73790,7 @@ func (*MsgStructOreRefineryComplete) ProtoMessage() {}
 
 // Deprecated: Use MsgStructOreRefineryComplete.ProtoReflect.Descriptor instead.
 func (*MsgStructOreRefineryComplete) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{96}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{97}
 }
 
 func (x *MsgStructOreRefineryComplete) GetCreator() string {
@@ -73226,7 +73832,7 @@ type MsgStructOreRefineryStatusResponse struct {
 func (x *MsgStructOreRefineryStatusResponse) Reset() {
 	*x = MsgStructOreRefineryStatusResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[97]
+		mi := &file_structs_structs_tx_proto_msgTypes[98]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73240,7 +73846,7 @@ func (*MsgStructOreRefineryStatusResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgStructOreRefineryStatusResponse.ProtoReflect.Descriptor instead.
 func (*MsgStructOreRefineryStatusResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{97}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{98}
 }
 
 func (x *MsgStructOreRefineryStatusResponse) GetStruct() *Struct {
@@ -73265,7 +73871,7 @@ type MsgStructStorageStash struct {
 func (x *MsgStructStorageStash) Reset() {
 	*x = MsgStructStorageStash{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[98]
+		mi := &file_structs_structs_tx_proto_msgTypes[99]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73279,7 +73885,7 @@ func (*MsgStructStorageStash) ProtoMessage() {}
 
 // Deprecated: Use MsgStructStorageStash.ProtoReflect.Descriptor instead.
 func (*MsgStructStorageStash) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{98}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{99}
 }
 
 func (x *MsgStructStorageStash) GetCreator() string {
@@ -73333,7 +73939,7 @@ type MsgStructStorageRecall struct {
 func (x *MsgStructStorageRecall) Reset() {
 	*x = MsgStructStorageRecall{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[99]
+		mi := &file_structs_structs_tx_proto_msgTypes[100]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73347,7 +73953,7 @@ func (*MsgStructStorageRecall) ProtoMessage() {}
 
 // Deprecated: Use MsgStructStorageRecall.ProtoReflect.Descriptor instead.
 func (*MsgStructStorageRecall) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{99}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *MsgStructStorageRecall) GetCreator() string {
@@ -73405,7 +74011,7 @@ type MsgSubstationCreate struct {
 func (x *MsgSubstationCreate) Reset() {
 	*x = MsgSubstationCreate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[100]
+		mi := &file_structs_structs_tx_proto_msgTypes[101]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73419,7 +74025,7 @@ func (*MsgSubstationCreate) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationCreate.ProtoReflect.Descriptor instead.
 func (*MsgSubstationCreate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{100}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *MsgSubstationCreate) GetCreator() string {
@@ -73454,7 +74060,7 @@ type MsgSubstationCreateResponse struct {
 func (x *MsgSubstationCreateResponse) Reset() {
 	*x = MsgSubstationCreateResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[101]
+		mi := &file_structs_structs_tx_proto_msgTypes[102]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73468,7 +74074,7 @@ func (*MsgSubstationCreateResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationCreateResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationCreateResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{101}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{102}
 }
 
 func (x *MsgSubstationCreateResponse) GetSubstationId() string {
@@ -73491,7 +74097,7 @@ type MsgSubstationDelete struct {
 func (x *MsgSubstationDelete) Reset() {
 	*x = MsgSubstationDelete{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[102]
+		mi := &file_structs_structs_tx_proto_msgTypes[103]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73505,7 +74111,7 @@ func (*MsgSubstationDelete) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationDelete.ProtoReflect.Descriptor instead.
 func (*MsgSubstationDelete) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{102}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{103}
 }
 
 func (x *MsgSubstationDelete) GetCreator() string {
@@ -73538,7 +74144,7 @@ type MsgSubstationDeleteResponse struct {
 func (x *MsgSubstationDeleteResponse) Reset() {
 	*x = MsgSubstationDeleteResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[103]
+		mi := &file_structs_structs_tx_proto_msgTypes[104]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73552,7 +74158,7 @@ func (*MsgSubstationDeleteResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationDeleteResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationDeleteResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{103}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{104}
 }
 
 type MsgSubstationAllocationConnect struct {
@@ -73568,7 +74174,7 @@ type MsgSubstationAllocationConnect struct {
 func (x *MsgSubstationAllocationConnect) Reset() {
 	*x = MsgSubstationAllocationConnect{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[104]
+		mi := &file_structs_structs_tx_proto_msgTypes[105]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73582,7 +74188,7 @@ func (*MsgSubstationAllocationConnect) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationAllocationConnect.ProtoReflect.Descriptor instead.
 func (*MsgSubstationAllocationConnect) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{104}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{105}
 }
 
 func (x *MsgSubstationAllocationConnect) GetCreator() string {
@@ -73615,7 +74221,7 @@ type MsgSubstationAllocationConnectResponse struct {
 func (x *MsgSubstationAllocationConnectResponse) Reset() {
 	*x = MsgSubstationAllocationConnectResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[105]
+		mi := &file_structs_structs_tx_proto_msgTypes[106]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73629,7 +74235,7 @@ func (*MsgSubstationAllocationConnectResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationAllocationConnectResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationAllocationConnectResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{105}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{106}
 }
 
 type MsgSubstationAllocationDisconnect struct {
@@ -73644,7 +74250,7 @@ type MsgSubstationAllocationDisconnect struct {
 func (x *MsgSubstationAllocationDisconnect) Reset() {
 	*x = MsgSubstationAllocationDisconnect{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[106]
+		mi := &file_structs_structs_tx_proto_msgTypes[107]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73658,7 +74264,7 @@ func (*MsgSubstationAllocationDisconnect) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationAllocationDisconnect.ProtoReflect.Descriptor instead.
 func (*MsgSubstationAllocationDisconnect) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{106}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{107}
 }
 
 func (x *MsgSubstationAllocationDisconnect) GetCreator() string {
@@ -73684,7 +74290,7 @@ type MsgSubstationAllocationDisconnectResponse struct {
 func (x *MsgSubstationAllocationDisconnectResponse) Reset() {
 	*x = MsgSubstationAllocationDisconnectResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[107]
+		mi := &file_structs_structs_tx_proto_msgTypes[108]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73698,7 +74304,7 @@ func (*MsgSubstationAllocationDisconnectResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationAllocationDisconnectResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationAllocationDisconnectResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{107}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{108}
 }
 
 type MsgSubstationPlayerConnect struct {
@@ -73714,7 +74320,7 @@ type MsgSubstationPlayerConnect struct {
 func (x *MsgSubstationPlayerConnect) Reset() {
 	*x = MsgSubstationPlayerConnect{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[108]
+		mi := &file_structs_structs_tx_proto_msgTypes[109]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73728,7 +74334,7 @@ func (*MsgSubstationPlayerConnect) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationPlayerConnect.ProtoReflect.Descriptor instead.
 func (*MsgSubstationPlayerConnect) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{108}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *MsgSubstationPlayerConnect) GetCreator() string {
@@ -73761,7 +74367,7 @@ type MsgSubstationPlayerConnectResponse struct {
 func (x *MsgSubstationPlayerConnectResponse) Reset() {
 	*x = MsgSubstationPlayerConnectResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[109]
+		mi := &file_structs_structs_tx_proto_msgTypes[110]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73775,7 +74381,7 @@ func (*MsgSubstationPlayerConnectResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationPlayerConnectResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationPlayerConnectResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{109}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{110}
 }
 
 type MsgSubstationPlayerDisconnect struct {
@@ -73790,7 +74396,7 @@ type MsgSubstationPlayerDisconnect struct {
 func (x *MsgSubstationPlayerDisconnect) Reset() {
 	*x = MsgSubstationPlayerDisconnect{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[110]
+		mi := &file_structs_structs_tx_proto_msgTypes[111]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73804,7 +74410,7 @@ func (*MsgSubstationPlayerDisconnect) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationPlayerDisconnect.ProtoReflect.Descriptor instead.
 func (*MsgSubstationPlayerDisconnect) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{110}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *MsgSubstationPlayerDisconnect) GetCreator() string {
@@ -73830,7 +74436,7 @@ type MsgSubstationPlayerDisconnectResponse struct {
 func (x *MsgSubstationPlayerDisconnectResponse) Reset() {
 	*x = MsgSubstationPlayerDisconnectResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[111]
+		mi := &file_structs_structs_tx_proto_msgTypes[112]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73844,7 +74450,7 @@ func (*MsgSubstationPlayerDisconnectResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationPlayerDisconnectResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationPlayerDisconnectResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{111}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{112}
 }
 
 type MsgSubstationPlayerMigrate struct {
@@ -73860,7 +74466,7 @@ type MsgSubstationPlayerMigrate struct {
 func (x *MsgSubstationPlayerMigrate) Reset() {
 	*x = MsgSubstationPlayerMigrate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[112]
+		mi := &file_structs_structs_tx_proto_msgTypes[113]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73874,7 +74480,7 @@ func (*MsgSubstationPlayerMigrate) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationPlayerMigrate.ProtoReflect.Descriptor instead.
 func (*MsgSubstationPlayerMigrate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{112}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{113}
 }
 
 func (x *MsgSubstationPlayerMigrate) GetCreator() string {
@@ -73907,7 +74513,7 @@ type MsgSubstationPlayerMigrateResponse struct {
 func (x *MsgSubstationPlayerMigrateResponse) Reset() {
 	*x = MsgSubstationPlayerMigrateResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[113]
+		mi := &file_structs_structs_tx_proto_msgTypes[114]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73921,7 +74527,7 @@ func (*MsgSubstationPlayerMigrateResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationPlayerMigrateResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationPlayerMigrateResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{113}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{114}
 }
 
 type MsgSubstationUpdateName struct {
@@ -73937,7 +74543,7 @@ type MsgSubstationUpdateName struct {
 func (x *MsgSubstationUpdateName) Reset() {
 	*x = MsgSubstationUpdateName{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[114]
+		mi := &file_structs_structs_tx_proto_msgTypes[115]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -73951,7 +74557,7 @@ func (*MsgSubstationUpdateName) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationUpdateName.ProtoReflect.Descriptor instead.
 func (*MsgSubstationUpdateName) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{114}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *MsgSubstationUpdateName) GetCreator() string {
@@ -73988,7 +74594,7 @@ type MsgSubstationUpdatePfp struct {
 func (x *MsgSubstationUpdatePfp) Reset() {
 	*x = MsgSubstationUpdatePfp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[115]
+		mi := &file_structs_structs_tx_proto_msgTypes[116]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74002,7 +74608,7 @@ func (*MsgSubstationUpdatePfp) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationUpdatePfp.ProtoReflect.Descriptor instead.
 func (*MsgSubstationUpdatePfp) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{115}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *MsgSubstationUpdatePfp) GetCreator() string {
@@ -74035,7 +74641,7 @@ type MsgSubstationUpdateResponse struct {
 func (x *MsgSubstationUpdateResponse) Reset() {
 	*x = MsgSubstationUpdateResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[116]
+		mi := &file_structs_structs_tx_proto_msgTypes[117]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74049,7 +74655,7 @@ func (*MsgSubstationUpdateResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationUpdateResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationUpdateResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{116}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{117}
 }
 
 type MsgAgreementOpen struct {
@@ -74066,7 +74672,7 @@ type MsgAgreementOpen struct {
 func (x *MsgAgreementOpen) Reset() {
 	*x = MsgAgreementOpen{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[117]
+		mi := &file_structs_structs_tx_proto_msgTypes[118]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74080,7 +74686,7 @@ func (*MsgAgreementOpen) ProtoMessage() {}
 
 // Deprecated: Use MsgAgreementOpen.ProtoReflect.Descriptor instead.
 func (*MsgAgreementOpen) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{117}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *MsgAgreementOpen) GetCreator() string {
@@ -74123,7 +74729,7 @@ type MsgAgreementClose struct {
 func (x *MsgAgreementClose) Reset() {
 	*x = MsgAgreementClose{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[118]
+		mi := &file_structs_structs_tx_proto_msgTypes[119]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74137,7 +74743,7 @@ func (*MsgAgreementClose) ProtoMessage() {}
 
 // Deprecated: Use MsgAgreementClose.ProtoReflect.Descriptor instead.
 func (*MsgAgreementClose) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{118}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{119}
 }
 
 func (x *MsgAgreementClose) GetCreator() string {
@@ -74167,7 +74773,7 @@ type MsgAgreementCapacityIncrease struct {
 func (x *MsgAgreementCapacityIncrease) Reset() {
 	*x = MsgAgreementCapacityIncrease{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[119]
+		mi := &file_structs_structs_tx_proto_msgTypes[120]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74181,7 +74787,7 @@ func (*MsgAgreementCapacityIncrease) ProtoMessage() {}
 
 // Deprecated: Use MsgAgreementCapacityIncrease.ProtoReflect.Descriptor instead.
 func (*MsgAgreementCapacityIncrease) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{119}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{120}
 }
 
 func (x *MsgAgreementCapacityIncrease) GetCreator() string {
@@ -74218,7 +74824,7 @@ type MsgAgreementCapacityDecrease struct {
 func (x *MsgAgreementCapacityDecrease) Reset() {
 	*x = MsgAgreementCapacityDecrease{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[120]
+		mi := &file_structs_structs_tx_proto_msgTypes[121]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74232,7 +74838,7 @@ func (*MsgAgreementCapacityDecrease) ProtoMessage() {}
 
 // Deprecated: Use MsgAgreementCapacityDecrease.ProtoReflect.Descriptor instead.
 func (*MsgAgreementCapacityDecrease) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{120}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{121}
 }
 
 func (x *MsgAgreementCapacityDecrease) GetCreator() string {
@@ -74269,7 +74875,7 @@ type MsgAgreementDurationIncrease struct {
 func (x *MsgAgreementDurationIncrease) Reset() {
 	*x = MsgAgreementDurationIncrease{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[121]
+		mi := &file_structs_structs_tx_proto_msgTypes[122]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74283,7 +74889,7 @@ func (*MsgAgreementDurationIncrease) ProtoMessage() {}
 
 // Deprecated: Use MsgAgreementDurationIncrease.ProtoReflect.Descriptor instead.
 func (*MsgAgreementDurationIncrease) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{121}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{122}
 }
 
 func (x *MsgAgreementDurationIncrease) GetCreator() string {
@@ -74316,7 +74922,7 @@ type MsgAgreementResponse struct {
 func (x *MsgAgreementResponse) Reset() {
 	*x = MsgAgreementResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[122]
+		mi := &file_structs_structs_tx_proto_msgTypes[123]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74330,7 +74936,7 @@ func (*MsgAgreementResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgAgreementResponse.ProtoReflect.Descriptor instead.
 func (*MsgAgreementResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{122}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{123}
 }
 
 type MsgProviderCreate struct {
@@ -74353,7 +74959,7 @@ type MsgProviderCreate struct {
 func (x *MsgProviderCreate) Reset() {
 	*x = MsgProviderCreate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[123]
+		mi := &file_structs_structs_tx_proto_msgTypes[124]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74367,7 +74973,7 @@ func (*MsgProviderCreate) ProtoMessage() {}
 
 // Deprecated: Use MsgProviderCreate.ProtoReflect.Descriptor instead.
 func (*MsgProviderCreate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{123}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{124}
 }
 
 func (x *MsgProviderCreate) GetCreator() string {
@@ -74453,7 +75059,7 @@ type MsgProviderWithdrawBalance struct {
 func (x *MsgProviderWithdrawBalance) Reset() {
 	*x = MsgProviderWithdrawBalance{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[124]
+		mi := &file_structs_structs_tx_proto_msgTypes[125]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74467,7 +75073,7 @@ func (*MsgProviderWithdrawBalance) ProtoMessage() {}
 
 // Deprecated: Use MsgProviderWithdrawBalance.ProtoReflect.Descriptor instead.
 func (*MsgProviderWithdrawBalance) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{124}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{125}
 }
 
 func (x *MsgProviderWithdrawBalance) GetCreator() string {
@@ -74504,7 +75110,7 @@ type MsgProviderUpdateCapacityMinimum struct {
 func (x *MsgProviderUpdateCapacityMinimum) Reset() {
 	*x = MsgProviderUpdateCapacityMinimum{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[125]
+		mi := &file_structs_structs_tx_proto_msgTypes[126]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74518,7 +75124,7 @@ func (*MsgProviderUpdateCapacityMinimum) ProtoMessage() {}
 
 // Deprecated: Use MsgProviderUpdateCapacityMinimum.ProtoReflect.Descriptor instead.
 func (*MsgProviderUpdateCapacityMinimum) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{125}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{126}
 }
 
 func (x *MsgProviderUpdateCapacityMinimum) GetCreator() string {
@@ -74555,7 +75161,7 @@ type MsgProviderUpdateCapacityMaximum struct {
 func (x *MsgProviderUpdateCapacityMaximum) Reset() {
 	*x = MsgProviderUpdateCapacityMaximum{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[126]
+		mi := &file_structs_structs_tx_proto_msgTypes[127]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74569,7 +75175,7 @@ func (*MsgProviderUpdateCapacityMaximum) ProtoMessage() {}
 
 // Deprecated: Use MsgProviderUpdateCapacityMaximum.ProtoReflect.Descriptor instead.
 func (*MsgProviderUpdateCapacityMaximum) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{126}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{127}
 }
 
 func (x *MsgProviderUpdateCapacityMaximum) GetCreator() string {
@@ -74606,7 +75212,7 @@ type MsgProviderUpdateDurationMinimum struct {
 func (x *MsgProviderUpdateDurationMinimum) Reset() {
 	*x = MsgProviderUpdateDurationMinimum{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[127]
+		mi := &file_structs_structs_tx_proto_msgTypes[128]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74620,7 +75226,7 @@ func (*MsgProviderUpdateDurationMinimum) ProtoMessage() {}
 
 // Deprecated: Use MsgProviderUpdateDurationMinimum.ProtoReflect.Descriptor instead.
 func (*MsgProviderUpdateDurationMinimum) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{127}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{128}
 }
 
 func (x *MsgProviderUpdateDurationMinimum) GetCreator() string {
@@ -74657,7 +75263,7 @@ type MsgProviderUpdateDurationMaximum struct {
 func (x *MsgProviderUpdateDurationMaximum) Reset() {
 	*x = MsgProviderUpdateDurationMaximum{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[128]
+		mi := &file_structs_structs_tx_proto_msgTypes[129]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74671,7 +75277,7 @@ func (*MsgProviderUpdateDurationMaximum) ProtoMessage() {}
 
 // Deprecated: Use MsgProviderUpdateDurationMaximum.ProtoReflect.Descriptor instead.
 func (*MsgProviderUpdateDurationMaximum) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{128}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{129}
 }
 
 func (x *MsgProviderUpdateDurationMaximum) GetCreator() string {
@@ -74708,7 +75314,7 @@ type MsgProviderUpdateAccessPolicy struct {
 func (x *MsgProviderUpdateAccessPolicy) Reset() {
 	*x = MsgProviderUpdateAccessPolicy{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[129]
+		mi := &file_structs_structs_tx_proto_msgTypes[130]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74722,7 +75328,7 @@ func (*MsgProviderUpdateAccessPolicy) ProtoMessage() {}
 
 // Deprecated: Use MsgProviderUpdateAccessPolicy.ProtoReflect.Descriptor instead.
 func (*MsgProviderUpdateAccessPolicy) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{129}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{130}
 }
 
 func (x *MsgProviderUpdateAccessPolicy) GetCreator() string {
@@ -74758,7 +75364,7 @@ type MsgProviderDelete struct {
 func (x *MsgProviderDelete) Reset() {
 	*x = MsgProviderDelete{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[130]
+		mi := &file_structs_structs_tx_proto_msgTypes[131]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74772,7 +75378,7 @@ func (*MsgProviderDelete) ProtoMessage() {}
 
 // Deprecated: Use MsgProviderDelete.ProtoReflect.Descriptor instead.
 func (*MsgProviderDelete) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{130}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{131}
 }
 
 func (x *MsgProviderDelete) GetCreator() string {
@@ -74798,7 +75404,7 @@ type MsgProviderResponse struct {
 func (x *MsgProviderResponse) Reset() {
 	*x = MsgProviderResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[131]
+		mi := &file_structs_structs_tx_proto_msgTypes[132]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74812,7 +75418,7 @@ func (*MsgProviderResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgProviderResponse.ProtoReflect.Descriptor instead.
 func (*MsgProviderResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{131}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{132}
 }
 
 type MsgPlayerSend struct {
@@ -74829,7 +75435,7 @@ type MsgPlayerSend struct {
 func (x *MsgPlayerSend) Reset() {
 	*x = MsgPlayerSend{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[132]
+		mi := &file_structs_structs_tx_proto_msgTypes[133]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74843,7 +75449,7 @@ func (*MsgPlayerSend) ProtoMessage() {}
 
 // Deprecated: Use MsgPlayerSend.ProtoReflect.Descriptor instead.
 func (*MsgPlayerSend) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{132}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{133}
 }
 
 func (x *MsgPlayerSend) GetCreator() string {
@@ -74883,7 +75489,7 @@ type MsgPlayerSendResponse struct {
 func (x *MsgPlayerSendResponse) Reset() {
 	*x = MsgPlayerSendResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[133]
+		mi := &file_structs_structs_tx_proto_msgTypes[134]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -74897,7 +75503,7 @@ func (*MsgPlayerSendResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgPlayerSendResponse.ProtoReflect.Descriptor instead.
 func (*MsgPlayerSendResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{133}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{134}
 }
 
 var File_structs_structs_tx_proto protoreflect.FileDescriptor
@@ -75100,6 +75706,14 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12,
 	0x1a, 0x0a, 0x08, 0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x08, 0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x3a, 0x0c, 0x82, 0xe7, 0xb0,
+	0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x7e, 0x0a, 0x1c, 0x4d, 0x73, 0x67,
+	0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61,
+	0x72, 0x79, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65,
+	0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61,
+	0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x1c, 0x0a,
+	0x09, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x09, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0,
 	0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x97, 0x01, 0x0a, 0x21, 0x4d, 0x73,
 	0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e,
 	0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x12,
@@ -75987,7 +76601,7 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x3a, 0x14, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00,
 	0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x17, 0x0a, 0x15,
 	0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x53, 0x65, 0x6e, 0x64, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xc5, 0x4c, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x5a, 0x0a,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xba, 0x4d, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x5a, 0x0a,
 	0x0c, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x20, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
 	0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x1a,
@@ -76117,500 +76731,507 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x1a, 0x27, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
 	0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7d, 0x0a, 0x1e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f,
-	0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x32, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x73, 0x0a, 0x19, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x52, 0x65, 0x61, 0x63,
+	0x74, 0x6f, 0x72, 0x12, 0x2d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x52, 0x65, 0x61, 0x63, 0x74,
+	0x6f, 0x72, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7d, 0x0a, 0x1e, 0x47,
+	0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e,
+	0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x32, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f,
+	0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75,
+	0x6d, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x99, 0x01, 0x0a, 0x2c, 0x47,
+	0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e,
+	0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x42, 0x79, 0x70,
+	0x61, 0x73, 0x73, 0x42, 0x79, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x12, 0x40, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e,
+	0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x42,
+	0x79, 0x70, 0x61, 0x73, 0x73, 0x42, 0x79, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x1a, 0x27, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x9b, 0x01, 0x0a, 0x2d, 0x47, 0x75, 0x69, 0x6c, 0x64,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69,
+	0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x42, 0x79, 0x70, 0x61, 0x73, 0x73, 0x42,
+	0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x41, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75,
 	0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66,
-	0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x1a, 0x27, 0x2e, 0x73,
+	0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x42, 0x79, 0x70, 0x61,
+	0x73, 0x73, 0x42, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x69, 0x0a, 0x14, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x61, 0x6e, 0x6b, 0x12, 0x28, 0x2e, 0x73,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x99, 0x01, 0x0a, 0x2c, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f,
-	0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x42, 0x79, 0x70, 0x61, 0x73, 0x73, 0x42, 0x79,
-	0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x12, 0x40, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c,
-	0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73,
-	0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x42, 0x79, 0x70, 0x61, 0x73, 0x73,
-	0x42, 0x79, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x9b, 0x01, 0x0a, 0x2d, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e,
-	0x69, 0x6d, 0x75, 0x6d, 0x42, 0x79, 0x70, 0x61, 0x73, 0x73, 0x42, 0x79, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x12, 0x41, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e,
-	0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x42, 0x79, 0x70, 0x61, 0x73, 0x73, 0x42, 0x79, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x74,
+	0x72, 0x79, 0x52, 0x61, 0x6e, 0x6b, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c,
 	0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x69, 0x0a, 0x14, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e,
-	0x74, 0x72, 0x79, 0x52, 0x61, 0x6e, 0x6b, 0x12, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69,
-	0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x61, 0x6e,
-	0x6b, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x0f, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x23, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x61,
-	0x6d, 0x65, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x5f, 0x0a, 0x0f, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x61,
+	0x6d, 0x65, 0x12, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
 	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64,
-	0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0e, 0x47,
-	0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x66, 0x70, 0x12, 0x22, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x66,
-	0x70, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x15, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x49, 0x6e, 0x76,
-	0x69, 0x74, 0x65, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65,
-	0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x1a, 0x2b,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73,
-	0x68, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7d, 0x0a, 0x1c, 0x47,
-	0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x49, 0x6e,
-	0x76, 0x69, 0x74, 0x65, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x12, 0x30, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
-	0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70,
-	0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x1a, 0x2b, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68,
-	0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x77, 0x0a, 0x19, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x49, 0x6e, 0x76,
-	0x69, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x79, 0x12, 0x2d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x61, 0x74, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69,
-	0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x49, 0x6e, 0x76, 0x69,
-	0x74, 0x65, 0x44, 0x65, 0x6e, 0x79, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x5d, 0x0a, 0x0e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50,
+	0x66, 0x70, 0x12, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x50, 0x66, 0x70, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c,
-	0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x1b, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62,
-	0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x52, 0x65, 0x76, 0x6f,
-	0x6b, 0x65, 0x12, 0x2f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d,
-	0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x52, 0x65, 0x76,
-	0x6f, 0x6b, 0x65, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65,
-	0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x6b, 0x0a, 0x13, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73,
-	0x68, 0x69, 0x70, 0x4a, 0x6f, 0x69, 0x6e, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69,
-	0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x4a, 0x6f, 0x69, 0x6e,
-	0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65,
-	0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a,
-	0x18, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70,
-	0x4a, 0x6f, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x78, 0x79, 0x12, 0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47,
-	0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x4a, 0x6f,
-	0x69, 0x6e, 0x50, 0x72, 0x6f, 0x78, 0x79, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69,
-	0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6b, 0x0a, 0x13, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d,
-	0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x4b, 0x69, 0x63, 0x6b, 0x12, 0x27, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
-	0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70,
-	0x4b, 0x69, 0x63, 0x6b, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d,
-	0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x71, 0x0a, 0x16, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72,
-	0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2a, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
-	0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69,
-	0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7f, 0x0a, 0x1d, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d,
-	0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x41, 0x70,
-	0x70, 0x72, 0x6f, 0x76, 0x65, 0x12, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64,
-	0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x6f, 0x0a, 0x15, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68,
+	0x69, 0x70, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x79, 0x0a, 0x1a, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65,
-	0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x44,
-	0x65, 0x6e, 0x79, 0x12, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65,
-	0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x44,
-	0x65, 0x6e, 0x79, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x49, 0x6e, 0x76,
+	0x69, 0x74, 0x65, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
 	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65,
 	0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
 	0x12, 0x7d, 0x0a, 0x1c, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73,
-	0x68, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65,
+	0x68, 0x69, 0x70, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65,
 	0x12, 0x30, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65,
-	0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x65, 0x76, 0x6f,
-	0x6b, 0x65, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x72, 0x73, 0x68, 0x69, 0x70, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x41, 0x70, 0x70, 0x72, 0x6f,
+	0x76, 0x65, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
 	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d,
 	0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x70, 0x0a, 0x18, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x61,
-	0x6e, 0x74, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x2c, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
-	0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x61, 0x6e, 0x74,
-	0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x1a, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50,
-	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x6e, 0x0a, 0x17, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47,
-	0x72, 0x61, 0x6e, 0x74, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x2b, 0x2e, 0x73,
+	0x77, 0x0a, 0x19, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68,
+	0x69, 0x70, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x79, 0x12, 0x2d, 0x2e, 0x73,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x61, 0x6e,
-	0x74, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x1a, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50,
-	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x72, 0x0a, 0x19, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52,
-	0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x2d,
+	0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69,
+	0x70, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x79, 0x1a, 0x2b, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x1b, 0x47, 0x75, 0x69, 0x6c,
+	0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x49, 0x6e, 0x76, 0x69, 0x74,
+	0x65, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x12, 0x2f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69,
+	0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x49, 0x6e, 0x76, 0x69,
+	0x74, 0x65, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75,
+	0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6b, 0x0a, 0x13, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65,
+	0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x4a, 0x6f, 0x69, 0x6e, 0x12, 0x27, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
+	0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69,
+	0x70, 0x4a, 0x6f, 0x69, 0x6e, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64,
+	0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x75, 0x0a, 0x18, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65,
+	0x72, 0x73, 0x68, 0x69, 0x70, 0x4a, 0x6f, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x78, 0x79, 0x12, 0x2c,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73,
+	0x68, 0x69, 0x70, 0x4a, 0x6f, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x78, 0x79, 0x1a, 0x2b, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
+	0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69,
+	0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6b, 0x0a, 0x13, 0x47, 0x75, 0x69,
+	0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x4b, 0x69, 0x63, 0x6b,
+	0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65,
+	0x72, 0x73, 0x68, 0x69, 0x70, 0x4b, 0x69, 0x63, 0x6b, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47,
+	0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x71, 0x0a, 0x16, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d,
+	0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x12, 0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65,
+	0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
+	0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69,
+	0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7f, 0x0a, 0x1d, 0x47, 0x75, 0x69,
+	0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x12, 0x31, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
+	0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x1a, 0x2b, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68,
+	0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x79, 0x0a, 0x1a, 0x47, 0x75,
+	0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x44, 0x65, 0x6e, 0x79, 0x12, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75,
+	0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x44, 0x65, 0x6e, 0x79, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75,
+	0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7d, 0x0a, 0x1c, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65,
+	0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52,
+	0x65, 0x76, 0x6f, 0x6b, 0x65, 0x12, 0x30, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64,
+	0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69,
+	0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x70, 0x0a, 0x18, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x12, 0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x1a, 0x26,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65,
-	0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x1a, 0x26, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x70, 0x0a, 0x18, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73,
-	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63,
-	0x74, 0x12, 0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6e, 0x0a, 0x17, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63,
+	0x74, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
-	0x6e, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x1a,
-	0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x16, 0x50, 0x65, 0x72, 0x6d, 0x69,
-	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x65, 0x74, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x12, 0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
-	0x6e, 0x53, 0x65, 0x74, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x1a, 0x26, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6a, 0x0a, 0x15, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73,
-	0x69, 0x6f, 0x6e, 0x53, 0x65, 0x74, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x29,
+	0x6e, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x1a, 0x26,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x65,
-	0x74, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x1a, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50,
-	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x6c, 0x0a, 0x16, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47,
-	0x75, 0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x53, 0x65, 0x74, 0x12, 0x2a, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
-	0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x75, 0x69, 0x6c, 0x64,
-	0x52, 0x61, 0x6e, 0x6b, 0x53, 0x65, 0x74, 0x1a, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72,
-	0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x72, 0x0a, 0x19, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x75, 0x69,
-	0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x12, 0x2d, 0x2e, 0x73,
+	0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x72, 0x0a, 0x19, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x12, 0x2d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x1a, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x70, 0x0a, 0x18, 0x50, 0x65,
+	0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e,
+	0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d,
+	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e, 0x4f, 0x62,
+	0x6a, 0x65, 0x63, 0x74, 0x1a, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x16,
+	0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x65, 0x74, 0x4f, 0x6e, 0x41,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d,
+	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x65, 0x74, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x1a, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6a, 0x0a, 0x15, 0x50, 0x65,
+	0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x65, 0x74, 0x4f, 0x6e, 0x4f, 0x62, 0x6a,
+	0x65, 0x63, 0x74, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x53, 0x65, 0x74, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x1a, 0x26,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x16, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x53, 0x65, 0x74,
+	0x12, 0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x53, 0x65, 0x74, 0x1a, 0x26, 0x2e, 0x73,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x75, 0x69, 0x6c,
-	0x64, 0x52, 0x61, 0x6e, 0x6b, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x1a, 0x26, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
-	0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a, 0x10, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x55, 0x70, 0x64,
-	0x61, 0x74, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61,
-	0x6e, 0x65, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x1a, 0x28, 0x2e,
+	0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x72, 0x0a, 0x19, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x52, 0x65, 0x76, 0x6f, 0x6b,
+	0x65, 0x12, 0x2d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65,
+	0x1a, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a, 0x10, 0x50, 0x6c, 0x61, 0x6e,
+	0x65, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x24, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
+	0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x61,
+	0x6d, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x55, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0d,
+	0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x45, 0x78, 0x70, 0x6c, 0x6f, 0x72, 0x65, 0x12, 0x21, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0d, 0x50, 0x6c, 0x61, 0x6e, 0x65,
-	0x74, 0x45, 0x78, 0x70, 0x6c, 0x6f, 0x72, 0x65, 0x12, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c,
-	0x61, 0x6e, 0x65, 0x74, 0x45, 0x78, 0x70, 0x6c, 0x6f, 0x72, 0x65, 0x1a, 0x29, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
-	0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x45, 0x78, 0x70, 0x6c, 0x6f, 0x72, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x12, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74,
-	0x52, 0x61, 0x69, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x26, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x61, 0x69, 0x64, 0x43, 0x6f, 0x6d, 0x70,
-	0x6c, 0x65, 0x74, 0x65, 0x1a, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74,
-	0x52, 0x61, 0x69, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x84, 0x01, 0x0a, 0x1a, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x12, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x1a, 0x36, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a, 0x15, 0x50,
-	0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x47, 0x75, 0x69, 0x6c, 0x64,
-	0x52, 0x61, 0x6e, 0x6b, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
-	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x1a,
-	0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x62, 0x0a, 0x10, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x1a, 0x28, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0f, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
-	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x66, 0x70, 0x12, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x45, 0x78, 0x70, 0x6c, 0x6f, 0x72, 0x65,
+	0x1a, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x45, 0x78, 0x70, 0x6c,
+	0x6f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x12, 0x50,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x61, 0x69, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74,
+	0x65, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x61, 0x69,
+	0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50,
-	0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x66, 0x70, 0x1a, 0x28,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x61, 0x69, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74,
+	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x84, 0x01, 0x0a, 0x1a, 0x50, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72,
+	0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72,
+	0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x1a, 0x36, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72,
+	0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x75, 0x0a, 0x15, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x47, 0x75, 0x69, 0x6c, 0x64,
+	0x52, 0x61, 0x6e, 0x6b, 0x1a, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a, 0x10, 0x50, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x24, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x61, 0x6d,
+	0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0f, 0x50,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x66, 0x70, 0x12, 0x23,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x54, 0x0a, 0x0a, 0x50, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x53, 0x65, 0x6e, 0x64, 0x12, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x53, 0x65, 0x6e, 0x64, 0x1a, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x53, 0x65, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5a,
-	0x0a, 0x0e, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x12, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x43, 0x72,
-	0x65, 0x61, 0x74, 0x65, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64,
-	0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x17, 0x50, 0x72,
-	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x42, 0x61,
-	0x6c, 0x61, 0x6e, 0x63, 0x65, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x50, 0x66, 0x70, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x54, 0x0a,
+	0x0a, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x53, 0x65, 0x6e, 0x64, 0x12, 0x1e, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x53, 0x65, 0x6e, 0x64, 0x1a, 0x26, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x53, 0x65, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x5a, 0x0a, 0x0e, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x43,
+	0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69,
-	0x64, 0x65, 0x72, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x42, 0x61, 0x6c, 0x61, 0x6e,
-	0x63, 0x65, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x78, 0x0a, 0x1d, 0x50, 0x72, 0x6f, 0x76,
-	0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69,
-	0x74, 0x79, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x64, 0x65, 0x72, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50,
-	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x61, 0x70,
-	0x61, 0x63, 0x69, 0x74, 0x79, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x1a, 0x24, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x78, 0x0a, 0x1d, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x4d, 0x61, 0x78, 0x69,
-	0x6d, 0x75, 0x6d, 0x12, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65,
-	0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x4d,
-	0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76,
-	0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x78, 0x0a, 0x1d,
-	0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x44, 0x75,
-	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x31, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d,
-	0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x78, 0x0a, 0x1d, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64,
-	0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f,
-	0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x44, 0x75, 0x72, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72,
+	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x6c, 0x0a, 0x17, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x57, 0x69, 0x74, 0x68, 0x64,
+	0x72, 0x61, 0x77, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72,
 	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
-	0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x72, 0x0a, 0x1a, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x12, 0x2e,
+	0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77,
+	0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f,
+	0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x78, 0x0a,
+	0x1d, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43,
+	0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x31,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x1a, 0x24,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5a, 0x0a, 0x0e, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72,
-	0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76,
-	0x69, 0x64, 0x65, 0x72, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
-	0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x5d, 0x0a, 0x0d, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x49, 0x6e, 0x66, 0x75, 0x73,
-	0x65, 0x12, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x49, 0x6e,
-	0x66, 0x75, 0x73, 0x65, 0x1a, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f,
-	0x72, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x5d, 0x0a, 0x0d, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65,
-	0x12, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x44, 0x65, 0x66,
-	0x75, 0x73, 0x65, 0x1a, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72,
-	0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x75,
-	0x0a, 0x15, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x42, 0x65, 0x67, 0x69, 0x6e, 0x4d, 0x69,
-	0x67, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x74, 0x65, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75,
+	0x6d, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x78, 0x0a, 0x1d, 0x50, 0x72, 0x6f, 0x76, 0x69,
+	0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74,
+	0x79, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72,
+	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x61, 0x70, 0x61,
+	0x63, 0x69, 0x74, 0x79, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x1a, 0x24, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x78, 0x0a, 0x1d, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d,
+	0x75, 0x6d, 0x12, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x69,
+	0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69,
+	0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x78, 0x0a, 0x1d, 0x50,
+	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x44, 0x75, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x31, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
+	0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x1a,
+	0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x72, 0x0a, 0x1a, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65,
+	0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x50, 0x6f, 0x6c,
+	0x69, 0x63, 0x79, 0x12, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65,
+	0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x50, 0x6f, 0x6c,
+	0x69, 0x63, 0x79, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65,
+	0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5a, 0x0a, 0x0e, 0x50, 0x72, 0x6f,
+	0x76, 0x69, 0x64, 0x65, 0x72, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x22, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x1a,
+	0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0d, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72,
+	0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x12, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x61, 0x63,
+	0x74, 0x6f, 0x72, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x1a, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x52,
+	0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0d, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x44,
+	0x65, 0x66, 0x75, 0x73, 0x65, 0x12, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x61, 0x63, 0x74,
+	0x6f, 0x72, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x1a, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65,
+	0x61, 0x63, 0x74, 0x6f, 0x72, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a, 0x15, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x42, 0x65,
+	0x67, 0x69, 0x6e, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x29, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
+	0x73, 0x67, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x42, 0x65, 0x67, 0x69, 0x6e, 0x4d, 0x69,
+	0x67, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x61,
 	0x63, 0x74, 0x6f, 0x72, 0x42, 0x65, 0x67, 0x69, 0x6e, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x1a, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x42,
-	0x65, 0x67, 0x69, 0x6e, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a, 0x15, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72,
-	0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x44, 0x65, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x29,
+	0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a, 0x15, 0x52, 0x65,
+	0x61, 0x63, 0x74, 0x6f, 0x72, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x44, 0x65, 0x66, 0x75, 0x73,
+	0x69, 0x6f, 0x6e, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72,
+	0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x44, 0x65, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x1a, 0x31,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x43, 0x61, 0x6e, 0x63, 0x65,
-	0x6c, 0x44, 0x65, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x1a, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x52,
-	0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x44, 0x65, 0x66, 0x75,
-	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5e, 0x0a, 0x0e,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x22,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61,
-	0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74,
-	0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a, 0x10,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65,
-	0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x61, 0x63,
-	0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x68, 0x0a, 0x13, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x49,
-	0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x6c, 0x44, 0x65, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x5e, 0x0a, 0x0e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76,
+	0x61, 0x74, 0x65, 0x12, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41,
+	0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65,
-	0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74,
-	0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x68, 0x0a, 0x13, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74,
-	0x65, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69,
-	0x6c, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x64, 0x0a, 0x11, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75,
-	0x69, 0x6c, 0x64, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x12, 0x25, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c,
-	0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74,
-	0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a, 0x10, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x53, 0x65, 0x74, 0x12, 0x24,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73,
-	0x65, 0x53, 0x65, 0x74, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66,
-	0x0a, 0x12, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43,
-	0x6c, 0x65, 0x61, 0x72, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x1a, 0x28, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x56, 0x0a, 0x0a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x4d, 0x6f, 0x76, 0x65, 0x12, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x4d, 0x6f, 0x76, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5a,
-	0x0a, 0x0c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x12, 0x20,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b,
-	0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74, 0x61,
-	0x63, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x15, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76,
-	0x61, 0x74, 0x65, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53,
-	0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a, 0x28,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x70, 0x0a, 0x17, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x53, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76,
-	0x61, 0x74, 0x65, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53,
-	0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65,
-	0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74,
-	0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a, 0x15, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x49, 0x6e, 0x66,
-	0x75, 0x73, 0x65, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x47,
-	0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x1a, 0x31,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61,
-	0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x76, 0x0a, 0x16, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69,
-	0x6e, 0x65, 0x72, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x2a, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
-	0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x72, 0x43,
-	0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x30, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x72, 0x53, 0x74, 0x61, 0x74, 0x75,
-	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7f, 0x0a, 0x19, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72, 0x79, 0x43, 0x6f,
-	0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x2d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72, 0x79, 0x43, 0x6f, 0x6d,
-	0x70, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x33, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x62, 0x0a, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x61, 0x63, 0x74,
+	0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72, 0x79, 0x53, 0x74, 0x61, 0x74,
-	0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6e, 0x0a, 0x14, 0x53, 0x75,
-	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x61,
-	0x6d, 0x65, 0x12, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x1a, 0x2c, 0x2e, 0x73,
+	0x74, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x68, 0x0a, 0x13, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42,
+	0x75, 0x69, 0x6c, 0x64, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x12, 0x27, 0x2e, 0x73,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x13, 0x53, 0x75,
-	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x66,
-	0x70, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x6e, 0x69,
+	0x74, 0x69, 0x61, 0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x68, 0x0a, 0x13, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f,
+	0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x1a,
+	0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75,
+	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x64, 0x0a, 0x11, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x12, 0x25,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x43,
+	0x61, 0x6e, 0x63, 0x65, 0x6c, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x62, 0x0a, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65,
+	0x53, 0x65, 0x74, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44,
+	0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x53, 0x65, 0x74, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x12, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66,
+	0x65, 0x6e, 0x73, 0x65, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x6c, 0x65, 0x61,
+	0x72, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x56, 0x0a, 0x0a, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x6f, 0x76, 0x65, 0x12, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x6f, 0x76, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x5a, 0x0a, 0x0c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74,
+	0x61, 0x63, 0x6b, 0x12, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41,
+	0x74, 0x74, 0x61, 0x63, 0x6b, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x6c, 0x0a, 0x15, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68,
+	0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76,
+	0x61, 0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53,
+	0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x70, 0x0a,
+	0x17, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x44, 0x65,
+	0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x44, 0x65, 0x61, 0x63, 0x74,
+	0x69, 0x76, 0x61, 0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x75, 0x0a, 0x15, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74,
+	0x6f, 0x72, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x49, 0x6e, 0x66,
+	0x75, 0x73, 0x65, 0x1a, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x47,
+	0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x76, 0x0a, 0x16, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x72, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65,
+	0x12, 0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x4d,
+	0x69, 0x6e, 0x65, 0x72, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x30, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
+	0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x72,
+	0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7f,
+	0x0a, 0x19, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e,
+	0x65, 0x72, 0x79, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x2d, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65,
+	0x72, 0x79, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x33, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72,
+	0x79, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x6e, 0x0a, 0x14, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62,
+	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x61, 0x6d,
+	0x65, 0x1a, 0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x66, 0x70, 0x1a, 0x2c, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
-	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x10, 0x53, 0x75, 0x62, 0x73,
-	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x24, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61,
-	0x74, 0x65, 0x1a, 0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x66, 0x0a, 0x10, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65,
-	0x6c, 0x65, 0x74, 0x65, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x2c, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
-	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x87, 0x01, 0x0a, 0x1b, 0x53, 0x75, 0x62,
-	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x2f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75,
-	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x37, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x6c, 0x0a, 0x13, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x50, 0x66, 0x70, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73,
+	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x66, 0x70, 0x1a,
+	0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a,
+	0x10, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x1a, 0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62,
+	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x10, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
-	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x90, 0x01, 0x0a, 0x1e, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f,
-	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x32, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44,
-	0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x3a, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
-	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x17, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
-	0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x33, 0x2e,
+	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x1a,
+	0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44,
+	0x65, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x87, 0x01,
+	0x0a, 0x1b, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f,
+	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x2f, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x84, 0x01, 0x0a, 0x1a, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63,
-	0x74, 0x12, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63,
-	0x74, 0x1a, 0x36, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63,
-	0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x17, 0x53, 0x75, 0x62,
-	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d, 0x69, 0x67,
-	0x72, 0x61, 0x74, 0x65, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74,
-	0x65, 0x1a, 0x33, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x1a, 0x05, 0x80, 0xe7, 0xb0, 0x2a, 0x01, 0x42, 0x9d, 0x01,
-	0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
-	0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47,
-	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c,
+	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x37,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c,
+	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x90, 0x01, 0x0a, 0x1e, 0x53, 0x75, 0x62, 0x73,
+	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x32, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
+	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x3a,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c,
+	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65,
+	0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x17, 0x53, 0x75,
+	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f,
+	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65,
+	0x63, 0x74, 0x1a, 0x33, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x84, 0x01, 0x0a, 0x1a, 0x53, 0x75, 0x62, 0x73,
+	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63,
+	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73,
+	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63,
+	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x36, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73,
+	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63,
+	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b,
+	0x0a, 0x17, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79,
+	0x65, 0x72, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
+	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d,
+	0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x1a, 0x33, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73,
+	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d, 0x69, 0x67, 0x72,
+	0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x1a, 0x05, 0x80, 0xe7, 0xb0,
+	0x2a, 0x01, 0x42, 0x9d, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72,
+	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b,
+	0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca,
+	0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea,
+	0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -76625,7 +77246,7 @@ func file_structs_structs_tx_proto_rawDescGZIP() []byte {
 	return file_structs_structs_tx_proto_rawDescData
 }
 
-var file_structs_structs_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 134)
+var file_structs_structs_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 135)
 var file_structs_structs_tx_proto_goTypes = []interface{}{
 	(*MsgUpdateParams)(nil),                                  // 0: structs.structs.MsgUpdateParams
 	(*MsgUpdateParamsResponse)(nil),                          // 1: structs.structs.MsgUpdateParamsResponse
@@ -76654,165 +77275,166 @@ var file_structs_structs_tx_proto_goTypes = []interface{}{
 	(*MsgGuildUpdateOwnerId)(nil),                            // 24: structs.structs.MsgGuildUpdateOwnerId
 	(*MsgGuildUpdateEntrySubstationId)(nil),                  // 25: structs.structs.MsgGuildUpdateEntrySubstationId
 	(*MsgGuildUpdateEndpoint)(nil),                           // 26: structs.structs.MsgGuildUpdateEndpoint
-	(*MsgGuildUpdateJoinInfusionMinimum)(nil),                // 27: structs.structs.MsgGuildUpdateJoinInfusionMinimum
-	(*MsgGuildUpdateJoinInfusionMinimumBypassByRequest)(nil), // 28: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest
-	(*MsgGuildUpdateJoinInfusionMinimumBypassByInvite)(nil),  // 29: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite
-	(*MsgGuildUpdateEntryRank)(nil),                          // 30: structs.structs.MsgGuildUpdateEntryRank
-	(*MsgGuildUpdateResponse)(nil),                           // 31: structs.structs.MsgGuildUpdateResponse
-	(*MsgGuildUpdateName)(nil),                               // 32: structs.structs.MsgGuildUpdateName
-	(*MsgGuildUpdatePfp)(nil),                                // 33: structs.structs.MsgGuildUpdatePfp
-	(*MsgGuildMembershipInvite)(nil),                         // 34: structs.structs.MsgGuildMembershipInvite
-	(*MsgGuildMembershipInviteApprove)(nil),                  // 35: structs.structs.MsgGuildMembershipInviteApprove
-	(*MsgGuildMembershipInviteDeny)(nil),                     // 36: structs.structs.MsgGuildMembershipInviteDeny
-	(*MsgGuildMembershipInviteRevoke)(nil),                   // 37: structs.structs.MsgGuildMembershipInviteRevoke
-	(*MsgGuildMembershipJoin)(nil),                           // 38: structs.structs.MsgGuildMembershipJoin
-	(*MsgGuildMembershipJoinProxy)(nil),                      // 39: structs.structs.MsgGuildMembershipJoinProxy
-	(*MsgGuildMembershipKick)(nil),                           // 40: structs.structs.MsgGuildMembershipKick
-	(*MsgGuildMembershipRequest)(nil),                        // 41: structs.structs.MsgGuildMembershipRequest
-	(*MsgGuildMembershipRequestApprove)(nil),                 // 42: structs.structs.MsgGuildMembershipRequestApprove
-	(*MsgGuildMembershipRequestDeny)(nil),                    // 43: structs.structs.MsgGuildMembershipRequestDeny
-	(*MsgGuildMembershipRequestRevoke)(nil),                  // 44: structs.structs.MsgGuildMembershipRequestRevoke
-	(*MsgGuildMembershipResponse)(nil),                       // 45: structs.structs.MsgGuildMembershipResponse
-	(*MsgPermissionGrantOnObject)(nil),                       // 46: structs.structs.MsgPermissionGrantOnObject
-	(*MsgPermissionGrantOnAddress)(nil),                      // 47: structs.structs.MsgPermissionGrantOnAddress
-	(*MsgPermissionRevokeOnObject)(nil),                      // 48: structs.structs.MsgPermissionRevokeOnObject
-	(*MsgPermissionRevokeOnAddress)(nil),                     // 49: structs.structs.MsgPermissionRevokeOnAddress
-	(*MsgPermissionSetOnObject)(nil),                         // 50: structs.structs.MsgPermissionSetOnObject
-	(*MsgPermissionSetOnAddress)(nil),                        // 51: structs.structs.MsgPermissionSetOnAddress
-	(*MsgPermissionGuildRankSet)(nil),                        // 52: structs.structs.MsgPermissionGuildRankSet
-	(*MsgPermissionGuildRankRevoke)(nil),                     // 53: structs.structs.MsgPermissionGuildRankRevoke
-	(*MsgPermissionResponse)(nil),                            // 54: structs.structs.MsgPermissionResponse
-	(*MsgPlanetExplore)(nil),                                 // 55: structs.structs.MsgPlanetExplore
-	(*MsgPlanetExploreResponse)(nil),                         // 56: structs.structs.MsgPlanetExploreResponse
-	(*MsgPlanetRaidComplete)(nil),                            // 57: structs.structs.MsgPlanetRaidComplete
-	(*MsgPlanetRaidCompleteResponse)(nil),                    // 58: structs.structs.MsgPlanetRaidCompleteResponse
-	(*MsgPlanetUpdateName)(nil),                              // 59: structs.structs.MsgPlanetUpdateName
-	(*MsgPlanetUpdateResponse)(nil),                          // 60: structs.structs.MsgPlanetUpdateResponse
-	(*MsgPlayerUpdatePrimaryAddress)(nil),                    // 61: structs.structs.MsgPlayerUpdatePrimaryAddress
-	(*MsgPlayerUpdatePrimaryAddressResponse)(nil),            // 62: structs.structs.MsgPlayerUpdatePrimaryAddressResponse
-	(*MsgPlayerResume)(nil),                                  // 63: structs.structs.MsgPlayerResume
-	(*MsgPlayerResumeResponse)(nil),                          // 64: structs.structs.MsgPlayerResumeResponse
-	(*MsgPlayerUpdateGuildRank)(nil),                         // 65: structs.structs.MsgPlayerUpdateGuildRank
-	(*MsgPlayerUpdateGuildRankResponse)(nil),                 // 66: structs.structs.MsgPlayerUpdateGuildRankResponse
-	(*MsgPlayerUpdateName)(nil),                              // 67: structs.structs.MsgPlayerUpdateName
-	(*MsgPlayerUpdatePfp)(nil),                               // 68: structs.structs.MsgPlayerUpdatePfp
-	(*MsgPlayerUpdateResponse)(nil),                          // 69: structs.structs.MsgPlayerUpdateResponse
-	(*MsgReactorInfuse)(nil),                                 // 70: structs.structs.MsgReactorInfuse
-	(*MsgReactorInfuseResponse)(nil),                         // 71: structs.structs.MsgReactorInfuseResponse
-	(*MsgReactorBeginMigration)(nil),                         // 72: structs.structs.MsgReactorBeginMigration
-	(*MsgReactorBeginMigrationResponse)(nil),                 // 73: structs.structs.MsgReactorBeginMigrationResponse
-	(*MsgReactorDefuse)(nil),                                 // 74: structs.structs.MsgReactorDefuse
-	(*MsgReactorDefuseResponse)(nil),                         // 75: structs.structs.MsgReactorDefuseResponse
-	(*MsgReactorCancelDefusion)(nil),                         // 76: structs.structs.MsgReactorCancelDefusion
-	(*MsgReactorCancelDefusionResponse)(nil),                 // 77: structs.structs.MsgReactorCancelDefusionResponse
-	(*MsgStructStatusResponse)(nil),                          // 78: structs.structs.MsgStructStatusResponse
-	(*MsgStructActivate)(nil),                                // 79: structs.structs.MsgStructActivate
-	(*MsgStructDeactivate)(nil),                              // 80: structs.structs.MsgStructDeactivate
-	(*MsgStructBuildInitiate)(nil),                           // 81: structs.structs.MsgStructBuildInitiate
-	(*MsgStructBuildComplete)(nil),                           // 82: structs.structs.MsgStructBuildComplete
-	(*MsgStructBuildCancel)(nil),                             // 83: structs.structs.MsgStructBuildCancel
-	(*MsgStructBuildCompleteAndStash)(nil),                   // 84: structs.structs.MsgStructBuildCompleteAndStash
-	(*MsgStructDefenseSet)(nil),                              // 85: structs.structs.MsgStructDefenseSet
-	(*MsgStructDefenseClear)(nil),                            // 86: structs.structs.MsgStructDefenseClear
-	(*MsgStructMove)(nil),                                    // 87: structs.structs.MsgStructMove
-	(*MsgStructAttack)(nil),                                  // 88: structs.structs.MsgStructAttack
-	(*MsgStructAttackResponse)(nil),                          // 89: structs.structs.MsgStructAttackResponse
-	(*MsgStructStealthActivate)(nil),                         // 90: structs.structs.MsgStructStealthActivate
-	(*MsgStructStealthDeactivate)(nil),                       // 91: structs.structs.MsgStructStealthDeactivate
-	(*MsgStructGeneratorInfuse)(nil),                         // 92: structs.structs.MsgStructGeneratorInfuse
-	(*MsgStructGeneratorStatusResponse)(nil),                 // 93: structs.structs.MsgStructGeneratorStatusResponse
-	(*MsgStructOreMinerComplete)(nil),                        // 94: structs.structs.MsgStructOreMinerComplete
-	(*MsgStructOreMinerStatusResponse)(nil),                  // 95: structs.structs.MsgStructOreMinerStatusResponse
-	(*MsgStructOreRefineryComplete)(nil),                     // 96: structs.structs.MsgStructOreRefineryComplete
-	(*MsgStructOreRefineryStatusResponse)(nil),               // 97: structs.structs.MsgStructOreRefineryStatusResponse
-	(*MsgStructStorageStash)(nil),                            // 98: structs.structs.MsgStructStorageStash
-	(*MsgStructStorageRecall)(nil),                           // 99: structs.structs.MsgStructStorageRecall
-	(*MsgSubstationCreate)(nil),                              // 100: structs.structs.MsgSubstationCreate
-	(*MsgSubstationCreateResponse)(nil),                      // 101: structs.structs.MsgSubstationCreateResponse
-	(*MsgSubstationDelete)(nil),                              // 102: structs.structs.MsgSubstationDelete
-	(*MsgSubstationDeleteResponse)(nil),                      // 103: structs.structs.MsgSubstationDeleteResponse
-	(*MsgSubstationAllocationConnect)(nil),                   // 104: structs.structs.MsgSubstationAllocationConnect
-	(*MsgSubstationAllocationConnectResponse)(nil),           // 105: structs.structs.MsgSubstationAllocationConnectResponse
-	(*MsgSubstationAllocationDisconnect)(nil),                // 106: structs.structs.MsgSubstationAllocationDisconnect
-	(*MsgSubstationAllocationDisconnectResponse)(nil),        // 107: structs.structs.MsgSubstationAllocationDisconnectResponse
-	(*MsgSubstationPlayerConnect)(nil),                       // 108: structs.structs.MsgSubstationPlayerConnect
-	(*MsgSubstationPlayerConnectResponse)(nil),               // 109: structs.structs.MsgSubstationPlayerConnectResponse
-	(*MsgSubstationPlayerDisconnect)(nil),                    // 110: structs.structs.MsgSubstationPlayerDisconnect
-	(*MsgSubstationPlayerDisconnectResponse)(nil),            // 111: structs.structs.MsgSubstationPlayerDisconnectResponse
-	(*MsgSubstationPlayerMigrate)(nil),                       // 112: structs.structs.MsgSubstationPlayerMigrate
-	(*MsgSubstationPlayerMigrateResponse)(nil),               // 113: structs.structs.MsgSubstationPlayerMigrateResponse
-	(*MsgSubstationUpdateName)(nil),                          // 114: structs.structs.MsgSubstationUpdateName
-	(*MsgSubstationUpdatePfp)(nil),                           // 115: structs.structs.MsgSubstationUpdatePfp
-	(*MsgSubstationUpdateResponse)(nil),                      // 116: structs.structs.MsgSubstationUpdateResponse
-	(*MsgAgreementOpen)(nil),                                 // 117: structs.structs.MsgAgreementOpen
-	(*MsgAgreementClose)(nil),                                // 118: structs.structs.MsgAgreementClose
-	(*MsgAgreementCapacityIncrease)(nil),                     // 119: structs.structs.MsgAgreementCapacityIncrease
-	(*MsgAgreementCapacityDecrease)(nil),                     // 120: structs.structs.MsgAgreementCapacityDecrease
-	(*MsgAgreementDurationIncrease)(nil),                     // 121: structs.structs.MsgAgreementDurationIncrease
-	(*MsgAgreementResponse)(nil),                             // 122: structs.structs.MsgAgreementResponse
-	(*MsgProviderCreate)(nil),                                // 123: structs.structs.MsgProviderCreate
-	(*MsgProviderWithdrawBalance)(nil),                       // 124: structs.structs.MsgProviderWithdrawBalance
-	(*MsgProviderUpdateCapacityMinimum)(nil),                 // 125: structs.structs.MsgProviderUpdateCapacityMinimum
-	(*MsgProviderUpdateCapacityMaximum)(nil),                 // 126: structs.structs.MsgProviderUpdateCapacityMaximum
-	(*MsgProviderUpdateDurationMinimum)(nil),                 // 127: structs.structs.MsgProviderUpdateDurationMinimum
-	(*MsgProviderUpdateDurationMaximum)(nil),                 // 128: structs.structs.MsgProviderUpdateDurationMaximum
-	(*MsgProviderUpdateAccessPolicy)(nil),                    // 129: structs.structs.MsgProviderUpdateAccessPolicy
-	(*MsgProviderDelete)(nil),                                // 130: structs.structs.MsgProviderDelete
-	(*MsgProviderResponse)(nil),                              // 131: structs.structs.MsgProviderResponse
-	(*MsgPlayerSend)(nil),                                    // 132: structs.structs.MsgPlayerSend
-	(*MsgPlayerSendResponse)(nil),                            // 133: structs.structs.MsgPlayerSendResponse
-	(*Params)(nil),                                           // 134: structs.structs.Params
-	(AllocationType)(0),                                      // 135: structs.structs.allocationType
-	(*Fleet)(nil),                                            // 136: structs.structs.Fleet
-	(*v1beta1.Coin)(nil),                                     // 137: cosmos.base.v1beta1.Coin
-	(GuildJoinBypassLevel)(0),                                // 138: structs.structs.guildJoinBypassLevel
-	(*GuildMembershipApplication)(nil),                       // 139: structs.structs.GuildMembershipApplication
-	(*Planet)(nil),                                           // 140: structs.structs.Planet
-	(*timestamppb.Timestamp)(nil),                            // 141: google.protobuf.Timestamp
-	(*Struct)(nil),                                           // 142: structs.structs.Struct
-	(Ambit)(0),                                               // 143: structs.structs.ambit
-	(ObjectType)(0),                                          // 144: structs.structs.objectType
-	(ProviderAccessPolicy)(0),                                // 145: structs.structs.providerAccessPolicy
+	(*MsgGuildUpdatePrimaryReactor)(nil),                     // 27: structs.structs.MsgGuildUpdatePrimaryReactor
+	(*MsgGuildUpdateJoinInfusionMinimum)(nil),                // 28: structs.structs.MsgGuildUpdateJoinInfusionMinimum
+	(*MsgGuildUpdateJoinInfusionMinimumBypassByRequest)(nil), // 29: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest
+	(*MsgGuildUpdateJoinInfusionMinimumBypassByInvite)(nil),  // 30: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite
+	(*MsgGuildUpdateEntryRank)(nil),                          // 31: structs.structs.MsgGuildUpdateEntryRank
+	(*MsgGuildUpdateResponse)(nil),                           // 32: structs.structs.MsgGuildUpdateResponse
+	(*MsgGuildUpdateName)(nil),                               // 33: structs.structs.MsgGuildUpdateName
+	(*MsgGuildUpdatePfp)(nil),                                // 34: structs.structs.MsgGuildUpdatePfp
+	(*MsgGuildMembershipInvite)(nil),                         // 35: structs.structs.MsgGuildMembershipInvite
+	(*MsgGuildMembershipInviteApprove)(nil),                  // 36: structs.structs.MsgGuildMembershipInviteApprove
+	(*MsgGuildMembershipInviteDeny)(nil),                     // 37: structs.structs.MsgGuildMembershipInviteDeny
+	(*MsgGuildMembershipInviteRevoke)(nil),                   // 38: structs.structs.MsgGuildMembershipInviteRevoke
+	(*MsgGuildMembershipJoin)(nil),                           // 39: structs.structs.MsgGuildMembershipJoin
+	(*MsgGuildMembershipJoinProxy)(nil),                      // 40: structs.structs.MsgGuildMembershipJoinProxy
+	(*MsgGuildMembershipKick)(nil),                           // 41: structs.structs.MsgGuildMembershipKick
+	(*MsgGuildMembershipRequest)(nil),                        // 42: structs.structs.MsgGuildMembershipRequest
+	(*MsgGuildMembershipRequestApprove)(nil),                 // 43: structs.structs.MsgGuildMembershipRequestApprove
+	(*MsgGuildMembershipRequestDeny)(nil),                    // 44: structs.structs.MsgGuildMembershipRequestDeny
+	(*MsgGuildMembershipRequestRevoke)(nil),                  // 45: structs.structs.MsgGuildMembershipRequestRevoke
+	(*MsgGuildMembershipResponse)(nil),                       // 46: structs.structs.MsgGuildMembershipResponse
+	(*MsgPermissionGrantOnObject)(nil),                       // 47: structs.structs.MsgPermissionGrantOnObject
+	(*MsgPermissionGrantOnAddress)(nil),                      // 48: structs.structs.MsgPermissionGrantOnAddress
+	(*MsgPermissionRevokeOnObject)(nil),                      // 49: structs.structs.MsgPermissionRevokeOnObject
+	(*MsgPermissionRevokeOnAddress)(nil),                     // 50: structs.structs.MsgPermissionRevokeOnAddress
+	(*MsgPermissionSetOnObject)(nil),                         // 51: structs.structs.MsgPermissionSetOnObject
+	(*MsgPermissionSetOnAddress)(nil),                        // 52: structs.structs.MsgPermissionSetOnAddress
+	(*MsgPermissionGuildRankSet)(nil),                        // 53: structs.structs.MsgPermissionGuildRankSet
+	(*MsgPermissionGuildRankRevoke)(nil),                     // 54: structs.structs.MsgPermissionGuildRankRevoke
+	(*MsgPermissionResponse)(nil),                            // 55: structs.structs.MsgPermissionResponse
+	(*MsgPlanetExplore)(nil),                                 // 56: structs.structs.MsgPlanetExplore
+	(*MsgPlanetExploreResponse)(nil),                         // 57: structs.structs.MsgPlanetExploreResponse
+	(*MsgPlanetRaidComplete)(nil),                            // 58: structs.structs.MsgPlanetRaidComplete
+	(*MsgPlanetRaidCompleteResponse)(nil),                    // 59: structs.structs.MsgPlanetRaidCompleteResponse
+	(*MsgPlanetUpdateName)(nil),                              // 60: structs.structs.MsgPlanetUpdateName
+	(*MsgPlanetUpdateResponse)(nil),                          // 61: structs.structs.MsgPlanetUpdateResponse
+	(*MsgPlayerUpdatePrimaryAddress)(nil),                    // 62: structs.structs.MsgPlayerUpdatePrimaryAddress
+	(*MsgPlayerUpdatePrimaryAddressResponse)(nil),            // 63: structs.structs.MsgPlayerUpdatePrimaryAddressResponse
+	(*MsgPlayerResume)(nil),                                  // 64: structs.structs.MsgPlayerResume
+	(*MsgPlayerResumeResponse)(nil),                          // 65: structs.structs.MsgPlayerResumeResponse
+	(*MsgPlayerUpdateGuildRank)(nil),                         // 66: structs.structs.MsgPlayerUpdateGuildRank
+	(*MsgPlayerUpdateGuildRankResponse)(nil),                 // 67: structs.structs.MsgPlayerUpdateGuildRankResponse
+	(*MsgPlayerUpdateName)(nil),                              // 68: structs.structs.MsgPlayerUpdateName
+	(*MsgPlayerUpdatePfp)(nil),                               // 69: structs.structs.MsgPlayerUpdatePfp
+	(*MsgPlayerUpdateResponse)(nil),                          // 70: structs.structs.MsgPlayerUpdateResponse
+	(*MsgReactorInfuse)(nil),                                 // 71: structs.structs.MsgReactorInfuse
+	(*MsgReactorInfuseResponse)(nil),                         // 72: structs.structs.MsgReactorInfuseResponse
+	(*MsgReactorBeginMigration)(nil),                         // 73: structs.structs.MsgReactorBeginMigration
+	(*MsgReactorBeginMigrationResponse)(nil),                 // 74: structs.structs.MsgReactorBeginMigrationResponse
+	(*MsgReactorDefuse)(nil),                                 // 75: structs.structs.MsgReactorDefuse
+	(*MsgReactorDefuseResponse)(nil),                         // 76: structs.structs.MsgReactorDefuseResponse
+	(*MsgReactorCancelDefusion)(nil),                         // 77: structs.structs.MsgReactorCancelDefusion
+	(*MsgReactorCancelDefusionResponse)(nil),                 // 78: structs.structs.MsgReactorCancelDefusionResponse
+	(*MsgStructStatusResponse)(nil),                          // 79: structs.structs.MsgStructStatusResponse
+	(*MsgStructActivate)(nil),                                // 80: structs.structs.MsgStructActivate
+	(*MsgStructDeactivate)(nil),                              // 81: structs.structs.MsgStructDeactivate
+	(*MsgStructBuildInitiate)(nil),                           // 82: structs.structs.MsgStructBuildInitiate
+	(*MsgStructBuildComplete)(nil),                           // 83: structs.structs.MsgStructBuildComplete
+	(*MsgStructBuildCancel)(nil),                             // 84: structs.structs.MsgStructBuildCancel
+	(*MsgStructBuildCompleteAndStash)(nil),                   // 85: structs.structs.MsgStructBuildCompleteAndStash
+	(*MsgStructDefenseSet)(nil),                              // 86: structs.structs.MsgStructDefenseSet
+	(*MsgStructDefenseClear)(nil),                            // 87: structs.structs.MsgStructDefenseClear
+	(*MsgStructMove)(nil),                                    // 88: structs.structs.MsgStructMove
+	(*MsgStructAttack)(nil),                                  // 89: structs.structs.MsgStructAttack
+	(*MsgStructAttackResponse)(nil),                          // 90: structs.structs.MsgStructAttackResponse
+	(*MsgStructStealthActivate)(nil),                         // 91: structs.structs.MsgStructStealthActivate
+	(*MsgStructStealthDeactivate)(nil),                       // 92: structs.structs.MsgStructStealthDeactivate
+	(*MsgStructGeneratorInfuse)(nil),                         // 93: structs.structs.MsgStructGeneratorInfuse
+	(*MsgStructGeneratorStatusResponse)(nil),                 // 94: structs.structs.MsgStructGeneratorStatusResponse
+	(*MsgStructOreMinerComplete)(nil),                        // 95: structs.structs.MsgStructOreMinerComplete
+	(*MsgStructOreMinerStatusResponse)(nil),                  // 96: structs.structs.MsgStructOreMinerStatusResponse
+	(*MsgStructOreRefineryComplete)(nil),                     // 97: structs.structs.MsgStructOreRefineryComplete
+	(*MsgStructOreRefineryStatusResponse)(nil),               // 98: structs.structs.MsgStructOreRefineryStatusResponse
+	(*MsgStructStorageStash)(nil),                            // 99: structs.structs.MsgStructStorageStash
+	(*MsgStructStorageRecall)(nil),                           // 100: structs.structs.MsgStructStorageRecall
+	(*MsgSubstationCreate)(nil),                              // 101: structs.structs.MsgSubstationCreate
+	(*MsgSubstationCreateResponse)(nil),                      // 102: structs.structs.MsgSubstationCreateResponse
+	(*MsgSubstationDelete)(nil),                              // 103: structs.structs.MsgSubstationDelete
+	(*MsgSubstationDeleteResponse)(nil),                      // 104: structs.structs.MsgSubstationDeleteResponse
+	(*MsgSubstationAllocationConnect)(nil),                   // 105: structs.structs.MsgSubstationAllocationConnect
+	(*MsgSubstationAllocationConnectResponse)(nil),           // 106: structs.structs.MsgSubstationAllocationConnectResponse
+	(*MsgSubstationAllocationDisconnect)(nil),                // 107: structs.structs.MsgSubstationAllocationDisconnect
+	(*MsgSubstationAllocationDisconnectResponse)(nil),        // 108: structs.structs.MsgSubstationAllocationDisconnectResponse
+	(*MsgSubstationPlayerConnect)(nil),                       // 109: structs.structs.MsgSubstationPlayerConnect
+	(*MsgSubstationPlayerConnectResponse)(nil),               // 110: structs.structs.MsgSubstationPlayerConnectResponse
+	(*MsgSubstationPlayerDisconnect)(nil),                    // 111: structs.structs.MsgSubstationPlayerDisconnect
+	(*MsgSubstationPlayerDisconnectResponse)(nil),            // 112: structs.structs.MsgSubstationPlayerDisconnectResponse
+	(*MsgSubstationPlayerMigrate)(nil),                       // 113: structs.structs.MsgSubstationPlayerMigrate
+	(*MsgSubstationPlayerMigrateResponse)(nil),               // 114: structs.structs.MsgSubstationPlayerMigrateResponse
+	(*MsgSubstationUpdateName)(nil),                          // 115: structs.structs.MsgSubstationUpdateName
+	(*MsgSubstationUpdatePfp)(nil),                           // 116: structs.structs.MsgSubstationUpdatePfp
+	(*MsgSubstationUpdateResponse)(nil),                      // 117: structs.structs.MsgSubstationUpdateResponse
+	(*MsgAgreementOpen)(nil),                                 // 118: structs.structs.MsgAgreementOpen
+	(*MsgAgreementClose)(nil),                                // 119: structs.structs.MsgAgreementClose
+	(*MsgAgreementCapacityIncrease)(nil),                     // 120: structs.structs.MsgAgreementCapacityIncrease
+	(*MsgAgreementCapacityDecrease)(nil),                     // 121: structs.structs.MsgAgreementCapacityDecrease
+	(*MsgAgreementDurationIncrease)(nil),                     // 122: structs.structs.MsgAgreementDurationIncrease
+	(*MsgAgreementResponse)(nil),                             // 123: structs.structs.MsgAgreementResponse
+	(*MsgProviderCreate)(nil),                                // 124: structs.structs.MsgProviderCreate
+	(*MsgProviderWithdrawBalance)(nil),                       // 125: structs.structs.MsgProviderWithdrawBalance
+	(*MsgProviderUpdateCapacityMinimum)(nil),                 // 126: structs.structs.MsgProviderUpdateCapacityMinimum
+	(*MsgProviderUpdateCapacityMaximum)(nil),                 // 127: structs.structs.MsgProviderUpdateCapacityMaximum
+	(*MsgProviderUpdateDurationMinimum)(nil),                 // 128: structs.structs.MsgProviderUpdateDurationMinimum
+	(*MsgProviderUpdateDurationMaximum)(nil),                 // 129: structs.structs.MsgProviderUpdateDurationMaximum
+	(*MsgProviderUpdateAccessPolicy)(nil),                    // 130: structs.structs.MsgProviderUpdateAccessPolicy
+	(*MsgProviderDelete)(nil),                                // 131: structs.structs.MsgProviderDelete
+	(*MsgProviderResponse)(nil),                              // 132: structs.structs.MsgProviderResponse
+	(*MsgPlayerSend)(nil),                                    // 133: structs.structs.MsgPlayerSend
+	(*MsgPlayerSendResponse)(nil),                            // 134: structs.structs.MsgPlayerSendResponse
+	(*Params)(nil),                                           // 135: structs.structs.Params
+	(AllocationType)(0),                                      // 136: structs.structs.allocationType
+	(*Fleet)(nil),                                            // 137: structs.structs.Fleet
+	(*v1beta1.Coin)(nil),                                     // 138: cosmos.base.v1beta1.Coin
+	(GuildJoinBypassLevel)(0),                                // 139: structs.structs.guildJoinBypassLevel
+	(*GuildMembershipApplication)(nil),                       // 140: structs.structs.GuildMembershipApplication
+	(*Planet)(nil),                                           // 141: structs.structs.Planet
+	(*timestamppb.Timestamp)(nil),                            // 142: google.protobuf.Timestamp
+	(*Struct)(nil),                                           // 143: structs.structs.Struct
+	(Ambit)(0),                                               // 144: structs.structs.ambit
+	(ObjectType)(0),                                          // 145: structs.structs.objectType
+	(ProviderAccessPolicy)(0),                                // 146: structs.structs.providerAccessPolicy
 }
 var file_structs_structs_tx_proto_depIdxs = []int32{
-	134, // 0: structs.structs.MsgUpdateParams.params:type_name -> structs.structs.Params
-	135, // 1: structs.structs.MsgAllocationCreate.allocationType:type_name -> structs.structs.allocationType
-	136, // 2: structs.structs.MsgFleetMoveResponse.fleet:type_name -> structs.structs.Fleet
-	137, // 3: structs.structs.MsgGuildBankRedeem.amountToken:type_name -> cosmos.base.v1beta1.Coin
-	138, // 4: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel:type_name -> structs.structs.guildJoinBypassLevel
-	138, // 5: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel:type_name -> structs.structs.guildJoinBypassLevel
-	139, // 6: structs.structs.MsgGuildMembershipResponse.guildMembershipApplication:type_name -> structs.structs.GuildMembershipApplication
-	140, // 7: structs.structs.MsgPlanetExploreResponse.planet:type_name -> structs.structs.Planet
-	136, // 8: structs.structs.MsgPlanetRaidCompleteResponse.fleet:type_name -> structs.structs.Fleet
-	140, // 9: structs.structs.MsgPlanetRaidCompleteResponse.planet:type_name -> structs.structs.Planet
-	137, // 10: structs.structs.MsgReactorInfuse.amount:type_name -> cosmos.base.v1beta1.Coin
-	137, // 11: structs.structs.MsgReactorBeginMigration.amount:type_name -> cosmos.base.v1beta1.Coin
-	141, // 12: structs.structs.MsgReactorBeginMigrationResponse.completion_time:type_name -> google.protobuf.Timestamp
-	137, // 13: structs.structs.MsgReactorDefuse.amount:type_name -> cosmos.base.v1beta1.Coin
-	141, // 14: structs.structs.MsgReactorDefuseResponse.completion_time:type_name -> google.protobuf.Timestamp
-	137, // 15: structs.structs.MsgReactorDefuseResponse.amount:type_name -> cosmos.base.v1beta1.Coin
-	137, // 16: structs.structs.MsgReactorCancelDefusion.amount:type_name -> cosmos.base.v1beta1.Coin
-	142, // 17: structs.structs.MsgStructStatusResponse.struct:type_name -> structs.structs.Struct
-	143, // 18: structs.structs.MsgStructBuildInitiate.operatingAmbit:type_name -> structs.structs.ambit
-	143, // 19: structs.structs.MsgStructBuildCompleteAndStash.storageAmbit:type_name -> structs.structs.ambit
-	144, // 20: structs.structs.MsgStructMove.locationType:type_name -> structs.structs.objectType
-	143, // 21: structs.structs.MsgStructMove.ambit:type_name -> structs.structs.ambit
-	142, // 22: structs.structs.MsgStructOreMinerStatusResponse.struct:type_name -> structs.structs.Struct
-	142, // 23: structs.structs.MsgStructOreRefineryStatusResponse.struct:type_name -> structs.structs.Struct
-	143, // 24: structs.structs.MsgStructStorageStash.ambit:type_name -> structs.structs.ambit
-	143, // 25: structs.structs.MsgStructStorageRecall.ambit:type_name -> structs.structs.ambit
-	137, // 26: structs.structs.MsgProviderCreate.rate:type_name -> cosmos.base.v1beta1.Coin
-	145, // 27: structs.structs.MsgProviderCreate.accessPolicy:type_name -> structs.structs.providerAccessPolicy
-	145, // 28: structs.structs.MsgProviderUpdateAccessPolicy.accessPolicy:type_name -> structs.structs.providerAccessPolicy
-	137, // 29: structs.structs.MsgPlayerSend.amount:type_name -> cosmos.base.v1beta1.Coin
+	135, // 0: structs.structs.MsgUpdateParams.params:type_name -> structs.structs.Params
+	136, // 1: structs.structs.MsgAllocationCreate.allocationType:type_name -> structs.structs.allocationType
+	137, // 2: structs.structs.MsgFleetMoveResponse.fleet:type_name -> structs.structs.Fleet
+	138, // 3: structs.structs.MsgGuildBankRedeem.amountToken:type_name -> cosmos.base.v1beta1.Coin
+	139, // 4: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel:type_name -> structs.structs.guildJoinBypassLevel
+	139, // 5: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel:type_name -> structs.structs.guildJoinBypassLevel
+	140, // 6: structs.structs.MsgGuildMembershipResponse.guildMembershipApplication:type_name -> structs.structs.GuildMembershipApplication
+	141, // 7: structs.structs.MsgPlanetExploreResponse.planet:type_name -> structs.structs.Planet
+	137, // 8: structs.structs.MsgPlanetRaidCompleteResponse.fleet:type_name -> structs.structs.Fleet
+	141, // 9: structs.structs.MsgPlanetRaidCompleteResponse.planet:type_name -> structs.structs.Planet
+	138, // 10: structs.structs.MsgReactorInfuse.amount:type_name -> cosmos.base.v1beta1.Coin
+	138, // 11: structs.structs.MsgReactorBeginMigration.amount:type_name -> cosmos.base.v1beta1.Coin
+	142, // 12: structs.structs.MsgReactorBeginMigrationResponse.completion_time:type_name -> google.protobuf.Timestamp
+	138, // 13: structs.structs.MsgReactorDefuse.amount:type_name -> cosmos.base.v1beta1.Coin
+	142, // 14: structs.structs.MsgReactorDefuseResponse.completion_time:type_name -> google.protobuf.Timestamp
+	138, // 15: structs.structs.MsgReactorDefuseResponse.amount:type_name -> cosmos.base.v1beta1.Coin
+	138, // 16: structs.structs.MsgReactorCancelDefusion.amount:type_name -> cosmos.base.v1beta1.Coin
+	143, // 17: structs.structs.MsgStructStatusResponse.struct:type_name -> structs.structs.Struct
+	144, // 18: structs.structs.MsgStructBuildInitiate.operatingAmbit:type_name -> structs.structs.ambit
+	144, // 19: structs.structs.MsgStructBuildCompleteAndStash.storageAmbit:type_name -> structs.structs.ambit
+	145, // 20: structs.structs.MsgStructMove.locationType:type_name -> structs.structs.objectType
+	144, // 21: structs.structs.MsgStructMove.ambit:type_name -> structs.structs.ambit
+	143, // 22: structs.structs.MsgStructOreMinerStatusResponse.struct:type_name -> structs.structs.Struct
+	143, // 23: structs.structs.MsgStructOreRefineryStatusResponse.struct:type_name -> structs.structs.Struct
+	144, // 24: structs.structs.MsgStructStorageStash.ambit:type_name -> structs.structs.ambit
+	144, // 25: structs.structs.MsgStructStorageRecall.ambit:type_name -> structs.structs.ambit
+	138, // 26: structs.structs.MsgProviderCreate.rate:type_name -> cosmos.base.v1beta1.Coin
+	146, // 27: structs.structs.MsgProviderCreate.accessPolicy:type_name -> structs.structs.providerAccessPolicy
+	146, // 28: structs.structs.MsgProviderUpdateAccessPolicy.accessPolicy:type_name -> structs.structs.providerAccessPolicy
+	138, // 29: structs.structs.MsgPlayerSend.amount:type_name -> cosmos.base.v1beta1.Coin
 	0,   // 30: structs.structs.Msg.UpdateParams:input_type -> structs.structs.MsgUpdateParams
 	2,   // 31: structs.structs.Msg.AddressRegister:input_type -> structs.structs.MsgAddressRegister
 	4,   // 32: structs.structs.Msg.AddressRevoke:input_type -> structs.structs.MsgAddressRevoke
-	117, // 33: structs.structs.Msg.AgreementOpen:input_type -> structs.structs.MsgAgreementOpen
-	118, // 34: structs.structs.Msg.AgreementClose:input_type -> structs.structs.MsgAgreementClose
-	119, // 35: structs.structs.Msg.AgreementCapacityIncrease:input_type -> structs.structs.MsgAgreementCapacityIncrease
-	120, // 36: structs.structs.Msg.AgreementCapacityDecrease:input_type -> structs.structs.MsgAgreementCapacityDecrease
-	121, // 37: structs.structs.Msg.AgreementDurationIncrease:input_type -> structs.structs.MsgAgreementDurationIncrease
+	118, // 33: structs.structs.Msg.AgreementOpen:input_type -> structs.structs.MsgAgreementOpen
+	119, // 34: structs.structs.Msg.AgreementClose:input_type -> structs.structs.MsgAgreementClose
+	120, // 35: structs.structs.Msg.AgreementCapacityIncrease:input_type -> structs.structs.MsgAgreementCapacityIncrease
+	121, // 36: structs.structs.Msg.AgreementCapacityDecrease:input_type -> structs.structs.MsgAgreementCapacityDecrease
+	122, // 37: structs.structs.Msg.AgreementDurationIncrease:input_type -> structs.structs.MsgAgreementDurationIncrease
 	6,   // 38: structs.structs.Msg.AllocationCreate:input_type -> structs.structs.MsgAllocationCreate
 	8,   // 39: structs.structs.Msg.AllocationDelete:input_type -> structs.structs.MsgAllocationDelete
 	10,  // 40: structs.structs.Msg.AllocationUpdate:input_type -> structs.structs.MsgAllocationUpdate
@@ -76825,164 +77447,166 @@ var file_structs_structs_tx_proto_depIdxs = []int32{
 	24,  // 47: structs.structs.Msg.GuildUpdateOwnerId:input_type -> structs.structs.MsgGuildUpdateOwnerId
 	25,  // 48: structs.structs.Msg.GuildUpdateEntrySubstationId:input_type -> structs.structs.MsgGuildUpdateEntrySubstationId
 	26,  // 49: structs.structs.Msg.GuildUpdateEndpoint:input_type -> structs.structs.MsgGuildUpdateEndpoint
-	27,  // 50: structs.structs.Msg.GuildUpdateJoinInfusionMinimum:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimum
-	29,  // 51: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByInvite:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite
-	28,  // 52: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByRequest:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest
-	30,  // 53: structs.structs.Msg.GuildUpdateEntryRank:input_type -> structs.structs.MsgGuildUpdateEntryRank
-	32,  // 54: structs.structs.Msg.GuildUpdateName:input_type -> structs.structs.MsgGuildUpdateName
-	33,  // 55: structs.structs.Msg.GuildUpdatePfp:input_type -> structs.structs.MsgGuildUpdatePfp
-	34,  // 56: structs.structs.Msg.GuildMembershipInvite:input_type -> structs.structs.MsgGuildMembershipInvite
-	35,  // 57: structs.structs.Msg.GuildMembershipInviteApprove:input_type -> structs.structs.MsgGuildMembershipInviteApprove
-	36,  // 58: structs.structs.Msg.GuildMembershipInviteDeny:input_type -> structs.structs.MsgGuildMembershipInviteDeny
-	37,  // 59: structs.structs.Msg.GuildMembershipInviteRevoke:input_type -> structs.structs.MsgGuildMembershipInviteRevoke
-	38,  // 60: structs.structs.Msg.GuildMembershipJoin:input_type -> structs.structs.MsgGuildMembershipJoin
-	39,  // 61: structs.structs.Msg.GuildMembershipJoinProxy:input_type -> structs.structs.MsgGuildMembershipJoinProxy
-	40,  // 62: structs.structs.Msg.GuildMembershipKick:input_type -> structs.structs.MsgGuildMembershipKick
-	41,  // 63: structs.structs.Msg.GuildMembershipRequest:input_type -> structs.structs.MsgGuildMembershipRequest
-	42,  // 64: structs.structs.Msg.GuildMembershipRequestApprove:input_type -> structs.structs.MsgGuildMembershipRequestApprove
-	43,  // 65: structs.structs.Msg.GuildMembershipRequestDeny:input_type -> structs.structs.MsgGuildMembershipRequestDeny
-	44,  // 66: structs.structs.Msg.GuildMembershipRequestRevoke:input_type -> structs.structs.MsgGuildMembershipRequestRevoke
-	47,  // 67: structs.structs.Msg.PermissionGrantOnAddress:input_type -> structs.structs.MsgPermissionGrantOnAddress
-	46,  // 68: structs.structs.Msg.PermissionGrantOnObject:input_type -> structs.structs.MsgPermissionGrantOnObject
-	49,  // 69: structs.structs.Msg.PermissionRevokeOnAddress:input_type -> structs.structs.MsgPermissionRevokeOnAddress
-	48,  // 70: structs.structs.Msg.PermissionRevokeOnObject:input_type -> structs.structs.MsgPermissionRevokeOnObject
-	51,  // 71: structs.structs.Msg.PermissionSetOnAddress:input_type -> structs.structs.MsgPermissionSetOnAddress
-	50,  // 72: structs.structs.Msg.PermissionSetOnObject:input_type -> structs.structs.MsgPermissionSetOnObject
-	52,  // 73: structs.structs.Msg.PermissionGuildRankSet:input_type -> structs.structs.MsgPermissionGuildRankSet
-	53,  // 74: structs.structs.Msg.PermissionGuildRankRevoke:input_type -> structs.structs.MsgPermissionGuildRankRevoke
-	59,  // 75: structs.structs.Msg.PlanetUpdateName:input_type -> structs.structs.MsgPlanetUpdateName
-	55,  // 76: structs.structs.Msg.PlanetExplore:input_type -> structs.structs.MsgPlanetExplore
-	57,  // 77: structs.structs.Msg.PlanetRaidComplete:input_type -> structs.structs.MsgPlanetRaidComplete
-	61,  // 78: structs.structs.Msg.PlayerUpdatePrimaryAddress:input_type -> structs.structs.MsgPlayerUpdatePrimaryAddress
-	65,  // 79: structs.structs.Msg.PlayerUpdateGuildRank:input_type -> structs.structs.MsgPlayerUpdateGuildRank
-	67,  // 80: structs.structs.Msg.PlayerUpdateName:input_type -> structs.structs.MsgPlayerUpdateName
-	68,  // 81: structs.structs.Msg.PlayerUpdatePfp:input_type -> structs.structs.MsgPlayerUpdatePfp
-	132, // 82: structs.structs.Msg.PlayerSend:input_type -> structs.structs.MsgPlayerSend
-	123, // 83: structs.structs.Msg.ProviderCreate:input_type -> structs.structs.MsgProviderCreate
-	124, // 84: structs.structs.Msg.ProviderWithdrawBalance:input_type -> structs.structs.MsgProviderWithdrawBalance
-	125, // 85: structs.structs.Msg.ProviderUpdateCapacityMinimum:input_type -> structs.structs.MsgProviderUpdateCapacityMinimum
-	126, // 86: structs.structs.Msg.ProviderUpdateCapacityMaximum:input_type -> structs.structs.MsgProviderUpdateCapacityMaximum
-	127, // 87: structs.structs.Msg.ProviderUpdateDurationMinimum:input_type -> structs.structs.MsgProviderUpdateDurationMinimum
-	128, // 88: structs.structs.Msg.ProviderUpdateDurationMaximum:input_type -> structs.structs.MsgProviderUpdateDurationMaximum
-	129, // 89: structs.structs.Msg.ProviderUpdateAccessPolicy:input_type -> structs.structs.MsgProviderUpdateAccessPolicy
-	130, // 90: structs.structs.Msg.ProviderDelete:input_type -> structs.structs.MsgProviderDelete
-	70,  // 91: structs.structs.Msg.ReactorInfuse:input_type -> structs.structs.MsgReactorInfuse
-	74,  // 92: structs.structs.Msg.ReactorDefuse:input_type -> structs.structs.MsgReactorDefuse
-	72,  // 93: structs.structs.Msg.ReactorBeginMigration:input_type -> structs.structs.MsgReactorBeginMigration
-	76,  // 94: structs.structs.Msg.ReactorCancelDefusion:input_type -> structs.structs.MsgReactorCancelDefusion
-	79,  // 95: structs.structs.Msg.StructActivate:input_type -> structs.structs.MsgStructActivate
-	80,  // 96: structs.structs.Msg.StructDeactivate:input_type -> structs.structs.MsgStructDeactivate
-	81,  // 97: structs.structs.Msg.StructBuildInitiate:input_type -> structs.structs.MsgStructBuildInitiate
-	82,  // 98: structs.structs.Msg.StructBuildComplete:input_type -> structs.structs.MsgStructBuildComplete
-	83,  // 99: structs.structs.Msg.StructBuildCancel:input_type -> structs.structs.MsgStructBuildCancel
-	85,  // 100: structs.structs.Msg.StructDefenseSet:input_type -> structs.structs.MsgStructDefenseSet
-	86,  // 101: structs.structs.Msg.StructDefenseClear:input_type -> structs.structs.MsgStructDefenseClear
-	87,  // 102: structs.structs.Msg.StructMove:input_type -> structs.structs.MsgStructMove
-	88,  // 103: structs.structs.Msg.StructAttack:input_type -> structs.structs.MsgStructAttack
-	90,  // 104: structs.structs.Msg.StructStealthActivate:input_type -> structs.structs.MsgStructStealthActivate
-	91,  // 105: structs.structs.Msg.StructStealthDeactivate:input_type -> structs.structs.MsgStructStealthDeactivate
-	92,  // 106: structs.structs.Msg.StructGeneratorInfuse:input_type -> structs.structs.MsgStructGeneratorInfuse
-	94,  // 107: structs.structs.Msg.StructOreMinerComplete:input_type -> structs.structs.MsgStructOreMinerComplete
-	96,  // 108: structs.structs.Msg.StructOreRefineryComplete:input_type -> structs.structs.MsgStructOreRefineryComplete
-	114, // 109: structs.structs.Msg.SubstationUpdateName:input_type -> structs.structs.MsgSubstationUpdateName
-	115, // 110: structs.structs.Msg.SubstationUpdatePfp:input_type -> structs.structs.MsgSubstationUpdatePfp
-	100, // 111: structs.structs.Msg.SubstationCreate:input_type -> structs.structs.MsgSubstationCreate
-	102, // 112: structs.structs.Msg.SubstationDelete:input_type -> structs.structs.MsgSubstationDelete
-	104, // 113: structs.structs.Msg.SubstationAllocationConnect:input_type -> structs.structs.MsgSubstationAllocationConnect
-	106, // 114: structs.structs.Msg.SubstationAllocationDisconnect:input_type -> structs.structs.MsgSubstationAllocationDisconnect
-	108, // 115: structs.structs.Msg.SubstationPlayerConnect:input_type -> structs.structs.MsgSubstationPlayerConnect
-	110, // 116: structs.structs.Msg.SubstationPlayerDisconnect:input_type -> structs.structs.MsgSubstationPlayerDisconnect
-	112, // 117: structs.structs.Msg.SubstationPlayerMigrate:input_type -> structs.structs.MsgSubstationPlayerMigrate
-	1,   // 118: structs.structs.Msg.UpdateParams:output_type -> structs.structs.MsgUpdateParamsResponse
-	3,   // 119: structs.structs.Msg.AddressRegister:output_type -> structs.structs.MsgAddressRegisterResponse
-	5,   // 120: structs.structs.Msg.AddressRevoke:output_type -> structs.structs.MsgAddressRevokeResponse
-	122, // 121: structs.structs.Msg.AgreementOpen:output_type -> structs.structs.MsgAgreementResponse
-	122, // 122: structs.structs.Msg.AgreementClose:output_type -> structs.structs.MsgAgreementResponse
-	122, // 123: structs.structs.Msg.AgreementCapacityIncrease:output_type -> structs.structs.MsgAgreementResponse
-	122, // 124: structs.structs.Msg.AgreementCapacityDecrease:output_type -> structs.structs.MsgAgreementResponse
-	122, // 125: structs.structs.Msg.AgreementDurationIncrease:output_type -> structs.structs.MsgAgreementResponse
-	7,   // 126: structs.structs.Msg.AllocationCreate:output_type -> structs.structs.MsgAllocationCreateResponse
-	9,   // 127: structs.structs.Msg.AllocationDelete:output_type -> structs.structs.MsgAllocationDeleteResponse
-	11,  // 128: structs.structs.Msg.AllocationUpdate:output_type -> structs.structs.MsgAllocationUpdateResponse
-	13,  // 129: structs.structs.Msg.AllocationTransfer:output_type -> structs.structs.MsgAllocationTransferResponse
-	15,  // 130: structs.structs.Msg.FleetMove:output_type -> structs.structs.MsgFleetMoveResponse
-	23,  // 131: structs.structs.Msg.GuildCreate:output_type -> structs.structs.MsgGuildCreateResponse
-	17,  // 132: structs.structs.Msg.GuildBankMint:output_type -> structs.structs.MsgGuildBankMintResponse
-	19,  // 133: structs.structs.Msg.GuildBankRedeem:output_type -> structs.structs.MsgGuildBankRedeemResponse
-	21,  // 134: structs.structs.Msg.GuildBankConfiscateAndBurn:output_type -> structs.structs.MsgGuildBankConfiscateAndBurnResponse
-	31,  // 135: structs.structs.Msg.GuildUpdateOwnerId:output_type -> structs.structs.MsgGuildUpdateResponse
-	31,  // 136: structs.structs.Msg.GuildUpdateEntrySubstationId:output_type -> structs.structs.MsgGuildUpdateResponse
-	31,  // 137: structs.structs.Msg.GuildUpdateEndpoint:output_type -> structs.structs.MsgGuildUpdateResponse
-	31,  // 138: structs.structs.Msg.GuildUpdateJoinInfusionMinimum:output_type -> structs.structs.MsgGuildUpdateResponse
-	31,  // 139: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByInvite:output_type -> structs.structs.MsgGuildUpdateResponse
-	31,  // 140: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByRequest:output_type -> structs.structs.MsgGuildUpdateResponse
-	31,  // 141: structs.structs.Msg.GuildUpdateEntryRank:output_type -> structs.structs.MsgGuildUpdateResponse
-	31,  // 142: structs.structs.Msg.GuildUpdateName:output_type -> structs.structs.MsgGuildUpdateResponse
-	31,  // 143: structs.structs.Msg.GuildUpdatePfp:output_type -> structs.structs.MsgGuildUpdateResponse
-	45,  // 144: structs.structs.Msg.GuildMembershipInvite:output_type -> structs.structs.MsgGuildMembershipResponse
-	45,  // 145: structs.structs.Msg.GuildMembershipInviteApprove:output_type -> structs.structs.MsgGuildMembershipResponse
-	45,  // 146: structs.structs.Msg.GuildMembershipInviteDeny:output_type -> structs.structs.MsgGuildMembershipResponse
-	45,  // 147: structs.structs.Msg.GuildMembershipInviteRevoke:output_type -> structs.structs.MsgGuildMembershipResponse
-	45,  // 148: structs.structs.Msg.GuildMembershipJoin:output_type -> structs.structs.MsgGuildMembershipResponse
-	45,  // 149: structs.structs.Msg.GuildMembershipJoinProxy:output_type -> structs.structs.MsgGuildMembershipResponse
-	45,  // 150: structs.structs.Msg.GuildMembershipKick:output_type -> structs.structs.MsgGuildMembershipResponse
-	45,  // 151: structs.structs.Msg.GuildMembershipRequest:output_type -> structs.structs.MsgGuildMembershipResponse
-	45,  // 152: structs.structs.Msg.GuildMembershipRequestApprove:output_type -> structs.structs.MsgGuildMembershipResponse
-	45,  // 153: structs.structs.Msg.GuildMembershipRequestDeny:output_type -> structs.structs.MsgGuildMembershipResponse
-	45,  // 154: structs.structs.Msg.GuildMembershipRequestRevoke:output_type -> structs.structs.MsgGuildMembershipResponse
-	54,  // 155: structs.structs.Msg.PermissionGrantOnAddress:output_type -> structs.structs.MsgPermissionResponse
-	54,  // 156: structs.structs.Msg.PermissionGrantOnObject:output_type -> structs.structs.MsgPermissionResponse
-	54,  // 157: structs.structs.Msg.PermissionRevokeOnAddress:output_type -> structs.structs.MsgPermissionResponse
-	54,  // 158: structs.structs.Msg.PermissionRevokeOnObject:output_type -> structs.structs.MsgPermissionResponse
-	54,  // 159: structs.structs.Msg.PermissionSetOnAddress:output_type -> structs.structs.MsgPermissionResponse
-	54,  // 160: structs.structs.Msg.PermissionSetOnObject:output_type -> structs.structs.MsgPermissionResponse
-	54,  // 161: structs.structs.Msg.PermissionGuildRankSet:output_type -> structs.structs.MsgPermissionResponse
-	54,  // 162: structs.structs.Msg.PermissionGuildRankRevoke:output_type -> structs.structs.MsgPermissionResponse
-	60,  // 163: structs.structs.Msg.PlanetUpdateName:output_type -> structs.structs.MsgPlanetUpdateResponse
-	56,  // 164: structs.structs.Msg.PlanetExplore:output_type -> structs.structs.MsgPlanetExploreResponse
-	58,  // 165: structs.structs.Msg.PlanetRaidComplete:output_type -> structs.structs.MsgPlanetRaidCompleteResponse
-	62,  // 166: structs.structs.Msg.PlayerUpdatePrimaryAddress:output_type -> structs.structs.MsgPlayerUpdatePrimaryAddressResponse
-	66,  // 167: structs.structs.Msg.PlayerUpdateGuildRank:output_type -> structs.structs.MsgPlayerUpdateGuildRankResponse
-	69,  // 168: structs.structs.Msg.PlayerUpdateName:output_type -> structs.structs.MsgPlayerUpdateResponse
-	69,  // 169: structs.structs.Msg.PlayerUpdatePfp:output_type -> structs.structs.MsgPlayerUpdateResponse
-	133, // 170: structs.structs.Msg.PlayerSend:output_type -> structs.structs.MsgPlayerSendResponse
-	131, // 171: structs.structs.Msg.ProviderCreate:output_type -> structs.structs.MsgProviderResponse
-	131, // 172: structs.structs.Msg.ProviderWithdrawBalance:output_type -> structs.structs.MsgProviderResponse
-	131, // 173: structs.structs.Msg.ProviderUpdateCapacityMinimum:output_type -> structs.structs.MsgProviderResponse
-	131, // 174: structs.structs.Msg.ProviderUpdateCapacityMaximum:output_type -> structs.structs.MsgProviderResponse
-	131, // 175: structs.structs.Msg.ProviderUpdateDurationMinimum:output_type -> structs.structs.MsgProviderResponse
-	131, // 176: structs.structs.Msg.ProviderUpdateDurationMaximum:output_type -> structs.structs.MsgProviderResponse
-	131, // 177: structs.structs.Msg.ProviderUpdateAccessPolicy:output_type -> structs.structs.MsgProviderResponse
-	131, // 178: structs.structs.Msg.ProviderDelete:output_type -> structs.structs.MsgProviderResponse
-	71,  // 179: structs.structs.Msg.ReactorInfuse:output_type -> structs.structs.MsgReactorInfuseResponse
-	75,  // 180: structs.structs.Msg.ReactorDefuse:output_type -> structs.structs.MsgReactorDefuseResponse
-	73,  // 181: structs.structs.Msg.ReactorBeginMigration:output_type -> structs.structs.MsgReactorBeginMigrationResponse
-	77,  // 182: structs.structs.Msg.ReactorCancelDefusion:output_type -> structs.structs.MsgReactorCancelDefusionResponse
-	78,  // 183: structs.structs.Msg.StructActivate:output_type -> structs.structs.MsgStructStatusResponse
-	78,  // 184: structs.structs.Msg.StructDeactivate:output_type -> structs.structs.MsgStructStatusResponse
-	78,  // 185: structs.structs.Msg.StructBuildInitiate:output_type -> structs.structs.MsgStructStatusResponse
-	78,  // 186: structs.structs.Msg.StructBuildComplete:output_type -> structs.structs.MsgStructStatusResponse
-	78,  // 187: structs.structs.Msg.StructBuildCancel:output_type -> structs.structs.MsgStructStatusResponse
-	78,  // 188: structs.structs.Msg.StructDefenseSet:output_type -> structs.structs.MsgStructStatusResponse
-	78,  // 189: structs.structs.Msg.StructDefenseClear:output_type -> structs.structs.MsgStructStatusResponse
-	78,  // 190: structs.structs.Msg.StructMove:output_type -> structs.structs.MsgStructStatusResponse
-	89,  // 191: structs.structs.Msg.StructAttack:output_type -> structs.structs.MsgStructAttackResponse
-	78,  // 192: structs.structs.Msg.StructStealthActivate:output_type -> structs.structs.MsgStructStatusResponse
-	78,  // 193: structs.structs.Msg.StructStealthDeactivate:output_type -> structs.structs.MsgStructStatusResponse
-	93,  // 194: structs.structs.Msg.StructGeneratorInfuse:output_type -> structs.structs.MsgStructGeneratorStatusResponse
-	95,  // 195: structs.structs.Msg.StructOreMinerComplete:output_type -> structs.structs.MsgStructOreMinerStatusResponse
-	97,  // 196: structs.structs.Msg.StructOreRefineryComplete:output_type -> structs.structs.MsgStructOreRefineryStatusResponse
-	116, // 197: structs.structs.Msg.SubstationUpdateName:output_type -> structs.structs.MsgSubstationUpdateResponse
-	116, // 198: structs.structs.Msg.SubstationUpdatePfp:output_type -> structs.structs.MsgSubstationUpdateResponse
-	101, // 199: structs.structs.Msg.SubstationCreate:output_type -> structs.structs.MsgSubstationCreateResponse
-	103, // 200: structs.structs.Msg.SubstationDelete:output_type -> structs.structs.MsgSubstationDeleteResponse
-	105, // 201: structs.structs.Msg.SubstationAllocationConnect:output_type -> structs.structs.MsgSubstationAllocationConnectResponse
-	107, // 202: structs.structs.Msg.SubstationAllocationDisconnect:output_type -> structs.structs.MsgSubstationAllocationDisconnectResponse
-	109, // 203: structs.structs.Msg.SubstationPlayerConnect:output_type -> structs.structs.MsgSubstationPlayerConnectResponse
-	111, // 204: structs.structs.Msg.SubstationPlayerDisconnect:output_type -> structs.structs.MsgSubstationPlayerDisconnectResponse
-	113, // 205: structs.structs.Msg.SubstationPlayerMigrate:output_type -> structs.structs.MsgSubstationPlayerMigrateResponse
-	118, // [118:206] is the sub-list for method output_type
-	30,  // [30:118] is the sub-list for method input_type
+	27,  // 50: structs.structs.Msg.GuildUpdatePrimaryReactor:input_type -> structs.structs.MsgGuildUpdatePrimaryReactor
+	28,  // 51: structs.structs.Msg.GuildUpdateJoinInfusionMinimum:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimum
+	30,  // 52: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByInvite:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite
+	29,  // 53: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByRequest:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest
+	31,  // 54: structs.structs.Msg.GuildUpdateEntryRank:input_type -> structs.structs.MsgGuildUpdateEntryRank
+	33,  // 55: structs.structs.Msg.GuildUpdateName:input_type -> structs.structs.MsgGuildUpdateName
+	34,  // 56: structs.structs.Msg.GuildUpdatePfp:input_type -> structs.structs.MsgGuildUpdatePfp
+	35,  // 57: structs.structs.Msg.GuildMembershipInvite:input_type -> structs.structs.MsgGuildMembershipInvite
+	36,  // 58: structs.structs.Msg.GuildMembershipInviteApprove:input_type -> structs.structs.MsgGuildMembershipInviteApprove
+	37,  // 59: structs.structs.Msg.GuildMembershipInviteDeny:input_type -> structs.structs.MsgGuildMembershipInviteDeny
+	38,  // 60: structs.structs.Msg.GuildMembershipInviteRevoke:input_type -> structs.structs.MsgGuildMembershipInviteRevoke
+	39,  // 61: structs.structs.Msg.GuildMembershipJoin:input_type -> structs.structs.MsgGuildMembershipJoin
+	40,  // 62: structs.structs.Msg.GuildMembershipJoinProxy:input_type -> structs.structs.MsgGuildMembershipJoinProxy
+	41,  // 63: structs.structs.Msg.GuildMembershipKick:input_type -> structs.structs.MsgGuildMembershipKick
+	42,  // 64: structs.structs.Msg.GuildMembershipRequest:input_type -> structs.structs.MsgGuildMembershipRequest
+	43,  // 65: structs.structs.Msg.GuildMembershipRequestApprove:input_type -> structs.structs.MsgGuildMembershipRequestApprove
+	44,  // 66: structs.structs.Msg.GuildMembershipRequestDeny:input_type -> structs.structs.MsgGuildMembershipRequestDeny
+	45,  // 67: structs.structs.Msg.GuildMembershipRequestRevoke:input_type -> structs.structs.MsgGuildMembershipRequestRevoke
+	48,  // 68: structs.structs.Msg.PermissionGrantOnAddress:input_type -> structs.structs.MsgPermissionGrantOnAddress
+	47,  // 69: structs.structs.Msg.PermissionGrantOnObject:input_type -> structs.structs.MsgPermissionGrantOnObject
+	50,  // 70: structs.structs.Msg.PermissionRevokeOnAddress:input_type -> structs.structs.MsgPermissionRevokeOnAddress
+	49,  // 71: structs.structs.Msg.PermissionRevokeOnObject:input_type -> structs.structs.MsgPermissionRevokeOnObject
+	52,  // 72: structs.structs.Msg.PermissionSetOnAddress:input_type -> structs.structs.MsgPermissionSetOnAddress
+	51,  // 73: structs.structs.Msg.PermissionSetOnObject:input_type -> structs.structs.MsgPermissionSetOnObject
+	53,  // 74: structs.structs.Msg.PermissionGuildRankSet:input_type -> structs.structs.MsgPermissionGuildRankSet
+	54,  // 75: structs.structs.Msg.PermissionGuildRankRevoke:input_type -> structs.structs.MsgPermissionGuildRankRevoke
+	60,  // 76: structs.structs.Msg.PlanetUpdateName:input_type -> structs.structs.MsgPlanetUpdateName
+	56,  // 77: structs.structs.Msg.PlanetExplore:input_type -> structs.structs.MsgPlanetExplore
+	58,  // 78: structs.structs.Msg.PlanetRaidComplete:input_type -> structs.structs.MsgPlanetRaidComplete
+	62,  // 79: structs.structs.Msg.PlayerUpdatePrimaryAddress:input_type -> structs.structs.MsgPlayerUpdatePrimaryAddress
+	66,  // 80: structs.structs.Msg.PlayerUpdateGuildRank:input_type -> structs.structs.MsgPlayerUpdateGuildRank
+	68,  // 81: structs.structs.Msg.PlayerUpdateName:input_type -> structs.structs.MsgPlayerUpdateName
+	69,  // 82: structs.structs.Msg.PlayerUpdatePfp:input_type -> structs.structs.MsgPlayerUpdatePfp
+	133, // 83: structs.structs.Msg.PlayerSend:input_type -> structs.structs.MsgPlayerSend
+	124, // 84: structs.structs.Msg.ProviderCreate:input_type -> structs.structs.MsgProviderCreate
+	125, // 85: structs.structs.Msg.ProviderWithdrawBalance:input_type -> structs.structs.MsgProviderWithdrawBalance
+	126, // 86: structs.structs.Msg.ProviderUpdateCapacityMinimum:input_type -> structs.structs.MsgProviderUpdateCapacityMinimum
+	127, // 87: structs.structs.Msg.ProviderUpdateCapacityMaximum:input_type -> structs.structs.MsgProviderUpdateCapacityMaximum
+	128, // 88: structs.structs.Msg.ProviderUpdateDurationMinimum:input_type -> structs.structs.MsgProviderUpdateDurationMinimum
+	129, // 89: structs.structs.Msg.ProviderUpdateDurationMaximum:input_type -> structs.structs.MsgProviderUpdateDurationMaximum
+	130, // 90: structs.structs.Msg.ProviderUpdateAccessPolicy:input_type -> structs.structs.MsgProviderUpdateAccessPolicy
+	131, // 91: structs.structs.Msg.ProviderDelete:input_type -> structs.structs.MsgProviderDelete
+	71,  // 92: structs.structs.Msg.ReactorInfuse:input_type -> structs.structs.MsgReactorInfuse
+	75,  // 93: structs.structs.Msg.ReactorDefuse:input_type -> structs.structs.MsgReactorDefuse
+	73,  // 94: structs.structs.Msg.ReactorBeginMigration:input_type -> structs.structs.MsgReactorBeginMigration
+	77,  // 95: structs.structs.Msg.ReactorCancelDefusion:input_type -> structs.structs.MsgReactorCancelDefusion
+	80,  // 96: structs.structs.Msg.StructActivate:input_type -> structs.structs.MsgStructActivate
+	81,  // 97: structs.structs.Msg.StructDeactivate:input_type -> structs.structs.MsgStructDeactivate
+	82,  // 98: structs.structs.Msg.StructBuildInitiate:input_type -> structs.structs.MsgStructBuildInitiate
+	83,  // 99: structs.structs.Msg.StructBuildComplete:input_type -> structs.structs.MsgStructBuildComplete
+	84,  // 100: structs.structs.Msg.StructBuildCancel:input_type -> structs.structs.MsgStructBuildCancel
+	86,  // 101: structs.structs.Msg.StructDefenseSet:input_type -> structs.structs.MsgStructDefenseSet
+	87,  // 102: structs.structs.Msg.StructDefenseClear:input_type -> structs.structs.MsgStructDefenseClear
+	88,  // 103: structs.structs.Msg.StructMove:input_type -> structs.structs.MsgStructMove
+	89,  // 104: structs.structs.Msg.StructAttack:input_type -> structs.structs.MsgStructAttack
+	91,  // 105: structs.structs.Msg.StructStealthActivate:input_type -> structs.structs.MsgStructStealthActivate
+	92,  // 106: structs.structs.Msg.StructStealthDeactivate:input_type -> structs.structs.MsgStructStealthDeactivate
+	93,  // 107: structs.structs.Msg.StructGeneratorInfuse:input_type -> structs.structs.MsgStructGeneratorInfuse
+	95,  // 108: structs.structs.Msg.StructOreMinerComplete:input_type -> structs.structs.MsgStructOreMinerComplete
+	97,  // 109: structs.structs.Msg.StructOreRefineryComplete:input_type -> structs.structs.MsgStructOreRefineryComplete
+	115, // 110: structs.structs.Msg.SubstationUpdateName:input_type -> structs.structs.MsgSubstationUpdateName
+	116, // 111: structs.structs.Msg.SubstationUpdatePfp:input_type -> structs.structs.MsgSubstationUpdatePfp
+	101, // 112: structs.structs.Msg.SubstationCreate:input_type -> structs.structs.MsgSubstationCreate
+	103, // 113: structs.structs.Msg.SubstationDelete:input_type -> structs.structs.MsgSubstationDelete
+	105, // 114: structs.structs.Msg.SubstationAllocationConnect:input_type -> structs.structs.MsgSubstationAllocationConnect
+	107, // 115: structs.structs.Msg.SubstationAllocationDisconnect:input_type -> structs.structs.MsgSubstationAllocationDisconnect
+	109, // 116: structs.structs.Msg.SubstationPlayerConnect:input_type -> structs.structs.MsgSubstationPlayerConnect
+	111, // 117: structs.structs.Msg.SubstationPlayerDisconnect:input_type -> structs.structs.MsgSubstationPlayerDisconnect
+	113, // 118: structs.structs.Msg.SubstationPlayerMigrate:input_type -> structs.structs.MsgSubstationPlayerMigrate
+	1,   // 119: structs.structs.Msg.UpdateParams:output_type -> structs.structs.MsgUpdateParamsResponse
+	3,   // 120: structs.structs.Msg.AddressRegister:output_type -> structs.structs.MsgAddressRegisterResponse
+	5,   // 121: structs.structs.Msg.AddressRevoke:output_type -> structs.structs.MsgAddressRevokeResponse
+	123, // 122: structs.structs.Msg.AgreementOpen:output_type -> structs.structs.MsgAgreementResponse
+	123, // 123: structs.structs.Msg.AgreementClose:output_type -> structs.structs.MsgAgreementResponse
+	123, // 124: structs.structs.Msg.AgreementCapacityIncrease:output_type -> structs.structs.MsgAgreementResponse
+	123, // 125: structs.structs.Msg.AgreementCapacityDecrease:output_type -> structs.structs.MsgAgreementResponse
+	123, // 126: structs.structs.Msg.AgreementDurationIncrease:output_type -> structs.structs.MsgAgreementResponse
+	7,   // 127: structs.structs.Msg.AllocationCreate:output_type -> structs.structs.MsgAllocationCreateResponse
+	9,   // 128: structs.structs.Msg.AllocationDelete:output_type -> structs.structs.MsgAllocationDeleteResponse
+	11,  // 129: structs.structs.Msg.AllocationUpdate:output_type -> structs.structs.MsgAllocationUpdateResponse
+	13,  // 130: structs.structs.Msg.AllocationTransfer:output_type -> structs.structs.MsgAllocationTransferResponse
+	15,  // 131: structs.structs.Msg.FleetMove:output_type -> structs.structs.MsgFleetMoveResponse
+	23,  // 132: structs.structs.Msg.GuildCreate:output_type -> structs.structs.MsgGuildCreateResponse
+	17,  // 133: structs.structs.Msg.GuildBankMint:output_type -> structs.structs.MsgGuildBankMintResponse
+	19,  // 134: structs.structs.Msg.GuildBankRedeem:output_type -> structs.structs.MsgGuildBankRedeemResponse
+	21,  // 135: structs.structs.Msg.GuildBankConfiscateAndBurn:output_type -> structs.structs.MsgGuildBankConfiscateAndBurnResponse
+	32,  // 136: structs.structs.Msg.GuildUpdateOwnerId:output_type -> structs.structs.MsgGuildUpdateResponse
+	32,  // 137: structs.structs.Msg.GuildUpdateEntrySubstationId:output_type -> structs.structs.MsgGuildUpdateResponse
+	32,  // 138: structs.structs.Msg.GuildUpdateEndpoint:output_type -> structs.structs.MsgGuildUpdateResponse
+	32,  // 139: structs.structs.Msg.GuildUpdatePrimaryReactor:output_type -> structs.structs.MsgGuildUpdateResponse
+	32,  // 140: structs.structs.Msg.GuildUpdateJoinInfusionMinimum:output_type -> structs.structs.MsgGuildUpdateResponse
+	32,  // 141: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByInvite:output_type -> structs.structs.MsgGuildUpdateResponse
+	32,  // 142: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByRequest:output_type -> structs.structs.MsgGuildUpdateResponse
+	32,  // 143: structs.structs.Msg.GuildUpdateEntryRank:output_type -> structs.structs.MsgGuildUpdateResponse
+	32,  // 144: structs.structs.Msg.GuildUpdateName:output_type -> structs.structs.MsgGuildUpdateResponse
+	32,  // 145: structs.structs.Msg.GuildUpdatePfp:output_type -> structs.structs.MsgGuildUpdateResponse
+	46,  // 146: structs.structs.Msg.GuildMembershipInvite:output_type -> structs.structs.MsgGuildMembershipResponse
+	46,  // 147: structs.structs.Msg.GuildMembershipInviteApprove:output_type -> structs.structs.MsgGuildMembershipResponse
+	46,  // 148: structs.structs.Msg.GuildMembershipInviteDeny:output_type -> structs.structs.MsgGuildMembershipResponse
+	46,  // 149: structs.structs.Msg.GuildMembershipInviteRevoke:output_type -> structs.structs.MsgGuildMembershipResponse
+	46,  // 150: structs.structs.Msg.GuildMembershipJoin:output_type -> structs.structs.MsgGuildMembershipResponse
+	46,  // 151: structs.structs.Msg.GuildMembershipJoinProxy:output_type -> structs.structs.MsgGuildMembershipResponse
+	46,  // 152: structs.structs.Msg.GuildMembershipKick:output_type -> structs.structs.MsgGuildMembershipResponse
+	46,  // 153: structs.structs.Msg.GuildMembershipRequest:output_type -> structs.structs.MsgGuildMembershipResponse
+	46,  // 154: structs.structs.Msg.GuildMembershipRequestApprove:output_type -> structs.structs.MsgGuildMembershipResponse
+	46,  // 155: structs.structs.Msg.GuildMembershipRequestDeny:output_type -> structs.structs.MsgGuildMembershipResponse
+	46,  // 156: structs.structs.Msg.GuildMembershipRequestRevoke:output_type -> structs.structs.MsgGuildMembershipResponse
+	55,  // 157: structs.structs.Msg.PermissionGrantOnAddress:output_type -> structs.structs.MsgPermissionResponse
+	55,  // 158: structs.structs.Msg.PermissionGrantOnObject:output_type -> structs.structs.MsgPermissionResponse
+	55,  // 159: structs.structs.Msg.PermissionRevokeOnAddress:output_type -> structs.structs.MsgPermissionResponse
+	55,  // 160: structs.structs.Msg.PermissionRevokeOnObject:output_type -> structs.structs.MsgPermissionResponse
+	55,  // 161: structs.structs.Msg.PermissionSetOnAddress:output_type -> structs.structs.MsgPermissionResponse
+	55,  // 162: structs.structs.Msg.PermissionSetOnObject:output_type -> structs.structs.MsgPermissionResponse
+	55,  // 163: structs.structs.Msg.PermissionGuildRankSet:output_type -> structs.structs.MsgPermissionResponse
+	55,  // 164: structs.structs.Msg.PermissionGuildRankRevoke:output_type -> structs.structs.MsgPermissionResponse
+	61,  // 165: structs.structs.Msg.PlanetUpdateName:output_type -> structs.structs.MsgPlanetUpdateResponse
+	57,  // 166: structs.structs.Msg.PlanetExplore:output_type -> structs.structs.MsgPlanetExploreResponse
+	59,  // 167: structs.structs.Msg.PlanetRaidComplete:output_type -> structs.structs.MsgPlanetRaidCompleteResponse
+	63,  // 168: structs.structs.Msg.PlayerUpdatePrimaryAddress:output_type -> structs.structs.MsgPlayerUpdatePrimaryAddressResponse
+	67,  // 169: structs.structs.Msg.PlayerUpdateGuildRank:output_type -> structs.structs.MsgPlayerUpdateGuildRankResponse
+	70,  // 170: structs.structs.Msg.PlayerUpdateName:output_type -> structs.structs.MsgPlayerUpdateResponse
+	70,  // 171: structs.structs.Msg.PlayerUpdatePfp:output_type -> structs.structs.MsgPlayerUpdateResponse
+	134, // 172: structs.structs.Msg.PlayerSend:output_type -> structs.structs.MsgPlayerSendResponse
+	132, // 173: structs.structs.Msg.ProviderCreate:output_type -> structs.structs.MsgProviderResponse
+	132, // 174: structs.structs.Msg.ProviderWithdrawBalance:output_type -> structs.structs.MsgProviderResponse
+	132, // 175: structs.structs.Msg.ProviderUpdateCapacityMinimum:output_type -> structs.structs.MsgProviderResponse
+	132, // 176: structs.structs.Msg.ProviderUpdateCapacityMaximum:output_type -> structs.structs.MsgProviderResponse
+	132, // 177: structs.structs.Msg.ProviderUpdateDurationMinimum:output_type -> structs.structs.MsgProviderResponse
+	132, // 178: structs.structs.Msg.ProviderUpdateDurationMaximum:output_type -> structs.structs.MsgProviderResponse
+	132, // 179: structs.structs.Msg.ProviderUpdateAccessPolicy:output_type -> structs.structs.MsgProviderResponse
+	132, // 180: structs.structs.Msg.ProviderDelete:output_type -> structs.structs.MsgProviderResponse
+	72,  // 181: structs.structs.Msg.ReactorInfuse:output_type -> structs.structs.MsgReactorInfuseResponse
+	76,  // 182: structs.structs.Msg.ReactorDefuse:output_type -> structs.structs.MsgReactorDefuseResponse
+	74,  // 183: structs.structs.Msg.ReactorBeginMigration:output_type -> structs.structs.MsgReactorBeginMigrationResponse
+	78,  // 184: structs.structs.Msg.ReactorCancelDefusion:output_type -> structs.structs.MsgReactorCancelDefusionResponse
+	79,  // 185: structs.structs.Msg.StructActivate:output_type -> structs.structs.MsgStructStatusResponse
+	79,  // 186: structs.structs.Msg.StructDeactivate:output_type -> structs.structs.MsgStructStatusResponse
+	79,  // 187: structs.structs.Msg.StructBuildInitiate:output_type -> structs.structs.MsgStructStatusResponse
+	79,  // 188: structs.structs.Msg.StructBuildComplete:output_type -> structs.structs.MsgStructStatusResponse
+	79,  // 189: structs.structs.Msg.StructBuildCancel:output_type -> structs.structs.MsgStructStatusResponse
+	79,  // 190: structs.structs.Msg.StructDefenseSet:output_type -> structs.structs.MsgStructStatusResponse
+	79,  // 191: structs.structs.Msg.StructDefenseClear:output_type -> structs.structs.MsgStructStatusResponse
+	79,  // 192: structs.structs.Msg.StructMove:output_type -> structs.structs.MsgStructStatusResponse
+	90,  // 193: structs.structs.Msg.StructAttack:output_type -> structs.structs.MsgStructAttackResponse
+	79,  // 194: structs.structs.Msg.StructStealthActivate:output_type -> structs.structs.MsgStructStatusResponse
+	79,  // 195: structs.structs.Msg.StructStealthDeactivate:output_type -> structs.structs.MsgStructStatusResponse
+	94,  // 196: structs.structs.Msg.StructGeneratorInfuse:output_type -> structs.structs.MsgStructGeneratorStatusResponse
+	96,  // 197: structs.structs.Msg.StructOreMinerComplete:output_type -> structs.structs.MsgStructOreMinerStatusResponse
+	98,  // 198: structs.structs.Msg.StructOreRefineryComplete:output_type -> structs.structs.MsgStructOreRefineryStatusResponse
+	117, // 199: structs.structs.Msg.SubstationUpdateName:output_type -> structs.structs.MsgSubstationUpdateResponse
+	117, // 200: structs.structs.Msg.SubstationUpdatePfp:output_type -> structs.structs.MsgSubstationUpdateResponse
+	102, // 201: structs.structs.Msg.SubstationCreate:output_type -> structs.structs.MsgSubstationCreateResponse
+	104, // 202: structs.structs.Msg.SubstationDelete:output_type -> structs.structs.MsgSubstationDeleteResponse
+	106, // 203: structs.structs.Msg.SubstationAllocationConnect:output_type -> structs.structs.MsgSubstationAllocationConnectResponse
+	108, // 204: structs.structs.Msg.SubstationAllocationDisconnect:output_type -> structs.structs.MsgSubstationAllocationDisconnectResponse
+	110, // 205: structs.structs.Msg.SubstationPlayerConnect:output_type -> structs.structs.MsgSubstationPlayerConnectResponse
+	112, // 206: structs.structs.Msg.SubstationPlayerDisconnect:output_type -> structs.structs.MsgSubstationPlayerDisconnectResponse
+	114, // 207: structs.structs.Msg.SubstationPlayerMigrate:output_type -> structs.structs.MsgSubstationPlayerMigrateResponse
+	119, // [119:208] is the sub-list for method output_type
+	30,  // [30:119] is the sub-list for method input_type
 	30,  // [30:30] is the sub-list for extension type_name
 	30,  // [30:30] is the sub-list for extension extendee
 	0,   // [0:30] is the sub-list for field type_name
@@ -77325,7 +77949,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[27].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildUpdateJoinInfusionMinimum); i {
+			switch v := v.(*MsgGuildUpdatePrimaryReactor); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77337,7 +77961,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[28].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildUpdateJoinInfusionMinimumBypassByRequest); i {
+			switch v := v.(*MsgGuildUpdateJoinInfusionMinimum); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77349,7 +77973,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[29].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildUpdateJoinInfusionMinimumBypassByInvite); i {
+			switch v := v.(*MsgGuildUpdateJoinInfusionMinimumBypassByRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77361,7 +77985,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[30].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildUpdateEntryRank); i {
+			switch v := v.(*MsgGuildUpdateJoinInfusionMinimumBypassByInvite); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77373,7 +77997,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[31].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildUpdateResponse); i {
+			switch v := v.(*MsgGuildUpdateEntryRank); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77385,7 +78009,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[32].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildUpdateName); i {
+			switch v := v.(*MsgGuildUpdateResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77397,7 +78021,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[33].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildUpdatePfp); i {
+			switch v := v.(*MsgGuildUpdateName); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77409,7 +78033,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[34].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildMembershipInvite); i {
+			switch v := v.(*MsgGuildUpdatePfp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77421,7 +78045,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[35].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildMembershipInviteApprove); i {
+			switch v := v.(*MsgGuildMembershipInvite); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77433,7 +78057,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[36].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildMembershipInviteDeny); i {
+			switch v := v.(*MsgGuildMembershipInviteApprove); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77445,7 +78069,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[37].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildMembershipInviteRevoke); i {
+			switch v := v.(*MsgGuildMembershipInviteDeny); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77457,7 +78081,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[38].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildMembershipJoin); i {
+			switch v := v.(*MsgGuildMembershipInviteRevoke); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77469,7 +78093,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[39].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildMembershipJoinProxy); i {
+			switch v := v.(*MsgGuildMembershipJoin); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77481,7 +78105,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[40].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildMembershipKick); i {
+			switch v := v.(*MsgGuildMembershipJoinProxy); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77493,7 +78117,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[41].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildMembershipRequest); i {
+			switch v := v.(*MsgGuildMembershipKick); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77505,7 +78129,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[42].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildMembershipRequestApprove); i {
+			switch v := v.(*MsgGuildMembershipRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77517,7 +78141,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[43].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildMembershipRequestDeny); i {
+			switch v := v.(*MsgGuildMembershipRequestApprove); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77529,7 +78153,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[44].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildMembershipRequestRevoke); i {
+			switch v := v.(*MsgGuildMembershipRequestDeny); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77541,7 +78165,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[45].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGuildMembershipResponse); i {
+			switch v := v.(*MsgGuildMembershipRequestRevoke); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77553,7 +78177,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[46].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPermissionGrantOnObject); i {
+			switch v := v.(*MsgGuildMembershipResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77565,7 +78189,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[47].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPermissionGrantOnAddress); i {
+			switch v := v.(*MsgPermissionGrantOnObject); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77577,7 +78201,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[48].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPermissionRevokeOnObject); i {
+			switch v := v.(*MsgPermissionGrantOnAddress); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77589,7 +78213,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[49].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPermissionRevokeOnAddress); i {
+			switch v := v.(*MsgPermissionRevokeOnObject); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77601,7 +78225,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[50].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPermissionSetOnObject); i {
+			switch v := v.(*MsgPermissionRevokeOnAddress); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77613,7 +78237,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[51].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPermissionSetOnAddress); i {
+			switch v := v.(*MsgPermissionSetOnObject); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77625,7 +78249,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[52].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPermissionGuildRankSet); i {
+			switch v := v.(*MsgPermissionSetOnAddress); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77637,7 +78261,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[53].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPermissionGuildRankRevoke); i {
+			switch v := v.(*MsgPermissionGuildRankSet); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77649,7 +78273,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[54].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPermissionResponse); i {
+			switch v := v.(*MsgPermissionGuildRankRevoke); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77661,7 +78285,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[55].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlanetExplore); i {
+			switch v := v.(*MsgPermissionResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77673,7 +78297,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[56].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlanetExploreResponse); i {
+			switch v := v.(*MsgPlanetExplore); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77685,7 +78309,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[57].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlanetRaidComplete); i {
+			switch v := v.(*MsgPlanetExploreResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77697,7 +78321,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[58].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlanetRaidCompleteResponse); i {
+			switch v := v.(*MsgPlanetRaidComplete); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77709,7 +78333,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[59].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlanetUpdateName); i {
+			switch v := v.(*MsgPlanetRaidCompleteResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77721,7 +78345,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[60].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlanetUpdateResponse); i {
+			switch v := v.(*MsgPlanetUpdateName); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77733,7 +78357,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[61].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlayerUpdatePrimaryAddress); i {
+			switch v := v.(*MsgPlanetUpdateResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77745,7 +78369,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[62].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlayerUpdatePrimaryAddressResponse); i {
+			switch v := v.(*MsgPlayerUpdatePrimaryAddress); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77757,7 +78381,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[63].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlayerResume); i {
+			switch v := v.(*MsgPlayerUpdatePrimaryAddressResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77769,7 +78393,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[64].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlayerResumeResponse); i {
+			switch v := v.(*MsgPlayerResume); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77781,7 +78405,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[65].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlayerUpdateGuildRank); i {
+			switch v := v.(*MsgPlayerResumeResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77793,7 +78417,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[66].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlayerUpdateGuildRankResponse); i {
+			switch v := v.(*MsgPlayerUpdateGuildRank); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77805,7 +78429,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[67].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlayerUpdateName); i {
+			switch v := v.(*MsgPlayerUpdateGuildRankResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77817,7 +78441,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[68].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlayerUpdatePfp); i {
+			switch v := v.(*MsgPlayerUpdateName); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77829,7 +78453,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[69].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlayerUpdateResponse); i {
+			switch v := v.(*MsgPlayerUpdatePfp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77841,7 +78465,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[70].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgReactorInfuse); i {
+			switch v := v.(*MsgPlayerUpdateResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77853,7 +78477,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[71].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgReactorInfuseResponse); i {
+			switch v := v.(*MsgReactorInfuse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77865,7 +78489,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[72].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgReactorBeginMigration); i {
+			switch v := v.(*MsgReactorInfuseResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77877,7 +78501,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[73].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgReactorBeginMigrationResponse); i {
+			switch v := v.(*MsgReactorBeginMigration); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77889,7 +78513,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[74].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgReactorDefuse); i {
+			switch v := v.(*MsgReactorBeginMigrationResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77901,7 +78525,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[75].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgReactorDefuseResponse); i {
+			switch v := v.(*MsgReactorDefuse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77913,7 +78537,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[76].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgReactorCancelDefusion); i {
+			switch v := v.(*MsgReactorDefuseResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77925,7 +78549,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[77].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgReactorCancelDefusionResponse); i {
+			switch v := v.(*MsgReactorCancelDefusion); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77937,7 +78561,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[78].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructStatusResponse); i {
+			switch v := v.(*MsgReactorCancelDefusionResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77949,7 +78573,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[79].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructActivate); i {
+			switch v := v.(*MsgStructStatusResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77961,7 +78585,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[80].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructDeactivate); i {
+			switch v := v.(*MsgStructActivate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77973,7 +78597,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[81].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructBuildInitiate); i {
+			switch v := v.(*MsgStructDeactivate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77985,7 +78609,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[82].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructBuildComplete); i {
+			switch v := v.(*MsgStructBuildInitiate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -77997,7 +78621,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[83].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructBuildCancel); i {
+			switch v := v.(*MsgStructBuildComplete); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78009,7 +78633,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[84].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructBuildCompleteAndStash); i {
+			switch v := v.(*MsgStructBuildCancel); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78021,7 +78645,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[85].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructDefenseSet); i {
+			switch v := v.(*MsgStructBuildCompleteAndStash); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78033,7 +78657,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[86].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructDefenseClear); i {
+			switch v := v.(*MsgStructDefenseSet); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78045,7 +78669,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[87].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructMove); i {
+			switch v := v.(*MsgStructDefenseClear); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78057,7 +78681,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[88].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructAttack); i {
+			switch v := v.(*MsgStructMove); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78069,7 +78693,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[89].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructAttackResponse); i {
+			switch v := v.(*MsgStructAttack); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78081,7 +78705,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[90].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructStealthActivate); i {
+			switch v := v.(*MsgStructAttackResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78093,7 +78717,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[91].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructStealthDeactivate); i {
+			switch v := v.(*MsgStructStealthActivate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78105,7 +78729,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[92].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructGeneratorInfuse); i {
+			switch v := v.(*MsgStructStealthDeactivate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78117,7 +78741,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[93].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructGeneratorStatusResponse); i {
+			switch v := v.(*MsgStructGeneratorInfuse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78129,7 +78753,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[94].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructOreMinerComplete); i {
+			switch v := v.(*MsgStructGeneratorStatusResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78141,7 +78765,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[95].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructOreMinerStatusResponse); i {
+			switch v := v.(*MsgStructOreMinerComplete); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78153,7 +78777,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[96].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructOreRefineryComplete); i {
+			switch v := v.(*MsgStructOreMinerStatusResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78165,7 +78789,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[97].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructOreRefineryStatusResponse); i {
+			switch v := v.(*MsgStructOreRefineryComplete); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78177,7 +78801,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[98].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructStorageStash); i {
+			switch v := v.(*MsgStructOreRefineryStatusResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78189,7 +78813,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[99].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructStorageRecall); i {
+			switch v := v.(*MsgStructStorageStash); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78201,7 +78825,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[100].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationCreate); i {
+			switch v := v.(*MsgStructStorageRecall); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78213,7 +78837,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[101].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationCreateResponse); i {
+			switch v := v.(*MsgSubstationCreate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78225,7 +78849,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[102].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationDelete); i {
+			switch v := v.(*MsgSubstationCreateResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78237,7 +78861,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[103].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationDeleteResponse); i {
+			switch v := v.(*MsgSubstationDelete); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78249,7 +78873,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[104].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationAllocationConnect); i {
+			switch v := v.(*MsgSubstationDeleteResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78261,7 +78885,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[105].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationAllocationConnectResponse); i {
+			switch v := v.(*MsgSubstationAllocationConnect); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78273,7 +78897,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[106].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationAllocationDisconnect); i {
+			switch v := v.(*MsgSubstationAllocationConnectResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78285,7 +78909,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[107].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationAllocationDisconnectResponse); i {
+			switch v := v.(*MsgSubstationAllocationDisconnect); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78297,7 +78921,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[108].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationPlayerConnect); i {
+			switch v := v.(*MsgSubstationAllocationDisconnectResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78309,7 +78933,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[109].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationPlayerConnectResponse); i {
+			switch v := v.(*MsgSubstationPlayerConnect); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78321,7 +78945,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[110].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationPlayerDisconnect); i {
+			switch v := v.(*MsgSubstationPlayerConnectResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78333,7 +78957,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[111].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationPlayerDisconnectResponse); i {
+			switch v := v.(*MsgSubstationPlayerDisconnect); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78345,7 +78969,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[112].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationPlayerMigrate); i {
+			switch v := v.(*MsgSubstationPlayerDisconnectResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78357,7 +78981,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[113].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationPlayerMigrateResponse); i {
+			switch v := v.(*MsgSubstationPlayerMigrate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78369,7 +78993,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[114].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationUpdateName); i {
+			switch v := v.(*MsgSubstationPlayerMigrateResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78381,7 +79005,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[115].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationUpdatePfp); i {
+			switch v := v.(*MsgSubstationUpdateName); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78393,7 +79017,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[116].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationUpdateResponse); i {
+			switch v := v.(*MsgSubstationUpdatePfp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78405,7 +79029,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[117].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgAgreementOpen); i {
+			switch v := v.(*MsgSubstationUpdateResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78417,7 +79041,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[118].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgAgreementClose); i {
+			switch v := v.(*MsgAgreementOpen); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78429,7 +79053,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[119].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgAgreementCapacityIncrease); i {
+			switch v := v.(*MsgAgreementClose); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78441,7 +79065,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[120].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgAgreementCapacityDecrease); i {
+			switch v := v.(*MsgAgreementCapacityIncrease); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78453,7 +79077,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[121].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgAgreementDurationIncrease); i {
+			switch v := v.(*MsgAgreementCapacityDecrease); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78465,7 +79089,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[122].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgAgreementResponse); i {
+			switch v := v.(*MsgAgreementDurationIncrease); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78477,7 +79101,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[123].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgProviderCreate); i {
+			switch v := v.(*MsgAgreementResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78489,7 +79113,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[124].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgProviderWithdrawBalance); i {
+			switch v := v.(*MsgProviderCreate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78501,7 +79125,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[125].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgProviderUpdateCapacityMinimum); i {
+			switch v := v.(*MsgProviderWithdrawBalance); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78513,7 +79137,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[126].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgProviderUpdateCapacityMaximum); i {
+			switch v := v.(*MsgProviderUpdateCapacityMinimum); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78525,7 +79149,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[127].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgProviderUpdateDurationMinimum); i {
+			switch v := v.(*MsgProviderUpdateCapacityMaximum); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78537,7 +79161,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[128].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgProviderUpdateDurationMaximum); i {
+			switch v := v.(*MsgProviderUpdateDurationMinimum); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78549,7 +79173,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[129].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgProviderUpdateAccessPolicy); i {
+			switch v := v.(*MsgProviderUpdateDurationMaximum); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78561,7 +79185,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[130].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgProviderDelete); i {
+			switch v := v.(*MsgProviderUpdateAccessPolicy); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78573,7 +79197,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[131].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgProviderResponse); i {
+			switch v := v.(*MsgProviderDelete); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78585,7 +79209,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[132].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlayerSend); i {
+			switch v := v.(*MsgProviderResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -78597,6 +79221,18 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[133].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgPlayerSend); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_tx_proto_msgTypes[134].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgPlayerSendResponse); i {
 			case 0:
 				return &v.state
@@ -78615,7 +79251,7 @@ func file_structs_structs_tx_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_structs_structs_tx_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   134,
+			NumMessages:   135,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

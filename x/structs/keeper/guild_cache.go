@@ -181,6 +181,16 @@ func (cache *GuildCache) CanTransferOwnershipBy(activePlayer *PlayerCache) error
 	return cache.CC.PermissionCheck(cache, activePlayer, types.PermAdmin)
 }
 
+// CanUpdatePrimaryReactorBy gates MsgGuildUpdatePrimaryReactor. The primary
+// reactor is structurally bound to the guild's economic surface (token mints,
+// guild bank, member infusion routing) so we deliberately reuse PermAdmin
+// rather than minting a new permission bit (which would force a permission-
+// register migration). Practically this means only the guild owner (and any
+// player explicitly granted PermAdmin on the guild object) can rotate it.
+func (cache *GuildCache) CanUpdatePrimaryReactorBy(activePlayer *PlayerCache) error {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermAdmin)
+}
+
 func (cache *GuildCache) CanUpdateEndpointBy(activePlayer *PlayerCache) error {
 	return cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildEndpointUpdate)
 }
@@ -426,6 +436,14 @@ func (cache *GuildCache) SetEntrySubstationId(substationId string) {
         cache.LoadGuild()
     }
     cache.Guild.EntrySubstationId = substationId
+    cache.Changed = true
+}
+
+func (cache *GuildCache) SetPrimaryReactorId(reactorId string) {
+    if (!cache.GuildLoaded) {
+        cache.LoadGuild()
+    }
+    cache.Guild.PrimaryReactorId = reactorId
     cache.Changed = true
 }
 

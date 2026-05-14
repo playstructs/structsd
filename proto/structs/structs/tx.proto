@@ -49,6 +49,7 @@ service Msg {
   rpc GuildUpdateOwnerId                            (MsgGuildUpdateOwnerId                            ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateEntrySubstationId                  (MsgGuildUpdateEntrySubstationId                  ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateEndpoint                           (MsgGuildUpdateEndpoint                           ) returns (MsgGuildUpdateResponse );
+  rpc GuildUpdatePrimaryReactor                     (MsgGuildUpdatePrimaryReactor                     ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateJoinInfusionMinimum                (MsgGuildUpdateJoinInfusionMinimum                ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateJoinInfusionMinimumBypassByInvite  (MsgGuildUpdateJoinInfusionMinimumBypassByInvite  ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateJoinInfusionMinimumBypassByRequest (MsgGuildUpdateJoinInfusionMinimumBypassByRequest ) returns (MsgGuildUpdateResponse );
@@ -323,6 +324,21 @@ message MsgGuildUpdateEndpoint {
   string creator            = 1;
   string guildId            = 2;
   string endpoint           = 3;
+}
+
+// MsgGuildUpdatePrimaryReactor reassigns a guild's primary reactor to a
+// different (delegate-able, non-jailed) validator's reactor. This is the
+// recovery path when the validator backing the current primary reactor has
+// been permanently retired and the guild can no longer accept token mints
+// or honor guild-bank operations tied to that reactor.
+//
+// Permission: PermAdmin on the guild object.
+message MsgGuildUpdatePrimaryReactor {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string guildId            = 2;
+  string reactorId          = 3;
 }
 
 
