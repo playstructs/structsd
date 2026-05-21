@@ -39,6 +39,7 @@ message GenesisState {
 
   repeated  Infusion    infusionList     = 5 [(gogoproto.nullable) = false];
   repeated  string      infusionDestructionQueue = 29;
+  repeated  string      infusionMaturitySweepQueue = 35;
 
   repeated  Guild       guildList        = 6 [(gogoproto.nullable) = false];
             uint64      guildCount       = 7;

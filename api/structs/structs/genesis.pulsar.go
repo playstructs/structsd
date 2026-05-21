@@ -213,6 +213,52 @@ func (x *_GenesisState_29_list) IsValid() bool {
 	return x.list != nil
 }
 
+var _ protoreflect.List = (*_GenesisState_35_list)(nil)
+
+type _GenesisState_35_list struct {
+	list *[]string
+}
+
+func (x *_GenesisState_35_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_GenesisState_35_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfString((*x.list)[i])
+}
+
+func (x *_GenesisState_35_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_GenesisState_35_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_GenesisState_35_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message GenesisState at list field InfusionMaturitySweepQueue as it is not of Message kind"))
+}
+
+func (x *_GenesisState_35_list) Truncate(n int) {
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_GenesisState_35_list) NewElement() protoreflect.Value {
+	v := ""
+	return protoreflect.ValueOfString(v)
+}
+
+func (x *_GenesisState_35_list) IsValid() bool {
+	return x.list != nil
+}
+
 var _ protoreflect.List = (*_GenesisState_6_list)(nil)
 
 type _GenesisState_6_list struct {
@@ -1186,6 +1232,7 @@ var (
 	fd_GenesisState_agreementList                  protoreflect.FieldDescriptor
 	fd_GenesisState_infusionList                   protoreflect.FieldDescriptor
 	fd_GenesisState_infusionDestructionQueue       protoreflect.FieldDescriptor
+	fd_GenesisState_infusionMaturitySweepQueue     protoreflect.FieldDescriptor
 	fd_GenesisState_guildList                      protoreflect.FieldDescriptor
 	fd_GenesisState_guildCount                     protoreflect.FieldDescriptor
 	fd_GenesisState_guildMembershipApplicationList protoreflect.FieldDescriptor
@@ -1224,6 +1271,7 @@ func init() {
 	fd_GenesisState_agreementList = md_GenesisState.Fields().ByName("agreementList")
 	fd_GenesisState_infusionList = md_GenesisState.Fields().ByName("infusionList")
 	fd_GenesisState_infusionDestructionQueue = md_GenesisState.Fields().ByName("infusionDestructionQueue")
+	fd_GenesisState_infusionMaturitySweepQueue = md_GenesisState.Fields().ByName("infusionMaturitySweepQueue")
 	fd_GenesisState_guildList = md_GenesisState.Fields().ByName("guildList")
 	fd_GenesisState_guildCount = md_GenesisState.Fields().ByName("guildCount")
 	fd_GenesisState_guildMembershipApplicationList = md_GenesisState.Fields().ByName("guildMembershipApplicationList")
@@ -1356,6 +1404,12 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 	if len(x.InfusionDestructionQueue) != 0 {
 		value := protoreflect.ValueOfList(&_GenesisState_29_list{list: &x.InfusionDestructionQueue})
 		if !f(fd_GenesisState_infusionDestructionQueue, value) {
+			return
+		}
+	}
+	if len(x.InfusionMaturitySweepQueue) != 0 {
+		value := protoreflect.ValueOfList(&_GenesisState_35_list{list: &x.InfusionMaturitySweepQueue})
+		if !f(fd_GenesisState_infusionMaturitySweepQueue, value) {
 			return
 		}
 	}
@@ -1544,6 +1598,8 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 		return len(x.InfusionList) != 0
 	case "structs.structs.GenesisState.infusionDestructionQueue":
 		return len(x.InfusionDestructionQueue) != 0
+	case "structs.structs.GenesisState.infusionMaturitySweepQueue":
+		return len(x.InfusionMaturitySweepQueue) != 0
 	case "structs.structs.GenesisState.guildList":
 		return len(x.GuildList) != 0
 	case "structs.structs.GenesisState.guildCount":
@@ -1626,6 +1682,8 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 		x.InfusionList = nil
 	case "structs.structs.GenesisState.infusionDestructionQueue":
 		x.InfusionDestructionQueue = nil
+	case "structs.structs.GenesisState.infusionMaturitySweepQueue":
+		x.InfusionMaturitySweepQueue = nil
 	case "structs.structs.GenesisState.guildList":
 		x.GuildList = nil
 	case "structs.structs.GenesisState.guildCount":
@@ -1726,6 +1784,12 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 			return protoreflect.ValueOfList(&_GenesisState_29_list{})
 		}
 		listValue := &_GenesisState_29_list{list: &x.InfusionDestructionQueue}
+		return protoreflect.ValueOfList(listValue)
+	case "structs.structs.GenesisState.infusionMaturitySweepQueue":
+		if len(x.InfusionMaturitySweepQueue) == 0 {
+			return protoreflect.ValueOfList(&_GenesisState_35_list{})
+		}
+		listValue := &_GenesisState_35_list{list: &x.InfusionMaturitySweepQueue}
 		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.GenesisState.guildList":
 		if len(x.GuildList) == 0 {
@@ -1904,6 +1968,10 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 		lv := value.List()
 		clv := lv.(*_GenesisState_29_list)
 		x.InfusionDestructionQueue = *clv.list
+	case "structs.structs.GenesisState.infusionMaturitySweepQueue":
+		lv := value.List()
+		clv := lv.(*_GenesisState_35_list)
+		x.InfusionMaturitySweepQueue = *clv.list
 	case "structs.structs.GenesisState.guildList":
 		lv := value.List()
 		clv := lv.(*_GenesisState_6_list)
@@ -2042,6 +2110,12 @@ func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) p
 			x.InfusionDestructionQueue = []string{}
 		}
 		value := &_GenesisState_29_list{list: &x.InfusionDestructionQueue}
+		return protoreflect.ValueOfList(value)
+	case "structs.structs.GenesisState.infusionMaturitySweepQueue":
+		if x.InfusionMaturitySweepQueue == nil {
+			x.InfusionMaturitySweepQueue = []string{}
+		}
+		value := &_GenesisState_35_list{list: &x.InfusionMaturitySweepQueue}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.GenesisState.guildList":
 		if x.GuildList == nil {
@@ -2207,6 +2281,9 @@ func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) 
 	case "structs.structs.GenesisState.infusionDestructionQueue":
 		list := []string{}
 		return protoreflect.ValueOfList(&_GenesisState_29_list{list: &list})
+	case "structs.structs.GenesisState.infusionMaturitySweepQueue":
+		list := []string{}
+		return protoreflect.ValueOfList(&_GenesisState_35_list{list: &list})
 	case "structs.structs.GenesisState.guildList":
 		list := []*Guild{}
 		return protoreflect.ValueOfList(&_GenesisState_6_list{list: &list})
@@ -2382,6 +2459,12 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				n += 2 + l + runtime.Sov(uint64(l))
 			}
 		}
+		if len(x.InfusionMaturitySweepQueue) > 0 {
+			for _, s := range x.InfusionMaturitySweepQueue {
+				l = len(s)
+				n += 2 + l + runtime.Sov(uint64(l))
+			}
+		}
 		if len(x.GuildList) > 0 {
 			for _, e := range x.GuildList {
 				l = options.Size(e)
@@ -2545,6 +2628,17 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.InfusionMaturitySweepQueue) > 0 {
+			for iNdEx := len(x.InfusionMaturitySweepQueue) - 1; iNdEx >= 0; iNdEx-- {
+				i -= len(x.InfusionMaturitySweepQueue[iNdEx])
+				copy(dAtA[i:], x.InfusionMaturitySweepQueue[iNdEx])
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.InfusionMaturitySweepQueue[iNdEx])))
+				i--
+				dAtA[i] = 0x2
+				i--
+				dAtA[i] = 0x9a
+			}
 		}
 		if len(x.GuildRankPermissionList) > 0 {
 			for iNdEx := len(x.GuildRankPermissionList) - 1; iNdEx >= 0; iNdEx-- {
@@ -3266,6 +3360,38 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
 				x.InfusionDestructionQueue = append(x.InfusionDestructionQueue, string(dAtA[iNdEx:postIndex]))
+				iNdEx = postIndex
+			case 35:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field InfusionMaturitySweepQueue", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.InfusionMaturitySweepQueue = append(x.InfusionMaturitySweepQueue, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
 			case 6:
 				if wireType != 2 {
@@ -4106,6 +4232,7 @@ type GenesisState struct {
 	AgreementList                  []*Agreement                    `protobuf:"bytes,4,rep,name=agreementList,proto3" json:"agreementList,omitempty"`
 	InfusionList                   []*Infusion                     `protobuf:"bytes,5,rep,name=infusionList,proto3" json:"infusionList,omitempty"`
 	InfusionDestructionQueue       []string                        `protobuf:"bytes,29,rep,name=infusionDestructionQueue,proto3" json:"infusionDestructionQueue,omitempty"`
+	InfusionMaturitySweepQueue     []string                        `protobuf:"bytes,35,rep,name=infusionMaturitySweepQueue,proto3" json:"infusionMaturitySweepQueue,omitempty"`
 	GuildList                      []*Guild                        `protobuf:"bytes,6,rep,name=guildList,proto3" json:"guildList,omitempty"`
 	GuildCount                     uint64                          `protobuf:"varint,7,opt,name=guildCount,proto3" json:"guildCount,omitempty"`
 	GuildMembershipApplicationList []*GuildMembershipApplication   `protobuf:"bytes,33,rep,name=guildMembershipApplicationList,proto3" json:"guildMembershipApplicationList,omitempty"`
@@ -4199,6 +4326,13 @@ func (x *GenesisState) GetInfusionList() []*Infusion {
 func (x *GenesisState) GetInfusionDestructionQueue() []string {
 	if x != nil {
 		return x.InfusionDestructionQueue
+	}
+	return nil
+}
+
+func (x *GenesisState) GetInfusionMaturitySweepQueue() []string {
+	if x != nil {
+		return x.InfusionMaturitySweepQueue
 	}
 	return nil
 }
@@ -4424,7 +4558,7 @@ var file_structs_structs_genesis_proto_rawDesc = []byte{
 	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xc7, 0x10, 0x0a, 0x0c, 0x47, 0x65, 0x6e,
+	0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x87, 0x11, 0x0a, 0x0c, 0x47, 0x65, 0x6e,
 	0x65, 0x73, 0x69, 0x73, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x3a, 0x0a, 0x06, 0x70, 0x61, 0x72,
 	0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x61, 0x72, 0x61,
@@ -4450,7 +4584,11 @@ var file_structs_structs_genesis_proto_rawDesc = []byte{
 	0x12, 0x3a, 0x0a, 0x18, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x73, 0x74,
 	0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x65, 0x75, 0x65, 0x18, 0x1d, 0x20, 0x03,
 	0x28, 0x09, 0x52, 0x18, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x65, 0x75, 0x65, 0x12, 0x3a, 0x0a, 0x09,
+	0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x65, 0x75, 0x65, 0x12, 0x3e, 0x0a, 0x1a,
+	0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x61, 0x74, 0x75, 0x72, 0x69, 0x74, 0x79,
+	0x53, 0x77, 0x65, 0x65, 0x70, 0x51, 0x75, 0x65, 0x75, 0x65, 0x18, 0x23, 0x20, 0x03, 0x28, 0x09,
+	0x52, 0x1a, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x61, 0x74, 0x75, 0x72, 0x69,
+	0x74, 0x79, 0x53, 0x77, 0x65, 0x65, 0x70, 0x51, 0x75, 0x65, 0x75, 0x65, 0x12, 0x3a, 0x0a, 0x09,
 	0x67, 0x75, 0x69, 0x6c, 0x64, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0b, 0x32,
 	0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x73, 0x2e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x09, 0x67,

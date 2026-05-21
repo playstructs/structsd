@@ -110,6 +110,7 @@ help:
 	@echo "  test-race            Run tests with race detector"
 	@echo "  test-cover           Run tests with coverage report"
 	@echo "  test-integration     Run integration test script"
+	@echo "  test-ante-regression Replay incident 2026-05 ante shape (needs PLAYER_KEY + struct IDs)"
 	@echo ""
 	@echo "Lint:"
 	@echo "  lint                 Run golangci-lint"
@@ -243,7 +244,24 @@ test-integration:
 	@echo "--> Running integration tests"
 	bash tests/test_chain.sh
 
-.PHONY: test test-unit test-race test-cover test-integration
+# test-ante-regression: replays the 2026-05 ante incident shape (two
+# struct-defense-set msgs in a single tx) against a running chain. Verifies the
+# ThrottleDecorator rejects with structs-ante/2020 (ErrDuplicateChargeInTx).
+#
+# Requires a running chain and live struct IDs (typically produced by
+# tests/test_chain.sh phase 1+). Invoke with:
+#
+#   PLAYER_KEY=player_3 \
+#   DEFENDER_STRUCT_ID=5-1702 \
+#   PROTECTED_STRUCT_ID_1=5-1657 \
+#   PROTECTED_STRUCT_ID_2=5-1658 \
+#   make test-ante-regression
+test-ante-regression:
+	@echo "--> Running ante regression (incident 2026-05)"
+	@test -n "$$PLAYER_KEY" || (echo "ERROR: set PLAYER_KEY (and DEFENDER_STRUCT_ID, PROTECTED_STRUCT_ID_1, PROTECTED_STRUCT_ID_2); see tests/ante_regression.sh"; exit 2)
+	bash tests/ante_regression.sh
+
+.PHONY: test test-unit test-race test-cover test-integration test-ante-regression
 
 ###############################################################################
 ###                            Linting & Format                             ###

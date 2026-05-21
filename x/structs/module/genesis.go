@@ -203,6 +203,14 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		}
 		k.SetStructDefender(ctx, elem.ProtectedStructId, protected.Index, elem.DefendingStructId)
 	}
+
+	// Infusion maturity sweep queue (raw composite-key rows). Restored verbatim
+	// so the EndBlocker continues processing UBD entries that were already in
+	// flight when the export was taken. Absent in pre-v0.17.0 exports; the
+	// keeper helper is a no-op on empty rows.
+	for _, row := range genState.InfusionMaturitySweepQueue {
+		k.ImportInfusionMaturitySweepRow(ctx, row)
+	}
 }
 
 // ExportGenesis returns the module's exported genesis.
@@ -221,6 +229,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	genesis.InfusionList = k.GetAllInfusion(ctx)
 	genesis.InfusionDestructionQueue = k.GetInfusionDestructionQueueExport(ctx)
+	genesis.InfusionMaturitySweepQueue = k.GetInfusionMaturitySweepQueueExport(ctx)
 
 	genesis.FleetList = k.GetAllFleet(ctx)
 

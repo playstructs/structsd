@@ -599,6 +599,7 @@ phase_order() {
         ev1) echo 3050;;
         ar1) echo 3100;; ar2) echo 3200;; ar3) echo 3300;; ar4) echo 3400;;
         rg1) echo 3450;; rg2) echo 3500;;
+        gp1) echo 3800;;
         *) echo "Unknown phase: $1" >&2; exit 1;;
     esac
 }
@@ -2035,8 +2036,11 @@ run_tx "Resetting invite bypass to closed" \
     tx structs guild-update-join-infusion-minimum-by-invite "${GUILD_ID}" closed --from alice
 
 # ─── guild-update-owner-id: transfer ownership ───
-# Grant Player 2 PermissionUpdate (2) on guild so they can transfer back
-run_tx "Granting Player 2 PermissionUpdate on guild" \
+# Grant Player 2 PermAdmin (2) on guild so they can transfer ownership back.
+# (CanTransferOwnershipBy requires PermAdmin.) The grant is intentionally NOT
+# revoked here — later phases (notably GP1) re-clear player_2's grants on the
+# guild when they need a clean "non-admin" caller.
+run_tx "Granting Player 2 PermAdmin on guild (for ownership transfer test)" \
     tx structs permission-grant-on-object "${GUILD_ID}" "${PLAYER_2_ID}" 2 --from alice
 
 info "Transferring guild ownership to Player 2"
@@ -6665,6 +6669,93 @@ fi
 fi # phase RG2
 
 fi  # end EXTENDED_BATTLE
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+if run_phase 3800; then
+# ═════════════════════════════════════════════════════════════════════════════
+#  PHASE GP1: Guild — Update Primary Reactor (recovery for retired validators)
+#
+#  Exercises MsgGuildUpdatePrimaryReactor end-to-end through the CLI. The
+#  single-validator test chain cannot rotate to a *different* reactor (there
+#  is only one), so this phase covers the validation surface:
+#
+#    1. Reject when target reactor does not exist.
+#    2. Reject when caller lacks PermAdmin on the guild.
+#    3. Accept when an admin targets a known, non-jailed validator's reactor
+#       (idempotent no-op on the value, but exercises every validation branch
+#       plus the EventGuild emission via cache commit → SetGuild).
+#    4. Confirm the guild's primaryReactorId is unchanged after the no-op
+#       update (and matches the configured reactor).
+# ═════════════════════════════════════════════════════════════════════════════
+section "PHASE GP1: Guild Update Primary Reactor"
+
+# Sanity: capture the pre-update value so we can detect any unintended drift.
+GP1_BEFORE=$(query query structs guild "${GUILD_ID}" 2>/dev/null | jq -r '.Guild.primaryReactorId // empty')
+assert_not_empty "GP1: pre-update guild.primaryReactorId" "${GP1_BEFORE}"
+
+# 1. Reject: unknown reactor. Format mirrors a real reactor id ("<n>-<addr>")
+#    so it parses but resolves to no object.
+GP1_FAKE_REACTOR="999999-${ALICE_ADDRESS}"
+run_tx_expect_fail "GP1: reject update to unknown reactor (${GP1_FAKE_REACTOR})" \
+    tx structs guild-update-primary-reactor "${GUILD_ID}" "${GP1_FAKE_REACTOR}" --from alice
+
+# 2. Reject: non-admin caller (player_2).
+#    Earlier phases (4d ownership-transfer suite) granted player_2 PermAdmin
+#    and briefly made them the guild owner (which adds PermGuildAll). Neither
+#    grant is revoked there, so by the time we get here player_2 legitimately
+#    has admin rights on the guild. Strip every bit they may have accumulated
+#    on the guild object before asserting that the message handler rejects a
+#    non-admin caller — otherwise this phase silently passes on whatever
+#    cruft Phase 4 left behind.
+GP1_P2_GUILD_PERMS=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_2_ID}")
+GP1_P2_GUILD_PERMS=${GP1_P2_GUILD_PERMS:-0}
+if [ "${GP1_P2_GUILD_PERMS}" != "0" ] && [ -n "${GP1_P2_GUILD_PERMS}" ]; then
+    info "GP1: stripping player_2's residual perms on guild (bits=${GP1_P2_GUILD_PERMS})"
+    run_tx "GP1: revoke residual player_2 perms on guild" \
+        tx structs permission-revoke-on-object "${GUILD_ID}" "${PLAYER_2_ID}" "${GP1_P2_GUILD_PERMS}" --from alice
+fi
+GP1_P2_GUILD_PERMS_AFTER=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_2_ID}")
+GP1_P2_GUILD_PERMS_AFTER=${GP1_P2_GUILD_PERMS_AFTER:-0}
+assert_eq "GP1: player_2 has no per-object perms on guild before reject test" \
+    "0" "${GP1_P2_GUILD_PERMS_AFTER}"
+
+run_tx_expect_fail "GP1: reject update from non-admin caller (player_2)" \
+    tx structs guild-update-primary-reactor "${GUILD_ID}" "${REACTOR_ID}" --from player_2
+
+# 3. Happy path: admin (alice) targets the current reactor. Exercises the
+#    full handler chain (player lookup, guild lookup, PermAdmin check, reactor
+#    lookup, validator lookup, jailed check, cache commit → EventGuild). We
+#    capture the tx output explicitly because the assertions in (4) below
+#    would trivially pass against unchanged state if this tx were silently
+#    rejected by ante (incident 2026-05: every new Structs message MUST be
+#    registered in app/ante/maps.go or it gets bounced as "unknown structs
+#    message type"). PARAMS_TX defaults to YAML, so force --output json here
+#    so we can pull .code with jq.
+GP1_HAPPY_OUT=$(structsd ${PARAMS_TX} --output json tx structs guild-update-primary-reactor \
+    "${GUILD_ID}" "${REACTOR_ID}" --from alice 2>&1) || true
+echo -e "  ${BOLD}structsd ${PARAMS_TX} --output json tx structs guild-update-primary-reactor ${GUILD_ID} ${REACTOR_ID} --from alice${NC}"
+# `--gas auto` prints "gas estimate: NNN" on stderr before the JSON tx response,
+# so pull the JSON line out explicitly before handing it to jq. Use `.code | tostring`
+# so that the legitimate value 0 round-trips as the string "0".
+GP1_HAPPY_JSON=$(echo "${GP1_HAPPY_OUT}" | grep -E '^\{' | tail -n 1)
+GP1_HAPPY_CODE=$(echo "${GP1_HAPPY_JSON}" | jq -r '.code | tostring' 2>/dev/null || echo "")
+if [ -z "${GP1_HAPPY_CODE}" ]; then
+    echo -e "  ${YELLOW}WARN${NC}: could not parse tx code from output, raw output follows:"
+    echo "${GP1_HAPPY_OUT}" | head -20
+fi
+assert_eq "GP1: admin update returned tx code 0 (message registered in ante maps)" \
+    "0" "${GP1_HAPPY_CODE}"
+sleep "${SLEEP}"
+
+# 4. Confirm the guild's primaryReactorId is intact (no drift from no-op).
+GP1_AFTER=$(query query structs guild "${GUILD_ID}" 2>/dev/null | jq -r '.Guild.primaryReactorId // empty')
+assert_eq "GP1: guild.primaryReactorId unchanged after no-op update" \
+    "${GP1_BEFORE}" "${GP1_AFTER}"
+assert_eq "GP1: guild.primaryReactorId matches configured reactor" \
+    "${REACTOR_ID}" "${GP1_AFTER}"
+
+fi # phase GP1
 
 
 # ═════════════════════════════════════════════════════════════════════════════

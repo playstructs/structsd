@@ -269,7 +269,9 @@ func (k Keeper) DequeueMatureInfusionSweeps(ctx context.Context, blockTime time.
 }
 
 // GetInfusionMaturitySweepQueueExport returns the full queue contents as
-// (encodedKey, infusionKey) pairs for genesis export and tests.
+// raw composite-key strings (sdk.FormatTimeBytes(completionTime) + "/" + infusionKey)
+// for genesis export and tests. The raw form is preserved so an export+import
+// cycle reconstructs the queue with byte-identical store keys.
 func (k Keeper) GetInfusionMaturitySweepQueueExport(ctx context.Context) (rows []string) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionMaturitySweepQueue))
 	iter := storetypes.KVStorePrefixIterator(store, []byte{})
@@ -279,4 +281,17 @@ func (k Keeper) GetInfusionMaturitySweepQueueExport(ctx context.Context) (rows [
 		rows = append(rows, string(iter.Key()))
 	}
 	return
+}
+
+// ImportInfusionMaturitySweepRow writes a single raw composite-key row produced
+// by GetInfusionMaturitySweepQueueExport back into the store. Used by
+// InitGenesis to round-trip the queue without re-deriving the time prefix.
+// Empty rows are ignored so that an export from a chain that never wrote to
+// the queue (pre-v0.17.0) is a safe no-op.
+func (k Keeper) ImportInfusionMaturitySweepRow(ctx context.Context, rawKey string) {
+	if rawKey == "" {
+		return
+	}
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionMaturitySweepQueue))
+	store.Set([]byte(rawKey), []byte{0x01})
 }

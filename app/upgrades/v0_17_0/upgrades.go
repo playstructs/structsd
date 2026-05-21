@@ -56,10 +56,27 @@ func CreateUpgradeHandler(
 // MigrateDefusingInfusions performs the two-step recovery documented above.
 // Exported so the migration can be exercised by upgrade-handler tests
 // independently of module.Manager wiring.
+//
 // Failures on any individual infusion are logged but do not abort the upgrade
 // (the EndBlocker sweep gives us a continuous self-heal mechanism going
 // forward, so an upgrade-time partial recovery still leaves the chain in a
 // good state).
+//
+// Idempotency: this function is safe to invoke more than once on the same
+// state. ReconcileInfusionForDelegation is a pure projection of the live
+// Cosmos staking state onto the infusion record (it recomputes Fuel and
+// Defusing from scratch rather than incrementing), and
+// EnqueueInfusionMaturitySweep writes to a (CompletionTime, infusionKey) map
+// key so re-enqueueing the same UBD entry overwrites with the same value.
+// This matters in two scenarios operators commonly hit:
+//
+//   - A validator restarts from a snapshot taken just before the upgrade
+//     height and replays the upgrade block.
+//   - An operator runs the migration manually on a recovered snapshot before
+//     joining the live network (e.g. as part of incident triage).
+//
+// In both cases re-running the migration produces the same Defusing values
+// and the same maturity-queue contents byte-for-byte.
 func MigrateDefusingInfusions(ctx context.Context, keepers *upgrades.Keepers) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateDefusingInfusions")
