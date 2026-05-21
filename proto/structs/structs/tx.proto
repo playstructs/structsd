@@ -578,6 +578,7 @@ message MsgPlanetExplore {
 
   string creator     = 1;
   string playerId    = 2;
+  string name        = 3;
 }
 
 message MsgPlanetExploreResponse {

@@ -110,3 +110,115 @@ func TestMsgPlanetExplore(t *testing.T) {
 		})
 	}
 }
+
+// TestMsgPlanetExploreWithName covers the optional name field on
+// MsgPlanetExplore. Each subtest provisions its own player so that name
+// validation failures do not interfere with state from prior cases (and so
+// that the success path always exercises a fresh exploration rather than
+// the prior-planet completion branch, which would trip on PlanetStartingOre).
+func TestMsgPlanetExploreWithName(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	wctx := sdk.UnwrapSDKContext(ctx)
+
+	setupExplorablePlayer := func(seed string) types.Player {
+		playerAcc := sdk.AccAddress(seed)
+		p := types.Player{
+			Creator:        playerAcc.String(),
+			PrimaryAddress: playerAcc.String(),
+		}
+		p = testAppendPlayer(k, ctx, p)
+
+		capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, p.Id)
+		k.SetGridAttribute(ctx, capacityAttrId, uint64(100000))
+		lastActionAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, p.Id)
+		k.SetGridAttribute(ctx, lastActionAttrId, uint64(0))
+
+		testAppendFleet(k, ctx, types.Fleet{Owner: p.Id})
+		return p
+	}
+
+	testCases := []struct {
+		name         string
+		seed         string
+		nameInput    string
+		expErr       bool
+		expErrMsg    string
+		expectedName string
+	}{
+		{
+			name:         "valid name on explore",
+			seed:         "exploreName1pad_padding_addr_padding",
+			nameInput:    "New Terra",
+			expectedName: "New Terra",
+		},
+		{
+			name:         "valid long name on explore",
+			seed:         "exploreName2pad_padding_addr_padding",
+			nameInput:    "Kepler Four-Fifty-Two",
+			expectedName: "Kepler Four-Fifty-Two",
+		},
+		{
+			name:         "empty name preserves prior behavior",
+			seed:         "exploreName3pad_padding_addr_padding",
+			nameInput:    "",
+			expectedName: "",
+		},
+		{
+			name:      "name too short rejects whole tx",
+			seed:      "exploreName4pad_padding_addr_padding",
+			nameInput: "ab",
+			expErr:    true,
+			expErrMsg: "must be 3-25 characters",
+		},
+		{
+			name:      "name too long rejects whole tx",
+			seed:      "exploreName5pad_padding_addr_padding",
+			nameInput: "abcdefghij1234567890abcdef",
+			expErr:    true,
+			expErrMsg: "must be 3-25 characters",
+		},
+		{
+			name:      "object id pattern rejected",
+			seed:      "exploreName6pad_padding_addr_padding",
+			nameInput: "5-100",
+			expErr:    true,
+			expErrMsg: "cannot resemble an object ID",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			p := setupExplorablePlayer(tc.seed)
+
+			resp, err := ms.PlanetExplore(wctx, &types.MsgPlanetExplore{
+				Creator:  p.Creator,
+				PlayerId: p.Id,
+				Name:     tc.nameInput,
+			})
+
+			if tc.expErr {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tc.expErrMsg)
+
+				// Validation must fail before any state mutation: the player
+				// should still have no planet attached.
+				stored, found := k.GetPlayer(ctx, p.Id)
+				require.True(t, found)
+				require.Equal(t, "", stored.PlanetId, "player must have no planet after failed explore")
+				return
+			}
+
+			require.NoError(t, err)
+			require.NotNil(t, resp)
+			require.Equal(t, tc.expectedName, resp.Planet.Name)
+
+			stored, found := k.GetPlayer(ctx, p.Id)
+			require.True(t, found)
+			require.NotEqual(t, "", stored.PlanetId, "player must have a planet after successful explore")
+
+			planetObj, found := k.GetPlanet(ctx, stored.PlanetId)
+			require.True(t, found)
+			require.Equal(t, tc.expectedName, planetObj.Name)
+		})
+	}
+}

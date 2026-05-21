@@ -3130,8 +3130,26 @@ assert_not_empty "Player 3 planet" "${PLAYER_3_PLANET_ID}"
 assert_not_empty "Player 3 fleet" "${PLAYER_3_FLEET_ID}"
 echo "  Player 3 Planet: ${PLAYER_3_PLANET_ID}  Fleet: ${PLAYER_3_FLEET_ID}"
 
-run_tx "Player 4 exploring a planet" \
-    tx structs planet-explore "${PLAYER_4_ID}" --from player_4
+# Player 4 exercises the optional planet-name argument on planet-explore.
+# Bad names must reject the entire tx and leave Player 4 without a planet so
+# the subsequent successful explore is a clean first-explore (no prior-planet
+# completion path). Same validation rules as planet-update-name.
+run_tx_expect_fail "Player 4 exploring with too-short name" \
+    tx structs planet-explore "${PLAYER_4_ID}" "ab" --from player_4
+
+run_tx_expect_fail "Player 4 exploring with too-long name (26 chars)" \
+    tx structs planet-explore "${PLAYER_4_ID}" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" --from player_4
+
+run_tx_expect_fail "Player 4 exploring with object-id-like name" \
+    tx structs planet-explore "${PLAYER_4_ID}" "5-100" --from player_4
+
+# Validation must fail before any state mutation: Player 4 should still have
+# no planet attached after the rejected txs above.
+P4_PRE_JSON=$(query query structs player "${PLAYER_4_ID}")
+assert_eq "Player 4 has no planet after failed name validation" "" "$(jqr "${P4_PRE_JSON}" '.Player.planetId')"
+
+run_tx "Player 4 exploring a planet with name 'NewEden'" \
+    tx structs planet-explore "${PLAYER_4_ID}" "NewEden" --from player_4
 
 P4_JSON=$(query query structs player "${PLAYER_4_ID}")
 PLAYER_4_PLANET_ID=$(jqr "${P4_JSON}" '.Player.planetId')
@@ -3139,6 +3157,9 @@ PLAYER_4_FLEET_ID=$(jqr "${P4_JSON}" '.Player.fleetId')
 assert_not_empty "Player 4 planet" "${PLAYER_4_PLANET_ID}"
 assert_not_empty "Player 4 fleet" "${PLAYER_4_FLEET_ID}"
 echo "  Player 4 Planet: ${PLAYER_4_PLANET_ID}  Fleet: ${PLAYER_4_FLEET_ID}"
+
+P4_PLANET_JSON=$(query query structs planet "${PLAYER_4_PLANET_ID}")
+assert_eq "Player 4 planet named on explore" "NewEden" "$(jqr "${P4_PLANET_JSON}" '.Planet.name')"
 
 # Verify planets exist
 info "Verifying planets"

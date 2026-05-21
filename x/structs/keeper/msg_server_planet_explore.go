@@ -39,6 +39,14 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
 		return emptyResponse, readinessError
 	}
 
+	// Validate the optional planet name up front so a bad name doesn't burn
+	// the prior-planet completion attempt below.
+	if msg.Name != "" {
+		if err := types.ValidatePlanetName(msg.Name); err != nil {
+			return emptyResponse, err
+		}
+	}
+
 	// check if there is a planet currently
 	// check that the planet can be completed
 	// complete the previous planet
@@ -60,6 +68,17 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
 	}
 
 	player.GetFleet().MigrateToNewPlanet(player.GetPlanet())
+
+	// Apply the optional planet name to the newly explored planet. The name
+	// follows the same rules as MsgPlanetUpdateName and emits the same UGC
+	// moderation event when an actor names a planet on behalf of another
+	// player via PermPlay delegation.
+	if msg.Name != "" {
+		newPlanet := player.GetPlanet()
+		oldName := newPlanet.GetName()
+		newPlanet.SetName(msg.Name)
+		emitUGCModerationEventIfActorIsNotOwner(ctx, newPlanet, callingPlayer, types.UGCFieldName, oldName, msg.Name)
+	}
 
 	cc.CommitAll()
 	return &types.MsgPlanetExploreResponse{Planet: player.GetPlanet().GetPlanet()}, nil
