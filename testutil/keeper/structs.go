@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"encoding/binary"
 	"fmt"
 	"testing"
 	"time"
@@ -505,5 +506,32 @@ func StructsKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 	// Initialize params
 	k.SetParams(ctx, types.DefaultParams())
 
+	// Stash the IAVL store key on the context so downstream test helpers
+	// (e.g. WriteRawGridAttribute) can punch raw KV writes through the
+	// keeper's exported surface to simulate corrupted on-chain state.
+	ctx = ctx.WithValue(testStoreKeyCtx{}, storeKey)
+
 	return k, ctx
+}
+
+// testStoreKeyCtx is the unexported context key used to stash the IAVL store
+// key produced by StructsKeeper so test helpers can reach the underlying KV
+// store without changing the public StructsKeeper return signature.
+type testStoreKeyCtx struct{}
+
+// WriteRawGridAttribute plants a raw GridAttribute KV row, bypassing
+// Keeper.SetGridAttribute. This exists only so tests can simulate the
+// pre-v0.17.0 testnet "2-" orphan documented in
+// docs/incident-2026-05-grid-orphan.md (which the SetGridAttribute backstop
+// would otherwise refuse to write). Production code must never use this.
+func WriteRawGridAttribute(t testing.TB, _ keeper.Keeper, ctx sdk.Context, gridAttributeId string, value uint64) {
+	t.Helper()
+	storeKey, ok := ctx.Value(testStoreKeyCtx{}).(*storetypes.KVStoreKey)
+	require.True(t, ok, "WriteRawGridAttribute: ctx not produced by keepertest.StructsKeeper")
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, value)
+
+	rawStore := ctx.KVStore(storeKey)
+	rawStore.Set(append([]byte(types.GridAttributeKey), []byte(gridAttributeId)...), bz)
 }

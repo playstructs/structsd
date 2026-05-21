@@ -113,6 +113,49 @@ func TestMigrateDefusingInfusions_BootstrapsQueueForLiveUBD(t *testing.T) {
 	require.Equal(t, uint64(300), got.Defusing, "live UBD totals should round-trip through reconciliation")
 }
 
+// TestMigrateMalformedGridAttributes_ClearsTestnetOrphan reproduces the
+// structstestnet-111 "2-" orphan from incident-2026-05-grid-orphan.md and
+// verifies that the upgrade pruning sweep deletes it without disturbing
+// canonical rows. The 840000 value is the actual on-chain value observed
+// at https://public.testnet.structs.network/structs/grid/2-.
+func TestMigrateMalformedGridAttributes_ClearsTestnetOrphan(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+
+	// Healthy row that must survive the sweep.
+	goodID := "2-1-7"
+	k.SetGridAttribute(ctx, goodID, uint64(123_456))
+
+	// Plant the testnet orphan exactly as it appears today.
+	keepertest.WriteRawGridAttribute(t, k, ctx, "2-", uint64(840_000))
+	require.Equal(t, uint64(840_000), k.GetGridAttribute(ctx, "2-"), "fixture must reproduce the testnet orphan")
+
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+	require.NoError(t, v0_17_0.MigrateMalformedGridAttributes(ctx, keepers))
+
+	require.Equal(t, uint64(0), k.GetGridAttribute(ctx, "2-"), "testnet '2-' orphan must be pruned")
+	require.Equal(t, uint64(123_456), k.GetGridAttribute(ctx, goodID), "canonical rows must survive the sweep")
+
+	// Idempotent: a second invocation has nothing to do.
+	require.NoError(t, v0_17_0.MigrateMalformedGridAttributes(ctx, keepers))
+	require.Equal(t, uint64(123_456), k.GetGridAttribute(ctx, goodID))
+}
+
+// TestMigrateMalformedGridAttributes_NoopOnCleanState confirms the pruning
+// sweep does nothing on a chain that was never affected by the pre-daac34c
+// AutoResizeAllocation bug. Same shape as the testnet orphan test, minus
+// the planted bad row.
+func TestMigrateMalformedGridAttributes_NoopOnCleanState(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+
+	goodID := "0-1-15"
+	k.SetGridAttribute(ctx, goodID, uint64(7))
+
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+	require.NoError(t, v0_17_0.MigrateMalformedGridAttributes(ctx, keepers))
+
+	require.Equal(t, uint64(7), k.GetGridAttribute(ctx, goodID), "clean-state run must leave canonical rows untouched")
+}
+
 // TestMigrateDefusingInfusions_SkipsHealthyInfusions confirms that infusions
 // with Defusing == 0 (i.e. healthy or non-defusing) are not touched by the
 // upgrade — no extra queue rows, no spurious reconciliation calls.

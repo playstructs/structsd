@@ -2,8 +2,10 @@ package v0_17_0
 
 // UpgradeName is the on-chain upgrade plan name for the v0.17.0 binary, which
 // hardens the ante chain in response to incident 2026-05 (see
-// docs/incident-2026-05-ante.md) and recovers from the stuck-defusing
-// reactor-infusion incident (see docs/incident-2026-05-defusing.md):
+// docs/incident-2026-05-ante.md), recovers from the stuck-defusing
+// reactor-infusion incident (see docs/incident-2026-05-defusing.md), and
+// prunes the orphan grid-attribute row left behind by the pre-daac34c
+// AutoResizeAllocation bug (see docs/incident-2026-05-grid-orphan.md):
 //
 // Ante / handler hardening:
 //
@@ -32,6 +34,19 @@ package v0_17_0
 // the structs EndBlocker drains them, so this same class of stale state
 // cannot accumulate again.
 //
-// No store-key changes required for these recoveries; both write to
+// Malformed grid-attribute pruning (state migration at upgrade height):
+//
+//   - One-time walk of the GridAttribute store deletes every row whose key
+//     fails IsValidGridAttributeID — i.e. anything that is not the
+//     "<prefix>-<non-empty objectId>" shape. On structstestnet-111 this
+//     prunes the single "2-" row at value 840000 left behind by the
+//     pre-daac34c AutoResizeAllocation bug (which wrote capacity for an
+//     empty DestinationId).
+//   - Going forward, Keeper.SetGridAttribute itself rejects any write
+//     against a malformed id with a logged error and a no-op, so the same
+//     leak class cannot resurface even if a future caller forgets the
+//     destination guard.
+//
+// No store-key changes required for these recoveries; all three write to
 // existing prefix stores.
 const UpgradeName = "v0.17.0"

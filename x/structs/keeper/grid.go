@@ -13,6 +13,7 @@ import (
 	"fmt"
 
 	"slices"
+	"strings"
 )
 
 // GetObjectID returns the string representation of the ID, based on ObjectType
@@ -32,6 +33,35 @@ func GetGridAttributeID(gridAttributeType types.GridAttributeType, objectType ty
 func GetGridAttributeIDByObjectId(gridAttributeType types.GridAttributeType, objectId string) string {
 	id := fmt.Sprintf("%d-%s", gridAttributeType, objectId)
 	return id
+}
+
+// IsValidGridAttributeID returns true if id has the shape "<prefix>-<objectId>"
+// with both the prefix and the objectId non-empty. The prefix is the
+// GridAttributeType bucket and the objectId is whatever was passed to
+// GetGridAttributeIDByObjectId (typically itself "<objectType>-<id>", but in
+// some test paths it is a single token like "source1", so we deliberately do
+// not require three segments here).
+//
+// The case we *do* want to catch is the historical bug where callers passed
+// an empty objectId, producing keys like "2-". See
+// docs/incident-2026-05-grid-orphan.md for the originating incident: a
+// pre-daac34c AutoResizeAllocation against an automated allocation with no
+// destination wrote `GetGridAttributeIDByObjectId(capacity, "")` = "2-" into
+// the grid store.
+//
+// Used as a defensive backstop in Keeper.SetGridAttribute and as the
+// detection rule in Keeper.PruneMalformedGridAttributes.
+func IsValidGridAttributeID(id string) bool {
+	idx := strings.Index(id, "-")
+	if idx <= 0 {
+		// No "-", or id starts with "-" (no prefix segment).
+		return false
+	}
+	if idx == len(id)-1 {
+		// Ends with "-": the objectId portion is empty (the "2-" shape).
+		return false
+	}
+	return true
 }
 
 func (k Keeper) GetGridAttribute(ctx context.Context, gridAttributeId string) (amount uint64) {
@@ -59,7 +89,27 @@ func (k Keeper) ClearGridAttribute(ctx context.Context, gridAttributeId string) 
     k.logger.Info("Grid Change (Clear)", "gridAttributeId", gridAttributeId)
 }
 
+// SetGridAttribute writes a grid attribute value for the given id.
+//
+// Defensive backstop: any caller that builds an id via
+// GetGridAttributeIDByObjectId(t, "") or otherwise produces a key with an
+// empty objectId portion (see IsValidGridAttributeID) is silently dropped
+// here, with a loud Error log so the regression surfaces in operator output
+// rather than as an orphan KV row. The known historical regression
+// (pre-daac34c AutoResizeAllocation writing "2-" when DestinationId == "")
+// has been fixed at every callsite, so this backstop should never fire in
+// practice; it exists purely to make the next "I forgot a guard" leak
+// harmless.
 func (k Keeper) SetGridAttribute(ctx context.Context, gridAttributeId string, amount uint64) {
+	if !IsValidGridAttributeID(gridAttributeId) {
+		k.logger.Error(
+			"refusing to write malformed grid attribute id; ignoring write",
+			"gridAttributeId", gridAttributeId,
+			"amount", amount,
+		)
+		return
+	}
+
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridAttributeKey))
 
 	bz := make([]byte, 8)
@@ -124,6 +174,40 @@ func (k Keeper) GetAllGridExport(ctx context.Context) (list []*types.GridRecord)
 	}
 
 	return
+}
+
+// PruneMalformedGridAttributes walks the GridAttribute store and deletes any
+// row whose key does not satisfy IsValidGridAttributeID — i.e. anything that
+// is not "<prefix>-<non-empty objectId>". Returns the deleted keys for
+// logging.
+//
+// This is used by the v0.17.0 upgrade handler to recover the testnet "2-"
+// orphan documented in docs/incident-2026-05-grid-orphan.md. Idempotent: a
+// second invocation finds no malformed rows and returns nil.
+func (k Keeper) PruneMalformedGridAttributes(ctx context.Context) []string {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridAttributeKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+
+	var malformed []string
+	for ; iterator.Valid(); iterator.Next() {
+		key := string(iterator.Key())
+		if !IsValidGridAttributeID(key) {
+			malformed = append(malformed, key)
+		}
+	}
+	iterator.Close()
+
+	if len(malformed) == 0 {
+		return nil
+	}
+
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+	for _, key := range malformed {
+		store.Delete([]byte(key))
+		_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGrid{&types.GridRecord{AttributeId: key, Value: 0}})
+		k.logger.Info("Grid Change (Pruned malformed)", "gridAttributeId", key)
+	}
+	return malformed
 }
 
 func (k Keeper) GetGridAttributesByObject(ctx context.Context, objectId string) types.GridAttributes {
