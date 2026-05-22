@@ -52,6 +52,7 @@ var KnownStructsMessages = map[string]bool{
 	"/structs.structs.MsgGuildUpdateName":                                true,
 	"/structs.structs.MsgGuildUpdatePfp":                                 true,
 	"/structs.structs.MsgGuildUpdateOwnerId":                             true,
+	"/structs.structs.MsgGuildUpdatePrimaryReactor":                      true,
 	"/structs.structs.MsgPermissionGrantOnAddress":                       true,
 	"/structs.structs.MsgPermissionGrantOnObject":                        true,
 	"/structs.structs.MsgPermissionGuildRankRevoke":                      true,
@@ -157,9 +158,10 @@ var PermissionMap = map[string]types.Permission{
 	"/structs.structs.MsgGuildMembershipRequestRevoke":    types.PermGuildMembership,
 
 	// Admin operations
-	"/structs.structs.MsgAllocationTransfer":          types.PermAdmin,
-	"/structs.structs.MsgGuildUpdateOwnerId":          types.PermAdmin,
-	"/structs.structs.MsgPlayerUpdatePrimaryAddress":  types.PermAdmin,
+	"/structs.structs.MsgAllocationTransfer":           types.PermAdmin,
+	"/structs.structs.MsgGuildUpdateOwnerId":           types.PermAdmin,
+	"/structs.structs.MsgGuildUpdatePrimaryReactor":    types.PermAdmin,
+	"/structs.structs.MsgPlayerUpdatePrimaryAddress":   types.PermAdmin,
 	"/structs.structs.MsgGuildUpdateEntryRank":        types.PermUpdate,
 
 	// Object updates

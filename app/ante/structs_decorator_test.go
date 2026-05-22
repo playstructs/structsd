@@ -26,7 +26,7 @@ func TestStructsDecorator_UnregisteredAddress(t *testing.T) {
 
 	_, err := dec.AnteHandle(freeCtx(), tx, false, next)
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "not registered as player")
+	require.True(t, sante.ErrUnregisteredAddress.Is(err))
 }
 
 func TestStructsDecorator_RegisteredWithCorrectPerm(t *testing.T) {
@@ -62,7 +62,7 @@ func TestStructsDecorator_RegisteredWithWrongPerm(t *testing.T) {
 	ctx := freeCtx().WithIsCheckTx(true)
 	_, err := dec.AnteHandle(ctx, tx, false, next)
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "lacks permission")
+	require.True(t, sante.ErrMissingPermission.Is(err))
 }
 
 func TestStructsDecorator_DynamicPermSkipsCheck(t *testing.T) {
@@ -114,7 +114,7 @@ func TestStructsDecorator_ChargeCheckRejectsSameBlock(t *testing.T) {
 	ctx := freeCtx().WithBlockHeight(100) // same block as lastAction
 	_, err := dec.AnteHandle(ctx, tx, false, next)
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "zero charge")
+	require.True(t, sante.ErrPlayerDischargedThisBlock.Is(err))
 }
 
 func TestStructsDecorator_ChargeCheckPassesDifferentBlock(t *testing.T) {
@@ -159,7 +159,7 @@ func TestStructsDecorator_PlayerMsgCapExceeded(t *testing.T) {
 	ctx := freeCtx().WithBlockHeight(100)
 	_, err := dec.AnteHandle(ctx, tx, false, next)
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "exceeded per-block message cap")
+	require.True(t, sante.ErrPlayerMsgCapExceeded.Is(err))
 }
 
 func TestStructsDecorator_PlayerMsgCapPassesUnderLimit(t *testing.T) {
@@ -224,5 +224,5 @@ func TestStructsDecorator_DefaultPlayerMsgCapApplied(t *testing.T) {
 	ctx := freeCtx().WithBlockHeight(100)
 	_, err := dec.AnteHandle(ctx, tx, false, next)
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "exceeded per-block message cap")
+	require.True(t, sante.ErrPlayerMsgCapExceeded.Is(err))
 }

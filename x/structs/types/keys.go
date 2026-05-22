@@ -113,6 +113,16 @@ const (
 	InfusionKey      = "Infusion/value/"
 	InfusionCountKey = "Infusion/count/"
 	InfusionDestructionQueue = "Infusion/destructionQueue/"
+
+	// InfusionMaturitySweepQueue indexes (Cosmos UBD entry CompletionTime, infusionKey)
+	// rows that the structs EndBlocker drains as their maturity time arrives, calling
+	// ReconcileInfusionForDelegation to clear the corresponding Defusing field.
+	//
+	// Cosmos SDK does not expose an unbonding-completion hook (only AfterUnbondingInitiated);
+	// this queue is the structs-side substitute, modeled after staking's UBDQueue.
+	// Rows are written by ReactorInfusionUnbonding (one per UBD entry), drained by the
+	// structs EndBlocker, and bootstrapped at upgrade height by migrateDefusingInfusions.
+	InfusionMaturitySweepQueue = "Infusion/maturitySweepQueue/"
 )
 
 const (

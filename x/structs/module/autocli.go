@@ -521,6 +521,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "owner"}},
                  },
                  {
+                     RpcMethod:      "GuildUpdatePrimaryReactor",
+                     Use:            "guild-update-primary-reactor [guild id] [reactor id]",
+                     Short:          "Reassign the guild's primary reactor (recovery for retired/jailed validators)",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "reactorId"}},
+                 },
+                 {
                      RpcMethod:      "GuildUpdateEntryRank",
                      Use:            "guild-update-entry-rank [new entry rank]",
                      Short:          "Update the entry rank for your guild",
@@ -594,9 +600,9 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                  },
                  {
                      RpcMethod:      "PlanetExplore",
-                     Use:            "planet-explore [player id]",
-                     Short:          "Explore a new planet",
-                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
+                     Use:            "planet-explore [player id] [name]",
+                     Short:          "Explore a new planet, optionally giving it a name",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "name", Optional: true}},
                  },
                  {
                     RpcMethod:      "PlanetRaidComplete",

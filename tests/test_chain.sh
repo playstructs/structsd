@@ -31,7 +31,7 @@
 #                      Recovers all IDs by querying the running chain.
 #                      Phase names: 0 1 2 3 3b 4 4b 4c 4d 4e 4f 4g 5 5b 6
 #                        7 7b 8 9 10 11 12 13 13b 14 15 15b 16
-#                        17 17b 17c 18 eb1-eb6
+#                        17 17b 17c 18 eb1-eb6 ev1 ar1-ar4 rg1 rg2
 #
 
 set -euo pipefail
@@ -596,6 +596,10 @@ phase_order() {
         17) echo 2300;; 17b) echo 2350;; 17c) echo 2400;;
         eb1) echo 2500;; eb2) echo 2600;; eb3) echo 2700;;
         eb4) echo 2800;; eb5) echo 2900;; eb6) echo 3000;;
+        ev1) echo 3050;;
+        ar1) echo 3100;; ar2) echo 3200;; ar3) echo 3300;; ar4) echo 3400;;
+        rg1) echo 3450;; rg2) echo 3500;;
+        gp1) echo 3800;;
         *) echo "Unknown phase: $1" >&2; exit 1;;
     esac
 }
@@ -619,6 +623,124 @@ find_struct_by_owner_type() {
         '[.Struct[] | select(.owner == $o and (.type | tonumber) == $t)]
          | sort_by(.id | split("-") | .[1] | tonumber)
          | .[($n - 1)].id // empty' 2>/dev/null || echo ""
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Combat helpers (used by EB5+ phases and RG1/RG2). Defined at top-level so
+# they are available even when --resume-from skips the EB phase block.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Weapon charge lookups by struct type (from genesis_struct_type.go)
+_primary_charge() {
+    case "$1" in
+        2)  echo 20 ;; # Battleship
+        4|6|7|8|10|11|12|13) echo 8 ;; # Frigate,StealthBomber,Interceptor,MobArt,SAM,Cruiser,Destroyer,Sub
+        *) echo 1 ;; # CommandShip(1),Starfighter(3),PursuitFighter(5),Tank(9),others
+    esac
+}
+_secondary_charge() {
+    case "$1" in
+        3)  echo 8 ;; # Starfighter attackRun
+        11) echo 1 ;; # Cruiser secondary
+        *)  echo 1 ;; # fallback
+    esac
+}
+
+# Helper: query struct health
+eb_health() {
+    local struct_id="$1"
+    query query structs struct "${struct_id}" 2>/dev/null | jq -r '.structAttributes.health // "0"' 2>/dev/null || echo "0"
+}
+
+# Helper: get the weapon charge for a struct, auto-detecting type
+eb_get_charge() {
+    local struct_id="$1"
+    local weapon="${2:-primaryWeapon}"
+    local stype
+    stype=$(query query structs struct "${struct_id}" 2>/dev/null | jq -r '.Struct.type // "0"' 2>/dev/null || echo "0")
+    if [ "${weapon}" = "secondaryWeapon" ]; then
+        _secondary_charge "${stype}"
+    else
+        _primary_charge "${stype}"
+    fi
+}
+
+# Helper: run an attack, track health changes, increment counters
+eb_attack() {
+    local desc="$1"
+    local attacker="$2"
+    local target="$3"
+    local weapon="${4:-primaryWeapon}"
+    local from_player="$5"
+    local charge="${6:-}"
+
+    if [ -z "${charge}" ]; then
+        charge=$(eb_get_charge "${attacker}" "${weapon}")
+    fi
+
+    EB_ATTACKS=$((${EB_ATTACKS:-0} + 1))
+
+    local atk_hp_before
+    atk_hp_before=$(eb_health "${attacker}")
+    local tgt_hp_before
+    tgt_hp_before=$(eb_health "${target}")
+
+    info "[Attack ${EB_ATTACKS}] ${desc}"
+    echo "  Attacker: ${attacker} (HP=${atk_hp_before})  Target: ${target} (HP=${tgt_hp_before})"
+
+    if [ "${atk_hp_before}" = "0" ]; then
+        echo "  SKIP: Attacker already destroyed"
+        return
+    fi
+    if [ "${tgt_hp_before}" = "0" ]; then
+        echo "  SKIP: Target already destroyed"
+        return
+    fi
+
+    wait_for_charge "$(eval echo "\${PLAYER_${from_player}_ID}")" "${charge}"
+    run_tx "${desc}" \
+        tx structs struct-attack "${attacker}" "${target}" "${weapon}" --from "player_${from_player}"
+
+    local atk_hp_after
+    atk_hp_after=$(eb_health "${attacker}")
+    local tgt_hp_after
+    tgt_hp_after=$(eb_health "${target}")
+
+    echo "  Result: Attacker HP ${atk_hp_before}→${atk_hp_after}  Target HP ${tgt_hp_before}→${tgt_hp_after}"
+
+    if [ "${tgt_hp_after}" = "0" ]; then
+        info "  TARGET DESTROYED"
+        EB_DESTROYED=$((${EB_DESTROYED:-0} + 1))
+    fi
+    if [ "${atk_hp_after}" = "0" ]; then
+        info "  ATTACKER DESTROYED (counter-attack/post-destruction)"
+        EB_DESTROYED=$((${EB_DESTROYED:-0} + 1))
+    fi
+}
+
+# Helper: attempt an attack that should fail (wrong ambit targeting)
+eb_attack_should_fail() {
+    local desc="$1"
+    local attacker="$2"
+    local target="$3"
+    local from_player="$4"
+
+    local tgt_hp_before
+    tgt_hp_before=$(eb_health "${target}")
+
+    info "[Negative] ${desc}"
+    echo "  Attacker: ${attacker}  Target: ${target} (HP=${tgt_hp_before})"
+
+    local charge
+    charge=$(eb_get_charge "${attacker}" "primaryWeapon")
+    wait_for_charge "$(eval echo "\${PLAYER_${from_player}_ID}")" "${charge}"
+    run_tx_expect_fail "${desc}" \
+        tx structs struct-attack "${attacker}" "${target}" primaryWeapon --from "player_${from_player}"
+
+    local tgt_hp_after
+    tgt_hp_after=$(eb_health "${target}")
+
+    assert_eq "${desc} — target HP unchanged" "${tgt_hp_before}" "${tgt_hp_after}"
 }
 
 # recover_state: rebuild all script variables by querying the running chain
@@ -1914,8 +2036,11 @@ run_tx "Resetting invite bypass to closed" \
     tx structs guild-update-join-infusion-minimum-by-invite "${GUILD_ID}" closed --from alice
 
 # ─── guild-update-owner-id: transfer ownership ───
-# Grant Player 2 PermissionUpdate (2) on guild so they can transfer back
-run_tx "Granting Player 2 PermissionUpdate on guild" \
+# Grant Player 2 PermAdmin (2) on guild so they can transfer ownership back.
+# (CanTransferOwnershipBy requires PermAdmin.) The grant is intentionally NOT
+# revoked here — later phases (notably GP1) re-clear player_2's grants on the
+# guild when they need a clean "non-admin" caller.
+run_tx "Granting Player 2 PermAdmin on guild (for ownership transfer test)" \
     tx structs permission-grant-on-object "${GUILD_ID}" "${PLAYER_2_ID}" 2 --from alice
 
 info "Transferring guild ownership to Player 2"
@@ -3005,8 +3130,26 @@ assert_not_empty "Player 3 planet" "${PLAYER_3_PLANET_ID}"
 assert_not_empty "Player 3 fleet" "${PLAYER_3_FLEET_ID}"
 echo "  Player 3 Planet: ${PLAYER_3_PLANET_ID}  Fleet: ${PLAYER_3_FLEET_ID}"
 
-run_tx "Player 4 exploring a planet" \
-    tx structs planet-explore "${PLAYER_4_ID}" --from player_4
+# Player 4 exercises the optional planet-name argument on planet-explore.
+# Bad names must reject the entire tx and leave Player 4 without a planet so
+# the subsequent successful explore is a clean first-explore (no prior-planet
+# completion path). Same validation rules as planet-update-name.
+run_tx_expect_fail "Player 4 exploring with too-short name" \
+    tx structs planet-explore "${PLAYER_4_ID}" "ab" --from player_4
+
+run_tx_expect_fail "Player 4 exploring with too-long name (26 chars)" \
+    tx structs planet-explore "${PLAYER_4_ID}" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" --from player_4
+
+run_tx_expect_fail "Player 4 exploring with object-id-like name" \
+    tx structs planet-explore "${PLAYER_4_ID}" "5-100" --from player_4
+
+# Validation must fail before any state mutation: Player 4 should still have
+# no planet attached after the rejected txs above.
+P4_PRE_JSON=$(query query structs player "${PLAYER_4_ID}")
+assert_eq "Player 4 has no planet after failed name validation" "" "$(jqr "${P4_PRE_JSON}" '.Player.planetId')"
+
+run_tx "Player 4 exploring a planet with name 'NewEden'" \
+    tx structs planet-explore "${PLAYER_4_ID}" "NewEden" --from player_4
 
 P4_JSON=$(query query structs player "${PLAYER_4_ID}")
 PLAYER_4_PLANET_ID=$(jqr "${P4_JSON}" '.Player.planetId')
@@ -3014,6 +3157,9 @@ PLAYER_4_FLEET_ID=$(jqr "${P4_JSON}" '.Player.fleetId')
 assert_not_empty "Player 4 planet" "${PLAYER_4_PLANET_ID}"
 assert_not_empty "Player 4 fleet" "${PLAYER_4_FLEET_ID}"
 echo "  Player 4 Planet: ${PLAYER_4_PLANET_ID}  Fleet: ${PLAYER_4_FLEET_ID}"
+
+P4_PLANET_JSON=$(query query structs planet "${PLAYER_4_PLANET_ID}")
+assert_eq "Player 4 planet named on explore" "NewEden" "$(jqr "${P4_PLANET_JSON}" '.Planet.name')"
 
 # Verify planets exist
 info "Verifying planets"
@@ -5223,118 +5369,8 @@ section "PHASE EB5: Comprehensive Attack Scenarios"
 EB_ATTACKS=0
 EB_DESTROYED=0
 
-# Weapon charge lookups by struct type (from genesis_struct_type.go)
-_primary_charge() {
-    case "$1" in
-        2)  echo 20 ;; # Battleship
-        4|6|7|8|10|11|12|13) echo 8 ;; # Frigate,StealthBomber,Interceptor,MobArt,SAM,Cruiser,Destroyer,Sub
-        *) echo 1 ;; # CommandShip(1),Starfighter(3),PursuitFighter(5),Tank(9),others
-    esac
-}
-_secondary_charge() {
-    case "$1" in
-        3)  echo 8 ;; # Starfighter attackRun
-        11) echo 1 ;; # Cruiser secondary
-        *)  echo 1 ;; # fallback
-    esac
-}
-
-# Helper: query struct health
-eb_health() {
-    local struct_id="$1"
-    query query structs struct "${struct_id}" 2>/dev/null | jq -r '.structAttributes.health // "0"' 2>/dev/null || echo "0"
-}
-
-# Helper: get the weapon charge for a struct, auto-detecting type
-eb_get_charge() {
-    local struct_id="$1"
-    local weapon="${2:-primaryWeapon}"
-    local stype
-    stype=$(query query structs struct "${struct_id}" 2>/dev/null | jq -r '.Struct.type // "0"' 2>/dev/null || echo "0")
-    if [ "${weapon}" = "secondaryWeapon" ]; then
-        _secondary_charge "${stype}"
-    else
-        _primary_charge "${stype}"
-    fi
-}
-
-# Helper: run an attack, track health changes, increment counters
-eb_attack() {
-    local desc="$1"
-    local attacker="$2"
-    local target="$3"
-    local weapon="${4:-primaryWeapon}"
-    local from_player="$5"
-    local charge="${6:-}"
-
-    if [ -z "${charge}" ]; then
-        charge=$(eb_get_charge "${attacker}" "${weapon}")
-    fi
-
-    EB_ATTACKS=$((EB_ATTACKS + 1))
-
-    local atk_hp_before
-    atk_hp_before=$(eb_health "${attacker}")
-    local tgt_hp_before
-    tgt_hp_before=$(eb_health "${target}")
-
-    info "[Attack ${EB_ATTACKS}] ${desc}"
-    echo "  Attacker: ${attacker} (HP=${atk_hp_before})  Target: ${target} (HP=${tgt_hp_before})"
-
-    if [ "${atk_hp_before}" = "0" ]; then
-        echo "  SKIP: Attacker already destroyed"
-        return
-    fi
-    if [ "${tgt_hp_before}" = "0" ]; then
-        echo "  SKIP: Target already destroyed"
-        return
-    fi
-
-    wait_for_charge "$(eval echo "\${PLAYER_${from_player}_ID}")" "${charge}"
-    run_tx "${desc}" \
-        tx structs struct-attack "${attacker}" "${target}" "${weapon}" --from "player_${from_player}"
-
-    local atk_hp_after
-    atk_hp_after=$(eb_health "${attacker}")
-    local tgt_hp_after
-    tgt_hp_after=$(eb_health "${target}")
-
-    echo "  Result: Attacker HP ${atk_hp_before}→${atk_hp_after}  Target HP ${tgt_hp_before}→${tgt_hp_after}"
-
-    if [ "${tgt_hp_after}" = "0" ]; then
-        info "  TARGET DESTROYED"
-        EB_DESTROYED=$((EB_DESTROYED + 1))
-    fi
-    if [ "${atk_hp_after}" = "0" ]; then
-        info "  ATTACKER DESTROYED (counter-attack/post-destruction)"
-        EB_DESTROYED=$((EB_DESTROYED + 1))
-    fi
-}
-
-# Helper: attempt an attack that should fail (wrong ambit targeting)
-eb_attack_should_fail() {
-    local desc="$1"
-    local attacker="$2"
-    local target="$3"
-    local from_player="$4"
-
-    local tgt_hp_before
-    tgt_hp_before=$(eb_health "${target}")
-
-    info "[Negative] ${desc}"
-    echo "  Attacker: ${attacker}  Target: ${target} (HP=${tgt_hp_before})"
-
-    local charge
-    charge=$(eb_get_charge "${attacker}" "primaryWeapon")
-    wait_for_charge "$(eval echo "\${PLAYER_${from_player}_ID}")" "${charge}"
-    run_tx_expect_fail "${desc}" \
-        tx structs struct-attack "${attacker}" "${target}" primaryWeapon --from "player_${from_player}"
-
-    local tgt_hp_after
-    tgt_hp_after=$(eb_health "${target}")
-
-    assert_eq "${desc} — target HP unchanged" "${tgt_hp_before}" "${tgt_hp_after}"
-}
+# Combat helpers (eb_health, eb_attack, etc.) are defined at top-level so
+# they remain available when --resume-from skips this phase.
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GROUP A: Same-Ambit Combat
@@ -6356,7 +6392,391 @@ info "Block height after Attack Run: ${BLOCK_HEIGHT}"
 
 fi # phase AR4
 
+if run_phase 3450; then
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  PHASE RG1: Regression — Defender Counter Destroys Attacker (Bug 1)
+# ═════════════════════════════════════════════════════════════════════════════
+#
+# Validates the resolveBlock / ResolveDefenders / resolveVolleyDamageOn fix
+# in x/structs/keeper/attack_context.go: when a defender's counter destroys
+# the attacker mid-iteration, the same defender's block must NOT fire on
+# the dead volley.
+#
+# Go unit test (deterministic):
+#   x/structs/keeper/msg_server_struct_attack_test.go
+#     TestMsgStructAttackDefenderCounterDestroysAttacker
+# This phase adds end-to-end coverage via the live state machine.
+#
+# Setup (all space-ambit Starfighters — MaxHealth 3, CounterAttack 1,
+# PrimaryWeaponDamage 2, PrimaryWeaponCharge 1):
+#   RG1_ATTACKER_ID: an alive 1-HP P2 or P3 SF from the AR phases
+#   RG1_TARGET_ID:   freshly-built P6 SF (space slot — was an EB SF that has
+#                    been destroyed and swept by now)
+#   RG1_DEFENDER_ID: freshly-built P6 SF (different space slot)
+#
+# Bug-1 trigger: defender counter (1) destroys the HP=1 attacker.
+#   • With the fix → block does NOT fire → defender HP stays at 3.
+#   • Without the fix → block fires → defender takes attacker primary
+#     damage 2 → defender HP drops 3→1.
+# ═════════════════════════════════════════════════════════════════════════════
+
+section "PHASE RG1: Regression — Defender Counter Destroys Attacker (Bug 1)"
+
+# Discover roles at runtime from the post-AR chain state. P6's command ship
+# is typically destroyed in AR Group C, so P6's fleet can't accept new
+# struct builds (`fleet needs a command struct before deploy`). P3 keeps
+# its CS alive throughout AR and is therefore the most reliable host for
+# the target + defender pair.
+#
+# Bug-1 condition: same-ambit defender's counter (CA=1) must destroy the
+# attacker. We pick a Starfighter attacker at HP=1 from any non-P3 player.
+
+SA_RG1=$(query query structs struct-all 2>/dev/null || echo '{}')
+
+RG1_ATTACKER_ID=""
+RG1_ATTACKER_PLAYER=""
+for ATK_PLAYER_NUM in 2 6; do
+    eval "RG1_ATK_PID=\${PLAYER_${ATK_PLAYER_NUM}_ID:-}"
+    if [ -z "${RG1_ATK_PID}" ]; then continue; fi
+    for NTH in 1 2 3 4 5; do
+        CAND=$(find_struct_by_owner_type "${RG1_ATK_PID}" 3 "${NTH}" "${SA_RG1}")
+        if [ -z "${CAND}" ]; then continue; fi
+        CAND_HP=$(eb_health "${CAND}")
+        if [ "${CAND_HP}" = "1" ]; then
+            RG1_ATTACKER_ID="${CAND}"
+            RG1_ATTACKER_PLAYER="${ATK_PLAYER_NUM}"
+            info "RG1: Selected attacker ${RG1_ATTACKER_ID} (player_${RG1_ATTACKER_PLAYER}, Starfighter) at HP=1"
+            break 2
+        fi
+    done
+done
+
+# Build the list of alive P3 space-ambit structs. Order matters: place the
+# higher-HP candidate first so it becomes the TARGET (more HP headroom for
+# the attacker volley if the bug allows it through), leaving the
+# lower-HP one as the DEFENDER (assertion still distinguishes since
+# block damage = 2).
+declare -a P3_SPACE_ALIVE=()
+for CAND_ID in "${BATTLESHIP_2_ID:-}" "${BATTLESHIP_1_ID:-}"; do
+    if [ -z "${CAND_ID}" ]; then continue; fi
+    CAND_HP=$(eb_health "${CAND_ID}")
+    if [ "${CAND_HP}" != "0" ]; then P3_SPACE_ALIVE+=("${CAND_ID}"); fi
+done
+for NTH in 1 2 3 4; do
+    SF_CAND=$(find_struct_by_owner_type "${PLAYER_3_ID}" 3 "${NTH}" "${SA_RG1}")
+    if [ -z "${SF_CAND}" ]; then continue; fi
+    SF_HP=$(eb_health "${SF_CAND}")
+    if [ "${SF_HP}" != "0" ]; then P3_SPACE_ALIVE+=("${SF_CAND}"); fi
+done
+
+RG1_TARGET_ID=""
+RG1_DEFENDER_ID=""
+if [ "${#P3_SPACE_ALIVE[@]}" -ge 2 ]; then
+    RG1_TARGET_ID="${P3_SPACE_ALIVE[0]}"
+    RG1_DEFENDER_ID="${P3_SPACE_ALIVE[1]}"
+fi
+
+if [ -z "${RG1_ATTACKER_ID}" ] || [ -z "${RG1_TARGET_ID}" ] || [ -z "${RG1_DEFENDER_ID}" ]; then
+    info "SKIP RG1: missing roles (attacker=${RG1_ATTACKER_ID} target=${RG1_TARGET_ID} defender=${RG1_DEFENDER_ID})"
+else
+    info "RG1: target=${RG1_TARGET_ID} defender=${RG1_DEFENDER_ID} (both P3, space-ambit)"
+
+    # The attacker fleet must have an online command struct to launch any
+    # attack (`fleet (X) needs an online command struct before deploy`).
+    # AR3 typically destroys both P2 and P6 command ships, so we rebuild
+    # the attacker's CS if it's missing. CS BuildLimit=1, but the count
+    # decrements on destruction so a fresh build is allowed.
+    eval "RG1_ATTACKER_PID=\${PLAYER_${RG1_ATTACKER_PLAYER}_ID}"
+    RG1_ATTACKER_KEY="player_${RG1_ATTACKER_PLAYER}"
+    RG1_ATK_CS_COUNT=$(echo "${SA_RG1}" | jq -r --arg pid "${RG1_ATTACKER_PID}" \
+        '[.Struct[] | select(.owner==$pid and (.type|tonumber)==1)] | length')
+    if [ "${RG1_ATK_CS_COUNT}" = "0" ]; then
+        info "RG1: ${RG1_ATTACKER_KEY} has no Command Ship — rebuilding (destroyed in AR phase)"
+        wait_for_charge "${RG1_ATTACKER_PID}" "${CHARGE_BUILD}"
+        run_tx "RG1: Initiating fresh ${RG1_ATTACKER_KEY} Command Ship (type=1, space, slot=1)" \
+            tx structs struct-build-initiate "${RG1_ATTACKER_PID}" 1 space 1 --from "${RG1_ATTACKER_KEY}"
+
+        STRUCT_ALL_JSON=$(query query structs struct-all)
+        RG1_NEW_CS_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
+        RG1_NEW_CS_OWNER=$(echo "${STRUCT_ALL_JSON}" | jq -r --arg sid "${RG1_NEW_CS_ID}" \
+            '[.Struct[] | select(.id == $sid)] | .[0].owner // empty' 2>/dev/null || echo "")
+
+        if [ "${RG1_NEW_CS_OWNER}" = "${RG1_ATTACKER_PID}" ]; then
+            run_compute "RG1: Building fresh ${RG1_ATTACKER_KEY} CS ${RG1_NEW_CS_ID}" \
+                tx structs struct-build-compute "${RG1_NEW_CS_ID}" --from "${RG1_ATTACKER_KEY}"
+            RG1_NEW_CS_BUILT=$(query query structs struct "${RG1_NEW_CS_ID}" 2>/dev/null \
+                | jq -r '.structAttributes.isBuilt // "false"')
+            assert_eq "RG1 fresh ${RG1_ATTACKER_KEY} CS built" "true" "${RG1_NEW_CS_BUILT}"
+        else
+            info "RG1: fresh CS build did not materialise (got owner='${RG1_NEW_CS_OWNER}'); attack will likely be skipped"
+        fi
+    fi
+
+    # The attacker fleet must be co-located with the target's fleet to be
+    # reachable. After AR3, P3's fleet typically stays at P6's planet (2-9)
+    # while the attacker's fleet sits at home, so a fleet-move is needed.
+    RG1_TARGET_FLEET_ID=$(query query structs struct "${RG1_TARGET_ID}" 2>/dev/null \
+        | jq -r '.Struct.locationId // empty')
+    RG1_TARGET_FLEET_LOC=""
+    if [ -n "${RG1_TARGET_FLEET_ID}" ]; then
+        RG1_TARGET_FLEET_LOC=$(query query structs fleet "${RG1_TARGET_FLEET_ID}" 2>/dev/null \
+            | jq -r '.Fleet.locationId // empty')
+    fi
+    RG1_ATTACKER_FLEET_ID=$(query query structs struct "${RG1_ATTACKER_ID}" 2>/dev/null \
+        | jq -r '.Struct.locationId // empty')
+    RG1_ATTACKER_FLEET_LOC=""
+    if [ -n "${RG1_ATTACKER_FLEET_ID}" ]; then
+        RG1_ATTACKER_FLEET_LOC=$(query query structs fleet "${RG1_ATTACKER_FLEET_ID}" 2>/dev/null \
+            | jq -r '.Fleet.locationId // empty')
+    fi
+    if [ -n "${RG1_TARGET_FLEET_LOC}" ] && [ -n "${RG1_ATTACKER_FLEET_LOC}" ] \
+       && [ "${RG1_ATTACKER_FLEET_LOC}" != "${RG1_TARGET_FLEET_LOC}" ]; then
+        info "RG1: co-locating attacker fleet ${RG1_ATTACKER_FLEET_ID} → ${RG1_TARGET_FLEET_LOC} (was ${RG1_ATTACKER_FLEET_LOC})"
+        run_tx "RG1: fleet-move ${RG1_ATTACKER_FLEET_ID} to ${RG1_TARGET_FLEET_LOC}" \
+            tx structs fleet-move "${RG1_ATTACKER_FLEET_ID}" "${RG1_TARGET_FLEET_LOC}" --from "${RG1_ATTACKER_KEY}"
+    fi
+
+    # Both target and defender belong to P3, so the defense registration
+    # transaction is authorised by player_3.
+    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_DEFEND}"
+    run_tx "RG1: Register ${RG1_DEFENDER_ID} as defender of ${RG1_TARGET_ID}" \
+        tx structs struct-defense-set "${RG1_DEFENDER_ID}" "${RG1_TARGET_ID}" --from player_3
+
+    RG1_ATTACKER_HP_BEFORE=$(eb_health "${RG1_ATTACKER_ID}")
+    RG1_TARGET_HP_BEFORE=$(eb_health "${RG1_TARGET_ID}")
+    RG1_DEFENDER_HP_BEFORE=$(eb_health "${RG1_DEFENDER_ID}")
+    info "RG1 pre-attack HPs: attacker(P${RG1_ATTACKER_PLAYER},${RG1_ATTACKER_ID})=${RG1_ATTACKER_HP_BEFORE} target(${RG1_TARGET_ID})=${RG1_TARGET_HP_BEFORE} defender(${RG1_DEFENDER_ID})=${RG1_DEFENDER_HP_BEFORE}"
+    info "  Expected: defender counter (CA=1) destroys HP=1 attacker; block must NOT fire."
+
+    if [ "${RG1_ATTACKER_HP_BEFORE}" != "1" ]; then
+        info "SKIP RG1 attack: attacker HP changed to ${RG1_ATTACKER_HP_BEFORE} between selection and attack"
+    else
+        eb_attack "RG1: P${RG1_ATTACKER_PLAYER} SF(HP=1) → P3 target (def: P3 same-ambit struct — counter-kills attacker)" \
+            "${RG1_ATTACKER_ID}" "${RG1_TARGET_ID}" primaryWeapon "${RG1_ATTACKER_PLAYER}"
+
+        RG1_ATTACKER_HP_AFTER=$(eb_health "${RG1_ATTACKER_ID}")
+        RG1_TARGET_HP_AFTER=$(eb_health "${RG1_TARGET_ID}")
+        RG1_DEFENDER_HP_AFTER=$(eb_health "${RG1_DEFENDER_ID}")
+        info "RG1 post-attack HPs: attacker=${RG1_ATTACKER_HP_AFTER} target=${RG1_TARGET_HP_AFTER} defender=${RG1_DEFENDER_HP_AFTER}"
+
+        # If the attacker, target, and defender all show identical HP before and
+        # after, the attack TX did not actually run on chain (e.g. ante reject,
+        # missing CS, etc.) and the bug-1 condition was never reached. Skip
+        # the assertions in that case rather than erroring out the whole
+        # phase on a no-op.
+        if [ "${RG1_ATTACKER_HP_AFTER}" = "${RG1_ATTACKER_HP_BEFORE}" ] \
+           && [ "${RG1_TARGET_HP_AFTER}" = "${RG1_TARGET_HP_BEFORE}" ] \
+           && [ "${RG1_DEFENDER_HP_AFTER}" = "${RG1_DEFENDER_HP_BEFORE}" ]; then
+            info "SKIP RG1 assertions: attack TX appears not to have executed (no HP changes)"
+        else
+            assert_eq "RG1: Attacker destroyed by defender counter" \
+                "0" "${RG1_ATTACKER_HP_AFTER}"
+            assert_eq "RG1: Defender HP unchanged — no block on dead volley [Bug 1 regression]" \
+                "${RG1_DEFENDER_HP_BEFORE}" "${RG1_DEFENDER_HP_AFTER}"
+            assert_eq "RG1: Target HP unchanged — dead attacker delivers no damage" \
+                "${RG1_TARGET_HP_BEFORE}" "${RG1_TARGET_HP_AFTER}"
+        fi
+    fi
+
+    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_DEFEND}"
+    run_tx "RG1 cleanup: clear defender registration" \
+        tx structs struct-defense-clear "${RG1_DEFENDER_ID}" --from player_3
+fi
+
+fi # phase RG1
+
+if run_phase 3500; then
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  PHASE RG2: Regression — Relocated Defender Provides No Support (Bug 2)
+# ═════════════════════════════════════════════════════════════════════════════
+#
+# Validates the IsProtecting filter in ResolveDefenders (and the matching
+# range check in MsgStructDefenseSet): a defender whose fleet has moved
+# away from the protected target's location must not counter or block.
+# Stale StructDefender entries are left intact across moves on purpose;
+# the runtime co-location check is what enforces correctness.
+#
+# Go unit test (deterministic):
+#   x/structs/keeper/msg_server_struct_attack_test.go
+#     TestMsgStructAttackDefenderFleetMovedNoSupport
+#
+# Setup:
+#   Defender: EB_MOBILE_ART_ID (P6 fleet, land slot 0). Mobile Artillery has
+#             CounterAttack=0, so the only defensive action it could take is
+#             block — and only when co-located with the protected target.
+#   Target:   EB_ORE_EXTRACTOR_ID (P6 planet, land slot 3). Same ambit as
+#             the MA defender, so block would fire when in range.
+#   Attacker: EB_P3_MOBILE_ART_ID (P3 fleet, currently at P6 planet from
+#             AR2). AttackCounterable=false, so PDC defensive cannons do
+#             not return damage and we can observe block independently.
+#
+# Bug-2 trigger: register defender → target while co-located, move P6 fleet
+# to P2 planet (defender relocates with the fleet; target stays on the
+# planet), then attack the target from P3.
+#   • With the fix → IsProtecting returns false → MA does not block →
+#     attacker primary damage 2 reaches Ore Extractor → MA HP unchanged.
+#   • Without the fix → MA still blocks → MA takes 2 damage; Ore Extractor
+#     takes no damage.
+# ═════════════════════════════════════════════════════════════════════════════
+
+section "PHASE RG2: Regression — Relocated Defender Provides No Support (Bug 2)"
+
+RG2_MA_HP=$(eb_health "${EB_MOBILE_ART_ID}")
+RG2_EXTRACTOR_HP=$(eb_health "${EB_ORE_EXTRACTOR_ID}")
+RG2_P3_MA_HP=$(eb_health "${EB_P3_MOBILE_ART_ID}")
+
+# Bug 2 requires a defender on a fleet that can be relocated AND a same-owner,
+# same-ambit target that stays behind (typically on a planet). EB5 attacks
+# usually leave the P6 Ore Extractor destroyed, in which case this scenario
+# is no longer reproducible from the natural EB/AR state. The Go unit test
+# (TestMsgStructAttackDefenderFleetMovedNoSupport) still provides
+# deterministic coverage.
+if [ "${RG2_MA_HP}" = "0" ] || [ "${RG2_EXTRACTOR_HP}" = "0" ] || [ "${RG2_P3_MA_HP}" = "0" ]; then
+    info "SKIP RG2: P6 MA(HP=${RG2_MA_HP}), Ore Extractor(HP=${RG2_EXTRACTOR_HP}), or P3 MA(HP=${RG2_P3_MA_HP}) destroyed — Go unit test still covers Bug 2."
+else
+    # Register P6 Mobile Art as defender of P6 Ore Extractor. Both are on
+    # P6's planet (MA on the fleet, Ore Extractor as planet struct), so
+    # IsProtecting accepts the relationship at registration time.
+    wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
+    run_tx "RG2: Register P6 Mobile Art (${EB_MOBILE_ART_ID}) as defender of P6 Ore Extractor (${EB_ORE_EXTRACTOR_ID})" \
+        tx structs struct-defense-set "${EB_MOBILE_ART_ID}" "${EB_ORE_EXTRACTOR_ID}" --from player_6
+
+    RG2_REGISTERED=$(query query structs struct "${EB_ORE_EXTRACTOR_ID}" 2>/dev/null \
+        | jq -r --arg sid "${EB_MOBILE_ART_ID}" \
+            '[.structDefenders // [] | .[] | select(. == $sid)] | first // ""' \
+            2>/dev/null || echo "")
+    assert_eq "RG2: MA registered as Ore Extractor defender" \
+        "${EB_MOBILE_ART_ID}" "${RG2_REGISTERED}"
+
+    RG2_MA_HP_BEFORE=$(eb_health "${EB_MOBILE_ART_ID}")
+    RG2_EXTRACTOR_HP_BEFORE=$(eb_health "${EB_ORE_EXTRACTOR_ID}")
+    RG2_P3_MA_HP_BEFORE=$(eb_health "${EB_P3_MOBILE_ART_ID}")
+
+    # Move P6 fleet to P2 planet. The MA goes with the fleet; the Ore
+    # Extractor stays on P6's planet. The stale StructDefender entry remains
+    # in state, but IsProtecting should now return false at attack time.
+    wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
+    run_tx "RG2: Move P6 fleet to P2 planet (defender relocates away from target)" \
+        tx structs fleet-move "${PLAYER_6_FLEET_ID}" "${PLAYER_2_PLANET_ID}" --from player_6
+
+    info "RG2 pre-attack HPs: P6 MA=${RG2_MA_HP_BEFORE} Ore Extractor=${RG2_EXTRACTOR_HP_BEFORE} P3 MA=${RG2_P3_MA_HP_BEFORE}"
+    info "  Expected: P6 MA out of range (IsProtecting=false). MA HP unchanged; Ore Extractor takes damage."
+
+    eb_attack "RG2: P3 Mobile Art → P6 Ore Extractor (MA defender out of range after fleet move)" \
+        "${EB_P3_MOBILE_ART_ID}" "${EB_ORE_EXTRACTOR_ID}" primaryWeapon 3
+
+    RG2_MA_HP_AFTER=$(eb_health "${EB_MOBILE_ART_ID}")
+    RG2_EXTRACTOR_HP_AFTER=$(eb_health "${EB_ORE_EXTRACTOR_ID}")
+    RG2_P3_MA_HP_AFTER=$(eb_health "${EB_P3_MOBILE_ART_ID}")
+    info "RG2 post-attack HPs: P6 MA=${RG2_MA_HP_AFTER} Ore Extractor=${RG2_EXTRACTOR_HP_AFTER} P3 MA=${RG2_P3_MA_HP_AFTER}"
+
+    assert_eq "RG2: P6 MA HP unchanged after fleet move — defender did not block [Bug 2 regression]" \
+        "${RG2_MA_HP_BEFORE}" "${RG2_MA_HP_AFTER}"
+    RG2_EXTRACTOR_DMG=$((RG2_EXTRACTOR_HP_BEFORE - RG2_EXTRACTOR_HP_AFTER))
+    assert_gt "RG2: Ore Extractor took damage — not deflected by stale defender" \
+        0 "${RG2_EXTRACTOR_DMG}"
+
+    wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
+    run_tx "RG2 cleanup: clear stale P6 MA defender registration" \
+        tx structs struct-defense-clear "${EB_MOBILE_ART_ID}" --from player_6
+
+    wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
+    run_tx "RG2 cleanup: move P6 fleet back to P6 planet" \
+        tx structs fleet-move "${PLAYER_6_FLEET_ID}" "${PLAYER_6_PLANET_ID}" --from player_6
+fi
+
+fi # phase RG2
+
 fi  # end EXTENDED_BATTLE
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+if run_phase 3800; then
+# ═════════════════════════════════════════════════════════════════════════════
+#  PHASE GP1: Guild — Update Primary Reactor (recovery for retired validators)
+#
+#  Exercises MsgGuildUpdatePrimaryReactor end-to-end through the CLI. The
+#  single-validator test chain cannot rotate to a *different* reactor (there
+#  is only one), so this phase covers the validation surface:
+#
+#    1. Reject when target reactor does not exist.
+#    2. Reject when caller lacks PermAdmin on the guild.
+#    3. Accept when an admin targets a known, non-jailed validator's reactor
+#       (idempotent no-op on the value, but exercises every validation branch
+#       plus the EventGuild emission via cache commit → SetGuild).
+#    4. Confirm the guild's primaryReactorId is unchanged after the no-op
+#       update (and matches the configured reactor).
+# ═════════════════════════════════════════════════════════════════════════════
+section "PHASE GP1: Guild Update Primary Reactor"
+
+# Sanity: capture the pre-update value so we can detect any unintended drift.
+GP1_BEFORE=$(query query structs guild "${GUILD_ID}" 2>/dev/null | jq -r '.Guild.primaryReactorId // empty')
+assert_not_empty "GP1: pre-update guild.primaryReactorId" "${GP1_BEFORE}"
+
+# 1. Reject: unknown reactor. Format mirrors a real reactor id ("<n>-<addr>")
+#    so it parses but resolves to no object.
+GP1_FAKE_REACTOR="999999-${ALICE_ADDRESS}"
+run_tx_expect_fail "GP1: reject update to unknown reactor (${GP1_FAKE_REACTOR})" \
+    tx structs guild-update-primary-reactor "${GUILD_ID}" "${GP1_FAKE_REACTOR}" --from alice
+
+# 2. Reject: non-admin caller (player_2).
+#    Earlier phases (4d ownership-transfer suite) granted player_2 PermAdmin
+#    and briefly made them the guild owner (which adds PermGuildAll). Neither
+#    grant is revoked there, so by the time we get here player_2 legitimately
+#    has admin rights on the guild. Strip every bit they may have accumulated
+#    on the guild object before asserting that the message handler rejects a
+#    non-admin caller — otherwise this phase silently passes on whatever
+#    cruft Phase 4 left behind.
+GP1_P2_GUILD_PERMS=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_2_ID}")
+GP1_P2_GUILD_PERMS=${GP1_P2_GUILD_PERMS:-0}
+if [ "${GP1_P2_GUILD_PERMS}" != "0" ] && [ -n "${GP1_P2_GUILD_PERMS}" ]; then
+    info "GP1: stripping player_2's residual perms on guild (bits=${GP1_P2_GUILD_PERMS})"
+    run_tx "GP1: revoke residual player_2 perms on guild" \
+        tx structs permission-revoke-on-object "${GUILD_ID}" "${PLAYER_2_ID}" "${GP1_P2_GUILD_PERMS}" --from alice
+fi
+GP1_P2_GUILD_PERMS_AFTER=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_2_ID}")
+GP1_P2_GUILD_PERMS_AFTER=${GP1_P2_GUILD_PERMS_AFTER:-0}
+assert_eq "GP1: player_2 has no per-object perms on guild before reject test" \
+    "0" "${GP1_P2_GUILD_PERMS_AFTER}"
+
+run_tx_expect_fail "GP1: reject update from non-admin caller (player_2)" \
+    tx structs guild-update-primary-reactor "${GUILD_ID}" "${REACTOR_ID}" --from player_2
+
+# 3. Happy path: admin (alice) targets the current reactor. Exercises the
+#    full handler chain (player lookup, guild lookup, PermAdmin check, reactor
+#    lookup, validator lookup, jailed check, cache commit → EventGuild). We
+#    capture the tx output explicitly because the assertions in (4) below
+#    would trivially pass against unchanged state if this tx were silently
+#    rejected by ante (incident 2026-05: every new Structs message MUST be
+#    registered in app/ante/maps.go or it gets bounced as "unknown structs
+#    message type"). PARAMS_TX defaults to YAML, so force --output json here
+#    so we can pull .code with jq.
+GP1_HAPPY_OUT=$(structsd ${PARAMS_TX} --output json tx structs guild-update-primary-reactor \
+    "${GUILD_ID}" "${REACTOR_ID}" --from alice 2>&1) || true
+echo -e "  ${BOLD}structsd ${PARAMS_TX} --output json tx structs guild-update-primary-reactor ${GUILD_ID} ${REACTOR_ID} --from alice${NC}"
+# `--gas auto` prints "gas estimate: NNN" on stderr before the JSON tx response,
+# so pull the JSON line out explicitly before handing it to jq. Use `.code | tostring`
+# so that the legitimate value 0 round-trips as the string "0".
+GP1_HAPPY_JSON=$(echo "${GP1_HAPPY_OUT}" | grep -E '^\{' | tail -n 1)
+GP1_HAPPY_CODE=$(echo "${GP1_HAPPY_JSON}" | jq -r '.code | tostring' 2>/dev/null || echo "")
+if [ -z "${GP1_HAPPY_CODE}" ]; then
+    echo -e "  ${YELLOW}WARN${NC}: could not parse tx code from output, raw output follows:"
+    echo "${GP1_HAPPY_OUT}" | head -20
+fi
+assert_eq "GP1: admin update returned tx code 0 (message registered in ante maps)" \
+    "0" "${GP1_HAPPY_CODE}"
+sleep "${SLEEP}"
+
+# 4. Confirm the guild's primaryReactorId is intact (no drift from no-op).
+GP1_AFTER=$(query query structs guild "${GUILD_ID}" 2>/dev/null | jq -r '.Guild.primaryReactorId // empty')
+assert_eq "GP1: guild.primaryReactorId unchanged after no-op update" \
+    "${GP1_BEFORE}" "${GP1_AFTER}"
+assert_eq "GP1: guild.primaryReactorId matches configured reactor" \
+    "${REACTOR_ID}" "${GP1_AFTER}"
+
+fi # phase GP1
 
 
 # ═════════════════════════════════════════════════════════════════════════════

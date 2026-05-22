@@ -156,3 +156,84 @@ func TestGridConnectionCapacity(t *testing.T) {
 	storedCapacity := keeper.GetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId))
 	require.Equal(t, uint64(300), storedCapacity)
 }
+
+// TestIsValidGridAttributeID locks down the validation rule used by both the
+// SetGridAttribute backstop and the upgrade-handler pruning sweep. The "2-"
+// case is the testnet orphan from incident-2026-05-grid-orphan.md.
+func TestIsValidGridAttributeID(t *testing.T) {
+	cases := []struct {
+		id    string
+		valid bool
+	}{
+		// Canonical three-segment ids built by GetGridAttributeID.
+		{"0-1-15", true},
+		{"2-4-100", true},
+		{"14-2-7", true},
+
+		// GetGridAttributeIDByObjectId(type, objectId) shapes from tests
+		// that pass single-token objectIds. Both segments non-empty so the
+		// row is well-formed even if it is not three-segment.
+		{"2-source1", true},
+		{"5-test-object", true},
+
+		// The historical orphan and friends.
+		{"2-", false},
+		{"0-", false},
+		{"", false},
+		{"-2", false},
+		{"-", false},
+		{"2", false},
+	}
+
+	for _, tc := range cases {
+		require.Equal(t, tc.valid, keeperlib.IsValidGridAttributeID(tc.id), "id=%q", tc.id)
+	}
+}
+
+// TestSetGridAttributeRejectsMalformedID locks the keeper-level guard that
+// makes the "2-" leak unreachable going forward. Any future regression that
+// calls GetGridAttributeIDByObjectId(t, "") drops on the floor instead of
+// landing as an orphan KV row.
+func TestSetGridAttributeRejectsMalformedID(t *testing.T) {
+	keeper, ctx := keepertest.StructsKeeper(t)
+
+	// Reproduce the historical pre-daac34c bug shape: capacity attribute
+	// for an empty destination id.
+	badID := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, "")
+	require.Equal(t, "2-", badID, "regression guard: bad id shape changed")
+
+	keeper.SetGridAttribute(ctx, badID, uint64(840000))
+
+	// The write should be a no-op; nothing leaked into the store.
+	require.Equal(t, uint64(0), keeper.GetGridAttribute(ctx, badID))
+	for _, rec := range keeper.GetAllGridExport(ctx) {
+		require.NotEqual(t, badID, rec.AttributeId, "malformed id leaked into store")
+	}
+}
+
+// TestPruneMalformedGridAttributes verifies the upgrade-handler sweep
+// that recovers historical orphan rows (the "2-" testnet leak): it deletes
+// every key that fails IsValidGridAttributeID while leaving canonical rows
+// untouched, and reports the deleted keys for upgrade-time logging.
+func TestPruneMalformedGridAttributes(t *testing.T) {
+	keeper, ctx := keepertest.StructsKeeper(t)
+
+	// A canonical row (must survive).
+	goodID := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, "1-7")
+	keeper.SetGridAttribute(ctx, goodID, uint64(123))
+
+	// Bypass the SetGridAttribute backstop to plant an orphan row that
+	// looks exactly like the one that exists on testnet today, simulating
+	// pre-upgrade state.
+	keepertest.WriteRawGridAttribute(t, keeper, ctx, "2-", uint64(840000))
+
+	pruned := keeper.PruneMalformedGridAttributes(ctx)
+	require.Equal(t, []string{"2-"}, pruned)
+
+	// Bad row gone, good row preserved.
+	require.Equal(t, uint64(0), keeper.GetGridAttribute(ctx, "2-"))
+	require.Equal(t, uint64(123), keeper.GetGridAttribute(ctx, goodID))
+
+	// Idempotent: a second pass finds nothing to prune.
+	require.Empty(t, keeper.PruneMalformedGridAttributes(ctx))
+}

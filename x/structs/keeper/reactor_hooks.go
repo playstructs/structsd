@@ -75,7 +75,27 @@ func (k Keeper) ReactorUpdatePlayerInfusion(ctx context.Context, playerAddress s
 	cc := k.NewCurrentContext(ctx)
 	defer cc.CommitAll()
 
-	/* Does this Reactor exist? */
+	k.reconcileInfusionForDelegation(ctx, cc, playerAddress, validatorAddress)
+}
+
+/* ReconcileInfusionForDelegation refreshes a single (delegator, validator)
+ * infusion's Fuel and Defusing fields from the current Cosmos staking state.
+ *
+ * Used by:
+ *   - AfterDelegationModified (via ReactorUpdatePlayerInfusion)
+ *   - The EndBlocker maturity sweep (post-CompleteUnbonding reconciliation)
+ *   - The v0.17.0 upgrade handler (one-time recovery of stuck defusing state)
+ *
+ * No-op (silently returns) if the validator's reactor is not yet initialized.
+ */
+func (k Keeper) ReconcileInfusionForDelegation(ctx context.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
+
+	k.reconcileInfusionForDelegation(ctx, cc, playerAddress, validatorAddress)
+}
+
+func (k Keeper) reconcileInfusionForDelegation(ctx context.Context, cc *CurrentContext, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
 	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
 	if !reactorBytesFound {
 		return
@@ -88,11 +108,17 @@ func (k Keeper) ReactorUpdatePlayerInfusion(ctx context.Context, playerAddress s
 	delegation, err := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
 
 	if err == nil {
-
 		delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
 
 		infusion.SetRatio(types.ReactorFuelToEnergyConversion)
 		infusion.SetFuelAndCommission(delegationShare.Uint64(), reactor.DefaultCommission)
+	} else if infusion.GetFuel() != 0 {
+		// No active delegation but stale fuel remains (e.g. recovery sweep
+		// after a full undelegate followed by a missed AfterDelegationModified
+		// path). Clear it so the destruction queue can reclaim the record once
+		// Defusing also drops to zero.
+		infusion.SetRatio(types.ReactorFuelToEnergyConversion)
+		infusion.SetFuel(0)
 	}
 
 	unbondingDelegation, err := k.stakingKeeper.GetUnbondingDelegation(ctx, playerAddress, validatorAddress)
@@ -105,7 +131,6 @@ func (k Keeper) ReactorUpdatePlayerInfusion(ctx context.Context, playerAddress s
 	if infusion.GetDefusing() != amount.Uint64() {
 		infusion.SetDefusing(amount.Uint64())
 	}
-
 }
 
 /* Update Reactor Details (Primarily In-Game Permissions/Ownership)
@@ -126,45 +151,63 @@ func (k Keeper) ReactorInfusionUnbonding(ctx context.Context, unbondingId uint64
 	defer cc.CommitAll()
 
 	unbondingDelegation, err := k.stakingKeeper.GetUnbondingDelegationByUnbondingID(ctx, unbondingId)
-    k.logger.Info("Unbonding Request", "unbondingId", unbondingId)
+	k.logger.Info("Unbonding Request", "unbondingId", unbondingId)
 
-	if err == nil {
-    	k.logger.Info("Delegation Found", "unbondingId", unbondingId, "delegator", unbondingDelegation.DelegatorAddress, "validator", unbondingDelegation.ValidatorAddress)
-
-		var playerAddress sdk.AccAddress
-		playerAddress, _ = sdk.AccAddressFromBech32(unbondingDelegation.DelegatorAddress)
-		var validatorAddress sdk.ValAddress
-		validatorAddress, _ = sdk.ValAddressFromBech32(unbondingDelegation.ValidatorAddress)
-
-		/* Does this Reactor exist? It really should... */
-		reactorBytes, _ := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
-		reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
-
-        player := cc.UpsertPlayer(playerAddress.String())
-		infusion := cc.UpsertInfusion(types.ObjectType_reactor, reactor.Id, playerAddress.String(),player.GetPlayerId())
-
-		infusion.SetRatio(types.ReactorFuelToEnergyConversion)
-		infusion.SetCommission(reactor.DefaultCommission)
-
-		amount := math.ZeroInt()
-		for _, entry := range unbondingDelegation.Entries {
-			amount = amount.Add(entry.Balance) // should this be entry.InitialBalance?
-		}
-		infusion.SetDefusing(amount.Uint64())
-
-		delegation, err := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
-		if err == nil {
-			validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
-			delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
-			infusion.SetFuel(delegationShare.Uint64())
-		} else {
-			infusion.SetFuel(uint64(0))
-		}
-
-		uctx := sdk.UnwrapSDKContext(ctx)
-		_ = uctx.EventManager().EmitTypedEvent(&types.EventAlphaInfuse{&types.EventAlphaInfuseDetail{PrimaryAddress: unbondingDelegation.DelegatorAddress, Amount: amount.Uint64()}})
-
+	if err != nil {
+		// AfterUnbondingInitiated also fires for redelegations and validator
+		// unbondings, neither of which resolve to an UBD. Those cases are not
+		// relevant to the structs reactor flow; log at debug and exit.
+		k.logger.Debug("AfterUnbondingInitiated: no UBD for id (likely a redelegation or validator unbonding)", "unbondingId", unbondingId)
+		return
 	}
+
+	k.logger.Info("Delegation Found", "unbondingId", unbondingId, "delegator", unbondingDelegation.DelegatorAddress, "validator", unbondingDelegation.ValidatorAddress)
+
+	var playerAddress sdk.AccAddress
+	playerAddress, _ = sdk.AccAddressFromBech32(unbondingDelegation.DelegatorAddress)
+	var validatorAddress sdk.ValAddress
+	validatorAddress, _ = sdk.ValAddressFromBech32(unbondingDelegation.ValidatorAddress)
+
+	/* Does this Reactor exist? It really should... */
+	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
+	if !reactorBytesFound {
+		k.logger.Warn("ReactorInfusionUnbonding: no reactor for validator", "validator", validatorAddress.String(), "delegator", playerAddress.String())
+		return
+	}
+	reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
+
+	player := cc.UpsertPlayer(playerAddress.String())
+	infusion := cc.UpsertInfusion(types.ObjectType_reactor, reactor.Id, playerAddress.String(), player.GetPlayerId())
+
+	infusion.SetRatio(types.ReactorFuelToEnergyConversion)
+	infusion.SetCommission(reactor.DefaultCommission)
+
+	amount := math.ZeroInt()
+	for _, entry := range unbondingDelegation.Entries {
+		amount = amount.Add(entry.Balance) // should this be entry.InitialBalance?
+	}
+	infusion.SetDefusing(amount.Uint64())
+
+	// Cosmos SDK v0.53 does not expose an unbonding-completion hook, so we
+	// pre-record each UBD entry's CompletionTime and let the structs
+	// EndBlocker reconcile the corresponding infusion once that block time
+	// passes. Idempotent on (CompletionTime, infusionId).
+	infusionId := reactor.Id + "-" + playerAddress.String()
+	for _, entry := range unbondingDelegation.Entries {
+		k.EnqueueInfusionMaturitySweep(ctx, entry.CompletionTime, infusionId)
+	}
+
+	delegation, err := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
+	if err == nil {
+		validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
+		delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
+		infusion.SetFuel(delegationShare.Uint64())
+	} else {
+		infusion.SetFuel(uint64(0))
+	}
+
+	uctx := sdk.UnwrapSDKContext(ctx)
+	_ = uctx.EventManager().EmitTypedEvent(&types.EventAlphaInfuse{&types.EventAlphaInfuseDetail{PrimaryAddress: unbondingDelegation.DelegatorAddress, Amount: amount.Uint64()}})
 }
 
 /* Update Reactor Infusions for All Delegations When Validator is Slashed

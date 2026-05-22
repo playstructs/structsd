@@ -79,6 +79,7 @@ import (
 	structsante "structs/app/ante"
 	"structs/app/upgrades"
 	v0_16_0 "structs/app/upgrades/v0_16_0"
+	v0_17_0 "structs/app/upgrades/v0_17_0"
 	"structs/docs"
 
 	upgradetypes "cosmossdk.io/x/upgrade/types"
@@ -398,6 +399,7 @@ func (app *App) RegisterUpgradeHandlers() {
 
 	upgradesList := []upgrades.Upgrade{
 		v0_16_0.NewUpgrade(),
+		v0_17_0.NewUpgrade(),
 	}
 
 	for _, upgrade := range upgradesList {

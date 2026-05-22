@@ -11,3 +11,4 @@ ts/
 structs.sh
 keeper.test
 coverage.txt
+tests/run_logs/

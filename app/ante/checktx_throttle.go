@@ -1,9 +1,9 @@
 package ante
 
 import (
-	"fmt"
 	"sync"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -41,6 +41,13 @@ func (d CheckTxThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 		return next(ctx, tx, simulate)
 	}
 
+	// SKIP_RATIONALE: CheckTxThrottleDecorator is a node-local mempool-flood
+	// defense. It only runs in fresh CheckTx (not ReCheckTx, DeliverTx, or
+	// simulate) because:
+	//   1. The counter is in-memory and not part of consensus state.
+	//   2. ReCheckTx and DeliverTx run on txs that already passed CheckTx, so
+	//      re-counting them would double-charge the address quota.
+	//   3. Simulate is a wallet-side estimate, not real admission.
 	if !ctx.IsCheckTx() || ctx.IsReCheckTx() || simulate {
 		return next(ctx, tx, simulate)
 	}
@@ -79,7 +86,8 @@ func (d CheckTxThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 	for addr := range addresses {
 		newCount := d.counter.counts[addr] + 1
 		if newCount > d.addrCap {
-			return ctx, fmt.Errorf("structs ante: address %s exceeded CheckTx free-tx cap (%d/%d) for block %d", addr, newCount, d.addrCap, height)
+			return ctx, observeReject(ctx, "CheckTxThrottleDecorator",
+				errorsmod.Wrapf(ErrCheckTxAddrCapExceeded, "address %s: %d/%d at block %d", addr, newCount, d.addrCap, height))
 		}
 		d.counter.counts[addr] = newCount
 	}
