@@ -1144,7 +1144,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      BuildDifficulty: 700,
      BuildDraw: 500000,
      PassiveDraw: 500000,
-     MaxHealth: 3,
+     MaxHealth: 6,
 
      PossibleAmbit: 6,
      Movable: false,
@@ -1230,7 +1230,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      BuildDifficulty: 700,
      BuildDraw: 500000,
      PassiveDraw: 500000,
-     MaxHealth: 3,
+     MaxHealth: 6,
 
      PossibleAmbit: 6,
      Movable: false,
@@ -1316,7 +1316,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      BuildDifficulty: 720,
      BuildDraw: 200000,
      PassiveDraw: 200000,
-     MaxHealth: 3,
+     MaxHealth: 6,
 
      PossibleAmbit: 16,
      Movable: false,
@@ -1402,7 +1402,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      BuildDifficulty: 2880,
      BuildDraw: 600000,
      PassiveDraw: 600000,
-     MaxHealth: 3,
+     MaxHealth: 6,
 
      PossibleAmbit: 16,
      Movable: false,
@@ -1488,7 +1488,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      BuildDifficulty: 3600,
      BuildDraw: 750000,
      PassiveDraw: 750000,
-     MaxHealth: 3,
+     MaxHealth: 6,
 
      PossibleAmbit: 4,
      Movable: false,
@@ -1574,7 +1574,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      BuildDifficulty: 2880,
      BuildDraw: 600000,
      PassiveDraw: 600000,
-     MaxHealth: 3,
+     MaxHealth: 6,
 
      PossibleAmbit: 6,
      Movable: false,
@@ -1660,7 +1660,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      BuildDifficulty: 700,
      BuildDraw: 500000,
      PassiveDraw: 500000,
-     MaxHealth: 3,
+     MaxHealth: 8,
 
      PossibleAmbit: 6,
      Movable: false,
@@ -1695,7 +1695,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      SecondaryWeaponShotSuccessRateDenominator: 0,
 
      PassiveWeaponry: TechPassiveWeaponry_noPassiveWeaponry,
-     UnitDefenses: TechUnitDefenses_noUnitDefenses,
+     UnitDefenses: TechUnitDefenses_armour,
      OreReserveDefenses: TechOreReserveDefenses_noOreReserveDefenses,
      PlanetaryDefenses: TechPlanetaryDefenses_noPlanetaryDefense,
      PlanetaryMining: TechPlanetaryMining_noPlanetaryMining,
@@ -1708,7 +1708,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      MoveCharge: 0,
      StealthActivateCharge: 0,
 
-     AttackReduction: 0,
+     AttackReduction: 1,
      AttackCounterable: true,
      StealthSystems: false,
 
@@ -1746,7 +1746,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      BuildDifficulty: 1440,
      BuildDraw: 10000000,
      PassiveDraw: 10000000,
-     MaxHealth: 3,
+     MaxHealth: 10,
 
      PossibleAmbit: 6,
      Movable: false,
@@ -1781,7 +1781,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      SecondaryWeaponShotSuccessRateDenominator: 0,
 
      PassiveWeaponry: TechPassiveWeaponry_noPassiveWeaponry,
-     UnitDefenses: TechUnitDefenses_noUnitDefenses,
+     UnitDefenses: TechUnitDefenses_armour,
      OreReserveDefenses: TechOreReserveDefenses_noOreReserveDefenses,
      PlanetaryDefenses: TechPlanetaryDefenses_noPlanetaryDefense,
      PlanetaryMining: TechPlanetaryMining_noPlanetaryMining,
@@ -1794,7 +1794,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      MoveCharge: 0,
      StealthActivateCharge: 0,
 
-     AttackReduction: 0,
+     AttackReduction: 1,
      AttackCounterable: true,
      StealthSystems: false,
 
@@ -1832,7 +1832,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      BuildDifficulty: 5000,
      BuildDraw: 100000000,
      PassiveDraw: 100000000,
-     MaxHealth: 3,
+     MaxHealth: 10,
 
      PossibleAmbit: 6,
      Movable: false,
@@ -1867,7 +1867,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      SecondaryWeaponShotSuccessRateDenominator: 0,
 
      PassiveWeaponry: TechPassiveWeaponry_noPassiveWeaponry,
-     UnitDefenses: TechUnitDefenses_noUnitDefenses,
+     UnitDefenses: TechUnitDefenses_armour,
      OreReserveDefenses: TechOreReserveDefenses_noOreReserveDefenses,
      PlanetaryDefenses: TechPlanetaryDefenses_noPlanetaryDefense,
      PlanetaryMining: TechPlanetaryMining_noPlanetaryMining,
@@ -1880,7 +1880,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      MoveCharge: 0,
      StealthActivateCharge: 0,
 
-     AttackReduction: 0,
+     AttackReduction: 1,
      AttackCounterable: true,
      StealthSystems: false,
 

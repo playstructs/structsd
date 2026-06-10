@@ -72,6 +72,10 @@ func raidAttrId(planetId string) string {
 	return structskeeper.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockStartRaid, planetId)
 }
 
+func healthAttrId(structId string) string {
+	return structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_health, structId)
+}
+
 // --- tests ----------------------------------------------------------------
 
 // TestMigrateStructTypes_RebasesShieldContributions verifies the rebased
@@ -151,6 +155,101 @@ func TestMigrateStructTypes_RebalancesBattleship(t *testing.T) {
 		require.False(t, structType.PrimaryWeaponArmourPiercing, "type %d primary must not be armour piercing", structType.Id)
 		require.False(t, structType.SecondaryWeaponArmourPiercing, "type %d secondary must not be armour piercing", structType.Id)
 	}
+}
+
+// TestMigrateStructTypes_RaisesPlanetaryHealth verifies the planetary
+// max-health rebase lands in the struct type store: baseline planetary
+// structs go to 6, the three power generators are hardened to 8/10/10
+// with armour + attackReduction 1, and fleet struct types are untouched.
+func TestMigrateStructTypes_RaisesPlanetaryHealth(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+
+	// Seed stale pre-upgrade health so the rewrite is observable.
+	for _, typeId := range []uint64{14, 15, 16, 17, 18, 19, 20, 21, 22} {
+		k.SetStructType(ctx, types.StructType{Id: typeId, MaxHealth: 3})
+	}
+
+	require.NoError(t, v0_18_0.MigrateStructTypes(ctx, keepers))
+
+	expectedHealth := map[uint64]uint64{
+		14: 6, 15: 6, 16: 6, 17: 6, 18: 6, 19: 6, // baseline planetary
+		20: 8, 21: 10, 22: 10, // power generators
+	}
+	for typeId, health := range expectedHealth {
+		structType, found := k.GetStructType(ctx, typeId)
+		require.True(t, found, "struct type %d must exist after rewrite", typeId)
+		require.Equal(t, health, structType.MaxHealth, "struct type %d max health", typeId)
+	}
+
+	// Power generators gain armour + attackReduction 1 (the Tank's pairing).
+	for _, typeId := range []uint64{20, 21, 22} {
+		structType, _ := k.GetStructType(ctx, typeId)
+		require.Equal(t, types.TechUnitDefenses_armour, structType.UnitDefenses, "struct type %d unit defenses", typeId)
+		require.Equal(t, uint64(1), structType.AttackReduction, "struct type %d attack reduction", typeId)
+	}
+
+	// Fleet struct types keep their 3 max health.
+	for _, typeId := range []uint64{2, 3, 8, 9} {
+		structType, found := k.GetStructType(ctx, typeId)
+		require.True(t, found)
+		require.Equal(t, uint64(3), structType.MaxHealth, "fleet struct type %d max health unchanged", typeId)
+	}
+}
+
+// TestMigratePlanetaryStructHealth verifies built, non-destroyed planetary
+// structs are raised to their new MaxHealth, while destroyed planetary
+// structs, unbuilt structs, and fleet structs are left untouched.
+func TestMigratePlanetaryStructHealth(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+
+	require.NoError(t, v0_18_0.MigrateStructTypes(ctx, keepers))
+
+	planet := appendPlanet(k, ctx, types.Planet{Owner: "1-1"})
+
+	online := types.StructStateMaterialized | types.StructStateBuilt | types.StructStateOnline
+	offlineBuilt := types.StructStateMaterialized | types.StructStateBuilt
+	building := types.StructStateMaterialized
+	destroyed := types.StructStateMaterialized | types.StructStateBuilt | types.StructStateDestroyed
+
+	// Damaged online PDC (type 19, new max 6).
+	damagedPDC := appendStruct(k, ctx, types.Struct{Type: 19, LocationType: types.ObjectType_planet, LocationId: planet.Id}, online)
+	k.SetStructAttribute(ctx, healthAttrId(damagedPDC.Id), 1)
+
+	// Offline-but-built Field Generator (type 20, new max 8) sitting at old health.
+	offlineGen := appendStruct(k, ctx, types.Struct{Type: 20, LocationType: types.ObjectType_planet, LocationId: planet.Id}, offlineBuilt)
+	k.SetStructAttribute(ctx, healthAttrId(offlineGen.Id), 3)
+
+	// World Engine (type 22, new max 10) at full old health.
+	worldEngine := appendStruct(k, ctx, types.Struct{Type: 22, LocationType: types.ObjectType_planet, LocationId: planet.Id}, online)
+	k.SetStructAttribute(ctx, healthAttrId(worldEngine.Id), 3)
+
+	// Still-building planetary struct must not be touched (not yet built).
+	unbuilt := appendStruct(k, ctx, types.Struct{Type: 19, LocationType: types.ObjectType_planet, LocationId: planet.Id}, building)
+	k.SetStructAttribute(ctx, healthAttrId(unbuilt.Id), 3)
+
+	// Destroyed planetary struct must not be revived.
+	deadBunker := appendStruct(k, ctx, types.Struct{Type: 18, LocationType: types.ObjectType_planet, LocationId: planet.Id}, destroyed)
+	k.SetStructAttribute(ctx, healthAttrId(deadBunker.Id), 0)
+
+	// Fleet struct (Tank, type 9) must not be touched.
+	fleetTank := appendStruct(k, ctx, types.Struct{Type: 9, LocationType: types.ObjectType_fleet, LocationId: "9-1"}, online)
+	k.SetStructAttribute(ctx, healthAttrId(fleetTank.Id), 2)
+
+	require.NoError(t, v0_18_0.MigratePlanetaryStructHealth(ctx, keepers))
+
+	require.Equal(t, uint64(6), k.GetStructAttribute(ctx, healthAttrId(damagedPDC.Id)), "damaged online PDC raised to new max")
+	require.Equal(t, uint64(8), k.GetStructAttribute(ctx, healthAttrId(offlineGen.Id)), "offline-but-built generator raised to new max")
+	require.Equal(t, uint64(10), k.GetStructAttribute(ctx, healthAttrId(worldEngine.Id)), "world engine raised to new max")
+	require.Equal(t, uint64(3), k.GetStructAttribute(ctx, healthAttrId(unbuilt.Id)), "unbuilt struct untouched")
+	require.Equal(t, uint64(0), k.GetStructAttribute(ctx, healthAttrId(deadBunker.Id)), "destroyed struct untouched")
+	require.Equal(t, uint64(2), k.GetStructAttribute(ctx, healthAttrId(fleetTank.Id)), "fleet struct untouched")
+
+	// Idempotent: a re-run produces the same values.
+	require.NoError(t, v0_18_0.MigratePlanetaryStructHealth(ctx, keepers))
+	require.Equal(t, uint64(6), k.GetStructAttribute(ctx, healthAttrId(damagedPDC.Id)))
+	require.Equal(t, uint64(10), k.GetStructAttribute(ctx, healthAttrId(worldEngine.Id)))
 }
 
 // TestMigratePlanetaryShields_RecomputesFromOnlineDefenses verifies the

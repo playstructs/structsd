@@ -29,6 +29,24 @@ package v0_18_0
 //     to land + water ambits (22 -> 6). Battleship gains a guided secondary
 //     weapon targeting space (charge 8, damage 1).
 //
+// Planetary struct health (binary + struct-type rewrite + state migration):
+//
+//   - Every planetary struct type's MaxHealth is raised from 3: the
+//     baseline planetary structs (Ore Extractor, Ore Refinery, Orbital
+//     Shield Generator, Jamming Satellite, Ore Bunker, Planetary Defense
+//     Cannon) go to 6. Fleet struct types are unchanged.
+//   - The three power generators are hardened further so disrupting power
+//     is a deliberate, costly raid objective rather than incidental
+//     collateral: Field Generator 3 -> 8, Continental Power Plant 3 -> 10,
+//     World Engine 3 -> 10, each gaining armour unit defenses and
+//     attackReduction 1 (the same mitigation the Tank already uses;
+//     armour-piercing weapons bypass it).
+//   - MigratePlanetaryStructHealth sets every built, non-destroyed
+//     planetary struct's stored health to its new MaxHealth at upgrade
+//     height. Health is only stamped at materialization, so without this
+//     migration pre-upgrade planetary structs would read as permanently
+//     damaged (old 3 against the new maxima) with no repair mechanism.
+//
 // Difficulty rebase (state migration at upgrade height):
 //
 //   - Planetary shield values are rebased from hour/day-scale targets to

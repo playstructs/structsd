@@ -22,21 +22,27 @@ import (
 //
 //  1. MigrateStructTypes rewrites every struct type from
 //     CreateStructTypeGenesis(), applying the rebased planetary shield
-//     contributions.
+//     contributions and the raised planetary max-health values.
 //
-//  2. MigratePlanetaryShields recomputes every planet's planetaryShield
+//  2. MigratePlanetaryStructHealth sets every built, non-destroyed
+//     planetary struct's health to its (newly raised) type MaxHealth.
+//     Health is only stamped at materialization, so without this
+//     pre-upgrade planetary structs would keep their old 3 health against
+//     the new 6/8/10 maxima and appear permanently damaged.
+//
+//  3. MigratePlanetaryShields recomputes every planet's planetaryShield
 //     attribute as the new base plus the new contributions of its online
 //     defense structs. Without this, pre-upgrade planets would keep
 //     hour-scale shield values (1500-21000) while GoOffline decrements
 //     only the new small contributions, permanently corrupting shields.
 //
-//  3. MigrateBlockStartRaid normalizes every planet's blockStartRaid
+//  4. MigrateBlockStartRaid normalizes every planet's blockStartRaid
 //     attribute to the new Command-Ship-driven semantics: upgrade height
 //     where a raid is in progress against a vulnerable defender, zero
 //     otherwise. A stale value would either collapse the puzzle
 //     difficulty to trivial or anchor it to a dead hash input.
 //
-// All three migrations are idempotent: each is a pure projection of the
+// All four migrations are idempotent: each is a pure projection of the
 // current state (genesis constants, online defense structs, raid queue +
 // Command Ship status) rather than an incremental adjustment, so a re-run
 // (e.g. a validator replaying the upgrade block from a snapshot) produces
@@ -56,6 +62,10 @@ func CreateUpgradeHandler(
 		}
 
 		if err := MigrateStructTypes(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
+		if err := MigratePlanetaryStructHealth(ctx, keepers); err != nil {
 			return newVM, err
 		}
 
@@ -84,6 +94,60 @@ func MigrateStructTypes(ctx context.Context, keepers *upgrades.Keepers) error {
 	}
 
 	logger.Info("v0.18.0 struct-type rewrite complete", "structTypesWritten", len(structTypes))
+	return nil
+}
+
+// MigratePlanetaryStructHealth raises the stored health of every built,
+// non-destroyed planetary struct to its (newly raised) type MaxHealth.
+//
+// Struct health is only stamped to MaxHealth at materialization; build
+// completion and going online never touch it. Bumping the struct type's
+// MaxHealth therefore leaves pre-upgrade planetary structs sitting at
+// their old health (3) against the new maxima (6/8/10), where they would
+// read as permanently damaged with no in-game way to repair. This sets
+// each one to full health once, at upgrade height.
+//
+// Must run after MigrateStructTypes so it reads the raised MaxHealth.
+// It is O(structs) with a memoized struct-type cache, mirroring
+// MigratePlanetaryShields. Idempotent: a pure projection to MaxHealth.
+func MigratePlanetaryStructHealth(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migratePlanetaryStructHealth")
+
+	k := keepers.StructsKeeper
+
+	// Struct types are few; memoize to avoid a store read per struct.
+	structTypeCache := make(map[uint64]structstypes.StructType)
+
+	var healthsRaised int
+	for _, structure := range k.GetAllStruct(ctx) {
+		if structure.LocationType != structstypes.ObjectType_planet {
+			continue
+		}
+
+		statusAttributeId := structskeeper.GetStructAttributeIDByObjectId(structstypes.StructAttributeType_status, structure.Id)
+		status := structstypes.StructState(k.GetStructAttribute(ctx, statusAttributeId))
+		if status&structstypes.StructStateBuilt == 0 || status&structstypes.StructStateDestroyed != 0 {
+			continue
+		}
+
+		structType, cached := structTypeCache[structure.Type]
+		if !cached {
+			loadedType, found := k.GetStructType(ctx, structure.Type)
+			if !found {
+				logger.Warn("struct references unknown struct type; skipping", "structId", structure.Id, "structType", structure.Type)
+				continue
+			}
+			structType = loadedType
+			structTypeCache[structure.Type] = structType
+		}
+
+		healthAttributeId := structskeeper.GetStructAttributeIDByObjectId(structstypes.StructAttributeType_health, structure.Id)
+		k.SetStructAttribute(ctx, healthAttributeId, structType.MaxHealth)
+		healthsRaised++
+	}
+
+	logger.Info("v0.18.0 planetary struct-health rebase complete", "planetaryStructsRaised", healthsRaised)
 	return nil
 }
 

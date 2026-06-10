@@ -4047,7 +4047,7 @@ section "PHASE 15: Power Generator (Player 4)"
 
 echo "  Player 4 Planet: ${PLAYER_4_PLANET_ID}"
 echo "  Using Field Generator (struct type 20, land, slot 0)"
-echo "  GeneratingRate=2, PassiveDraw=500000, MaxHealth=3"
+echo "  GeneratingRate=2, PassiveDraw=500000, MaxHealth=8 (armour, AttackReduction=1)"
 
 # ─── Snapshot Player 4's capacity before building ───
 P4_JSON=$(query query structs player "${PLAYER_4_ID}")
@@ -4109,7 +4109,7 @@ assert_gt "Player 4 has available capacity for allocations" 0 "${P4_AVAIL_CAP}"
 # ─── Now destroy the generator: Player 3 attacks ───
 info "--- Destruction Phase ---"
 echo "  Player 3 will move fleet to Player 4's planet and destroy the generator"
-echo "  Generator MaxHealth=3, Tank (type=9, land) does 2 damage per shot → 2 rounds"
+echo "  Generator MaxHealth=8 + armour (AttackReduction=1): Tank (type=9, land) 2 dmg → 1 net per shot → 8 rounds"
 echo "  NOTE: Command Ship (space ambit) cannot target land structs — using Tank instead"
 
 # Move Player 3's fleet to Player 4's planet (fleet-move has no charge cost)
@@ -4124,27 +4124,38 @@ info "Player 3 fleet location: ${FLEET_3_LOC}"
 # Record generator health before attacks
 GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}" || echo '{}')
 GEN_HP_BEFORE=$(jqr "${GEN_JSON}" '.structAttributes.health' '0')
-info "Generator health before attacks: ${GEN_HP_BEFORE}"
+info "Generator health before attacks: ${GEN_HP_BEFORE} (MaxHealth=8; armour reduces each 2-dmg Tank hit to 1 net)"
 
 # Attack round 1 — use Destroyer/Tank (type=9, land ambit, PrimaryWeaponAmbits=4=land)
-# Tank PrimaryWeaponCharge=1, PrimaryWeaponDamage=2
+# Tank PrimaryWeaponCharge=1, PrimaryWeaponDamage=2; generator AttackReduction=1 → 1 net.
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
-run_tx "Attack round 1: Tank -> Generator" \
+run_tx "Attack round 1: Tank -> Generator (armour: 2 dmg → 1 net)" \
     tx structs struct-attack "${DESTROYER_STRUCT_ID}" "${GENERATOR_STRUCT_ID}" primaryWeapon --from player_3
 
 GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}" || echo '{}')
 GEN_HP_MID=$(jqr "${GEN_JSON}" '.structAttributes.health' '0')
-info "Generator health after round 1: ${GEN_HP_MID}"
+info "Generator health after round 1: ${GEN_HP_MID} (was ${GEN_HP_BEFORE})"
+# Armour: a 2-damage Tank hit lands only 1 net damage on the generator.
+GEN_DMG_R1=$(( GEN_HP_BEFORE - GEN_HP_MID ))
+assert_eq "Generator armour reduced Tank hit to 1 net damage" "1" "${GEN_DMG_R1}"
 
-# Attack round 2 — should destroy it (3 HP - 2 dmg = 1 HP, then 1 HP - 2 dmg = destroyed)
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
-run_tx "Attack round 2: Tank -> Generator (should destroy)" \
-    tx structs struct-attack "${DESTROYER_STRUCT_ID}" "${GENERATOR_STRUCT_ID}" primaryWeapon --from player_3
+# Keep attacking until destroyed. With armour the Tank lands 1 net per shot,
+# so an 8-HP generator takes ~8 rounds; cap the loop for safety.
+GEN_HP_NOW="${GEN_HP_MID}"
+for round in 2 3 4 5 6 7 8 9 10 11 12; do
+    if [ "${GEN_HP_NOW}" = "0" ]; then break; fi
+    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
+    run_tx "Attack round ${round}: Tank -> Generator" \
+        tx structs struct-attack "${DESTROYER_STRUCT_ID}" "${GENERATOR_STRUCT_ID}" primaryWeapon --from player_3
+    GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}" || echo '{}')
+    GEN_HP_NOW=$(jqr "${GEN_JSON}" '.structAttributes.health' '0')
+    info "Generator health after round ${round}: ${GEN_HP_NOW}"
+done
 
 GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}" || echo '{}')
 GEN_HP_AFTER=$(jqr "${GEN_JSON}" '.structAttributes.health' '0')
 GEN_DESTROYED=$(jqr "${GEN_JSON}" '.structAttributes.isDestroyed' 'false')
-info "Generator health after round 2: ${GEN_HP_AFTER}"
+info "Generator health after destruction loop: ${GEN_HP_AFTER}"
 info "Generator isDestroyed: ${GEN_DESTROYED}"
 assert_eq "Generator destroyed (health=0)" "0" "${GEN_HP_AFTER}"
 
@@ -5824,26 +5835,30 @@ else
     info "SKIP E4: PDC(HP=${PDC_HP}), Tank(HP=${TANK_HP}), or P6 Mobile Art(HP=${P6_MA_HP}) destroyed"
 fi
 
-# ─── E4b: Soften PDC to HP=1 for the E5 killing-blow test ───
-# With distinct PDC and Ore Extractor ids, E1/E3 no longer pre-damage the PDC.
-# E5 expects PDC at HP=1 (Tank primaryWeaponDamage=2 destroys it in one shot).
-# Use non-counterable Mobile Art so the attacker survives any intermediate fire.
-PDC_HP=$(eb_health "${EB_PDC_ID}")
-P3_MA_HP=$(eb_health "${EB_P3_MOBILE_ART_ID}")
-if [ "${PDC_HP}" -gt 1 ] 2>/dev/null && [ "${P3_MA_HP}" != "0" ]; then
-    eb_attack "E4b: P3 Mobile Art(non-counterable) → P6 PDC (soften to HP=1)" \
-        "${EB_P3_MOBILE_ART_ID}" "${EB_PDC_ID}" primaryWeapon 3
+# ─── E4b: Soften PDC to HP=2 for the E5 killing-blow test ───
+# PDC MaxHealth is now 6 (v0.18.0). E5's Tank (primaryWeaponDamage=2) must
+# deliver the killing blow, so soften the PDC down to HP=2 first. Use the
+# non-counterable Mobile Art (2 dmg) so the attacker survives any PDC fire;
+# from a full 6 HP this takes ~2 hits (6→4→2).
+for soften_round in 1 2 3 4 5; do
     PDC_HP=$(eb_health "${EB_PDC_ID}")
-    info "E4b: PDC softened to HP=${PDC_HP} (target HP=1 for E5)"
-elif [ "${PDC_HP}" = "1" ]; then
-    info "E4b: PDC already at HP=1, skipping soften step"
-else
-    info "SKIP E4b: PDC(HP=${PDC_HP}) or P3 Mobile Art(HP=${P3_MA_HP}) unavailable"
-fi
+    P3_MA_HP=$(eb_health "${EB_P3_MOBILE_ART_ID}")
+    if [ "${PDC_HP}" = "0" ] || [ "${PDC_HP}" -le 2 ] 2>/dev/null; then
+        break
+    fi
+    if [ "${P3_MA_HP}" = "0" ]; then
+        info "SKIP E4b soften: P3 Mobile Art destroyed (PDC HP=${PDC_HP})"
+        break
+    fi
+    eb_attack "E4b: P3 Mobile Art(non-counterable) → P6 PDC (soften toward HP=2)" \
+        "${EB_P3_MOBILE_ART_ID}" "${EB_PDC_ID}" primaryWeapon 3
+done
+PDC_HP=$(eb_health "${EB_PDC_ID}")
+info "E4b: PDC softened to HP=${PDC_HP} (target HP=2 for E5 killing blow)"
 
 # ─── E5: Counterable attacker vs PDC directly — destroyed PDC does not counter ───
 # P3 Tank (type 9, counterable, land) → P6 PDC (type 19, planet-category, land)
-# Tank primaryWeaponDamage=2, PDC HP=1, so PDC is destroyed.
+# Tank primaryWeaponDamage=2, PDC softened to HP=2 in E4b, so PDC is destroyed.
 # A destroyed PDC does not fire counter-damage — Tank HP should be unchanged.
 PDC_HP=$(eb_health "${EB_PDC_ID}")
 TANK_HP=$(eb_health "${DESTROYER_STRUCT_ID}")
@@ -5874,11 +5889,11 @@ else
 fi
 
 # ─── E7: PDC killing blow — PDC should STILL fire (Bug 1 regression test) ───
-# The PDC should be at HP 1 after E5 (took 2 damage from Tank: 3→1).
-# A counterable attacker destroys the PDC (2 damage > 1 HP remaining).
-# Under Bug 1, DestroyAndCommit() decrements defensiveCannonQuantity before
-# ResolvePlanetaryDefense() runs, so the PDC fails to fire on the killing blow.
-# This test EXPECTS the PDC to still fire — it will FAIL until Bug 1 is fixed.
+# E5's Tank normally destroys the PDC, so this block usually SKIPS. If a
+# future change leaves the PDC alive into E7, a counterable attacker (BB#1)
+# destroys it here. Under Bug 1, DestroyAndCommit() decrements
+# defensiveCannonQuantity before ResolvePlanetaryDefense() runs, so the PDC
+# fails to fire on the killing blow; this test EXPECTS the PDC to still fire.
 PDC_HP=$(eb_health "${EB_PDC_ID}")
 BB1_HP=$(eb_health "${BATTLESHIP_1_ID}")
 if [ "${PDC_HP}" != "0" ] && [ "${BB1_HP}" != "0" ]; then
