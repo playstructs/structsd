@@ -5824,6 +5824,23 @@ else
     info "SKIP E4: PDC(HP=${PDC_HP}), Tank(HP=${TANK_HP}), or P6 Mobile Art(HP=${P6_MA_HP}) destroyed"
 fi
 
+# ─── E4b: Soften PDC to HP=1 for the E5 killing-blow test ───
+# With distinct PDC and Ore Extractor ids, E1/E3 no longer pre-damage the PDC.
+# E5 expects PDC at HP=1 (Tank primaryWeaponDamage=2 destroys it in one shot).
+# Use non-counterable Mobile Art so the attacker survives any intermediate fire.
+PDC_HP=$(eb_health "${EB_PDC_ID}")
+P3_MA_HP=$(eb_health "${EB_P3_MOBILE_ART_ID}")
+if [ "${PDC_HP}" -gt 1 ] 2>/dev/null && [ "${P3_MA_HP}" != "0" ]; then
+    eb_attack "E4b: P3 Mobile Art(non-counterable) → P6 PDC (soften to HP=1)" \
+        "${EB_P3_MOBILE_ART_ID}" "${EB_PDC_ID}" primaryWeapon 3
+    PDC_HP=$(eb_health "${EB_PDC_ID}")
+    info "E4b: PDC softened to HP=${PDC_HP} (target HP=1 for E5)"
+elif [ "${PDC_HP}" = "1" ]; then
+    info "E4b: PDC already at HP=1, skipping soften step"
+else
+    info "SKIP E4b: PDC(HP=${PDC_HP}) or P3 Mobile Art(HP=${P3_MA_HP}) unavailable"
+fi
+
 # ─── E5: Counterable attacker vs PDC directly — destroyed PDC does not counter ───
 # P3 Tank (type 9, counterable, land) → P6 PDC (type 19, planet-category, land)
 # Tank primaryWeaponDamage=2, PDC HP=1, so PDC is destroyed.
