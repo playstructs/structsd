@@ -147,6 +147,17 @@ func (structType StructType) GetWeaponCounterable(weaponSystem TechWeaponSystem)
     return weaponCounterable
 }
 
+func (structType StructType) GetWeaponArmourPiercing(weaponSystem TechWeaponSystem) (weaponArmourPiercing bool) {
+    switch weaponSystem {
+        case TechWeaponSystem_primaryWeapon:
+            weaponArmourPiercing = structType.PrimaryWeaponArmourPiercing
+
+        case TechWeaponSystem_secondaryWeapon:
+            weaponArmourPiercing = structType.SecondaryWeaponArmourPiercing
+    }
+    return weaponArmourPiercing
+}
+
 func (structType StructType) GetWeaponRecoilDamage(weaponSystem TechWeaponSystem) (weaponRecoilDamage uint64) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:

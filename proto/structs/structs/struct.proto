@@ -136,6 +136,9 @@ message StructType {
 
   uint64 primaryWeaponGuaranteedShots   = 67;
   uint64 secondaryWeaponGuaranteedShots = 68;
+
+  bool primaryWeaponArmourPiercing   = 69;
+  bool secondaryWeaponArmourPiercing = 70;
 }
 
 message StructDefender {

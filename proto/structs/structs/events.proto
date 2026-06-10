@@ -213,6 +213,8 @@ option go_package = "structs/x/structs/types";
     uint64 blockerHealthAfter  = 42;
     uint64 blockerHealthMax    = 43;
 
+    bool armourPiercing = 45;
+
   }
 
   message EventAttackDefenderCounterDetail {

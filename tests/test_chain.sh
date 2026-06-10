@@ -349,6 +349,25 @@ get_newest_struct_id() {
     echo "${json}" | jq -r '[.Struct[].id] | map(split("-") | {p: .[0], n: (.[1] | tonumber)}) | sort_by(.n) | last | "\(.p)-\(.n)"' 2>/dev/null || echo ""
 }
 
+# assert_new_struct: fail loudly if a struct-build-initiate did not produce a
+# NEW struct of the expected type (guards against get_newest_struct_id silently
+# returning a stale id when an initiate is rejected).
+# Usage: assert_new_struct <label> <new_id> <prev_newest_id> <expected_type>
+assert_new_struct() {
+    local label="$1" new_id="$2" prev_id="$3" exp_type="$4"
+    if [ -z "${new_id}" ] || [ "${new_id}" = "${prev_id}" ]; then
+        echo -e "  ${RED}FAIL${NC}: ${label} - initiate produced no new struct (id='${new_id}', prev='${prev_id}')"
+        FAIL_COUNT=$((FAIL_COUNT + 1)); return 1
+    fi
+    local t; t=$(query query structs struct "${new_id}" | jq -r '.Struct.type // empty')
+    if [ "${t}" != "${exp_type}" ]; then
+        echo -e "  ${RED}FAIL${NC}: ${label} - new struct ${new_id} type='${t}', expected '${exp_type}'"
+        FAIL_COUNT=$((FAIL_COUNT + 1)); return 1
+    fi
+    echo -e "  ${GREEN}PASS${NC}: ${label} = ${new_id} (type ${exp_type})"
+    PASS_COUNT=$((PASS_COUNT + 1))
+}
+
 # get_latest_allocation_for_source: find the most recent allocation for a given source
 get_latest_allocation_for_source() {
     local source_id="$1"
@@ -420,7 +439,8 @@ wait_for_charge() {
 # Charge constants (from genesis_struct_type.go)
 CHARGE_BUILD=8
 CHARGE_ATTACK_DEFAULT=1
-CHARGE_ATTACK_BATTLESHIP=8
+CHARGE_ATTACK_BATTLESHIP=8           # guided secondary (v0.18.0)
+CHARGE_ATTACK_BATTLESHIP_PRIMARY=20  # armour-piercing unguided primary
 CHARGE_ATTACK_SAM=20
 CHARGE_MOVE=8
 CHARGE_DEFEND=1
@@ -640,6 +660,7 @@ _primary_charge() {
 }
 _secondary_charge() {
     case "$1" in
+        2)  echo 8 ;; # Battleship guided secondary (v0.18.0)
         3)  echo 8 ;; # Starfighter attackRun
         11) echo 1 ;; # Cruiser secondary
         *)  echo 1 ;; # fallback
@@ -819,6 +840,7 @@ recover_state() {
     MINER_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 14 1 "${SA}")
     REFINERY_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 16 1 "${SA}")
     DESTROYER_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 9 1 "${SA}")
+    AP_TANK_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 9 2 "${SA}")
     DEFENDER_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 9 1 "${SA}")
     GENERATOR_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_4_ID}" 20 1 "${SA}")
     SAM_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 10 1 "${SA}")
@@ -3774,6 +3796,22 @@ run_compute "Building Galactic Battleship #2 ${BATTLESHIP_2_ID}" \
 
 assert_eq "Battleship #2 built" "true" "$(query query structs struct "${BATTLESHIP_2_ID}" | jq -r '.structAttributes.isBuilt')"
 
+# ─── P3: Tank #2 (type 9, land, slot 0) — armour-piercing target for Phase 13 ───
+# Dedicated target so the AP test never disturbs the main Tank's HP.
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
+run_tx "Initiating P3 Tank #2 (type=9, land, slot=0) — armour piercing target" \
+    tx structs struct-build-initiate "${PLAYER_3_ID}" 9 land 0 --from player_3
+
+STRUCT_ALL_JSON=$(query query structs struct-all)
+AP_TANK_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
+assert_not_empty "P3 Tank #2 struct ID" "${AP_TANK_ID}"
+echo "  P3 Tank #2 Struct ID: ${AP_TANK_ID}"
+
+run_compute "Building P3 Tank #2 ${AP_TANK_ID}" \
+    tx structs struct-build-compute "${AP_TANK_ID}" --from player_3
+
+assert_eq "P3 Tank #2 built" "true" "$(query query structs struct "${AP_TANK_ID}" | jq -r '.structAttributes.isBuilt')"
+
 fi # phase 12
 
 if run_phase 1300; then
@@ -3812,14 +3850,40 @@ run_compute "Building Player 2's Battleship ${P2_BATTLESHIP_ID}" \
 
 assert_eq "Player 2 Battleship built" "true" "$(query query structs struct "${P2_BATTLESHIP_ID}" | jq -r '.structAttributes.isBuilt')"
 
-# Attack the defended Command Ship
+# ─── v0.18.0 Battleship rebalance: primary is armour-piercing, land/water only ───
+# The unguided primary (PrimaryWeaponAmbits=6: water+land) can no longer
+# target space — the guided secondary (SecondaryWeaponAmbits=16: space) covers it.
+
+# Negative: Battleship primary cannot target the space-ambit Command Ship.
+# Wait for full primary charge first so the failure is the ambit check, not charge.
+wait_for_charge "${PLAYER_2_ID}" "${CHARGE_ATTACK_BATTLESHIP_PRIMARY}"
+run_tx_expect_fail "Battleship primary (land/water) rejected against space target" \
+    tx structs struct-attack "${P2_BATTLESHIP_ID}" "${COMMAND_SHIP_ID}" primaryWeapon --from player_2
+
+# ─── Armour piercing: Battleship primary vs Tank (AttackReduction=1) ───
+# P3 Tank #2 (built in Phase 12, full HP, land ambit on P3's fleet at this
+# planet). The armour-piercing primary negates the Tank's reduction, so the
+# full 2 damage lands. A non-piercing weapon would only deal 1 (2 - 1).
+AP_TANK_HP_BEFORE=$(query query structs struct "${AP_TANK_ID}" | jq -r '.structAttributes.health // "0"')
+P2_BB_HP_BEFORE=$(query query structs struct "${P2_BATTLESHIP_ID}" | jq -r '.structAttributes.health // "0"')
+info "P3 Tank #2 health before armour-piercing attack: ${AP_TANK_HP_BEFORE}"
+
+run_tx "P2 Battleship fires armour-piercing primary at P3 Tank #2" \
+    tx structs struct-attack "${P2_BATTLESHIP_ID}" "${AP_TANK_ID}" primaryWeapon --from player_2
+
+AP_TANK_HP_AFTER=$(query query structs struct "${AP_TANK_ID}" | jq -r '.structAttributes.health // "0"')
+P2_BB_HP_AFTER=$(query query structs struct "${P2_BATTLESHIP_ID}" | jq -r '.structAttributes.health // "0"')
+assert_eq "Armour piercing negates Tank reduction (full 2 damage)" "2" "$((AP_TANK_HP_BEFORE - AP_TANK_HP_AFTER))"
+assert_eq "Battleship unharmed (Tank cannot counter into space)" "${P2_BB_HP_BEFORE}" "${P2_BB_HP_AFTER}"
+
+# Attack the defended Command Ship with the guided secondary (space ambit)
 CMDSHIP_JSON=$(query query structs struct "${COMMAND_SHIP_ID}" || echo '{}')
 CMDSHIP_HP_BEFORE=$(jqr "${CMDSHIP_JSON}" '.structAttributes.health' '0')
 info "Command Ship health before defended attack: ${CMDSHIP_HP_BEFORE}"
 
 wait_for_charge "${PLAYER_2_ID}" "${CHARGE_ATTACK_BATTLESHIP}"
-run_tx "Player 2 attacks the defended Command Ship" \
-    tx structs struct-attack "${P2_BATTLESHIP_ID}" "${COMMAND_SHIP_ID}" primaryWeapon --from player_2
+run_tx "Player 2 attacks the defended Command Ship (guided secondary)" \
+    tx structs struct-attack "${P2_BATTLESHIP_ID}" "${COMMAND_SHIP_ID}" secondaryWeapon --from player_2
 
 CMDSHIP_JSON=$(query query structs struct "${COMMAND_SHIP_ID}" || echo '{}')
 CMDSHIP_HP_AFTER=$(jqr "${CMDSHIP_JSON}" '.structAttributes.health' '0')
@@ -5024,10 +5088,10 @@ fi
 assert_not_empty "Player 6 address" "${PLAYER_6_ADDRESS}"
 
 run_tx "Funding player_6 from bob" \
-    tx bank send "${BOB_ADDRESS}" "${PLAYER_6_ADDRESS}" 10000000ualpha --from bob
+    tx bank send "${BOB_ADDRESS}" "${PLAYER_6_ADDRESS}" 25000000ualpha --from bob
 
-run_tx "Delegating 5000000ualpha from player_6 to validator" \
-    tx staking delegate "${VALIDATOR_ADDRESS}" 5000000ualpha --from player_6
+run_tx "Delegating 20000000ualpha from player_6 to validator" \
+    tx staking delegate "${VALIDATOR_ADDRESS}" 20000000ualpha --from player_6
 
 ADDR_JSON_6=$(query query structs address "${PLAYER_6_ADDRESS}")
 PLAYER_6_ID=$(jqr "${ADDR_JSON_6}" '.playerId')
@@ -5200,23 +5264,25 @@ assert_not_empty "P3 Mobile Artillery struct ID" "${EB_P3_MOBILE_ART_ID}"
 echo "  P3 Mobile Artillery ID: ${EB_P3_MOBILE_ART_ID}"
 
 # ─── P6: PDC (type 19, land, slot 2) — planetary struct for defense cannon test ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P6 PDC (type=19, land, slot=2) for PDC test" \
     tx structs struct-build-initiate "${PLAYER_6_ID}" 19 land 2 --from player_6
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_PDC_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "P6 PDC struct ID" "${EB_PDC_ID}"
+assert_new_struct "P6 PDC initiated" "${EB_PDC_ID}" "${PREV_NEWEST_STRUCT_ID}" 19
 echo "  P6 PDC ID: ${EB_PDC_ID}"
 
 # ─── P6: Ore Extractor (type 14, land, slot 3) — non-PDC planet struct for PDC cross-defense test ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P6 Ore Extractor (type=14, land, slot=3) for PDC cross-defense test" \
     tx structs struct-build-initiate "${PLAYER_6_ID}" 14 land 3 --from player_6
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_ORE_EXTRACTOR_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "P6 Ore Extractor struct ID" "${EB_ORE_EXTRACTOR_ID}"
+assert_new_struct "P6 Ore Extractor initiated" "${EB_ORE_EXTRACTOR_ID}" "${PREV_NEWEST_STRUCT_ID}" 14
 echo "  P6 Ore Extractor ID: ${EB_ORE_EXTRACTOR_ID}"
 
 info "All 12 extended battle builds initiated. Computing now (difficulty decays with age)."
@@ -5458,8 +5524,10 @@ EB_DESTROYED=0
 info "── Group A: Same-Ambit Combat ──"
 
 # A1: Space — P3 Battleship #1 → P6 Starfighter
-eb_attack "Space: P3 Battleship #1 → P6 Starfighter" \
-    "${BATTLESHIP_1_ID}" "${EB_STARFIGHTER_ID}" primaryWeapon 3
+# v0.18.0: Battleship primary is land/water only; space targets use the
+# guided secondary (damage 1).
+eb_attack "Space: P3 Battleship #1 → P6 Starfighter (guided secondary)" \
+    "${BATTLESHIP_1_ID}" "${EB_STARFIGHTER_ID}" secondaryWeapon 3
 
 # A2: Space — P6 Frigate → P3 Battleship #2
 eb_attack "Space: P6 Frigate → P3 Battleship #2" \
@@ -5489,9 +5557,9 @@ eb_attack "Water: P3 Cruiser → P6 Destroyer-water" \
 eb_attack "Water: P6 Cruiser → P3 Submersible" \
     "${EB_P6_CRUISER_ID}" "${SUB_STRUCT_ID}" primaryWeapon 6
 
-# A7: Space — P3 Battleship #2 → P6 Frigate
-eb_attack "Space: P3 Battleship #2 → P6 Frigate" \
-    "${BATTLESHIP_2_ID}" "${EB_FRIGATE_ID}" primaryWeapon 3
+# A7: Space — P3 Battleship #2 → P6 Frigate (guided secondary, space ambit)
+eb_attack "Space: P3 Battleship #2 → P6 Frigate (guided secondary)" \
+    "${BATTLESHIP_2_ID}" "${EB_FRIGATE_ID}" secondaryWeapon 3
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GROUP B: Cross-Ambit Combat
@@ -5572,8 +5640,10 @@ P6_STAR_HP_BEFORE=$(eb_health "${EB_STARFIGHTER_ID}")
 
 BB2_ALIVE=$(eb_health "${BATTLESHIP_2_ID}")
 if [ "${BB2_ALIVE}" != "0" ]; then
-    eb_attack "Blocking: P3 Battleship #2 → P6 Battleship (defended)" \
-        "${BATTLESHIP_2_ID}" "${EB_P6_BATTLESHIP_ID}" primaryWeapon 3
+    # v0.18.0: space target requires the guided secondary. Note the P6
+    # Battleship's signal jamming may evade guided attacks (2/3 chance).
+    eb_attack "Blocking: P3 Battleship #2 → P6 Battleship (defended, guided secondary)" \
+        "${BATTLESHIP_2_ID}" "${EB_P6_BATTLESHIP_ID}" secondaryWeapon 3
 
     P6_BB_HP_AFTER=$(eb_health "${EB_P6_BATTLESHIP_ID}")
     P6_FRIG_HP_AFTER=$(eb_health "${EB_FRIGATE_ID}")
@@ -5624,8 +5694,8 @@ while [ "${STAR_HP}" != "0" ] && [ "${SUSTAINED_ROUNDS}" -lt 4 ]; do
         info "  Battleship #1 destroyed, stopping sustained attack"
         break
     fi
-    eb_attack "Sustained round ${SUSTAINED_ROUNDS}: P3 BB#1 → P6 Starfighter" \
-        "${BATTLESHIP_1_ID}" "${EB_STARFIGHTER_ID}" primaryWeapon 3
+    eb_attack "Sustained round ${SUSTAINED_ROUNDS}: P3 BB#1 → P6 Starfighter (guided secondary)" \
+        "${BATTLESHIP_1_ID}" "${EB_STARFIGHTER_ID}" secondaryWeapon 3
     STAR_HP=$(eb_health "${EB_STARFIGHTER_ID}")
 done
 if [ "${STAR_HP}" = "0" ]; then

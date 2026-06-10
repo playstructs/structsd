@@ -49,6 +49,7 @@ type VolleyResult struct {
 	RolledDamage             uint64
 	DamageReduction          uint64
 	UnitDefenses             types.TechUnitDefenses
+	ArmourPiercing           bool
 	NetDamage                uint64
 	IsBlocker                bool
 	TargetOrBlockerDestroyed bool
@@ -296,6 +297,13 @@ func (ac *AttackContext) resolveVolleyDamageOn(target *StructCache, isBlocker bo
 	net := rolled
 	damageReduction := target.GetStructType().AttackReduction
 	unitDefenses := target.GetStructType().UnitDefenses
+
+	// Armour piercing negates the target's damage reduction entirely.
+	armourPiercing := damageReduction > 0 && attacker.GetStructType().GetWeaponArmourPiercing(ac.WeaponSystem)
+	if armourPiercing {
+		damageReduction = 0
+	}
+
 	if rolled != 0 && damageReduction > 0 {
 		if damageReduction >= rolled {
 			net = 1
@@ -309,6 +317,7 @@ func (ac *AttackContext) resolveVolleyDamageOn(target *StructCache, isBlocker bo
 		RolledDamage:    rolled,
 		DamageReduction: damageReduction,
 		UnitDefenses:    unitDefenses,
+		ArmourPiercing:  armourPiercing,
 		NetDamage:       net,
 		IsBlocker:       isBlocker,
 	}
@@ -498,6 +507,7 @@ func newProjectileRow(base *types.EventAttackShotDetail) *types.EventAttackShotD
 	row.DamageDealt = 0
 	row.DamageReduction = 0
 	row.DamageReductionCause = 0
+	row.ArmourPiercing = false
 	row.Damage = 0
 	row.BlockerDestroyed = false
 	row.TargetDestroyed = false
@@ -612,6 +622,10 @@ func (ac *AttackContext) EndShot() {
 			base.DamageReduction = vr.DamageReduction
 			base.DamageReductionCause = vr.UnitDefenses
 		}
+		if vr.ArmourPiercing {
+			base.ArmourPiercing = true
+			base.DamageReductionCause = vr.UnitDefenses
+		}
 		base.Damage = vr.NetDamage
 
 		if vr.IsBlocker {
@@ -651,6 +665,10 @@ func (ac *AttackContext) EndShot() {
 		lastRow.DamageDealt = vr.Shots[n-1].Damage
 		if vr.RolledDamage != 0 && vr.DamageReduction > 0 {
 			lastRow.DamageReduction = vr.DamageReduction
+			lastRow.DamageReductionCause = vr.UnitDefenses
+		}
+		if vr.ArmourPiercing {
+			lastRow.ArmourPiercing = true
 			lastRow.DamageReductionCause = vr.UnitDefenses
 		}
 		lastRow.Damage = vr.NetDamage

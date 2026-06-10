@@ -705,3 +705,204 @@ func TestMsgStructAttackDefenderFleetMovedNoSupport(t *testing.T) {
 	require.Equal(t, atkType.MaxHealth, k.GetStructAttribute(sdkCtx, atkHAttr),
 		"attacker HP should be unchanged when no defender is in range to counter")
 }
+
+// TestMsgStructAttackArmourPiercing verifies the armour-piercing weapon tech:
+// an armour-piercing weapon negates the target's AttackReduction entirely,
+// a non-piercing weapon still has its damage reduced, and piercing against
+// an unarmoured target changes nothing. The emitted EventAttack rows must
+// report the piercing transparently.
+func TestMsgStructAttackArmourPiercing(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1000)
+
+	landAmbitFlag := uint64(1) << uint64(types.Ambit_land)
+
+	atkPlayer := testAppendPlayer(k, sdkCtx, types.Player{
+		Creator:        "cosmos1apattacker",
+		PrimaryAddress: "cosmos1apattacker",
+	})
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, atkPlayer.Id), uint64(100000))
+	atkLastActionAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, atkPlayer.Id)
+	k.SetGridAttribute(sdkCtx, atkLastActionAttrId, uint64(0))
+
+	tgtPlayer := testAppendPlayer(k, sdkCtx, types.Player{
+		Creator:        "cosmos1aptarget",
+		PrimaryAddress: "cosmos1aptarget",
+	})
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, tgtPlayer.Id), uint64(100000))
+
+	planet := testAppendPlanet(k, sdkCtx, types.Planet{
+		Creator:   tgtPlayer.Creator,
+		Owner:     tgtPlayer.Id,
+		LandSlots: 4,
+		Land:      []string{"", "", "", ""},
+	})
+	tgtPlayer.PlanetId = planet.Id
+	k.SetPlayer(sdkCtx, tgtPlayer)
+
+	cmdType := types.StructType{
+		Id:       400,
+		Type:     types.CommandStruct,
+		Category: types.ObjectType_fleet,
+	}
+	k.SetStructType(sdkCtx, cmdType)
+
+	// Armour-piercing attacker: 1 shot, 2 damage, always hits.
+	apType := types.StructType{
+		Id:                                      401,
+		Type:                                    "PiercingGunship",
+		Category:                                types.ObjectType_fleet,
+		MaxHealth:                               3,
+		PossibleAmbit:                           landAmbitFlag,
+		PrimaryWeapon:                           types.TechActiveWeaponry_unguidedWeaponry,
+		PrimaryWeaponControl:                    types.TechWeaponControl_unguided,
+		PrimaryWeaponCharge:                     1,
+		PrimaryWeaponTargets:                    1,
+		PrimaryWeaponShots:                      1,
+		PrimaryWeaponDamage:                     2,
+		PrimaryWeaponAmbits:                     landAmbitFlag,
+		PrimaryWeaponBlockable:                  true,
+		PrimaryWeaponArmourPiercing:             true,
+		PrimaryWeaponShotSuccessRateNumerator:   1,
+		PrimaryWeaponShotSuccessRateDenominator: 1,
+	}
+	k.SetStructType(sdkCtx, apType)
+
+	// Identical weapon without armour piercing.
+	nonApType := apType
+	nonApType.Id = 402
+	nonApType.Type = "Gunship"
+	nonApType.PrimaryWeaponArmourPiercing = false
+	k.SetStructType(sdkCtx, nonApType)
+
+	// Armoured target: AttackReduction 1, like the Tank.
+	armouredType := types.StructType{
+		Id:              403,
+		Type:            "ArmouredTarget",
+		Category:        types.ObjectType_planet,
+		MaxHealth:       10,
+		PossibleAmbit:   landAmbitFlag,
+		UnitDefenses:    types.TechUnitDefenses_armour,
+		AttackReduction: 1,
+	}
+	k.SetStructType(sdkCtx, armouredType)
+
+	unarmouredType := types.StructType{
+		Id:            404,
+		Type:          "SoftTarget",
+		Category:      types.ObjectType_planet,
+		MaxHealth:     10,
+		PossibleAmbit: landAmbitFlag,
+	}
+	k.SetStructType(sdkCtx, unarmouredType)
+
+	fleet := testAppendFleet(k, sdkCtx, types.Fleet{
+		Owner:      atkPlayer.Id,
+		LocationId: planet.Id,
+		Status:     types.FleetStatus_away,
+	})
+	cmd := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator: atkPlayer.Creator, Owner: atkPlayer.Id, Type: cmdType.Id,
+		LocationId: fleet.Id, LocationType: types.ObjectType_fleet, OperatingAmbit: types.Ambit_land,
+	})
+	cmdSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, cmd.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, cmdSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, cmdSAttr, uint64(types.StructStateOnline))
+	fleet.CommandStruct = cmd.Id
+	k.SetFleet(sdkCtx, fleet)
+	atkPlayer.FleetId = fleet.Id
+	k.SetPlayer(sdkCtx, atkPlayer)
+
+	makeStruct := func(player types.Player, typeId uint64, locationId string, locationType types.ObjectType) (types.Struct, string) {
+		structure := testAppendStruct(k, sdkCtx, types.Struct{
+			Creator: player.Creator, Owner: player.Id, Type: typeId,
+			LocationId: locationId, LocationType: locationType, OperatingAmbit: types.Ambit_land,
+		})
+		sAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id)
+		testSetStructAttributeFlagAdd(k, sdkCtx, sAttr, uint64(types.StructStateBuilt))
+		testSetStructAttributeFlagAdd(k, sdkCtx, sAttr, uint64(types.StructStateOnline))
+		hAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, structure.Id)
+		return structure, hAttr
+	}
+
+	apAttacker, _ := makeStruct(atkPlayer, apType.Id, fleet.Id, types.ObjectType_fleet)
+	nonApAttacker, _ := makeStruct(atkPlayer, nonApType.Id, fleet.Id, types.ObjectType_fleet)
+	armouredTarget, armouredHAttr := makeStruct(tgtPlayer, armouredType.Id, planet.Id, types.ObjectType_planet)
+	unarmouredTarget, unarmouredHAttr := makeStruct(tgtPlayer, unarmouredType.Id, planet.Id, types.ObjectType_planet)
+
+	// attack runs one StructAttack with a fresh event manager and returns the
+	// emitted EventAttack for shot-detail assertions.
+	attack := func(t *testing.T, attackerId string, targetId string) *types.EventAttack {
+		t.Helper()
+		k.SetGridAttribute(sdkCtx, atkLastActionAttrId, uint64(0))
+		eventCtx := sdkCtx.WithEventManager(sdk.NewEventManager())
+
+		_, err := ms.StructAttack(sdk.WrapSDKContext(eventCtx), &types.MsgStructAttack{
+			Creator:           atkPlayer.Creator,
+			OperatingStructId: attackerId,
+			WeaponSystem:      "primaryWeapon",
+			TargetStructId:    []string{targetId},
+		})
+		require.NoError(t, err)
+
+		for _, abciEvent := range eventCtx.EventManager().ABCIEvents() {
+			if abciEvent.Type != "structs.structs.EventAttack" {
+				continue
+			}
+			msg, err := sdk.ParseTypedEvent(abciEvent)
+			require.NoError(t, err)
+			attackEvent, ok := msg.(*types.EventAttack)
+			require.True(t, ok)
+			return attackEvent
+		}
+		t.Fatal("no EventAttack emitted")
+		return nil
+	}
+
+	t.Run("armour piercing negates attack reduction", func(t *testing.T) {
+		k.SetStructAttribute(sdkCtx, armouredHAttr, armouredType.MaxHealth)
+
+		attackEvent := attack(t, apAttacker.Id, armouredTarget.Id)
+
+		require.Equal(t, armouredType.MaxHealth-2, k.GetStructAttribute(sdkCtx, armouredHAttr),
+			"armour-piercing volley should land full damage")
+
+		shots := attackEvent.EventAttackDetail.EventAttackShotDetail
+		require.Len(t, shots, 1)
+		require.True(t, shots[0].ArmourPiercing, "event must report armour piercing")
+		require.Equal(t, uint64(0), shots[0].DamageReduction, "no reduction applied when pierced")
+		require.Equal(t, types.TechUnitDefenses_armour, shots[0].DamageReductionCause, "event must report what was pierced")
+		require.Equal(t, uint64(2), shots[0].Damage)
+	})
+
+	t.Run("non-piercing weapon is still reduced by armour", func(t *testing.T) {
+		k.SetStructAttribute(sdkCtx, armouredHAttr, armouredType.MaxHealth)
+
+		attackEvent := attack(t, nonApAttacker.Id, armouredTarget.Id)
+
+		require.Equal(t, armouredType.MaxHealth-1, k.GetStructAttribute(sdkCtx, armouredHAttr),
+			"non-piercing volley should be reduced by armour")
+
+		shots := attackEvent.EventAttackDetail.EventAttackShotDetail
+		require.Len(t, shots, 1)
+		require.False(t, shots[0].ArmourPiercing)
+		require.Equal(t, uint64(1), shots[0].DamageReduction)
+		require.Equal(t, types.TechUnitDefenses_armour, shots[0].DamageReductionCause)
+		require.Equal(t, uint64(1), shots[0].Damage)
+	})
+
+	t.Run("armour piercing against unarmoured target changes nothing", func(t *testing.T) {
+		k.SetStructAttribute(sdkCtx, unarmouredHAttr, unarmouredType.MaxHealth)
+
+		attackEvent := attack(t, apAttacker.Id, unarmouredTarget.Id)
+
+		require.Equal(t, unarmouredType.MaxHealth-2, k.GetStructAttribute(sdkCtx, unarmouredHAttr))
+
+		shots := attackEvent.EventAttackDetail.EventAttackShotDetail
+		require.Len(t, shots, 1)
+		require.False(t, shots[0].ArmourPiercing, "no piercing reported when target has no reduction")
+		require.Equal(t, uint64(0), shots[0].DamageReduction)
+		require.Equal(t, uint64(2), shots[0].Damage)
+	})
+}

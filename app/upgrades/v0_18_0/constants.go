@@ -18,6 +18,17 @@ package v0_18_0
 //     raid becomes winnable; the previously unused `ongoing` (2) is emitted
 //     when the defending Command Ship comes back online mid-raid.
 //
+// Battleship vs. Tank balancing (binary + struct-type rewrite):
+//
+//   - New per-weapon armour-piercing tech: struct types gain
+//     primaryWeaponArmourPiercing / secondaryWeaponArmourPiercing booleans
+//     (default false). An armour-piercing weapon negates the target's
+//     attackReduction during volley damage resolution; attack events report
+//     the piercing via EventAttackShotDetail.armourPiercing.
+//   - Battleship primary (unguided) is now armour piercing and restricted
+//     to land + water ambits (22 -> 6). Battleship gains a guided secondary
+//     weapon targeting space (charge 8, damage 1).
+//
 // Difficulty rebase (state migration at upgrade height):
 //
 //   - Planetary shield values are rebased from hour/day-scale targets to

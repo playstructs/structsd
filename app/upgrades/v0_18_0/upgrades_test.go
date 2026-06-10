@@ -99,6 +99,52 @@ func TestMigrateStructTypes_RebasesShieldContributions(t *testing.T) {
 	}
 }
 
+// TestMigrateStructTypes_RebalancesBattleship verifies the Battleship vs.
+// Tank balancing lands in the struct type store: armour-piercing unguided
+// primary restricted to land+water, and a new guided space secondary.
+func TestMigrateStructTypes_RebalancesBattleship(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+
+	// Seed a stale pre-upgrade Battleship so the rewrite is observable.
+	k.SetStructType(ctx, types.StructType{
+		Id:                  2,
+		PrimaryWeaponAmbits: 22,
+		SecondaryWeapon:     types.TechActiveWeaponry_noActiveWeaponry,
+	})
+
+	require.NoError(t, v0_18_0.MigrateStructTypes(ctx, keepers))
+
+	battleship, found := k.GetStructType(ctx, 2)
+	require.True(t, found, "Battleship struct type must exist after rewrite")
+
+	// Primary: armour-piercing unguided, land + water only.
+	require.Equal(t, uint64(6), battleship.PrimaryWeaponAmbits, "primary ambits = water + land")
+	require.True(t, battleship.PrimaryWeaponArmourPiercing, "primary is armour piercing")
+	require.Equal(t, types.TechWeaponControl_unguided, battleship.PrimaryWeaponControl)
+
+	// Secondary: guided space weapon.
+	require.Equal(t, types.TechActiveWeaponry_guidedWeaponry, battleship.SecondaryWeapon)
+	require.Equal(t, types.TechWeaponControl_guided, battleship.SecondaryWeaponControl)
+	require.Equal(t, uint64(16), battleship.SecondaryWeaponAmbits, "secondary ambits = space")
+	require.Equal(t, uint64(8), battleship.SecondaryWeaponCharge)
+	require.Equal(t, uint64(1), battleship.SecondaryWeaponDamage)
+	require.False(t, battleship.SecondaryWeaponArmourPiercing)
+
+	// Tank keeps its armour; no struct type other than the Battleship
+	// primary gains armour piercing.
+	tank, found := k.GetStructType(ctx, 9)
+	require.True(t, found)
+	require.Equal(t, uint64(1), tank.AttackReduction, "tank retains attack reduction")
+	for _, structType := range types.CreateStructTypeGenesis() {
+		if structType.Id == 2 {
+			continue
+		}
+		require.False(t, structType.PrimaryWeaponArmourPiercing, "type %d primary must not be armour piercing", structType.Id)
+		require.False(t, structType.SecondaryWeaponArmourPiercing, "type %d secondary must not be armour piercing", structType.Id)
+	}
+}
+
 // TestMigratePlanetaryShields_RecomputesFromOnlineDefenses verifies the
 // two-pass shield rebase: every planet drops to the new base, and online
 // defense structs add their new (not old) contributions.
