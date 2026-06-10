@@ -81,8 +81,8 @@ func TestMigrateStructTypes_RebasesShieldContributions(t *testing.T) {
 	keepers := &upgrades.Keepers{StructsKeeper: k}
 
 	// Seed stale pre-upgrade values so the rewrite is observable.
-	k.SetStructType(ctx, types.StructType{Id: 16, PlanetaryShieldContribution: 1500})
-	k.SetStructType(ctx, types.StructType{Id: 18, PlanetaryShieldContribution: 9000})
+	k.SetStructType(ctx, types.StructType{Id: 16, PlanetaryShieldContribution: 1500, BuildLimit: 1})
+	k.SetStructType(ctx, types.StructType{Id: 18, PlanetaryShieldContribution: 9000, BuildLimit: 1})
 
 	require.NoError(t, v0_18_0.MigrateStructTypes(ctx, keepers))
 
@@ -96,6 +96,14 @@ func TestMigrateStructTypes_RebasesShieldContributions(t *testing.T) {
 		structType, found := k.GetStructType(ctx, typeId)
 		require.True(t, found, "struct type %d must exist after rewrite", typeId)
 		require.Equal(t, contribution, structType.PlanetaryShieldContribution, "struct type %d contribution", typeId)
+	}
+
+	// The pure-shield defense structs are now unlimited (BuildLimit 0) so
+	// players can stack them to extend the shields-vulnerable window.
+	for _, typeId := range []uint64{16, 18} {
+		structType, found := k.GetStructType(ctx, typeId)
+		require.True(t, found, "struct type %d must exist after rewrite", typeId)
+		require.Equal(t, uint64(0), structType.BuildLimit, "struct type %d build limit", typeId)
 	}
 }
 

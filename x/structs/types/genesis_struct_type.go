@@ -1312,7 +1312,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      DefaultCosmeticName: "Shieldwall",
      Category: ObjectType_planet,
 
-     BuildLimit: 1,
+     BuildLimit: 0,
      BuildDifficulty: 720,
      BuildDraw: 200000,
      PassiveDraw: 200000,
@@ -1484,7 +1484,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      DefaultCosmeticName: "Hardshell",
      Category: ObjectType_planet,
 
-     BuildLimit: 1,
+     BuildLimit: 0,
      BuildDifficulty: 3600,
      BuildDraw: 750000,
      PassiveDraw: 750000,
