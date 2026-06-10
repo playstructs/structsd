@@ -814,6 +814,8 @@ recover_state() {
     SA=$(query query structs struct-all)
 
     COMMAND_SHIP_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 1 1 "${SA}")
+    PLAYER_2_CMD_SHIP_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 1 1 "${SA}")
+    PLAYER_3_CMD_SHIP_ID="${COMMAND_SHIP_ID}"
     MINER_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 14 1 "${SA}")
     REFINERY_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 16 1 "${SA}")
     DESTROYER_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 9 1 "${SA}")
@@ -3475,32 +3477,109 @@ fi # phase 9
 if run_phase 1000; then
 
 # ═════════════════════════════════════════════════════════════════════════════
-#  PHASE 10: Planet Raid
+#  PHASE 10: Planet Raid — SHIELDS_VULNERABLE mechanics (v0.18.0)
 # ═════════════════════════════════════════════════════════════════════════════
+# A raid can only be won while the defending Command Ship is offline,
+# destroyed, or non-existent. blockStartRaid tracks that vulnerability
+# window: it anchors when the defender's Command Ship goes down and clears
+# when it comes back online (or when the raid ends).
 
-section "PHASE 10: Planet Raid"
+section "PHASE 10: Planet Raid (SHIELDS_VULNERABLE)"
+
+P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
+P2_SHIELD=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.planetaryShield' '0')
+P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
+info "P2 planet: planetaryShield=${P2_SHIELD} blockStartRaid=${P2_RAID_CLOCK}"
+
+P2_CMD_JSON=$(query query structs struct "${PLAYER_2_CMD_SHIP_ID}" || echo '{}')
+P2_CMD_ONLINE=$(jqr "${P2_CMD_JSON}" '.structAttributes.isOnline' 'false')
+assert_eq "P2 Command Ship online before raid scenarios" "true" "${P2_CMD_ONLINE}"
+
+# ─── Scenario A (expected bad): raid cannot be won while defender CMD online ───
+
+assert_eq "blockStartRaid unset while defender Command Ship is online" "0" "${P2_RAID_CLOCK}"
+
+run_tx_expect_fail "Raid complete while defender Command Ship online (should fail)" \
+    tx structs planet-raid-complete "${PLAYER_3_FLEET_ID}" deadbeef 1 --from player_3
+
+run_tx_expect_fail "Raid compute fast-fails while shields are up (should fail)" \
+    tx structs planet-raid-compute "${PLAYER_3_FLEET_ID}" --from player_3
+
+# ─── Scenario B: defender CMD offline opens the vulnerability window ───
+
+run_tx "P2 deactivates their Command Ship (shields drop)" \
+    tx structs struct-deactivate "${PLAYER_2_CMD_SHIP_ID}" --from player_2
+
+P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
+P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
+assert_gt "blockStartRaid anchored after defender Command Ship went offline" "0" "${P2_RAID_CLOCK}"
+
+# ─── Scenario C (expected bad): CMD back online closes the window again ───
+
+wait_for_charge "${PLAYER_2_ID}" "${CHARGE_ACTIVATE}"
+run_tx "P2 re-activates their Command Ship (shields restored)" \
+    tx structs struct-activate "${PLAYER_2_CMD_SHIP_ID}" --from player_2
+
+P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
+P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
+assert_eq "blockStartRaid cleared when defender Command Ship back online" "0" "${P2_RAID_CLOCK}"
+
+run_tx_expect_fail "Raid complete after shields restored (should fail)" \
+    tx structs planet-raid-complete "${PLAYER_3_FLEET_ID}" deadbeef 1 --from player_3
+
+# ─── Scenario D (good): raid succeeds while defender CMD is offline ───
+
+run_tx "P2 deactivates their Command Ship again (shields drop)" \
+    tx structs struct-deactivate "${PLAYER_2_CMD_SHIP_ID}" --from player_2
+
+P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
+P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
+assert_gt "blockStartRaid re-anchored for the raid attempt" "0" "${P2_RAID_CLOCK}"
+
+P3_JSON=$(query query structs player "${PLAYER_3_ID}")
+P2_JSON=$(query query structs player "${PLAYER_2_ID}")
+P3_ORE_BEFORE=$(jqr "${P3_JSON}" '.playerInventory.ore' '0')
+P2_ORE_BEFORE=$(jqr "${P2_JSON}" '.playerInventory.ore' '0')
+info "Player 3 ore before raid: ${P3_ORE_BEFORE}"
+info "Player 2 ore before raid: ${P2_ORE_BEFORE}"
+
+run_compute "Completing planet raid (defender Command Ship offline)" \
+    tx structs planet-raid-compute "${PLAYER_3_FLEET_ID}" --from player_3
+
+P3_JSON=$(query query structs player "${PLAYER_3_ID}")
+P2_JSON=$(query query structs player "${PLAYER_2_ID}")
+P3_ORE_AFTER=$(jqr "${P3_JSON}" '.playerInventory.ore' '0')
+P2_ORE_AFTER=$(jqr "${P2_JSON}" '.playerInventory.ore' '0')
+info "Player 3 ore after raid: ${P3_ORE_AFTER}"
+info "Player 2 ore after raid: ${P2_ORE_AFTER}"
+echo "  Raid results: P3 ore ${P3_ORE_BEFORE} -> ${P3_ORE_AFTER}, P2 ore ${P2_ORE_BEFORE} -> ${P2_ORE_AFTER}"
 
 if [ "${SKIP_MINING}" = true ]; then
-    info "Skipping planet raid (--skip-mining, no ore to raid)"
+    info "Skipping ore-theft assertion (--skip-mining, no ore to steal)"
 else
-    P3_JSON=$(query query structs player "${PLAYER_3_ID}")
-    P2_JSON=$(query query structs player "${PLAYER_2_ID}")
-    P3_ORE_BEFORE=$(jqr "${P3_JSON}" '.playerInventory.ore' '0')
-    P2_ORE_BEFORE=$(jqr "${P2_JSON}" '.playerInventory.ore' '0')
-    info "Player 3 ore before raid: ${P3_ORE_BEFORE}"
-    info "Player 2 ore before raid: ${P2_ORE_BEFORE}"
-
-    run_compute "Completing planet raid" \
-        tx structs planet-raid-compute "${PLAYER_3_FLEET_ID}" --from player_3
-
-    P3_JSON=$(query query structs player "${PLAYER_3_ID}")
-    P2_JSON=$(query query structs player "${PLAYER_2_ID}")
-    P3_ORE_AFTER=$(jqr "${P3_JSON}" '.playerInventory.ore' '0')
-    P2_ORE_AFTER=$(jqr "${P2_JSON}" '.playerInventory.ore' '0')
-    info "Player 3 ore after raid: ${P3_ORE_AFTER}"
-    info "Player 2 ore after raid: ${P2_ORE_AFTER}"
-    echo "  Raid results: P3 ore ${P3_ORE_BEFORE} -> ${P3_ORE_AFTER}, P2 ore ${P2_ORE_BEFORE} -> ${P2_ORE_AFTER}"
+    assert_eq "P2 ore emptied by raid" "0" "${P2_ORE_AFTER}"
+    assert_gt "P3 ore increased by raid" "${P3_ORE_BEFORE}" "${P3_ORE_AFTER}"
 fi
+
+# A successful raid sends the attacking fleet home
+FLEET_3_JSON=$(query query structs fleet "${PLAYER_3_FLEET_ID}")
+FLEET_3_LOC=$(jqr "${FLEET_3_JSON}" '.Fleet.locationId')
+assert_eq "P3 fleet returned home after successful raid" "${PLAYER_3_PLANET_ID}" "${FLEET_3_LOC}"
+
+# Raid over: the vulnerability clock must be cleared
+P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
+P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
+assert_eq "blockStartRaid cleared after raid completed" "0" "${P2_RAID_CLOCK}"
+
+# ─── Restore: bring P2's Command Ship back online for later phases ───
+
+wait_for_charge "${PLAYER_2_ID}" "${CHARGE_ACTIVATE}"
+run_tx "P2 re-activates their Command Ship (cleanup)" \
+    tx structs struct-activate "${PLAYER_2_CMD_SHIP_ID}" --from player_2
+
+P2_CMD_JSON=$(query query structs struct "${PLAYER_2_CMD_SHIP_ID}" || echo '{}')
+P2_CMD_ONLINE=$(jqr "${P2_CMD_JSON}" '.structAttributes.isOnline' 'false')
+assert_eq "P2 Command Ship back online after raid scenarios" "true" "${P2_CMD_ONLINE}"
 
 fi # phase 10
 
@@ -5752,8 +5831,8 @@ assert_eq "E8 — defensiveCannonQuantity is 0 after PDC destroyed" "0" "${E8_CA
 E9_SHIELD_AFTER=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.planetaryShield' '0')
 E9_SHIELD_DIFF=$((E6_SHIELD_BEFORE - E9_SHIELD_AFTER))
 info "E9: Planetary shield after PDC destruction: ${E9_SHIELD_AFTER} (decreased by ${E9_SHIELD_DIFF})"
-# PDC contributes PlanetaryShieldContribution=4500
-assert_eq "E9 — Planetary shield decreased by PDC contribution (4500)" "4500" "${E9_SHIELD_DIFF}"
+# PDC contributes PlanetaryShieldContribution=13 (v0.18.0 rebase)
+assert_eq "E9 — Planetary shield decreased by PDC contribution (13)" "13" "${E9_SHIELD_DIFF}"
 
 # ─── E10: After PDC destroyed, Ore Extractor attack yields NO PDC damage ───
 # With cannon count = 0, attacking a planet-category struct should not damage

@@ -364,6 +364,9 @@ func (cache *StructCache) GoOnline() {
 
 	// Set the struct status flag to include built
 	cache.StatusAddOnline()
+
+	// Command Ship back online raises the raid shields on the owner's planet
+	cache.CommandStructRaidStatusHook(true)
 }
 
 func (cache *StructCache) GoOffline() {
@@ -411,7 +414,57 @@ func (cache *StructCache) GoOffline() {
 
     	// Set the struct status flag to include built
     	cache.StatusRemoveOnline()
+
+    	// Command Ship going down drops the raid shields on the owner's planet
+    	cache.CommandStructRaidStatusHook(false)
     }
+}
+
+// CommandStructRaidStatusHook updates the raid state of the owner's home
+// planet when their Command Ship changes online status. While a raid is in
+// progress, the hashing puzzle can only be won while the defending Command
+// Ship is down (shieldsVulnerable); blockStartRaid tracks that window.
+//
+// Checks are ordered cheapest-first: the struct type is already loaded in
+// the cache, so the common non-Command-Ship case pays nothing here.
+func (cache *StructCache) CommandStructRaidStatusHook(online bool) {
+	if cache.GetStructType().Type != types.CommandStruct {
+		return
+	}
+
+	owner := cache.GetOwner()
+
+	// During initial Command Ship creation the owner may not have a fleet
+	// reference or planet yet. Bail out before loading either to avoid
+	// fleet auto-creation and malformed empty-ID attribute keys.
+	if owner.GetFleetId() == "" || owner.GetPlanetId() == "" {
+		return
+	}
+
+	// Only react when this struct is actually the fleet's command struct
+	if owner.GetFleet().GetCommandStructId() != cache.GetStructId() {
+		return
+	}
+
+	planet := owner.GetPlanet()
+
+	// No raid in progress, nothing to update
+	raidFleetId := planet.GetLocationListStart()
+	if raidFleetId == "" {
+		return
+	}
+
+	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
+	if online {
+		// Shields restored: the raid can no longer be won until the
+		// Command Ship goes down again
+		planet.ClearBlockStartRaid()
+		_ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: raidFleetId, PlanetId: planet.GetPlanetId(), Status: types.RaidStatus_ongoing}})
+	} else {
+		// Shields down: the raid vulnerability clock starts now
+		planet.ResetBlockStartRaid()
+		_ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: raidFleetId, PlanetId: planet.GetPlanetId(), Status: types.RaidStatus_shieldsVulnerable}})
+	}
 }
 
 func (cache *StructCache) ReadinessCheck() error {

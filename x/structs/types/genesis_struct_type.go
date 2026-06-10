@@ -1341,7 +1341,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
 
      PostDestructionDamage: 0,
      GeneratingRate: 0,
-     PlanetaryShieldContribution: 1500,
+     PlanetaryShieldContribution: 25,
 
      OreMiningDifficulty: 0,
      OreRefiningDifficulty: 0,
@@ -1425,7 +1425,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
 
      PostDestructionDamage: 0,
      GeneratingRate: 0,
-     PlanetaryShieldContribution: 4500,
+     PlanetaryShieldContribution: 12,
 
      OreMiningDifficulty: 0,
      OreRefiningDifficulty: 0,
@@ -1509,7 +1509,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
 
      PostDestructionDamage: 0,
      GeneratingRate: 0,
-     PlanetaryShieldContribution: 9000,
+     PlanetaryShieldContribution: 50,
 
      OreMiningDifficulty: 0,
      OreRefiningDifficulty: 0,
@@ -1593,7 +1593,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
 
      PostDestructionDamage: 0,
      GeneratingRate: 0,
-     PlanetaryShieldContribution: 4500,
+     PlanetaryShieldContribution: 13,
 
      OreMiningDifficulty: 0,
      OreRefiningDifficulty: 0,
