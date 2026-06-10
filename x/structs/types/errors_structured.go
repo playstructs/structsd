@@ -502,7 +502,7 @@ type StructLocationError struct {
 	Ambit        string
 	LocationType string
 	LocationId   string
-	Reason       string // "invalid_ambit", "invalid_location", "command_struct_fleet_only", "outside_planet"
+	Reason       string // "invalid_ambit", "invalid_location", "command_struct_fleet_only", "outside_planet", "immovable"
 }
 
 func NewStructLocationError(structType uint64, ambit, reason string) *StructLocationError {
@@ -532,6 +532,8 @@ func (e *StructLocationError) Error() string {
 		return "command structs can only be built directly in the fleet"
 	case "outside_planet":
 		return "struct type cannot exist outside a planet"
+	case "immovable":
+		return fmt.Sprintf("struct type (%d) is not movable and cannot change ambit", e.StructType)
 	default:
 		return fmt.Sprintf("struct type (%d) cannot exist in this location: %s", e.StructType, e.Reason)
 	}

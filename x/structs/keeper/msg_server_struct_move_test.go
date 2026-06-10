@@ -34,6 +34,7 @@ func TestMsgStructMove(t *testing.T) {
 		Category:      types.ObjectType_planet,
 		MoveCharge:    10,
 		PossibleAmbit: 1<<uint64(types.Ambit_land) | 1<<uint64(types.Ambit_space),
+		Movable:       true,
 	}
 	k.SetStructType(sdkCtx, structType)
 

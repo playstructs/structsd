@@ -808,6 +808,10 @@ func (cache *StructCache) AttemptMove(destinationType types.ObjectType, ambit ty
 		return types.NewStructStateError(cache.StructId, "offline", "online", "move")
 	}
 
+	if !cache.GetStructType().Movable {
+		return types.NewStructLocationError(cache.GetTypeId(), ambit.String(), "immovable")
+	}
+
 	switch destinationType {
         case types.ObjectType_planet:
             err := cache.GetOwner().GetPlanet().MoveReadiness(cache, ambit, slot)
