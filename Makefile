@@ -195,6 +195,16 @@ proto-all: proto-format proto-lint proto-gen proto-gen-ts
 proto-gen:
 	@echo "--> Generating Go protobuf files (gogo)..."
 	buf generate --template proto/buf.gen.gogo.yaml
+	@echo "--> Relocating gogo output to canonical package path..."
+	@# gogo emits under a module-name-prefixed path (./structs/x/structs/types)
+	@# because the proto go_package is the full module path while out is the repo
+	@# root. Move the generated files to their real location and drop the stray
+	@# tree. The cosmos module descriptor at ./structs/structs/module is unused
+	@# (and does not compile), so it is discarded with the rest of the prefix dir.
+	@if [ -d structs/x/structs/types ]; then \
+		cp -Rf structs/x/structs/types/. x/structs/types/; \
+	fi
+	@rm -rf structs
 	@echo "--> Generating Go protobuf files (pulsar)..."
 	buf generate --template proto/buf.gen.pulsar.yaml
 
