@@ -107,4 +107,41 @@ func TestMsgStructMove(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "required charge")
 	})
+
+	t.Run("immovable struct rejected", func(t *testing.T) {
+		immovableType := types.StructType{
+			Id:            99,
+			Type:          "Immobile Struct",
+			Category:      types.ObjectType_fleet,
+			PossibleAmbit: 1 << uint64(types.Ambit_land),
+			Movable:       false,
+		}
+		k.SetStructType(sdkCtx, immovableType)
+
+		immobile := types.Struct{
+			Creator:        player.Creator,
+			Owner:          player.Id,
+			Type:           immovableType.Id,
+			LocationId:     player.PlanetId,
+			LocationType:   types.ObjectType_planet,
+			OperatingAmbit: types.Ambit_land,
+			Slot:           0,
+		}
+		immobile = testAppendStruct(k, sdkCtx, immobile)
+
+		statusId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, immobile.Id)
+		testSetStructAttributeFlagAdd(k, sdkCtx, statusId, uint64(types.StructStateBuilt))
+		testSetStructAttributeFlagAdd(k, sdkCtx, statusId, uint64(types.StructStateOnline))
+
+		k.SetGridAttribute(sdkCtx, lastActionAttrId, uint64(0))
+		_, err := ms.StructMove(wctx, &types.MsgStructMove{
+			Creator:      player.Creator,
+			StructId:     immobile.Id,
+			LocationType: types.ObjectType_planet,
+			Ambit:        types.Ambit_land,
+			Slot:         1,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not movable")
+	})
 }

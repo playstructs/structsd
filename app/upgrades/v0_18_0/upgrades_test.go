@@ -139,7 +139,7 @@ func TestMigrateStructTypes_RebalancesBattleship(t *testing.T) {
 	require.Equal(t, types.TechActiveWeaponry_guidedWeaponry, battleship.SecondaryWeapon)
 	require.Equal(t, types.TechWeaponControl_guided, battleship.SecondaryWeaponControl)
 	require.Equal(t, uint64(16), battleship.SecondaryWeaponAmbits, "secondary ambits = space")
-	require.Equal(t, uint64(8), battleship.SecondaryWeaponCharge)
+	require.Equal(t, uint64(5), battleship.SecondaryWeaponCharge)
 	require.Equal(t, uint64(1), battleship.SecondaryWeaponDamage)
 	require.False(t, battleship.SecondaryWeaponArmourPiercing)
 

@@ -31,7 +31,7 @@ structType = StructType{
                                                                                                    
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,                                 
  PrimaryWeaponControl: TechWeaponControl_guided,                     
- PrimaryWeaponCharge: 1,                                         
+ PrimaryWeaponCharge: 3,                                         
  PrimaryWeaponAmbits: 32,                          
  PrimaryWeaponTargets: 1,                                       
  PrimaryWeaponShots: 1,                                           
@@ -65,10 +65,10 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 1,                
+ ActivateCharge: 2,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
- MoveCharge: 8,                        
+ MoveCharge: 3,                        
  StealthActivateCharge: 0,  
             
  AttackReduction: 0,      
@@ -119,7 +119,7 @@ structType = StructType{
                                                                                                    
  PrimaryWeapon:  TechActiveWeaponry_unguidedWeaponry,                                 
  PrimaryWeaponControl: TechWeaponControl_unguided,                     
- PrimaryWeaponCharge: 20,                                         
+ PrimaryWeaponCharge: 5,                                         
  PrimaryWeaponAmbits: 6,                          
  PrimaryWeaponTargets: 1,                                       
  PrimaryWeaponShots: 1,                                           
@@ -133,7 +133,7 @@ structType = StructType{
             
  SecondaryWeapon:  TechActiveWeaponry_guidedWeaponry,                                 
  SecondaryWeaponControl: TechWeaponControl_guided,                     
- SecondaryWeaponCharge: 8,                                         
+ SecondaryWeaponCharge: 5,                                         
  SecondaryWeaponAmbits: 16,                          
  SecondaryWeaponTargets: 1,                                       
  SecondaryWeaponShots: 1,                                           
@@ -153,7 +153,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 1,                
+ ActivateCharge: 2,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -205,7 +205,7 @@ structType = StructType{
                                                                                                    
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,                                 
  PrimaryWeaponControl: TechWeaponControl_guided,                     
- PrimaryWeaponCharge: 1,                                         
+ PrimaryWeaponCharge: 3,                                         
  PrimaryWeaponAmbits: 16,                          
  PrimaryWeaponTargets: 1,                                       
  PrimaryWeaponShots: 1,                                           
@@ -219,7 +219,7 @@ structType = StructType{
             
  SecondaryWeapon:  TechActiveWeaponry_attackRun,                                 
  SecondaryWeaponControl: TechWeaponControl_unguided,                     
- SecondaryWeaponCharge: 8,                                         
+ SecondaryWeaponCharge: 5,                                         
  SecondaryWeaponAmbits: 16,                          
  SecondaryWeaponTargets: 1,                                       
  SecondaryWeaponShots: 3,                                           
@@ -240,7 +240,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 1,                
+ ActivateCharge: 2,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -292,7 +292,7 @@ structType = StructType{
                                                                                                    
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,                                 
  PrimaryWeaponControl: TechWeaponControl_guided,                     
- PrimaryWeaponCharge: 8,                                         
+ PrimaryWeaponCharge: 5,                                         
  PrimaryWeaponAmbits: 24,                          
  PrimaryWeaponTargets: 1,                                       
  PrimaryWeaponShots: 1,                                           
@@ -326,7 +326,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 1,                
+ ActivateCharge: 2,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -378,7 +378,7 @@ structType = StructType{
                                                                                                    
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,                                 
  PrimaryWeaponControl: TechWeaponControl_guided,                     
- PrimaryWeaponCharge: 1,                                         
+ PrimaryWeaponCharge: 3,                                         
  PrimaryWeaponAmbits: 8,                          
  PrimaryWeaponTargets: 1,                                       
  PrimaryWeaponShots: 1,                                           
@@ -412,7 +412,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 1,                
+ ActivateCharge: 2,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -464,7 +464,7 @@ structType = StructType{
                                                                                                    
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,                                 
  PrimaryWeaponControl: TechWeaponControl_guided,                     
- PrimaryWeaponCharge: 8,                                         
+ PrimaryWeaponCharge: 5,                                         
  PrimaryWeaponAmbits: 6,                          
  PrimaryWeaponTargets: 1,                                       
  PrimaryWeaponShots: 1,                                           
@@ -498,11 +498,11 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 1,                
+ ActivateCharge: 2,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
- StealthActivateCharge: 1,  
+ StealthActivateCharge: 2,  
             
  AttackReduction: 0,      
  AttackCounterable: true,  
@@ -550,7 +550,7 @@ structType = StructType{
                                                                                                    
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,                                 
  PrimaryWeaponControl: TechWeaponControl_guided,                     
- PrimaryWeaponCharge: 8,                                         
+ PrimaryWeaponCharge: 5,                                         
  PrimaryWeaponAmbits: 24,                          
  PrimaryWeaponTargets: 1,                                       
  PrimaryWeaponShots: 1,                                           
@@ -584,7 +584,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 1,                
+ ActivateCharge: 2,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -636,7 +636,7 @@ structType = StructType{
                                                                                                    
  PrimaryWeapon:  TechActiveWeaponry_unguidedWeaponry,                                 
  PrimaryWeaponControl: TechWeaponControl_unguided,                     
- PrimaryWeaponCharge: 8,                                         
+ PrimaryWeaponCharge: 5,                                         
  PrimaryWeaponAmbits: 6,                          
  PrimaryWeaponTargets: 1,                                       
  PrimaryWeaponShots: 1,                                           
@@ -670,7 +670,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 1,                
+ ActivateCharge: 2,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -722,7 +722,7 @@ structType = StructType{
                                                                                                    
  PrimaryWeapon:  TechActiveWeaponry_unguidedWeaponry,                                 
  PrimaryWeaponControl: TechWeaponControl_unguided,                     
- PrimaryWeaponCharge: 1,                                         
+ PrimaryWeaponCharge: 3,                                         
  PrimaryWeaponAmbits: 4,                          
  PrimaryWeaponTargets: 1,                                       
  PrimaryWeaponShots: 1,                                           
@@ -756,7 +756,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 1,                
+ ActivateCharge: 2,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -808,7 +808,7 @@ structType = StructType{
                                                                                                    
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,                                 
  PrimaryWeaponControl: TechWeaponControl_guided,                     
- PrimaryWeaponCharge: 8,                                         
+ PrimaryWeaponCharge: 5,                                         
  PrimaryWeaponAmbits: 24,                          
  PrimaryWeaponTargets: 1,                                       
  PrimaryWeaponShots: 1,                                           
@@ -842,7 +842,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 1,                
+ ActivateCharge: 2,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -894,7 +894,7 @@ structType = StructType{
                                                                                                    
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,                                 
  PrimaryWeaponControl: TechWeaponControl_guided,                     
- PrimaryWeaponCharge: 8,                                         
+ PrimaryWeaponCharge: 5,                                         
  PrimaryWeaponAmbits: 6,                          
  PrimaryWeaponTargets: 1,                                       
  PrimaryWeaponShots: 1,                                           
@@ -908,7 +908,7 @@ structType = StructType{
             
  SecondaryWeapon:  TechActiveWeaponry_unguidedWeaponry,                                 
  SecondaryWeaponControl: TechWeaponControl_unguided,                     
- SecondaryWeaponCharge: 1,                                         
+ SecondaryWeaponCharge: 3,                                         
  SecondaryWeaponAmbits: 8,                          
  SecondaryWeaponTargets: 1,                                       
  SecondaryWeaponShots: 1,                                           
@@ -928,7 +928,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 1,                
+ ActivateCharge: 2,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -980,7 +980,7 @@ structType = StructType{
                                                                                                    
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,                                 
  PrimaryWeaponControl: TechWeaponControl_guided,                     
- PrimaryWeaponCharge: 8,                                         
+ PrimaryWeaponCharge: 5,                                         
  PrimaryWeaponAmbits: 10,                          
  PrimaryWeaponTargets: 1,                                       
  PrimaryWeaponShots: 1,                                           
@@ -1014,7 +1014,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 1,                
+ ActivateCharge: 2,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -1066,7 +1066,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
 
      PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,
      PrimaryWeaponControl: TechWeaponControl_guided,
-     PrimaryWeaponCharge: 8,
+     PrimaryWeaponCharge: 5,
      PrimaryWeaponAmbits: 18,
      PrimaryWeaponTargets: 1,
      PrimaryWeaponShots: 1,
@@ -1100,11 +1100,11 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 1,
+     ActivateCharge: 2,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
-     StealthActivateCharge: 1,
+     StealthActivateCharge: 2,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -1186,7 +1186,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 1,
+     ActivateCharge: 2,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1272,7 +1272,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_oreRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 1,
+     ActivateCharge: 2,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1358,7 +1358,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 1,
+     ActivateCharge: 2,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1444,7 +1444,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 1,
+     ActivateCharge: 2,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1530,7 +1530,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 1,
+     ActivateCharge: 2,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1616,7 +1616,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 1,
+     ActivateCharge: 2,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1702,7 +1702,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_smallGenerator,
 
-     ActivateCharge: 1,
+     ActivateCharge: 2,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1788,7 +1788,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_mediumGenerator,
 
-     ActivateCharge: 1,
+     ActivateCharge: 2,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1874,7 +1874,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_largeGenerator,
 
-     ActivateCharge: 1,
+     ActivateCharge: 2,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,

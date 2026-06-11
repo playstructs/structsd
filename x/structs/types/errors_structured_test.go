@@ -355,6 +355,10 @@ func TestStructLocationError(t *testing.T) {
 	assertContains(t, err.Error(), "struct type")
 	assertContains(t, err.Error(), "5")
 
+	immovable := NewStructLocationError(19, "water", "immovable")
+	assertContains(t, immovable.Error(), "not movable")
+	assertContains(t, immovable.Error(), "19")
+
 	// Test Code()
 	assertCode(t, err.Code(), 1302)
 

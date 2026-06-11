@@ -27,7 +27,7 @@ package v0_18_0
 //     the piercing via EventAttackShotDetail.armourPiercing.
 //   - Battleship primary (unguided) is now armour piercing and restricted
 //     to land + water ambits (22 -> 6). Battleship gains a guided secondary
-//     weapon targeting space (charge 8, damage 1).
+//     weapon targeting space (charge 5, damage 1).
 //
 // Planetary struct health (binary + struct-type rewrite + state migration):
 //
@@ -63,6 +63,20 @@ package v0_18_0
 //     values would otherwise collapse the puzzle difficulty to trivial
 //     (age is measured from blockStartRaid) or anchor proofs to inputs
 //     that no longer match the new semantics.
+//
+// Charge rebalance (struct-type rewrite):
+//
+//   - Action charges are retuned across all struct types: activateCharge
+//     1 -> 2, and the Command Ship's moveCharge 8 -> 3. stealthActivateCharge
+//     goes 1 -> 2 on the only stealth-capable types (Stealth Bomber,
+//     Submersible); defendChangeCharge (1) and buildCharge (8) are unchanged.
+//   - Weapon charges are flattened toward a 3/5 cadence so secondary and
+//     low-charge weapons stay relevant: primaries are 3 (Command Ship,
+//     Starfighter, Pursuit Fighter, Tank) or 5 (Battleship, Frigate, Stealth
+//     Bomber, High Altitude Interceptor, Mobile Artillery, SAM Launcher,
+//     Cruiser, Destroyer, Submersible); secondaries are 5 (Battleship,
+//     Starfighter) or 3 (Cruiser).
+//   - Applied via the CreateStructTypeGenesis() rewrite; no extra migration.
 //
 // No store-key changes; all migrations write to existing prefix stores.
 const UpgradeName = "v0.18.0"

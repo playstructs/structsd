@@ -438,13 +438,13 @@ wait_for_charge() {
 
 # Charge constants (from genesis_struct_type.go)
 CHARGE_BUILD=8
-CHARGE_ATTACK_DEFAULT=1
-CHARGE_ATTACK_BATTLESHIP=8           # guided secondary (v0.18.0)
-CHARGE_ATTACK_BATTLESHIP_PRIMARY=20  # armour-piercing unguided primary
-CHARGE_ATTACK_SAM=20
-CHARGE_MOVE=8
+CHARGE_ATTACK_DEFAULT=3              # primary charge 3 (Tank/Starfighter/Pursuit/CmdShip)
+CHARGE_ATTACK_BATTLESHIP=5           # guided secondary (v0.18.0 charge rebalance)
+CHARGE_ATTACK_BATTLESHIP_PRIMARY=5   # armour-piercing unguided primary
+CHARGE_ATTACK_SAM=5
+CHARGE_MOVE=3                        # only the Command Ship pays moveCharge (3); others 0
 CHARGE_DEFEND=1
-CHARGE_ACTIVATE=1
+CHARGE_ACTIVATE=2
 
 # Permission constants (from x/structs/types/permissions.go, 1<<iota)
 PERM_PLAY=1
@@ -653,16 +653,16 @@ find_struct_by_owner_type() {
 # Weapon charge lookups by struct type (from genesis_struct_type.go)
 _primary_charge() {
     case "$1" in
-        2)  echo 20 ;; # Battleship
-        4|6|7|8|10|11|12|13) echo 8 ;; # Frigate,StealthBomber,Interceptor,MobArt,SAM,Cruiser,Destroyer,Sub
-        *) echo 1 ;; # CommandShip(1),Starfighter(3),PursuitFighter(5),Tank(9),others
+        1|3|5|9) echo 3 ;; # CommandShip,Starfighter,PursuitFighter,Tank
+        2|4|6|7|8|10|11|12|13) echo 5 ;; # Battleship,Frigate,StealthBomber,Interceptor,MobArt,SAM,Cruiser,Destroyer,Sub
+        *) echo 0 ;; # planetary / no primary weapon
     esac
 }
 _secondary_charge() {
     case "$1" in
-        2)  echo 8 ;; # Battleship guided secondary (v0.18.0)
-        3)  echo 8 ;; # Starfighter attackRun
-        11) echo 1 ;; # Cruiser secondary
+        2)  echo 5 ;; # Battleship guided secondary (v0.18.0 charge rebalance)
+        3)  echo 5 ;; # Starfighter attackRun
+        11) echo 3 ;; # Cruiser secondary
         *)  echo 1 ;; # fallback
     esac
 }
@@ -3668,10 +3668,10 @@ run_tx "Moving Player 3's fleet home for building" \
 
 info "Batch-initiating all builds for Phases 12-14 (difficulty decays while computing)"
 
-# ─── P3: SAM Launcher (type 10, land, slot 3) ───
+# ─── P3: SAM Launcher (type 10, land, slot 2) ───
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating SAM Launcher (type=10, land, slot=3)" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 10 land 3 --from player_3
+run_tx "Initiating SAM Launcher (type=10, land, slot=2)" \
+    tx structs struct-build-initiate "${PLAYER_3_ID}" 10 land 2 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 SAM_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
@@ -3688,10 +3688,10 @@ P2_BATTLESHIP_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
 assert_not_empty "Player 2 Battleship struct ID" "${P2_BATTLESHIP_ID}"
 echo "  P2 Battleship Struct ID: ${P2_BATTLESHIP_ID} (compute deferred to Phase 13)"
 
-# ─── P3: Submarine (type 13, water, slot 2) ───
+# ─── P3: Submarine (type 13, water, slot 1) ───
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Submarine (type=13, water, slot=2)" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 13 water 2 --from player_3
+run_tx "Initiating Submarine (type=13, water, slot=1)" \
+    tx structs struct-build-initiate "${PLAYER_3_ID}" 13 water 1 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 SUB_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
@@ -3708,10 +3708,10 @@ INTERCEPTOR_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
 assert_not_empty "Interceptor struct ID" "${INTERCEPTOR_ID}"
 echo "  P2 Interceptor Struct ID: ${INTERCEPTOR_ID} (compute deferred to Phase 14)"
 
-# ─── P3: Battleship #1 (type 2, space, slot 1) ───
+# ─── P3: Battleship #1 (type 2, space, slot 2) ───
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Battleship #1 (type=2, space, slot=1)" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 2 space 1 --from player_3
+run_tx "Initiating Battleship #1 (type=2, space, slot=2)" \
+    tx structs struct-build-initiate "${PLAYER_3_ID}" 2 space 2 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 BATTLESHIP_1_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
@@ -3766,29 +3766,17 @@ run_compute "Building SAM Launcher ${SAM_STRUCT_ID}" \
 
 assert_eq "SAM built" "true" "$(query query structs struct "${SAM_STRUCT_ID}" | jq -r '.structAttributes.isBuilt')"
 
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
-run_tx "Moving SAM Launcher to fleet" \
-    tx structs struct-move "${SAM_STRUCT_ID}" fleet land 2 --from player_3
-
 # ─── Compute Submarine (aged during SAM compute) ───
 run_compute "Building Submarine ${SUB_STRUCT_ID}" \
     tx structs struct-build-compute "${SUB_STRUCT_ID}" --from player_3
 
 assert_eq "Submarine built" "true" "$(query query structs struct "${SUB_STRUCT_ID}" | jq -r '.structAttributes.isBuilt')"
 
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Submarine to fleet" \
-    tx structs struct-move "${SUB_STRUCT_ID}" fleet water 1 --from player_3
-
 # ─── Compute Battleship #1 (aged during SAM + Sub computes) ───
 run_compute "Building Galactic Battleship ${BATTLESHIP_1_ID}" \
     tx structs struct-build-compute "${BATTLESHIP_1_ID}" --from player_3
 
 assert_eq "Battleship #1 built" "true" "$(query query structs struct "${BATTLESHIP_1_ID}" | jq -r '.structAttributes.isBuilt')"
-
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Battleship to fleet" \
-    tx structs struct-move "${BATTLESHIP_1_ID}" fleet space 2 --from player_3
 
 # ─── Compute Battleship #2 (aged during SAM + Sub + BB1 computes) ───
 run_compute "Building Galactic Battleship #2 ${BATTLESHIP_2_ID}" \
@@ -5265,13 +5253,14 @@ assert_not_empty "P6 HAI struct ID" "${EB_P6_HAI_ID}"
 echo "  P6 HAI ID: ${EB_P6_HAI_ID}"
 
 # ─── P3: Mobile Artillery (type 8, land, slot 3) — for PDC immunity test ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P3 Mobile Artillery (type=8, land, slot=3) for P3" \
     tx structs struct-build-initiate "${PLAYER_3_ID}" 8 land 3 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_P3_MOBILE_ART_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "P3 Mobile Artillery struct ID" "${EB_P3_MOBILE_ART_ID}"
+assert_new_struct "P3 Mobile Artillery initiated" "${EB_P3_MOBILE_ART_ID}" "${PREV_NEWEST_STRUCT_ID}" 8
 echo "  P3 Mobile Artillery ID: ${EB_P3_MOBILE_ART_ID}"
 
 # ─── P6: PDC (type 19, land, slot 2) — planetary struct for defense cannon test ───
@@ -5397,70 +5386,22 @@ if run_phase 2700; then
 
 section "PHASE EB3: Fleet Assembly & Positioning"
 
+# Fleet units are built directly on their final fleet slots (Movable=false).
+# Only the Command Ship may struct-move (ambit changes).
+
 # ─── Move P3's fleet home for assembly ───
 run_tx "Moving P3's fleet home for extended battle assembly" \
     tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_3_PLANET_ID}" --from player_3
 
-# ─── Add P3's new Pursuit Fighter to fleet (air, slot 1) ───
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Pursuit Fighter to P3's fleet (air, slot 1)" \
-    tx structs struct-move "${EB_PURSUIT_FIGHTER_ID}" fleet air 1 --from player_3
-
-# ─── Assemble P6's fleet ───
-# P6's Command Ship goes to space ambit
+# ─── P6 Command Ship to space ambit ───
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
 run_tx "Moving P6 Command Ship to fleet (space)" \
     tx structs struct-move "${P6_COMMAND_SHIP_ID}" fleet space --from player_6
 
-# Starfighter → space slot 0
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Starfighter to P6's fleet (space, slot 0)" \
-    tx structs struct-move "${EB_STARFIGHTER_ID}" fleet space 0 --from player_6
-
-# Frigate → space slot 1
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Frigate to P6's fleet (space, slot 1)" \
-    tx structs struct-move "${EB_FRIGATE_ID}" fleet space 1 --from player_6
-
-# Battleship → space slot 2
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving P6 Battleship to fleet (space, slot 2)" \
-    tx structs struct-move "${EB_P6_BATTLESHIP_ID}" fleet space 2 --from player_6
-
-# Mobile Artillery → land slot 0
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Mobile Artillery to P6's fleet (land, slot 0)" \
-    tx structs struct-move "${EB_MOBILE_ART_ID}" fleet land 0 --from player_6
-
-# Tank → land slot 1
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving P6 Tank to P6's fleet (land, slot 1)" \
-    tx structs struct-move "${EB_P6_TANK_ID}" fleet land 1 --from player_6
-
-# Destroyer-water → water slot 0
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Destroyer-water to P6's fleet (water, slot 0)" \
-    tx structs struct-move "${EB_DESTROYER_W_ID}" fleet water 0 --from player_6
-
-# Cruiser → water slot 1
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving P6 Cruiser to P6's fleet (water, slot 1)" \
-    tx structs struct-move "${EB_P6_CRUISER_ID}" fleet water 1 --from player_6
-
-# HAI → air slot 0
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving P6 HAI to P6's fleet (air, slot 0)" \
-    tx structs struct-move "${EB_P6_HAI_ID}" fleet air 0 --from player_6
-
-# P3 Mobile Artillery → land slot 3
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
-run_tx "Moving P3 Mobile Artillery to P3's fleet (land, slot 3)" \
-    tx structs struct-move "${EB_P3_MOBILE_ART_ID}" fleet land 3 --from player_3
-
 info "P6 fleet assembled: CS(space), Starfighter(space/0), Frigate(space/1), Battleship(space/2),"
 info "  MobileArt(land/0), Tank(land/1), Destroyer(water/0), Cruiser(water/1), HAI(air/0)"
 info "P6 planet structs: PDC(land/2), Ore Extractor(land/3)"
-info "P3 fleet now also has: Mobile Artillery(land/3) for PDC immunity test"
+info "P3 fleet now also has: Pursuit Fighter(air/1), Mobile Artillery(land/3) for PDC immunity test"
 
 # ─── Move P3's fleet to P6's planet for battle ───
 run_tx "Moving P3's fleet to P6's planet for battle" \
