@@ -30,10 +30,11 @@ func TestMsgGuildMembershipJoinProxy(t *testing.T) {
 		require.Equal(t, "0-1", gs.Guild.Id, "guild ID must be 0-1 to match signed data")
 
 		resp, err := ms.GuildMembershipJoinProxy(wctx, &types.MsgGuildMembershipJoinProxy{
-			Creator:        gs.GuildOwner.Creator,
-			Address:        proxyTargetAddress,
-			ProofPubKey:    proxyPubKeyHex,
-			ProofSignature: proxySignatureHex,
+			Creator:                         gs.GuildOwner.Creator,
+			Address:                         proxyTargetAddress,
+			ProofPubKey:                     proxyPubKeyHex,
+			ProofSignature:                  proxySignatureHex,
+			PlayerPfpClientRenderAttributes: "{\n  \"head\": 1234\n}",
 		})
 		require.NoError(t, err)
 		require.NotNil(t, resp)
@@ -45,6 +46,7 @@ func TestMsgGuildMembershipJoinProxy(t *testing.T) {
 		player, found := k.GetPlayer(ctx, playerId)
 		require.True(t, found)
 		require.Equal(t, gs.Guild.Id, player.GuildId, "target player should be in the proxy guild")
+		require.Equal(t, `{"head":1234}`, player.PfpClientRenderAttributes, "render attributes should be stored compacted")
 	})
 
 	t.Run("unregistered creator", func(t *testing.T) {

@@ -170,6 +170,14 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 		player.SetPfp(msg.PlayerPfp)
 	}
 
+	if msg.PlayerPfpClientRenderAttributes != "" {
+		canonical, err := types.ValidatePfpClientRenderAttributes(msg.PlayerPfpClientRenderAttributes)
+		if err != nil {
+			return emptyResponse, err
+		}
+		player.SetPfpClientRenderAttributes(canonical)
+	}
+
 	// The proxy join has completely mostly successfully at this point
 	// Increase the nonce of the player account to prevent replay of this signed message
 	cc.SetGridAttributeIncrement(GetGridAttributeIDByObjectId(types.GridAttributeType_proxyNonce, player.GetPlayerId()), 1)

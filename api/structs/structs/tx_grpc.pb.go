@@ -72,6 +72,7 @@ const (
 	Msg_PlayerUpdateGuildRank_FullMethodName                         = "/structs.structs.Msg/PlayerUpdateGuildRank"
 	Msg_PlayerUpdateName_FullMethodName                              = "/structs.structs.Msg/PlayerUpdateName"
 	Msg_PlayerUpdatePfp_FullMethodName                               = "/structs.structs.Msg/PlayerUpdatePfp"
+	Msg_PlayerUpdatePfpClientRenderAttributes_FullMethodName         = "/structs.structs.Msg/PlayerUpdatePfpClientRenderAttributes"
 	Msg_PlayerSend_FullMethodName                                    = "/structs.structs.Msg/PlayerSend"
 	Msg_ProviderCreate_FullMethodName                                = "/structs.structs.Msg/ProviderCreate"
 	Msg_ProviderWithdrawBalance_FullMethodName                       = "/structs.structs.Msg/ProviderWithdrawBalance"
@@ -171,6 +172,7 @@ type MsgClient interface {
 	PlayerUpdateGuildRank(ctx context.Context, in *MsgPlayerUpdateGuildRank, opts ...grpc.CallOption) (*MsgPlayerUpdateGuildRankResponse, error)
 	PlayerUpdateName(ctx context.Context, in *MsgPlayerUpdateName, opts ...grpc.CallOption) (*MsgPlayerUpdateResponse, error)
 	PlayerUpdatePfp(ctx context.Context, in *MsgPlayerUpdatePfp, opts ...grpc.CallOption) (*MsgPlayerUpdateResponse, error)
+	PlayerUpdatePfpClientRenderAttributes(ctx context.Context, in *MsgPlayerUpdatePfpClientRenderAttributes, opts ...grpc.CallOption) (*MsgPlayerUpdateResponse, error)
 	PlayerSend(ctx context.Context, in *MsgPlayerSend, opts ...grpc.CallOption) (*MsgPlayerSendResponse, error)
 	ProviderCreate(ctx context.Context, in *MsgProviderCreate, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderWithdrawBalance(ctx context.Context, in *MsgProviderWithdrawBalance, opts ...grpc.CallOption) (*MsgProviderResponse, error)
@@ -747,6 +749,16 @@ func (c *msgClient) PlayerUpdatePfp(ctx context.Context, in *MsgPlayerUpdatePfp,
 	return out, nil
 }
 
+func (c *msgClient) PlayerUpdatePfpClientRenderAttributes(ctx context.Context, in *MsgPlayerUpdatePfpClientRenderAttributes, opts ...grpc.CallOption) (*MsgPlayerUpdateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgPlayerUpdateResponse)
+	err := c.cc.Invoke(ctx, Msg_PlayerUpdatePfpClientRenderAttributes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) PlayerSend(ctx context.Context, in *MsgPlayerSend, opts ...grpc.CallOption) (*MsgPlayerSendResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgPlayerSendResponse)
@@ -1168,6 +1180,7 @@ type MsgServer interface {
 	PlayerUpdateGuildRank(context.Context, *MsgPlayerUpdateGuildRank) (*MsgPlayerUpdateGuildRankResponse, error)
 	PlayerUpdateName(context.Context, *MsgPlayerUpdateName) (*MsgPlayerUpdateResponse, error)
 	PlayerUpdatePfp(context.Context, *MsgPlayerUpdatePfp) (*MsgPlayerUpdateResponse, error)
+	PlayerUpdatePfpClientRenderAttributes(context.Context, *MsgPlayerUpdatePfpClientRenderAttributes) (*MsgPlayerUpdateResponse, error)
 	PlayerSend(context.Context, *MsgPlayerSend) (*MsgPlayerSendResponse, error)
 	ProviderCreate(context.Context, *MsgProviderCreate) (*MsgProviderResponse, error)
 	ProviderWithdrawBalance(context.Context, *MsgProviderWithdrawBalance) (*MsgProviderResponse, error)
@@ -1372,6 +1385,9 @@ func (UnimplementedMsgServer) PlayerUpdateName(context.Context, *MsgPlayerUpdate
 }
 func (UnimplementedMsgServer) PlayerUpdatePfp(context.Context, *MsgPlayerUpdatePfp) (*MsgPlayerUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayerUpdatePfp not implemented")
+}
+func (UnimplementedMsgServer) PlayerUpdatePfpClientRenderAttributes(context.Context, *MsgPlayerUpdatePfpClientRenderAttributes) (*MsgPlayerUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlayerUpdatePfpClientRenderAttributes not implemented")
 }
 func (UnimplementedMsgServer) PlayerSend(context.Context, *MsgPlayerSend) (*MsgPlayerSendResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayerSend not implemented")
@@ -2456,6 +2472,24 @@ func _Msg_PlayerUpdatePfp_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_PlayerUpdatePfpClientRenderAttributes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPlayerUpdatePfpClientRenderAttributes)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).PlayerUpdatePfpClientRenderAttributes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_PlayerUpdatePfpClientRenderAttributes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).PlayerUpdatePfpClientRenderAttributes(ctx, req.(*MsgPlayerUpdatePfpClientRenderAttributes))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_PlayerSend_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgPlayerSend)
 	if err := dec(in); err != nil {
@@ -3322,6 +3356,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PlayerUpdatePfp",
 			Handler:    _Msg_PlayerUpdatePfp_Handler,
+		},
+		{
+			MethodName: "PlayerUpdatePfpClientRenderAttributes",
+			Handler:    _Msg_PlayerUpdatePfpClientRenderAttributes_Handler,
 		},
 		{
 			MethodName: "PlayerSend",

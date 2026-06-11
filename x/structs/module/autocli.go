@@ -635,6 +635,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "pfp"}},
                  },
                  {
+                     RpcMethod:      "PlayerUpdatePfpClientRenderAttributes",
+                     Use:            "player-update-pfp-cr-attributes [player id] [json]",
+                     Short:          "Update the client render attributes for a player's local profile picture",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "pfpClientRenderAttributes"}},
+                 },
+                 {
                     RpcMethod:      "PlayerSend",
                     Use:            "player-send [from address] [to address] [1coin, 2coin, ...coin]",
                     Short:          "Send tokens from any player-owned address",

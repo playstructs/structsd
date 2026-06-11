@@ -24,6 +24,7 @@ message Player {
 
   string name           = 10;
   string pfp            = 11;
+  string pfpClientRenderAttributes = 12;
 }
 
 message PlayerInventory {

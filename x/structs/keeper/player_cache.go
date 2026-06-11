@@ -513,6 +513,21 @@ func (cache *PlayerCache) SetPfp(pfp string) {
 	cache.Changed = true
 }
 
+func (cache *PlayerCache) GetPfpClientRenderAttributes() string {
+	if !cache.PlayerLoaded {
+		cache.LoadPlayer()
+	}
+	return cache.Player.PfpClientRenderAttributes
+}
+
+func (cache *PlayerCache) SetPfpClientRenderAttributes(pfpClientRenderAttributes string) {
+	if !cache.PlayerLoaded {
+		cache.LoadPlayer()
+	}
+	cache.Player.PfpClientRenderAttributes = pfpClientRenderAttributes
+	cache.Changed = true
+}
+
 func (cache *PlayerCache) CanUpdateUGCBy(activePlayer *PlayerCache) error {
 	return cache.CC.UGCPermissionCheck(cache, activePlayer)
 }

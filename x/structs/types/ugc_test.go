@@ -211,3 +211,36 @@ func TestNormalizeName(t *testing.T) {
 	decomposed := "cafe\u0301"                           // e + combining acute
 	require.Equal(t, NormalizeName(precomposed), NormalizeName(decomposed))
 }
+
+func TestValidatePfpClientRenderAttributes(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    string
+		wantErr bool
+	}{
+		{"empty clears", "", "", false},
+		{"valid object", `{"head":1234,"background":1234}`, `{"head":1234,"background":1234}`, false},
+		{"valid object with schema hash", `{"head":1234,"schema":"abc123"}`, `{"head":1234,"schema":"abc123"}`, false},
+		{"empty object", `{}`, `{}`, false},
+		{"whitespace compacted", "{\n  \"head\": 1234\n}", `{"head":1234}`, false},
+		{"array rejected", `[1,2,3]`, "", true},
+		{"scalar number rejected", `1234`, "", true},
+		{"scalar string rejected", `"head"`, "", true},
+		{"malformed json rejected", `{"head":}`, "", true},
+		{"trailing garbage rejected", `{"head":1}x`, "", true},
+		{"over byte cap rejected", `{"x":"` + strings.Repeat("a", MaxPfpClientRenderAttributesBytes) + `"}`, "", true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ValidatePfpClientRenderAttributes(tt.input)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			require.Equal(t, tt.want, got)
+		})
+	}
+}

@@ -73,6 +73,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdateGuildRank{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdateName{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdatePfp{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdatePfpClientRenderAttributes{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerSend{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderCreate{},)

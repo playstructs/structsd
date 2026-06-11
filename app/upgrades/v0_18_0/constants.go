@@ -78,5 +78,16 @@ package v0_18_0
 //     Starfighter) or 3 (Cruiser).
 //   - Applied via the CreateStructTypeGenesis() rewrite; no extra migration.
 //
+// Player client render attributes (binary only, no migration):
+//
+//   - Player gains a pfpClientRenderAttributes string field (proto field 12)
+//     plus a new PlayerUpdatePfpClientRenderAttributes transaction. It stores
+//     a small JSON object describing how a client renders a player's local
+//     profile picture. The value is validated as an object-only JSON blob
+//     capped at 512 bytes, stored in compacted form, and is moderatable by a
+//     guild through the same PermGuildUGCUpdate path as name/pfp. A new proto
+//     string defaults to empty for existing players, so no state migration is
+//     required.
+//
 // No store-key changes; all migrations write to existing prefix stores.
 const UpgradeName = "v0.18.0"

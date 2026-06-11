@@ -1,6 +1,8 @@
 package types
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"regexp"
@@ -237,6 +239,44 @@ func ValidatePfp(pfp string) error {
 	}
 
 	return nil
+}
+
+// MaxPfpClientRenderAttributesBytes bounds the stored client render
+// attributes blob. The cap is byte-denominated (not rune count) because the
+// value is re-marshaled into the Player record and emitted on every player
+// write, so the byte size is what actually drives state and event growth.
+const MaxPfpClientRenderAttributesBytes = 512
+
+// ValidatePfpClientRenderAttributes validates the client render attributes
+// blob attached to a player's locally-rendered profile picture and returns
+// the compacted (whitespace-stripped) JSON to store.
+//
+// The empty string is allowed and clears the value. Otherwise the value must
+// be a JSON object within the byte cap. Validation is intentionally loose --
+// object-only, with no key/value schema -- so the contents stay flexible as
+// the client render model evolves. Storing the compacted form prevents
+// padding the cap with whitespace and keeps the per-write/event footprint
+// minimal.
+func ValidatePfpClientRenderAttributes(attributes string) (string, error) {
+	if attributes == "" {
+		return "", nil
+	}
+	if len(attributes) > MaxPfpClientRenderAttributesBytes {
+		return "", fmt.Errorf("pfpClientRenderAttributes must be at most %d bytes", MaxPfpClientRenderAttributesBytes)
+	}
+
+	// Must decode as a JSON object (rejects arrays, scalars, and malformed
+	// JSON). RawMessage values avoid imposing any schema on the contents.
+	var obj map[string]json.RawMessage
+	if err := json.Unmarshal([]byte(attributes), &obj); err != nil {
+		return "", fmt.Errorf("pfpClientRenderAttributes must be a valid JSON object")
+	}
+
+	var compacted bytes.Buffer
+	if err := json.Compact(&compacted, []byte(attributes)); err != nil {
+		return "", fmt.Errorf("pfpClientRenderAttributes must be a valid JSON object")
+	}
+	return compacted.String(), nil
 }
 
 // NormalizeName produces the canonical comparison form for a name: NFC
