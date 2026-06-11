@@ -69,8 +69,11 @@ func CmdPlanetRaidCompute() *cobra.Command {
 			planetAttributes := Planet_res.PlanetAttributes
 
 			if planetAttributes.BlockStartRaid == 0 {
-				fmt.Printf("Planet (%s) has no Active raid \n", performingFleet.LocationId)
-				return nil
+				// blockStartRaid is only set while a raid is in progress and the
+				// defending Command Ship is offline, destroyed, or non-existent.
+				// Grinding now would be wasted work: the chain rejects the proof
+				// and the hash input changes once the Command Ship goes down.
+				return fmt.Errorf("planet (%s) shields are not vulnerable: no active raid window (defending Command Ship may still be online)", performingFleet.LocationId)
 			}
 
 			currentBlockResponse, currentBlock_err := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})

@@ -89,6 +89,7 @@ service Msg {
   rpc PlayerUpdateGuildRank          (MsgPlayerUpdateGuildRank         ) returns (MsgPlayerUpdateGuildRankResponse);
   rpc PlayerUpdateName               (MsgPlayerUpdateName              ) returns (MsgPlayerUpdateResponse);
   rpc PlayerUpdatePfp                (MsgPlayerUpdatePfp               ) returns (MsgPlayerUpdateResponse);
+  rpc PlayerUpdatePfpClientRenderAttributes (MsgPlayerUpdatePfpClientRenderAttributes) returns (MsgPlayerUpdateResponse);
   rpc PlayerSend                     (MsgPlayerSend                    ) returns (MsgPlayerSendResponse);
 
   rpc ProviderCreate                 (MsgProviderCreate                ) returns (MsgProviderResponse);
@@ -451,6 +452,7 @@ message MsgGuildMembershipJoinProxy {
 
   string playerName        = 6;
   string playerPfp         = 7;
+  string playerPfpClientRenderAttributes = 8;
 }
 
 message MsgGuildMembershipKick {
@@ -652,6 +654,14 @@ message MsgPlayerUpdatePfp {
   string creator  = 1;
   string playerId = 2;
   string pfp      = 3;
+}
+
+message MsgPlayerUpdatePfpClientRenderAttributes {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator                   = 1;
+  string playerId                  = 2;
+  string pfpClientRenderAttributes = 3;
 }
 
 message MsgPlayerUpdateResponse {}

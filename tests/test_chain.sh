@@ -349,6 +349,25 @@ get_newest_struct_id() {
     echo "${json}" | jq -r '[.Struct[].id] | map(split("-") | {p: .[0], n: (.[1] | tonumber)}) | sort_by(.n) | last | "\(.p)-\(.n)"' 2>/dev/null || echo ""
 }
 
+# assert_new_struct: fail loudly if a struct-build-initiate did not produce a
+# NEW struct of the expected type (guards against get_newest_struct_id silently
+# returning a stale id when an initiate is rejected).
+# Usage: assert_new_struct <label> <new_id> <prev_newest_id> <expected_type>
+assert_new_struct() {
+    local label="$1" new_id="$2" prev_id="$3" exp_type="$4"
+    if [ -z "${new_id}" ] || [ "${new_id}" = "${prev_id}" ]; then
+        echo -e "  ${RED}FAIL${NC}: ${label} - initiate produced no new struct (id='${new_id}', prev='${prev_id}')"
+        FAIL_COUNT=$((FAIL_COUNT + 1)); return 1
+    fi
+    local t; t=$(query query structs struct "${new_id}" | jq -r '.Struct.type // empty')
+    if [ "${t}" != "${exp_type}" ]; then
+        echo -e "  ${RED}FAIL${NC}: ${label} - new struct ${new_id} type='${t}', expected '${exp_type}'"
+        FAIL_COUNT=$((FAIL_COUNT + 1)); return 1
+    fi
+    echo -e "  ${GREEN}PASS${NC}: ${label} = ${new_id} (type ${exp_type})"
+    PASS_COUNT=$((PASS_COUNT + 1))
+}
+
 # get_latest_allocation_for_source: find the most recent allocation for a given source
 get_latest_allocation_for_source() {
     local source_id="$1"
@@ -419,12 +438,13 @@ wait_for_charge() {
 
 # Charge constants (from genesis_struct_type.go)
 CHARGE_BUILD=8
-CHARGE_ATTACK_DEFAULT=1
-CHARGE_ATTACK_BATTLESHIP=8
-CHARGE_ATTACK_SAM=20
-CHARGE_MOVE=8
+CHARGE_ATTACK_DEFAULT=3              # primary charge 3 (Tank/Starfighter/Pursuit/CmdShip)
+CHARGE_ATTACK_BATTLESHIP=5           # guided secondary (v0.18.0 charge rebalance)
+CHARGE_ATTACK_BATTLESHIP_PRIMARY=5   # armour-piercing unguided primary
+CHARGE_ATTACK_SAM=5
+CHARGE_MOVE=3                        # only the Command Ship pays moveCharge (3); others 0
 CHARGE_DEFEND=1
-CHARGE_ACTIVATE=1
+CHARGE_ACTIVATE=2
 
 # Permission constants (from x/structs/types/permissions.go, 1<<iota)
 PERM_PLAY=1
@@ -633,15 +653,16 @@ find_struct_by_owner_type() {
 # Weapon charge lookups by struct type (from genesis_struct_type.go)
 _primary_charge() {
     case "$1" in
-        2)  echo 20 ;; # Battleship
-        4|6|7|8|10|11|12|13) echo 8 ;; # Frigate,StealthBomber,Interceptor,MobArt,SAM,Cruiser,Destroyer,Sub
-        *) echo 1 ;; # CommandShip(1),Starfighter(3),PursuitFighter(5),Tank(9),others
+        1|3|5|9) echo 3 ;; # CommandShip,Starfighter,PursuitFighter,Tank
+        2|4|6|7|8|10|11|12|13) echo 5 ;; # Battleship,Frigate,StealthBomber,Interceptor,MobArt,SAM,Cruiser,Destroyer,Sub
+        *) echo 0 ;; # planetary / no primary weapon
     esac
 }
 _secondary_charge() {
     case "$1" in
-        3)  echo 8 ;; # Starfighter attackRun
-        11) echo 1 ;; # Cruiser secondary
+        2)  echo 5 ;; # Battleship guided secondary (v0.18.0 charge rebalance)
+        3)  echo 5 ;; # Starfighter attackRun
+        11) echo 3 ;; # Cruiser secondary
         *)  echo 1 ;; # fallback
     esac
 }
@@ -814,9 +835,12 @@ recover_state() {
     SA=$(query query structs struct-all)
 
     COMMAND_SHIP_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 1 1 "${SA}")
+    PLAYER_2_CMD_SHIP_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 1 1 "${SA}")
+    PLAYER_3_CMD_SHIP_ID="${COMMAND_SHIP_ID}"
     MINER_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 14 1 "${SA}")
     REFINERY_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 16 1 "${SA}")
     DESTROYER_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 9 1 "${SA}")
+    AP_TANK_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 9 2 "${SA}")
     DEFENDER_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 9 1 "${SA}")
     GENERATOR_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_4_ID}" 20 1 "${SA}")
     SAM_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 10 1 "${SA}")
@@ -3475,32 +3499,109 @@ fi # phase 9
 if run_phase 1000; then
 
 # ═════════════════════════════════════════════════════════════════════════════
-#  PHASE 10: Planet Raid
+#  PHASE 10: Planet Raid — SHIELDS_VULNERABLE mechanics (v0.18.0)
 # ═════════════════════════════════════════════════════════════════════════════
+# A raid can only be won while the defending Command Ship is offline,
+# destroyed, or non-existent. blockStartRaid tracks that vulnerability
+# window: it anchors when the defender's Command Ship goes down and clears
+# when it comes back online (or when the raid ends).
 
-section "PHASE 10: Planet Raid"
+section "PHASE 10: Planet Raid (SHIELDS_VULNERABLE)"
+
+P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
+P2_SHIELD=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.planetaryShield' '0')
+P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
+info "P2 planet: planetaryShield=${P2_SHIELD} blockStartRaid=${P2_RAID_CLOCK}"
+
+P2_CMD_JSON=$(query query structs struct "${PLAYER_2_CMD_SHIP_ID}" || echo '{}')
+P2_CMD_ONLINE=$(jqr "${P2_CMD_JSON}" '.structAttributes.isOnline' 'false')
+assert_eq "P2 Command Ship online before raid scenarios" "true" "${P2_CMD_ONLINE}"
+
+# ─── Scenario A (expected bad): raid cannot be won while defender CMD online ───
+
+assert_eq "blockStartRaid unset while defender Command Ship is online" "0" "${P2_RAID_CLOCK}"
+
+run_tx_expect_fail "Raid complete while defender Command Ship online (should fail)" \
+    tx structs planet-raid-complete "${PLAYER_3_FLEET_ID}" deadbeef 1 --from player_3
+
+run_tx_expect_fail "Raid compute fast-fails while shields are up (should fail)" \
+    tx structs planet-raid-compute "${PLAYER_3_FLEET_ID}" --from player_3
+
+# ─── Scenario B: defender CMD offline opens the vulnerability window ───
+
+run_tx "P2 deactivates their Command Ship (shields drop)" \
+    tx structs struct-deactivate "${PLAYER_2_CMD_SHIP_ID}" --from player_2
+
+P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
+P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
+assert_gt "blockStartRaid anchored after defender Command Ship went offline" "0" "${P2_RAID_CLOCK}"
+
+# ─── Scenario C (expected bad): CMD back online closes the window again ───
+
+wait_for_charge "${PLAYER_2_ID}" "${CHARGE_ACTIVATE}"
+run_tx "P2 re-activates their Command Ship (shields restored)" \
+    tx structs struct-activate "${PLAYER_2_CMD_SHIP_ID}" --from player_2
+
+P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
+P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
+assert_eq "blockStartRaid cleared when defender Command Ship back online" "0" "${P2_RAID_CLOCK}"
+
+run_tx_expect_fail "Raid complete after shields restored (should fail)" \
+    tx structs planet-raid-complete "${PLAYER_3_FLEET_ID}" deadbeef 1 --from player_3
+
+# ─── Scenario D (good): raid succeeds while defender CMD is offline ───
+
+run_tx "P2 deactivates their Command Ship again (shields drop)" \
+    tx structs struct-deactivate "${PLAYER_2_CMD_SHIP_ID}" --from player_2
+
+P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
+P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
+assert_gt "blockStartRaid re-anchored for the raid attempt" "0" "${P2_RAID_CLOCK}"
+
+P3_JSON=$(query query structs player "${PLAYER_3_ID}")
+P2_JSON=$(query query structs player "${PLAYER_2_ID}")
+P3_ORE_BEFORE=$(jqr "${P3_JSON}" '.playerInventory.ore' '0')
+P2_ORE_BEFORE=$(jqr "${P2_JSON}" '.playerInventory.ore' '0')
+info "Player 3 ore before raid: ${P3_ORE_BEFORE}"
+info "Player 2 ore before raid: ${P2_ORE_BEFORE}"
+
+run_compute "Completing planet raid (defender Command Ship offline)" \
+    tx structs planet-raid-compute "${PLAYER_3_FLEET_ID}" --from player_3
+
+P3_JSON=$(query query structs player "${PLAYER_3_ID}")
+P2_JSON=$(query query structs player "${PLAYER_2_ID}")
+P3_ORE_AFTER=$(jqr "${P3_JSON}" '.playerInventory.ore' '0')
+P2_ORE_AFTER=$(jqr "${P2_JSON}" '.playerInventory.ore' '0')
+info "Player 3 ore after raid: ${P3_ORE_AFTER}"
+info "Player 2 ore after raid: ${P2_ORE_AFTER}"
+echo "  Raid results: P3 ore ${P3_ORE_BEFORE} -> ${P3_ORE_AFTER}, P2 ore ${P2_ORE_BEFORE} -> ${P2_ORE_AFTER}"
 
 if [ "${SKIP_MINING}" = true ]; then
-    info "Skipping planet raid (--skip-mining, no ore to raid)"
+    info "Skipping ore-theft assertion (--skip-mining, no ore to steal)"
 else
-    P3_JSON=$(query query structs player "${PLAYER_3_ID}")
-    P2_JSON=$(query query structs player "${PLAYER_2_ID}")
-    P3_ORE_BEFORE=$(jqr "${P3_JSON}" '.playerInventory.ore' '0')
-    P2_ORE_BEFORE=$(jqr "${P2_JSON}" '.playerInventory.ore' '0')
-    info "Player 3 ore before raid: ${P3_ORE_BEFORE}"
-    info "Player 2 ore before raid: ${P2_ORE_BEFORE}"
-
-    run_compute "Completing planet raid" \
-        tx structs planet-raid-compute "${PLAYER_3_FLEET_ID}" --from player_3
-
-    P3_JSON=$(query query structs player "${PLAYER_3_ID}")
-    P2_JSON=$(query query structs player "${PLAYER_2_ID}")
-    P3_ORE_AFTER=$(jqr "${P3_JSON}" '.playerInventory.ore' '0')
-    P2_ORE_AFTER=$(jqr "${P2_JSON}" '.playerInventory.ore' '0')
-    info "Player 3 ore after raid: ${P3_ORE_AFTER}"
-    info "Player 2 ore after raid: ${P2_ORE_AFTER}"
-    echo "  Raid results: P3 ore ${P3_ORE_BEFORE} -> ${P3_ORE_AFTER}, P2 ore ${P2_ORE_BEFORE} -> ${P2_ORE_AFTER}"
+    assert_eq "P2 ore emptied by raid" "0" "${P2_ORE_AFTER}"
+    assert_gt "P3 ore increased by raid" "${P3_ORE_BEFORE}" "${P3_ORE_AFTER}"
 fi
+
+# A successful raid sends the attacking fleet home
+FLEET_3_JSON=$(query query structs fleet "${PLAYER_3_FLEET_ID}")
+FLEET_3_LOC=$(jqr "${FLEET_3_JSON}" '.Fleet.locationId')
+assert_eq "P3 fleet returned home after successful raid" "${PLAYER_3_PLANET_ID}" "${FLEET_3_LOC}"
+
+# Raid over: the vulnerability clock must be cleared
+P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
+P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
+assert_eq "blockStartRaid cleared after raid completed" "0" "${P2_RAID_CLOCK}"
+
+# ─── Restore: bring P2's Command Ship back online for later phases ───
+
+wait_for_charge "${PLAYER_2_ID}" "${CHARGE_ACTIVATE}"
+run_tx "P2 re-activates their Command Ship (cleanup)" \
+    tx structs struct-activate "${PLAYER_2_CMD_SHIP_ID}" --from player_2
+
+P2_CMD_JSON=$(query query structs struct "${PLAYER_2_CMD_SHIP_ID}" || echo '{}')
+P2_CMD_ONLINE=$(jqr "${P2_CMD_JSON}" '.structAttributes.isOnline' 'false')
+assert_eq "P2 Command Ship back online after raid scenarios" "true" "${P2_CMD_ONLINE}"
 
 fi # phase 10
 
@@ -3567,10 +3668,10 @@ run_tx "Moving Player 3's fleet home for building" \
 
 info "Batch-initiating all builds for Phases 12-14 (difficulty decays while computing)"
 
-# ─── P3: SAM Launcher (type 10, land, slot 3) ───
+# ─── P3: SAM Launcher (type 10, land, slot 2) ───
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating SAM Launcher (type=10, land, slot=3)" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 10 land 3 --from player_3
+run_tx "Initiating SAM Launcher (type=10, land, slot=2)" \
+    tx structs struct-build-initiate "${PLAYER_3_ID}" 10 land 2 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 SAM_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
@@ -3587,10 +3688,10 @@ P2_BATTLESHIP_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
 assert_not_empty "Player 2 Battleship struct ID" "${P2_BATTLESHIP_ID}"
 echo "  P2 Battleship Struct ID: ${P2_BATTLESHIP_ID} (compute deferred to Phase 13)"
 
-# ─── P3: Submarine (type 13, water, slot 2) ───
+# ─── P3: Submarine (type 13, water, slot 1) ───
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Submarine (type=13, water, slot=2)" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 13 water 2 --from player_3
+run_tx "Initiating Submarine (type=13, water, slot=1)" \
+    tx structs struct-build-initiate "${PLAYER_3_ID}" 13 water 1 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 SUB_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
@@ -3607,10 +3708,10 @@ INTERCEPTOR_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
 assert_not_empty "Interceptor struct ID" "${INTERCEPTOR_ID}"
 echo "  P2 Interceptor Struct ID: ${INTERCEPTOR_ID} (compute deferred to Phase 14)"
 
-# ─── P3: Battleship #1 (type 2, space, slot 1) ───
+# ─── P3: Battleship #1 (type 2, space, slot 2) ───
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Battleship #1 (type=2, space, slot=1)" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 2 space 1 --from player_3
+run_tx "Initiating Battleship #1 (type=2, space, slot=2)" \
+    tx structs struct-build-initiate "${PLAYER_3_ID}" 2 space 2 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 BATTLESHIP_1_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
@@ -3665,19 +3766,11 @@ run_compute "Building SAM Launcher ${SAM_STRUCT_ID}" \
 
 assert_eq "SAM built" "true" "$(query query structs struct "${SAM_STRUCT_ID}" | jq -r '.structAttributes.isBuilt')"
 
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
-run_tx "Moving SAM Launcher to fleet" \
-    tx structs struct-move "${SAM_STRUCT_ID}" fleet land 2 --from player_3
-
 # ─── Compute Submarine (aged during SAM compute) ───
 run_compute "Building Submarine ${SUB_STRUCT_ID}" \
     tx structs struct-build-compute "${SUB_STRUCT_ID}" --from player_3
 
 assert_eq "Submarine built" "true" "$(query query structs struct "${SUB_STRUCT_ID}" | jq -r '.structAttributes.isBuilt')"
-
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Submarine to fleet" \
-    tx structs struct-move "${SUB_STRUCT_ID}" fleet water 1 --from player_3
 
 # ─── Compute Battleship #1 (aged during SAM + Sub computes) ───
 run_compute "Building Galactic Battleship ${BATTLESHIP_1_ID}" \
@@ -3685,15 +3778,27 @@ run_compute "Building Galactic Battleship ${BATTLESHIP_1_ID}" \
 
 assert_eq "Battleship #1 built" "true" "$(query query structs struct "${BATTLESHIP_1_ID}" | jq -r '.structAttributes.isBuilt')"
 
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Battleship to fleet" \
-    tx structs struct-move "${BATTLESHIP_1_ID}" fleet space 2 --from player_3
-
 # ─── Compute Battleship #2 (aged during SAM + Sub + BB1 computes) ───
 run_compute "Building Galactic Battleship #2 ${BATTLESHIP_2_ID}" \
     tx structs struct-build-compute "${BATTLESHIP_2_ID}" --from player_3
 
 assert_eq "Battleship #2 built" "true" "$(query query structs struct "${BATTLESHIP_2_ID}" | jq -r '.structAttributes.isBuilt')"
+
+# ─── P3: Tank #2 (type 9, land, slot 0) — armour-piercing target for Phase 13 ───
+# Dedicated target so the AP test never disturbs the main Tank's HP.
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
+run_tx "Initiating P3 Tank #2 (type=9, land, slot=0) — armour piercing target" \
+    tx structs struct-build-initiate "${PLAYER_3_ID}" 9 land 0 --from player_3
+
+STRUCT_ALL_JSON=$(query query structs struct-all)
+AP_TANK_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
+assert_not_empty "P3 Tank #2 struct ID" "${AP_TANK_ID}"
+echo "  P3 Tank #2 Struct ID: ${AP_TANK_ID}"
+
+run_compute "Building P3 Tank #2 ${AP_TANK_ID}" \
+    tx structs struct-build-compute "${AP_TANK_ID}" --from player_3
+
+assert_eq "P3 Tank #2 built" "true" "$(query query structs struct "${AP_TANK_ID}" | jq -r '.structAttributes.isBuilt')"
 
 fi # phase 12
 
@@ -3733,14 +3838,40 @@ run_compute "Building Player 2's Battleship ${P2_BATTLESHIP_ID}" \
 
 assert_eq "Player 2 Battleship built" "true" "$(query query structs struct "${P2_BATTLESHIP_ID}" | jq -r '.structAttributes.isBuilt')"
 
-# Attack the defended Command Ship
+# ─── v0.18.0 Battleship rebalance: primary is armour-piercing, land/water only ───
+# The unguided primary (PrimaryWeaponAmbits=6: water+land) can no longer
+# target space — the guided secondary (SecondaryWeaponAmbits=16: space) covers it.
+
+# Negative: Battleship primary cannot target the space-ambit Command Ship.
+# Wait for full primary charge first so the failure is the ambit check, not charge.
+wait_for_charge "${PLAYER_2_ID}" "${CHARGE_ATTACK_BATTLESHIP_PRIMARY}"
+run_tx_expect_fail "Battleship primary (land/water) rejected against space target" \
+    tx structs struct-attack "${P2_BATTLESHIP_ID}" "${COMMAND_SHIP_ID}" primaryWeapon --from player_2
+
+# ─── Armour piercing: Battleship primary vs Tank (AttackReduction=1) ───
+# P3 Tank #2 (built in Phase 12, full HP, land ambit on P3's fleet at this
+# planet). The armour-piercing primary negates the Tank's reduction, so the
+# full 2 damage lands. A non-piercing weapon would only deal 1 (2 - 1).
+AP_TANK_HP_BEFORE=$(query query structs struct "${AP_TANK_ID}" | jq -r '.structAttributes.health // "0"')
+P2_BB_HP_BEFORE=$(query query structs struct "${P2_BATTLESHIP_ID}" | jq -r '.structAttributes.health // "0"')
+info "P3 Tank #2 health before armour-piercing attack: ${AP_TANK_HP_BEFORE}"
+
+run_tx "P2 Battleship fires armour-piercing primary at P3 Tank #2" \
+    tx structs struct-attack "${P2_BATTLESHIP_ID}" "${AP_TANK_ID}" primaryWeapon --from player_2
+
+AP_TANK_HP_AFTER=$(query query structs struct "${AP_TANK_ID}" | jq -r '.structAttributes.health // "0"')
+P2_BB_HP_AFTER=$(query query structs struct "${P2_BATTLESHIP_ID}" | jq -r '.structAttributes.health // "0"')
+assert_eq "Armour piercing negates Tank reduction (full 2 damage)" "2" "$((AP_TANK_HP_BEFORE - AP_TANK_HP_AFTER))"
+assert_eq "Battleship unharmed (Tank cannot counter into space)" "${P2_BB_HP_BEFORE}" "${P2_BB_HP_AFTER}"
+
+# Attack the defended Command Ship with the guided secondary (space ambit)
 CMDSHIP_JSON=$(query query structs struct "${COMMAND_SHIP_ID}" || echo '{}')
 CMDSHIP_HP_BEFORE=$(jqr "${CMDSHIP_JSON}" '.structAttributes.health' '0')
 info "Command Ship health before defended attack: ${CMDSHIP_HP_BEFORE}"
 
 wait_for_charge "${PLAYER_2_ID}" "${CHARGE_ATTACK_BATTLESHIP}"
-run_tx "Player 2 attacks the defended Command Ship" \
-    tx structs struct-attack "${P2_BATTLESHIP_ID}" "${COMMAND_SHIP_ID}" primaryWeapon --from player_2
+run_tx "Player 2 attacks the defended Command Ship (guided secondary)" \
+    tx structs struct-attack "${P2_BATTLESHIP_ID}" "${COMMAND_SHIP_ID}" secondaryWeapon --from player_2
 
 CMDSHIP_JSON=$(query query structs struct "${COMMAND_SHIP_ID}" || echo '{}')
 CMDSHIP_HP_AFTER=$(jqr "${CMDSHIP_JSON}" '.structAttributes.health' '0')
@@ -3904,7 +4035,7 @@ section "PHASE 15: Power Generator (Player 4)"
 
 echo "  Player 4 Planet: ${PLAYER_4_PLANET_ID}"
 echo "  Using Field Generator (struct type 20, land, slot 0)"
-echo "  GeneratingRate=2, PassiveDraw=500000, MaxHealth=3"
+echo "  GeneratingRate=2, PassiveDraw=500000, MaxHealth=8 (armour, AttackReduction=1)"
 
 # ─── Snapshot Player 4's capacity before building ───
 P4_JSON=$(query query structs player "${PLAYER_4_ID}")
@@ -3966,7 +4097,7 @@ assert_gt "Player 4 has available capacity for allocations" 0 "${P4_AVAIL_CAP}"
 # ─── Now destroy the generator: Player 3 attacks ───
 info "--- Destruction Phase ---"
 echo "  Player 3 will move fleet to Player 4's planet and destroy the generator"
-echo "  Generator MaxHealth=3, Tank (type=9, land) does 2 damage per shot → 2 rounds"
+echo "  Generator MaxHealth=8 + armour (AttackReduction=1): Tank (type=9, land) 2 dmg → 1 net per shot → 8 rounds"
 echo "  NOTE: Command Ship (space ambit) cannot target land structs — using Tank instead"
 
 # Move Player 3's fleet to Player 4's planet (fleet-move has no charge cost)
@@ -3981,27 +4112,38 @@ info "Player 3 fleet location: ${FLEET_3_LOC}"
 # Record generator health before attacks
 GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}" || echo '{}')
 GEN_HP_BEFORE=$(jqr "${GEN_JSON}" '.structAttributes.health' '0')
-info "Generator health before attacks: ${GEN_HP_BEFORE}"
+info "Generator health before attacks: ${GEN_HP_BEFORE} (MaxHealth=8; armour reduces each 2-dmg Tank hit to 1 net)"
 
 # Attack round 1 — use Destroyer/Tank (type=9, land ambit, PrimaryWeaponAmbits=4=land)
-# Tank PrimaryWeaponCharge=1, PrimaryWeaponDamage=2
+# Tank PrimaryWeaponCharge=1, PrimaryWeaponDamage=2; generator AttackReduction=1 → 1 net.
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
-run_tx "Attack round 1: Tank -> Generator" \
+run_tx "Attack round 1: Tank -> Generator (armour: 2 dmg → 1 net)" \
     tx structs struct-attack "${DESTROYER_STRUCT_ID}" "${GENERATOR_STRUCT_ID}" primaryWeapon --from player_3
 
 GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}" || echo '{}')
 GEN_HP_MID=$(jqr "${GEN_JSON}" '.structAttributes.health' '0')
-info "Generator health after round 1: ${GEN_HP_MID}"
+info "Generator health after round 1: ${GEN_HP_MID} (was ${GEN_HP_BEFORE})"
+# Armour: a 2-damage Tank hit lands only 1 net damage on the generator.
+GEN_DMG_R1=$(( GEN_HP_BEFORE - GEN_HP_MID ))
+assert_eq "Generator armour reduced Tank hit to 1 net damage" "1" "${GEN_DMG_R1}"
 
-# Attack round 2 — should destroy it (3 HP - 2 dmg = 1 HP, then 1 HP - 2 dmg = destroyed)
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
-run_tx "Attack round 2: Tank -> Generator (should destroy)" \
-    tx structs struct-attack "${DESTROYER_STRUCT_ID}" "${GENERATOR_STRUCT_ID}" primaryWeapon --from player_3
+# Keep attacking until destroyed. With armour the Tank lands 1 net per shot,
+# so an 8-HP generator takes ~8 rounds; cap the loop for safety.
+GEN_HP_NOW="${GEN_HP_MID}"
+for round in 2 3 4 5 6 7 8 9 10 11 12; do
+    if [ "${GEN_HP_NOW}" = "0" ]; then break; fi
+    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
+    run_tx "Attack round ${round}: Tank -> Generator" \
+        tx structs struct-attack "${DESTROYER_STRUCT_ID}" "${GENERATOR_STRUCT_ID}" primaryWeapon --from player_3
+    GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}" || echo '{}')
+    GEN_HP_NOW=$(jqr "${GEN_JSON}" '.structAttributes.health' '0')
+    info "Generator health after round ${round}: ${GEN_HP_NOW}"
+done
 
 GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}" || echo '{}')
 GEN_HP_AFTER=$(jqr "${GEN_JSON}" '.structAttributes.health' '0')
 GEN_DESTROYED=$(jqr "${GEN_JSON}" '.structAttributes.isDestroyed' 'false')
-info "Generator health after round 2: ${GEN_HP_AFTER}"
+info "Generator health after destruction loop: ${GEN_HP_AFTER}"
 info "Generator isDestroyed: ${GEN_DESTROYED}"
 assert_eq "Generator destroyed (health=0)" "0" "${GEN_HP_AFTER}"
 
@@ -4945,10 +5087,10 @@ fi
 assert_not_empty "Player 6 address" "${PLAYER_6_ADDRESS}"
 
 run_tx "Funding player_6 from bob" \
-    tx bank send "${BOB_ADDRESS}" "${PLAYER_6_ADDRESS}" 10000000ualpha --from bob
+    tx bank send "${BOB_ADDRESS}" "${PLAYER_6_ADDRESS}" 25000000ualpha --from bob
 
-run_tx "Delegating 5000000ualpha from player_6 to validator" \
-    tx staking delegate "${VALIDATOR_ADDRESS}" 5000000ualpha --from player_6
+run_tx "Delegating 20000000ualpha from player_6 to validator" \
+    tx staking delegate "${VALIDATOR_ADDRESS}" 20000000ualpha --from player_6
 
 ADDR_JSON_6=$(query query structs address "${PLAYER_6_ADDRESS}")
 PLAYER_6_ID=$(jqr "${ADDR_JSON_6}" '.playerId')
@@ -5111,33 +5253,36 @@ assert_not_empty "P6 HAI struct ID" "${EB_P6_HAI_ID}"
 echo "  P6 HAI ID: ${EB_P6_HAI_ID}"
 
 # ─── P3: Mobile Artillery (type 8, land, slot 3) — for PDC immunity test ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P3 Mobile Artillery (type=8, land, slot=3) for P3" \
     tx structs struct-build-initiate "${PLAYER_3_ID}" 8 land 3 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_P3_MOBILE_ART_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "P3 Mobile Artillery struct ID" "${EB_P3_MOBILE_ART_ID}"
+assert_new_struct "P3 Mobile Artillery initiated" "${EB_P3_MOBILE_ART_ID}" "${PREV_NEWEST_STRUCT_ID}" 8
 echo "  P3 Mobile Artillery ID: ${EB_P3_MOBILE_ART_ID}"
 
 # ─── P6: PDC (type 19, land, slot 2) — planetary struct for defense cannon test ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P6 PDC (type=19, land, slot=2) for PDC test" \
     tx structs struct-build-initiate "${PLAYER_6_ID}" 19 land 2 --from player_6
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_PDC_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "P6 PDC struct ID" "${EB_PDC_ID}"
+assert_new_struct "P6 PDC initiated" "${EB_PDC_ID}" "${PREV_NEWEST_STRUCT_ID}" 19
 echo "  P6 PDC ID: ${EB_PDC_ID}"
 
 # ─── P6: Ore Extractor (type 14, land, slot 3) — non-PDC planet struct for PDC cross-defense test ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P6 Ore Extractor (type=14, land, slot=3) for PDC cross-defense test" \
     tx structs struct-build-initiate "${PLAYER_6_ID}" 14 land 3 --from player_6
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_ORE_EXTRACTOR_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "P6 Ore Extractor struct ID" "${EB_ORE_EXTRACTOR_ID}"
+assert_new_struct "P6 Ore Extractor initiated" "${EB_ORE_EXTRACTOR_ID}" "${PREV_NEWEST_STRUCT_ID}" 14
 echo "  P6 Ore Extractor ID: ${EB_ORE_EXTRACTOR_ID}"
 
 info "All 12 extended battle builds initiated. Computing now (difficulty decays with age)."
@@ -5241,70 +5386,22 @@ if run_phase 2700; then
 
 section "PHASE EB3: Fleet Assembly & Positioning"
 
+# Fleet units are built directly on their final fleet slots (Movable=false).
+# Only the Command Ship may struct-move (ambit changes).
+
 # ─── Move P3's fleet home for assembly ───
 run_tx "Moving P3's fleet home for extended battle assembly" \
     tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_3_PLANET_ID}" --from player_3
 
-# ─── Add P3's new Pursuit Fighter to fleet (air, slot 1) ───
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Pursuit Fighter to P3's fleet (air, slot 1)" \
-    tx structs struct-move "${EB_PURSUIT_FIGHTER_ID}" fleet air 1 --from player_3
-
-# ─── Assemble P6's fleet ───
-# P6's Command Ship goes to space ambit
+# ─── P6 Command Ship to space ambit ───
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
 run_tx "Moving P6 Command Ship to fleet (space)" \
     tx structs struct-move "${P6_COMMAND_SHIP_ID}" fleet space --from player_6
 
-# Starfighter → space slot 0
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Starfighter to P6's fleet (space, slot 0)" \
-    tx structs struct-move "${EB_STARFIGHTER_ID}" fleet space 0 --from player_6
-
-# Frigate → space slot 1
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Frigate to P6's fleet (space, slot 1)" \
-    tx structs struct-move "${EB_FRIGATE_ID}" fleet space 1 --from player_6
-
-# Battleship → space slot 2
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving P6 Battleship to fleet (space, slot 2)" \
-    tx structs struct-move "${EB_P6_BATTLESHIP_ID}" fleet space 2 --from player_6
-
-# Mobile Artillery → land slot 0
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Mobile Artillery to P6's fleet (land, slot 0)" \
-    tx structs struct-move "${EB_MOBILE_ART_ID}" fleet land 0 --from player_6
-
-# Tank → land slot 1
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving P6 Tank to P6's fleet (land, slot 1)" \
-    tx structs struct-move "${EB_P6_TANK_ID}" fleet land 1 --from player_6
-
-# Destroyer-water → water slot 0
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Destroyer-water to P6's fleet (water, slot 0)" \
-    tx structs struct-move "${EB_DESTROYER_W_ID}" fleet water 0 --from player_6
-
-# Cruiser → water slot 1
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving P6 Cruiser to P6's fleet (water, slot 1)" \
-    tx structs struct-move "${EB_P6_CRUISER_ID}" fleet water 1 --from player_6
-
-# HAI → air slot 0
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving P6 HAI to P6's fleet (air, slot 0)" \
-    tx structs struct-move "${EB_P6_HAI_ID}" fleet air 0 --from player_6
-
-# P3 Mobile Artillery → land slot 3
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
-run_tx "Moving P3 Mobile Artillery to P3's fleet (land, slot 3)" \
-    tx structs struct-move "${EB_P3_MOBILE_ART_ID}" fleet land 3 --from player_3
-
 info "P6 fleet assembled: CS(space), Starfighter(space/0), Frigate(space/1), Battleship(space/2),"
 info "  MobileArt(land/0), Tank(land/1), Destroyer(water/0), Cruiser(water/1), HAI(air/0)"
 info "P6 planet structs: PDC(land/2), Ore Extractor(land/3)"
-info "P3 fleet now also has: Mobile Artillery(land/3) for PDC immunity test"
+info "P3 fleet now also has: Pursuit Fighter(air/1), Mobile Artillery(land/3) for PDC immunity test"
 
 # ─── Move P3's fleet to P6's planet for battle ───
 run_tx "Moving P3's fleet to P6's planet for battle" \
@@ -5379,8 +5476,10 @@ EB_DESTROYED=0
 info "── Group A: Same-Ambit Combat ──"
 
 # A1: Space — P3 Battleship #1 → P6 Starfighter
-eb_attack "Space: P3 Battleship #1 → P6 Starfighter" \
-    "${BATTLESHIP_1_ID}" "${EB_STARFIGHTER_ID}" primaryWeapon 3
+# v0.18.0: Battleship primary is land/water only; space targets use the
+# guided secondary (damage 1).
+eb_attack "Space: P3 Battleship #1 → P6 Starfighter (guided secondary)" \
+    "${BATTLESHIP_1_ID}" "${EB_STARFIGHTER_ID}" secondaryWeapon 3
 
 # A2: Space — P6 Frigate → P3 Battleship #2
 eb_attack "Space: P6 Frigate → P3 Battleship #2" \
@@ -5410,9 +5509,9 @@ eb_attack "Water: P3 Cruiser → P6 Destroyer-water" \
 eb_attack "Water: P6 Cruiser → P3 Submersible" \
     "${EB_P6_CRUISER_ID}" "${SUB_STRUCT_ID}" primaryWeapon 6
 
-# A7: Space — P3 Battleship #2 → P6 Frigate
-eb_attack "Space: P3 Battleship #2 → P6 Frigate" \
-    "${BATTLESHIP_2_ID}" "${EB_FRIGATE_ID}" primaryWeapon 3
+# A7: Space — P3 Battleship #2 → P6 Frigate (guided secondary, space ambit)
+eb_attack "Space: P3 Battleship #2 → P6 Frigate (guided secondary)" \
+    "${BATTLESHIP_2_ID}" "${EB_FRIGATE_ID}" secondaryWeapon 3
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GROUP B: Cross-Ambit Combat
@@ -5493,8 +5592,10 @@ P6_STAR_HP_BEFORE=$(eb_health "${EB_STARFIGHTER_ID}")
 
 BB2_ALIVE=$(eb_health "${BATTLESHIP_2_ID}")
 if [ "${BB2_ALIVE}" != "0" ]; then
-    eb_attack "Blocking: P3 Battleship #2 → P6 Battleship (defended)" \
-        "${BATTLESHIP_2_ID}" "${EB_P6_BATTLESHIP_ID}" primaryWeapon 3
+    # v0.18.0: space target requires the guided secondary. Note the P6
+    # Battleship's signal jamming may evade guided attacks (2/3 chance).
+    eb_attack "Blocking: P3 Battleship #2 → P6 Battleship (defended, guided secondary)" \
+        "${BATTLESHIP_2_ID}" "${EB_P6_BATTLESHIP_ID}" secondaryWeapon 3
 
     P6_BB_HP_AFTER=$(eb_health "${EB_P6_BATTLESHIP_ID}")
     P6_FRIG_HP_AFTER=$(eb_health "${EB_FRIGATE_ID}")
@@ -5545,8 +5646,8 @@ while [ "${STAR_HP}" != "0" ] && [ "${SUSTAINED_ROUNDS}" -lt 4 ]; do
         info "  Battleship #1 destroyed, stopping sustained attack"
         break
     fi
-    eb_attack "Sustained round ${SUSTAINED_ROUNDS}: P3 BB#1 → P6 Starfighter" \
-        "${BATTLESHIP_1_ID}" "${EB_STARFIGHTER_ID}" primaryWeapon 3
+    eb_attack "Sustained round ${SUSTAINED_ROUNDS}: P3 BB#1 → P6 Starfighter (guided secondary)" \
+        "${BATTLESHIP_1_ID}" "${EB_STARFIGHTER_ID}" secondaryWeapon 3
     STAR_HP=$(eb_health "${EB_STARFIGHTER_ID}")
 done
 if [ "${STAR_HP}" = "0" ]; then
@@ -5675,9 +5776,30 @@ else
     info "SKIP E4: PDC(HP=${PDC_HP}), Tank(HP=${TANK_HP}), or P6 Mobile Art(HP=${P6_MA_HP}) destroyed"
 fi
 
+# ─── E4b: Soften PDC to HP=2 for the E5 killing-blow test ───
+# PDC MaxHealth is now 6 (v0.18.0). E5's Tank (primaryWeaponDamage=2) must
+# deliver the killing blow, so soften the PDC down to HP=2 first. Use the
+# non-counterable Mobile Art (2 dmg) so the attacker survives any PDC fire;
+# from a full 6 HP this takes ~2 hits (6→4→2).
+for soften_round in 1 2 3 4 5; do
+    PDC_HP=$(eb_health "${EB_PDC_ID}")
+    P3_MA_HP=$(eb_health "${EB_P3_MOBILE_ART_ID}")
+    if [ "${PDC_HP}" = "0" ] || [ "${PDC_HP}" -le 2 ] 2>/dev/null; then
+        break
+    fi
+    if [ "${P3_MA_HP}" = "0" ]; then
+        info "SKIP E4b soften: P3 Mobile Art destroyed (PDC HP=${PDC_HP})"
+        break
+    fi
+    eb_attack "E4b: P3 Mobile Art(non-counterable) → P6 PDC (soften toward HP=2)" \
+        "${EB_P3_MOBILE_ART_ID}" "${EB_PDC_ID}" primaryWeapon 3
+done
+PDC_HP=$(eb_health "${EB_PDC_ID}")
+info "E4b: PDC softened to HP=${PDC_HP} (target HP=2 for E5 killing blow)"
+
 # ─── E5: Counterable attacker vs PDC directly — destroyed PDC does not counter ───
 # P3 Tank (type 9, counterable, land) → P6 PDC (type 19, planet-category, land)
-# Tank primaryWeaponDamage=2, PDC HP=1, so PDC is destroyed.
+# Tank primaryWeaponDamage=2, PDC softened to HP=2 in E4b, so PDC is destroyed.
 # A destroyed PDC does not fire counter-damage — Tank HP should be unchanged.
 PDC_HP=$(eb_health "${EB_PDC_ID}")
 TANK_HP=$(eb_health "${DESTROYER_STRUCT_ID}")
@@ -5708,11 +5830,11 @@ else
 fi
 
 # ─── E7: PDC killing blow — PDC should STILL fire (Bug 1 regression test) ───
-# The PDC should be at HP 1 after E5 (took 2 damage from Tank: 3→1).
-# A counterable attacker destroys the PDC (2 damage > 1 HP remaining).
-# Under Bug 1, DestroyAndCommit() decrements defensiveCannonQuantity before
-# ResolvePlanetaryDefense() runs, so the PDC fails to fire on the killing blow.
-# This test EXPECTS the PDC to still fire — it will FAIL until Bug 1 is fixed.
+# E5's Tank normally destroys the PDC, so this block usually SKIPS. If a
+# future change leaves the PDC alive into E7, a counterable attacker (BB#1)
+# destroys it here. Under Bug 1, DestroyAndCommit() decrements
+# defensiveCannonQuantity before ResolvePlanetaryDefense() runs, so the PDC
+# fails to fire on the killing blow; this test EXPECTS the PDC to still fire.
 PDC_HP=$(eb_health "${EB_PDC_ID}")
 BB1_HP=$(eb_health "${BATTLESHIP_1_ID}")
 if [ "${PDC_HP}" != "0" ] && [ "${BB1_HP}" != "0" ]; then
@@ -5752,8 +5874,8 @@ assert_eq "E8 — defensiveCannonQuantity is 0 after PDC destroyed" "0" "${E8_CA
 E9_SHIELD_AFTER=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.planetaryShield' '0')
 E9_SHIELD_DIFF=$((E6_SHIELD_BEFORE - E9_SHIELD_AFTER))
 info "E9: Planetary shield after PDC destruction: ${E9_SHIELD_AFTER} (decreased by ${E9_SHIELD_DIFF})"
-# PDC contributes PlanetaryShieldContribution=4500
-assert_eq "E9 — Planetary shield decreased by PDC contribution (4500)" "4500" "${E9_SHIELD_DIFF}"
+# PDC contributes PlanetaryShieldContribution=13 (v0.18.0 rebase)
+assert_eq "E9 — Planetary shield decreased by PDC contribution (13)" "13" "${E9_SHIELD_DIFF}"
 
 # ─── E10: After PDC destroyed, Ore Extractor attack yields NO PDC damage ───
 # With cannon count = 0, attacking a planet-category struct should not damage

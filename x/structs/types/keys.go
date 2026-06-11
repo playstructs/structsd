@@ -30,12 +30,21 @@ const (
     InitialSubstationOwnerEnergy = 100
 
     /*
-        Difficult Calculations
-        1500 = 1 hour
-        36000 = 1 day
-        252000 = 7 days
+        Difficulty Calculations
+
+        Raid difficulty is now scaled against the Command Ship build time
+        (BuildDifficulty: 200). Raids can only be won while the defending
+        Command Ship is offline, destroyed, or non-existent, so the
+        planetary shield values represent fractions of the CMD Ship
+        rebuild window:
+
+            Base Shield         25  (~1/8 CMD build time)
+            Orbital Shield     +25  (~1/8 CMD build time)
+            Jamming Satellite  +12  (~1/16 CMD build time)
+            Ore Bunker         +50  (~1/4 CMD build time)
+            PDC                +13  (~1/16 CMD build time)
     */
-    PlanetaryShieldBase = 1500 // One Hour Target
+    PlanetaryShieldBase = 25 // ~1/8th of the Command Ship rebuild window
 
 
     // Current Aim is a 3 hour max
@@ -298,6 +307,8 @@ var RaidStatus_enum = map[string]RaidStatus {
     "attackerRetreated":    RaidStatus_attackerRetreated,
     "attackerDefeated":     RaidStatus_attackerDefeated,
     "raidSuccessful":       RaidStatus_raidSuccessful,
+    "demilitarized":        RaidStatus_demilitarized,
+    "shieldsVulnerable":    RaidStatus_shieldsVulnerable,
 }
 
 

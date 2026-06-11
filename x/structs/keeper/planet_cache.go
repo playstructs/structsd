@@ -142,6 +142,41 @@ func (cache *PlanetCache) GetLocationListStart() string {
     return cache.GetPlanet().LocationListStart
 }
 
+// IsDefenderCommandStructVulnerable reports whether the planet owner's
+// Command Ship is offline, destroyed, or non-existent. The planet raid
+// hashing puzzle can only be completed while this is true.
+//
+// Ordering matters here: PlayerCache.GetFleet() falls back to creating a
+// fleet (and a pre-built, online Command Ship) when the player has no
+// FleetId yet, so the empty-FleetId check must happen before any fleet
+// load to keep this a pure read.
+func (cache *PlanetCache) IsDefenderCommandStructVulnerable() bool {
+    if (cache.GetOwnerId() == "") {
+        return true
+    }
+
+    defender := cache.GetOwner()
+    if (defender.GetFleetId() == "") {
+        return true
+    }
+
+    defenderFleet, defenderFleetError := cache.CC.GetFleetById(defender.GetFleetId())
+    if (defenderFleetError != nil) {
+        return true
+    }
+
+    if (!defenderFleet.HasCommandStruct()) {
+        return true
+    }
+
+    commandStruct := defenderFleet.GetCommandStruct()
+    if (commandStruct.IsDestroyed()) {
+        return true
+    }
+
+    return !commandStruct.IsOnline()
+}
+
 func (cache *PlanetCache) GetLocationListLast() string {
     return cache.GetPlanet().LocationListLast
 }
@@ -161,15 +196,33 @@ func (cache *PlanetCache) SetStatus(status types.PlanetStatus) () {
 func (cache *PlanetCache) SetLocationListStart(fleetId string) {
     if (!cache.PlanetLoaded) { cache.LoadPlanet() }
 
+    previousStart := cache.Planet.LocationListStart
+
     cache.Planet.LocationListStart = fleetId
     cache.Changed = true
 
-    if (fleetId != "") {
-        uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
-        _ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleetId, PlanetId: cache.GetPlanetId(), Status: types.RaidStatus_initiated}})
-        cache.ResetBlockStartRaid()
+    if (fleetId == "") {
+        // Raid is over, stop the vulnerability clock
+        cache.ClearBlockStartRaid()
+        return
     }
 
+    uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
+    _ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleetId, PlanetId: cache.GetPlanetId(), Status: types.RaidStatus_initiated}})
+
+    if (cache.IsDefenderCommandStructVulnerable()) {
+        // The raid clock starts at the later of raider arrival and the
+        // defending Command Ship going down. A promotion (front fleet
+        // replaced mid-raid) inherits the already-running clock.
+        if (previousStart == "" || cache.GetBlockStartRaid() == 0) {
+            cache.ResetBlockStartRaid()
+        }
+        _ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleetId, PlanetId: cache.GetPlanetId(), Status: types.RaidStatus_shieldsVulnerable}})
+    } else {
+        // Shields are up; the hashing puzzle cannot be won until the
+        // defending Command Ship goes offline (which restarts the clock).
+        cache.ClearBlockStartRaid()
+    }
 }
 
 func (cache *PlanetCache) SetLocationListLast(fleetId string) {
@@ -182,6 +235,10 @@ func (cache *PlanetCache) SetLocationListLast(fleetId string) {
 func (cache *PlanetCache) ResetBlockStartRaid() {
     uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
     cache.CC.SetPlanetAttribute(cache.BlockStartRaidAttributeId, uint64(uctx.BlockHeight()))
+}
+
+func (cache *PlanetCache) ClearBlockStartRaid() {
+    cache.CC.ClearPlanetAttribute(cache.BlockStartRaidAttributeId)
 }
 
 func (cache *PlanetCache) BuriedOreDecrement(amount uint64) {

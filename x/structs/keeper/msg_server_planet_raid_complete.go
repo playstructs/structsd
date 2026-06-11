@@ -67,6 +67,18 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 		return emptyResponse, types.NewPlayerPowerError(fleet.GetOwnerId(), "offline")
 	}
 
+	// The raid hashing puzzle can only be won while the defending Command
+	// Ship is offline, destroyed, or non-existent (shieldsVulnerable)
+	if !fleet.GetPlanet().IsDefenderCommandStructVulnerable() {
+		return emptyResponse, types.NewPlanetStateError(fleet.GetPlanet().GetPlanetId(), "shields_active", "raid_complete")
+	}
+
+	// Defensive: a zero start block would make currentAge the full chain
+	// height, collapsing the puzzle difficulty to trivial
+	if fleet.GetPlanet().GetBlockStartRaid() == 0 {
+		return emptyResponse, types.NewPlanetStateError(fleet.GetPlanet().GetPlanetId(), "raid_clock_unset", "raid_complete")
+	}
+
 	raidedPlanet := fleet.GetPlanet().GetPlanetId()
 	blockStartRaidString := strconv.FormatUint(fleet.GetPlanet().GetBlockStartRaid(), 10)
 	hashInput := msg.FleetId + "@" + fleet.GetPlanet().GetPlanetId() + "RAID" + blockStartRaidString + "NONCE" + msg.Nonce

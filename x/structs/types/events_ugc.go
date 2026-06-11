@@ -17,6 +17,7 @@ const (
 	AttributeKeyUGCOldValue       = "old_value"
 	AttributeKeyUGCNewValue       = "new_value"
 
-	UGCFieldName = "name"
-	UGCFieldPfp  = "pfp"
+	UGCFieldName                      = "name"
+	UGCFieldPfp                       = "pfp"
+	UGCFieldPfpClientRenderAttributes = "pfpClientRenderAttributes"
 )
