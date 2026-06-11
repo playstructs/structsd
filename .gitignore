@@ -12,3 +12,7 @@ structs.sh
 keeper.test
 coverage.txt
 tests/run_logs/
+
+# Stray home-dir tree created when a tool is run with a literal "~" path
+# (e.g. HOME=~ structsd init) instead of an expanded $HOME.
+/~/
