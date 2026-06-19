@@ -218,6 +218,10 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
     }
 
     cache.Changed = true
+
+    // The Command Ship travels with the fleet, so moving it changes whether
+    // the owner's home planet is defended. Refresh any in-progress raid there.
+    cache.GetOwner().GetPlanet().RefreshRaidVulnerability()
 }
 
 func (cache *FleetCache) PlanetMoveReadinessCheck() (error) {

@@ -143,8 +143,13 @@ func (cache *PlanetCache) GetLocationListStart() string {
 }
 
 // IsDefenderCommandStructVulnerable reports whether the planet owner's
-// Command Ship is offline, destroyed, or non-existent. The planet raid
-// hashing puzzle can only be completed while this is true.
+// Command Ship is absent, offline, destroyed, or non-existent. The planet
+// raid hashing puzzle can only be completed while this is true.
+//
+// The Command Ship is fleet-bound and travels with the fleet, so the
+// defending fleet being on station is a complete proxy for "the Command
+// Ship is home." A defender who moves their fleet away (to raid elsewhere)
+// leaves their home planet undefended even with an online Command Ship.
 //
 // Ordering matters here: PlayerCache.GetFleet() falls back to creating a
 // fleet (and a pre-built, online Command Ship) when the player has no
@@ -165,6 +170,11 @@ func (cache *PlanetCache) IsDefenderCommandStructVulnerable() bool {
         return true
     }
 
+    // Command Ship only defends the home planet while the fleet is on station
+    if (!defenderFleet.IsOnStation()) {
+        return true
+    }
+
     if (!defenderFleet.HasCommandStruct()) {
         return true
     }
@@ -175,6 +185,35 @@ func (cache *PlanetCache) IsDefenderCommandStructVulnerable() bool {
     }
 
     return !commandStruct.IsOnline()
+}
+
+// RefreshRaidVulnerability recomputes the shieldsVulnerable state of an
+// in-progress raid on this planet and updates the vulnerability clock,
+// emitting a raid status event only on a transition. A running clock is
+// preserved while the planet stays vulnerable, so repeated calls (e.g. a
+// defender hopping between enemy planets) neither restart the puzzle nor
+// spam events.
+func (cache *PlanetCache) RefreshRaidVulnerability() {
+    raidFleetId := cache.GetLocationListStart()
+    if (raidFleetId == "") {
+        // No raid in progress, nothing to update
+        return
+    }
+
+    uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
+    if (cache.IsDefenderCommandStructVulnerable()) {
+        // Transition into vulnerable: start the clock and announce it
+        if (cache.GetBlockStartRaid() == 0) {
+            cache.ResetBlockStartRaid()
+            _ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: raidFleetId, PlanetId: cache.GetPlanetId(), Status: types.RaidStatus_shieldsVulnerable}})
+        }
+    } else {
+        // Transition out of vulnerable: shields restored, stop the clock
+        if (cache.GetBlockStartRaid() != 0) {
+            cache.ClearBlockStartRaid()
+            _ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: raidFleetId, PlanetId: cache.GetPlanetId(), Status: types.RaidStatus_ongoing}})
+        }
+    }
 }
 
 func (cache *PlanetCache) GetLocationListLast() string {
