@@ -16,16 +16,21 @@ import (
 // CreateUpgradeHandler returns the v0.19.0 upgrade handler.
 //
 // Beyond the binary-only raid handler changes described in constants.go,
-// this upgrade carries a single one-time state migration at upgrade height:
+// this upgrade carries two one-time state migrations at upgrade height:
+//
+//   - MigrateStructTypes rewrites every struct type from
+//     CreateStructTypeGenesis(), applying the Battleship secondary weapon
+//     damage rebalance (1 -> 2). Struct types are stored in state, so the
+//     genesis change only reaches the live chain through this rewrite.
 //
 //   - MigrateAwayDefenderRaidClock backfills blockStartRaid for in-progress
 //     raids that became winnable under the broadened vulnerability predicate
 //     (defending fleet away) but were left with a zero clock by v0.18.0.
 //
-// The migration is idempotent: it is a pure projection of the current state
-// (raid queue + defending fleet location + Command Ship status) and only
-// fills still-zero clocks, so a re-run (e.g. a validator replaying the
-// upgrade block from a snapshot) produces the same rows.
+// Both migrations are idempotent: each is a pure projection of the current
+// state (genesis constants; raid queue + defending fleet location + Command
+// Ship status), so a re-run (e.g. a validator replaying the upgrade block
+// from a snapshot) produces the same rows.
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
@@ -37,12 +42,34 @@ func CreateUpgradeHandler(
 			return newVM, err
 		}
 
+		if err := MigrateStructTypes(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
 		if err := MigrateAwayDefenderRaidClock(ctx, keepers); err != nil {
 			return newVM, err
 		}
 
 		return newVM, nil
 	}
+}
+
+// MigrateStructTypes rewrites all struct types from the genesis definitions,
+// applying any struct type tuning shipped with this release (the Battleship
+// secondary weapon damage 1 -> 2 rebalance). Struct types are persisted in
+// state, so this rewrite is how the genesis change reaches an already-live
+// chain. Idempotent: it is a pure projection of the genesis constants.
+func MigrateStructTypes(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateStructTypes")
+
+	structTypes := structstypes.CreateStructTypeGenesis()
+	for _, structType := range structTypes {
+		keepers.StructsKeeper.SetStructType(ctx, structType)
+	}
+
+	logger.Info("v0.19.0 struct-type rewrite complete", "structTypesWritten", len(structTypes))
+	return nil
 }
 
 // MigrateAwayDefenderRaidClock anchors the blockStartRaid vulnerability

@@ -21,6 +21,14 @@ package v0_19_0
 //     Command Ship coming back online while the fleet is still away no
 //     longer wrongly restores shields.
 //
+// Struct-type rebalance (binary + struct-type rewrite):
+//
+//   - The Battleship's secondary weapon damage is raised from 1 to 2.
+//   - All struct types are rewritten from CreateStructTypeGenesis() at
+//     upgrade height (MigrateStructTypes). Struct types are persisted in
+//     state, so the genesis change only reaches an already-live chain
+//     through this rewrite.
+//
 // State migration at upgrade height:
 //
 //   - MigrateAwayDefenderRaidClock anchors blockStartRaid to the upgrade
@@ -30,6 +38,6 @@ package v0_19_0
 //     would read as vulnerable yet remain uncompletable (raid_clock_unset)
 //     until some unrelated event restarted the clock.
 //
-// No store-key changes; the migration writes to the existing planet
-// attribute prefix store.
+// No store-key changes; the migrations write to the existing struct type
+// and planet attribute prefix stores.
 const UpgradeName = "v0.19.0"

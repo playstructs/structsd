@@ -132,3 +132,25 @@ func TestMigrateAwayDefenderRaidClock(t *testing.T) {
 	require.Equal(t, uint64(upgradeHeight), k.GetPlanetAttribute(sdkCtx, raidAttrId(awayPlanet.Id)))
 	require.Equal(t, uint64(42), k.GetPlanetAttribute(sdkCtx, raidAttrId(runningPlanet.Id)))
 }
+
+// TestMigrateStructTypes_RaisesBattleshipSecondaryDamage verifies the
+// Battleship secondary weapon damage rebalance (1 -> 2) lands in the struct
+// type store, overwriting a stale pre-upgrade value.
+func TestMigrateStructTypes_RaisesBattleshipSecondaryDamage(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+
+	// Seed a stale pre-upgrade Battleship so the rewrite is observable.
+	k.SetStructType(ctx, types.StructType{Id: 2, SecondaryWeaponDamage: 1})
+
+	require.NoError(t, v0_19_0.MigrateStructTypes(ctx, keepers))
+
+	battleship, found := k.GetStructType(ctx, 2)
+	require.True(t, found, "Battleship struct type must exist after rewrite")
+	require.Equal(t, uint64(2), battleship.SecondaryWeaponDamage, "battleship secondary weapon damage raised to 2")
+
+	// Idempotent: a re-run produces the same value.
+	require.NoError(t, v0_19_0.MigrateStructTypes(ctx, keepers))
+	battleship, _ = k.GetStructType(ctx, 2)
+	require.Equal(t, uint64(2), battleship.SecondaryWeaponDamage)
+}

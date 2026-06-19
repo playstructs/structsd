@@ -140,7 +140,9 @@ func TestMigrateStructTypes_RebalancesBattleship(t *testing.T) {
 	require.Equal(t, types.TechWeaponControl_guided, battleship.SecondaryWeaponControl)
 	require.Equal(t, uint64(16), battleship.SecondaryWeaponAmbits, "secondary ambits = space")
 	require.Equal(t, uint64(5), battleship.SecondaryWeaponCharge)
-	require.Equal(t, uint64(1), battleship.SecondaryWeaponDamage)
+	// MigrateStructTypes rewrites from the shared CreateStructTypeGenesis(),
+	// which v0.19.0 bumped to secondary damage 2.
+	require.Equal(t, uint64(2), battleship.SecondaryWeaponDamage)
 	require.False(t, battleship.SecondaryWeaponArmourPiercing)
 
 	// Tank keeps its armour; no struct type other than the Battleship
