@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"errors"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -153,6 +154,142 @@ func TestMsgStructAttack(t *testing.T) {
 			TargetStructId:    []string{targetStruct.Id},
 		})
 		require.Error(t, err)
+	})
+}
+
+// TestMsgStructAttackUnbuiltTargetRejected verifies the v0.19.0 rule that a
+// struct must have the Built status before it can be attacked. A target that
+// is only materialized (a struct row exists but the Built flag was never set)
+// must be rejected with the "unbuilt" targeting reason, regardless of its
+// online/offline state.
+func TestMsgStructAttackUnbuiltTargetRejected(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
+
+	attackerPlayer := types.Player{Creator: "cosmos1ubatk", PrimaryAddress: "cosmos1ubatk"}
+	attackerPlayer = testAppendPlayer(k, sdkCtx, attackerPlayer)
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, attackerPlayer.Id), uint64(100000))
+	attackerLastActionAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, attackerPlayer.Id)
+	k.SetGridAttribute(sdkCtx, attackerLastActionAttrId, uint64(0))
+
+	targetPlayer := types.Player{Creator: "cosmos1ubtgt", PrimaryAddress: "cosmos1ubtgt"}
+	targetPlayer = testAppendPlayer(k, sdkCtx, targetPlayer)
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, targetPlayer.Id), uint64(100000))
+
+	planet := testAppendPlanet(k, sdkCtx, types.Planet{
+		Creator:   targetPlayer.Creator,
+		Owner:     targetPlayer.Id,
+		LandSlots: 4,
+		Land:      []string{"", "", "", ""},
+	})
+	targetPlayer.PlanetId = planet.Id
+	k.SetPlayer(sdkCtx, targetPlayer)
+
+	cmdStructType := types.StructType{Id: 500, Type: types.CommandStruct, Category: types.ObjectType_fleet}
+	k.SetStructType(sdkCtx, cmdStructType)
+
+	attackStructType := types.StructType{
+		Id:                     501,
+		Type:                   "Gunship",
+		Category:               types.ObjectType_fleet,
+		PrimaryWeapon:          1,
+		PrimaryWeaponCharge:    10,
+		PrimaryWeaponTargets:   1,
+		PrimaryWeaponAmbits:    0xFFFF,
+		PrimaryWeaponDamage:    5,
+		PrimaryWeaponBlockable: true,
+		PossibleAmbit:          1 << uint64(types.Ambit_space),
+	}
+	k.SetStructType(sdkCtx, attackStructType)
+
+	targetStructType := types.StructType{
+		Id:            502,
+		Type:          "Turret",
+		Category:      types.ObjectType_planet,
+		PossibleAmbit: 1 << uint64(types.Ambit_land),
+	}
+	k.SetStructType(sdkCtx, targetStructType)
+
+	fleet := testAppendFleet(k, sdkCtx, types.Fleet{
+		Owner:      attackerPlayer.Id,
+		LocationId: planet.Id,
+		Status:     types.FleetStatus_away,
+	})
+
+	cmdStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator:        attackerPlayer.Creator,
+		Owner:          attackerPlayer.Id,
+		Type:           cmdStructType.Id,
+		LocationId:     fleet.Id,
+		LocationType:   types.ObjectType_fleet,
+		OperatingAmbit: types.Ambit_space,
+	})
+	cmdStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, cmdStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, cmdStatusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, cmdStatusAttrId, uint64(types.StructStateOnline))
+
+	fleet.CommandStruct = cmdStruct.Id
+	k.SetFleet(sdkCtx, fleet)
+	attackerPlayer.FleetId = fleet.Id
+	k.SetPlayer(sdkCtx, attackerPlayer)
+
+	attackerStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator:        attackerPlayer.Creator,
+		Owner:          attackerPlayer.Id,
+		Type:           attackStructType.Id,
+		LocationId:     fleet.Id,
+		LocationType:   types.ObjectType_fleet,
+		OperatingAmbit: types.Ambit_space,
+	})
+	atkStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, attackerStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, atkStatusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, atkStatusAttrId, uint64(types.StructStateOnline))
+
+	// Target is materialized (a struct row exists) but never receives the
+	// Built flag — this is the case the v0.19.0 rule must reject.
+	targetStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator:        targetPlayer.Creator,
+		Owner:          targetPlayer.Id,
+		Type:           targetStructType.Id,
+		LocationId:     planet.Id,
+		LocationType:   types.ObjectType_planet,
+		OperatingAmbit: types.Ambit_land,
+	})
+	tgtStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, targetStruct.Id)
+
+	t.Run("unbuilt target rejected", func(t *testing.T) {
+		k.SetGridAttribute(sdkCtx, attackerLastActionAttrId, uint64(0))
+		_, err := ms.StructAttack(wctx, &types.MsgStructAttack{
+			Creator:           attackerPlayer.Creator,
+			OperatingStructId: attackerStruct.Id,
+			WeaponSystem:      "primaryWeapon",
+			TargetStructId:    []string{targetStruct.Id},
+		})
+		require.Error(t, err)
+
+		var targetingErr *types.CombatTargetingError
+		require.True(t, errors.As(err, &targetingErr), "expected a CombatTargetingError, got %T", err)
+		require.Equal(t, "unbuilt", targetingErr.Reason)
+	})
+
+	t.Run("online but unbuilt target still rejected", func(t *testing.T) {
+		// Online status is irrelevant: flag the target online but leave it unbuilt.
+		testSetStructAttributeFlagAdd(k, sdkCtx, tgtStatusAttrId, uint64(types.StructStateOnline))
+		k.SetGridAttribute(sdkCtx, attackerLastActionAttrId, uint64(0))
+
+		_, err := ms.StructAttack(wctx, &types.MsgStructAttack{
+			Creator:           attackerPlayer.Creator,
+			OperatingStructId: attackerStruct.Id,
+			WeaponSystem:      "primaryWeapon",
+			TargetStructId:    []string{targetStruct.Id},
+		})
+		require.Error(t, err)
+
+		var targetingErr *types.CombatTargetingError
+		require.True(t, errors.As(err, &targetingErr), "expected a CombatTargetingError, got %T", err)
+		require.Equal(t, "unbuilt", targetingErr.Reason)
 	})
 }
 

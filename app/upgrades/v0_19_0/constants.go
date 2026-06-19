@@ -20,6 +20,10 @@ package v0_19_0
 //     vulnerability predicate rather than trusting the online flag, so a
 //     Command Ship coming back online while the fleet is still away no
 //     longer wrongly restores shields.
+//   - Struct attacks now require the target to have the Built status. A
+//     struct that is materialized but not yet built can no longer be
+//     attacked (online/offline is irrelevant); CanAttack rejects such
+//     targets with the "unbuilt" targeting reason.
 //
 // Struct-type rebalance (binary + struct-type rewrite):
 //

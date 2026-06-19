@@ -3831,6 +3831,20 @@ CMDSHIP_DEFENDERS=$(query query structs struct "${COMMAND_SHIP_ID}" | jq -r '.st
 assert_gt "Command Ship has defenders" 0 "${CMDSHIP_DEFENDERS}"
 info "Command Ship defender count: ${CMDSHIP_DEFENDERS}"
 
+# ─── v0.19.0: a not-yet-built struct cannot be attacked ───
+# The P2 Battleship was build-initiated in Phase 12 but has not been computed
+# yet (the compute is just below), so it is materialized but not Built. An
+# attack against it must be rejected with the "unbuilt" targeting reason,
+# regardless of online/offline state. CanAttack checks Built before ambit, so
+# a built P3 Battleship firing its space-capable secondary is enough to prove
+# the rule. wait_for_charge ensures the failure is the build check, not charge.
+P2_BB_PREBUILD_BUILT=$(query query structs struct "${P2_BATTLESHIP_ID}" | jq -r '.structAttributes.isBuilt')
+assert_eq "P2 Battleship not yet built (pre-compute)" "false" "${P2_BB_PREBUILD_BUILT}"
+
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ATTACK_BATTLESHIP}"
+run_tx_expect_fail "Attack against a not-yet-built struct rejected (v0.19.0)" \
+    tx structs struct-attack "${BATTLESHIP_1_ID}" "${P2_BATTLESHIP_ID}" secondaryWeapon --from player_3
+
 # ─── Player 2's Battleship was pre-seeded in Phase 12 — compute now (heavily aged) ───
 info "Computing P2 Battleship ${P2_BATTLESHIP_ID} (pre-seeded in Phase 12)"
 run_compute "Building Player 2's Battleship ${P2_BATTLESHIP_ID}" \

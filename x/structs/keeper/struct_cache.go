@@ -630,6 +630,10 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
 	if targetStruct.IsDestroyed() {
 		return types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "destroyed")
 	}
+	// A struct must be fully built before it can be attacked (online status is irrelevant).
+	if !targetStruct.IsBuilt() {
+		return types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "unbuilt")
+	}
 	if !cache.GetStructType().CanTargetAmbit(weaponSystem, cache.GetOperatingAmbit(), targetStruct.GetOperatingAmbit()) {
 		return types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "out_of_range").WithAmbits(cache.GetOperatingAmbit().String(), targetStruct.GetOperatingAmbit().String())
 	}

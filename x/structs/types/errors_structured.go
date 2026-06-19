@@ -564,7 +564,7 @@ type CombatTargetingError struct {
 	AttackerId    string
 	TargetId      string
 	WeaponSystem  string
-	Reason        string // "destroyed", "unreachable", "blocked", "hidden", "out_of_range", "incomplete_targeting"
+	Reason        string // "destroyed", "unbuilt", "unreachable", "blocked", "hidden", "out_of_range", "incomplete_targeting"
 	IsCounter     bool   // True if counter-attack check
 	AttackerAmbit string
 	TargetAmbit   string
