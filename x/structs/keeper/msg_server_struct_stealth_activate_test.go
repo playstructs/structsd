@@ -105,3 +105,84 @@ func TestMsgStructStealthActivate(t *testing.T) {
 		require.Error(t, err)
 	})
 }
+
+// TestMsgStructStealthActivateCommandShipNotRequired verifies the v0.19.0
+// change that activating stealth no longer requires the fleet's Command Ship
+// to be present or online. The stealth struct (fleet-category) sits on a fleet
+// whose Command Ship is offline; activation must still succeed because the
+// struct itself is online.
+func TestMsgStructStealthActivateCommandShipNotRequired(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
+
+	player := types.Player{Creator: "cosmos1stanc", PrimaryAddress: "cosmos1stanc"}
+	player = testAppendPlayer(k, sdkCtx, player)
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id), uint64(100000))
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, player.Id), uint64(0))
+
+	planet := testAppendPlanet(k, sdkCtx, types.Planet{
+		Creator:   player.Creator,
+		Owner:     player.Id,
+		LandSlots: 4,
+		Land:      []string{"", "", "", ""},
+	})
+	player.PlanetId = planet.Id
+	k.SetPlayer(sdkCtx, player)
+
+	cmdStructType := types.StructType{Id: 720, Type: types.CommandStruct, Category: types.ObjectType_fleet}
+	k.SetStructType(sdkCtx, cmdStructType)
+
+	stealthStructType := types.StructType{
+		Id:                    721,
+		Type:                  "StealthFighter",
+		Category:              types.ObjectType_fleet,
+		UnitDefenses:          types.TechUnitDefenses_stealthMode,
+		StealthActivateCharge: 10,
+		PossibleAmbit:         1 << uint64(types.Ambit_space),
+	}
+	k.SetStructType(sdkCtx, stealthStructType)
+
+	fleet := testAppendFleet(k, sdkCtx, types.Fleet{
+		Owner:      player.Id,
+		LocationId: planet.Id,
+		Status:     types.FleetStatus_away,
+	})
+
+	cmdStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator:        player.Creator,
+		Owner:          player.Id,
+		Type:           cmdStructType.Id,
+		LocationId:     fleet.Id,
+		LocationType:   types.ObjectType_fleet,
+		OperatingAmbit: types.Ambit_space,
+	})
+	cmdStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, cmdStruct.Id)
+	// Command ship is built but deliberately NOT online.
+	testSetStructAttributeFlagAdd(k, sdkCtx, cmdStatusAttrId, uint64(types.StructStateBuilt))
+
+	fleet.CommandStruct = cmdStruct.Id
+	k.SetFleet(sdkCtx, fleet)
+	player.FleetId = fleet.Id
+	k.SetPlayer(sdkCtx, player)
+
+	stealthStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator:        player.Creator,
+		Owner:          player.Id,
+		Type:           stealthStructType.Id,
+		LocationId:     fleet.Id,
+		LocationType:   types.ObjectType_fleet,
+		OperatingAmbit: types.Ambit_space,
+	})
+	stealthStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, stealthStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, stealthStatusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, stealthStatusAttrId, uint64(types.StructStateOnline))
+
+	resp, err := ms.StructStealthActivate(wctx, &types.MsgStructStealthActivate{
+		Creator:  player.Creator,
+		StructId: stealthStruct.Id,
+	})
+	require.NoError(t, err, "stealth activate should succeed with the command ship offline")
+	require.NotNil(t, resp)
+}

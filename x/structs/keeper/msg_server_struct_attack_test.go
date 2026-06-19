@@ -1043,3 +1043,133 @@ func TestMsgStructAttackArmourPiercing(t *testing.T) {
 		require.Equal(t, uint64(2), shots[0].Damage)
 	})
 }
+
+// TestMsgStructAttackCommandShipNotRequired verifies the v0.19.0 change that an
+// attack no longer requires the fleet's Command Ship to be present or online.
+// The attacking struct itself must still be online; only the command-ship gate
+// was removed.
+func TestMsgStructAttackCommandShipNotRequired(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
+
+	attackerPlayer := types.Player{Creator: "cosmos1ncatk", PrimaryAddress: "cosmos1ncatk"}
+	attackerPlayer = testAppendPlayer(k, sdkCtx, attackerPlayer)
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, attackerPlayer.Id), uint64(100000))
+	attackerLastActionAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, attackerPlayer.Id)
+	k.SetGridAttribute(sdkCtx, attackerLastActionAttrId, uint64(0))
+
+	targetPlayer := types.Player{Creator: "cosmos1nctgt", PrimaryAddress: "cosmos1nctgt"}
+	targetPlayer = testAppendPlayer(k, sdkCtx, targetPlayer)
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, targetPlayer.Id), uint64(100000))
+
+	planet := testAppendPlanet(k, sdkCtx, types.Planet{
+		Creator:   targetPlayer.Creator,
+		Owner:     targetPlayer.Id,
+		LandSlots: 4,
+		Land:      []string{"", "", "", ""},
+	})
+	targetPlayer.PlanetId = planet.Id
+	k.SetPlayer(sdkCtx, targetPlayer)
+
+	cmdStructType := types.StructType{Id: 600, Type: types.CommandStruct, Category: types.ObjectType_fleet}
+	k.SetStructType(sdkCtx, cmdStructType)
+
+	attackStructType := types.StructType{
+		Id:                     601,
+		Type:                   "Gunship",
+		Category:               types.ObjectType_fleet,
+		PrimaryWeapon:          1,
+		PrimaryWeaponCharge:    10,
+		PrimaryWeaponTargets:   1,
+		PrimaryWeaponAmbits:    0xFFFF,
+		PrimaryWeaponDamage:    5,
+		PrimaryWeaponBlockable: true,
+		PossibleAmbit:          1 << uint64(types.Ambit_space),
+	}
+	k.SetStructType(sdkCtx, attackStructType)
+
+	targetStructType := types.StructType{
+		Id:            602,
+		Type:          "Turret",
+		Category:      types.ObjectType_planet,
+		MaxHealth:     30,
+		PossibleAmbit: 1 << uint64(types.Ambit_land),
+	}
+	k.SetStructType(sdkCtx, targetStructType)
+
+	fleet := testAppendFleet(k, sdkCtx, types.Fleet{
+		Owner:      attackerPlayer.Id,
+		LocationId: planet.Id,
+		Status:     types.FleetStatus_away,
+	})
+
+	cmdStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator:        attackerPlayer.Creator,
+		Owner:          attackerPlayer.Id,
+		Type:           cmdStructType.Id,
+		LocationId:     fleet.Id,
+		LocationType:   types.ObjectType_fleet,
+		OperatingAmbit: types.Ambit_space,
+	})
+	cmdStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, cmdStruct.Id)
+	// Command ship is built but deliberately NOT online.
+	testSetStructAttributeFlagAdd(k, sdkCtx, cmdStatusAttrId, uint64(types.StructStateBuilt))
+
+	fleet.CommandStruct = cmdStruct.Id
+	k.SetFleet(sdkCtx, fleet)
+	attackerPlayer.FleetId = fleet.Id
+	k.SetPlayer(sdkCtx, attackerPlayer)
+
+	attackerStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator:        attackerPlayer.Creator,
+		Owner:          attackerPlayer.Id,
+		Type:           attackStructType.Id,
+		LocationId:     fleet.Id,
+		LocationType:   types.ObjectType_fleet,
+		OperatingAmbit: types.Ambit_space,
+	})
+	atkStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, attackerStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, atkStatusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, atkStatusAttrId, uint64(types.StructStateOnline))
+
+	targetStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator:        targetPlayer.Creator,
+		Owner:          targetPlayer.Id,
+		Type:           targetStructType.Id,
+		LocationId:     planet.Id,
+		LocationType:   types.ObjectType_planet,
+		OperatingAmbit: types.Ambit_land,
+	})
+	tgtStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, targetStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, tgtStatusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, tgtStatusAttrId, uint64(types.StructStateOnline))
+
+	attack := func(t *testing.T) error {
+		t.Helper()
+		k.SetGridAttribute(sdkCtx, attackerLastActionAttrId, uint64(0))
+		_, err := ms.StructAttack(wctx, &types.MsgStructAttack{
+			Creator:           attackerPlayer.Creator,
+			OperatingStructId: attackerStruct.Id,
+			WeaponSystem:      "primaryWeapon",
+			TargetStructId:    []string{targetStruct.Id},
+		})
+		return err
+	}
+
+	t.Run("attack succeeds with command ship offline", func(t *testing.T) {
+		require.NoError(t, attack(t))
+	})
+
+	t.Run("attack succeeds with command ship destroyed", func(t *testing.T) {
+		testSetStructAttributeFlagAdd(k, sdkCtx, cmdStatusAttrId, uint64(types.StructStateDestroyed))
+		require.NoError(t, attack(t))
+	})
+
+	t.Run("attack succeeds with no command struct on the fleet", func(t *testing.T) {
+		fleet.CommandStruct = ""
+		k.SetFleet(sdkCtx, fleet)
+		require.NoError(t, attack(t))
+	})
+}

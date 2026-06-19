@@ -43,10 +43,6 @@ func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStruc
         return emptyResponse, types.NewStructStateError(msg.DefenderStructId, "offline", "online", "defense_clear")
     }
 
-    if !structure.IsCommandable() {
-        return emptyResponse, types.NewFleetCommandError(structure.GetStructId(), "no_command_struct")
-    }
-
     // Check Player Charge
     if (structure.GetOwner().GetCharge() < structure.GetStructType().DefendChangeCharge) {
         err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().DefendChangeCharge, structure.GetOwner().GetCharge(), "defend").WithStructType(structure.GetStructType().Id)

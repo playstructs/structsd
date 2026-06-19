@@ -4035,6 +4035,59 @@ echo "  unguided attacks from the Cruiser's secondary weapon."
 BLOCK_HEIGHT=$(query query structs block-height | jq -r '.blockHeight // empty' 2>/dev/null || echo "?")
 info "Final block height: ${BLOCK_HEIGHT}"
 
+# ═══════════════════════════════════════════════════════════════
+# v0.19.0: attack / defense / stealth no longer require the Command Ship
+# Deactivate P3's Command Ship, then confirm a non-command struct can still
+# attack, (de)register a defensive assignment, and toggle stealth. The Command
+# Ship is re-activated afterwards so later phases are unaffected. (Movement and
+# building still require the Command Ship — covered elsewhere.)
+# ═══════════════════════════════════════════════════════════════
+section "PHASE 14b: Command Ship NOT required for attack/defense/stealth (v0.19.0)"
+
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
+run_tx "P3 deactivates Command Ship (command-ship-not-required test)" \
+    tx structs struct-deactivate "${COMMAND_SHIP_ID}" --from player_3
+CS_OFFLINE=$(query query structs struct "${COMMAND_SHIP_ID}" | jq -r '.structAttributes.isOnline // "false"')
+assert_eq "P3 Command Ship offline for the test" "false" "${CS_OFFLINE}"
+
+# Attack works with the Command Ship offline (only if the Interceptor survived
+# the earlier rounds — it may have been destroyed or dodged).
+INTERCEPTOR_HP_NOW=$(query query structs struct "${INTERCEPTOR_ID}" | jq -r '.structAttributes.health // "0"')
+if [ "${INTERCEPTOR_HP_NOW}" != "0" ]; then
+    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
+    run_tx "Cruiser attacks Interceptor with Command Ship offline (v0.19.0)" \
+        tx structs struct-attack "${CRUISER_ID}" "${INTERCEPTOR_ID}" secondaryWeapon --from player_3
+else
+    info "Interceptor already destroyed — skipping the command-ship-offline attack assertion"
+fi
+
+# Defensive assignment set/clear works with the Command Ship offline. Use the
+# Cruiser (freshly built, guaranteed alive) so we do not depend on SAM's combat
+# survival; clearing afterward leaves no residual defense relationship.
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_DEFEND}"
+run_tx "Set Cruiser to defend Command Ship (Command Ship offline, v0.19.0)" \
+    tx structs struct-defense-set "${CRUISER_ID}" "${COMMAND_SHIP_ID}" --from player_3
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_DEFEND}"
+run_tx "Clear Cruiser defense (Command Ship offline, v0.19.0)" \
+    tx structs struct-defense-clear "${CRUISER_ID}" --from player_3
+
+# Stealth toggle works with the Command Ship offline.
+if [ -n "${STEALTH_BOMBER_ID}" ]; then
+    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
+    run_tx "Activate stealth with Command Ship offline (v0.19.0)" \
+        tx structs struct-stealth-activate "${STEALTH_BOMBER_ID}" --from player_3
+    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
+    run_tx "Deactivate stealth with Command Ship offline (v0.19.0)" \
+        tx structs struct-stealth-deactivate "${STEALTH_BOMBER_ID}" --from player_3
+fi
+
+# Restore the Command Ship online so the remaining phases are unaffected.
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
+run_tx "P3 re-activates Command Ship (cleanup)" \
+    tx structs struct-activate "${COMMAND_SHIP_ID}" --from player_3
+CS_BACK_ONLINE=$(query query structs struct "${COMMAND_SHIP_ID}" | jq -r '.structAttributes.isOnline // "false"')
+assert_eq "P3 Command Ship back online after offline test" "true" "${CS_BACK_ONLINE}"
+
 fi # cruiser available
 
 fi # phase 14
@@ -6618,17 +6671,18 @@ if [ -z "${RG1_ATTACKER_ID}" ] || [ -z "${RG1_TARGET_ID}" ] || [ -z "${RG1_DEFEN
 else
     info "RG1: target=${RG1_TARGET_ID} defender=${RG1_DEFENDER_ID} (both P3, space-ambit)"
 
-    # The attacker fleet must have an online command struct to launch any
-    # attack (`fleet (X) needs an online command struct before deploy`).
-    # AR3 typically destroys both P2 and P6 command ships, so we rebuild
-    # the attacker's CS if it's missing. CS BuildLimit=1, but the count
-    # decrements on destruction so a fresh build is allowed.
+    # v0.19.0: the attack itself no longer requires an online (or present)
+    # Command Ship. However, the co-location fleet-move below still does
+    # (movement remains gated on an online command struct), so we rebuild the
+    # attacker's CS if AR3 destroyed it — purely to allow that fleet-move, not
+    # to "deploy" the attack. CS BuildLimit=1, but the count decrements on
+    # destruction so a fresh build is allowed.
     eval "RG1_ATTACKER_PID=\${PLAYER_${RG1_ATTACKER_PLAYER}_ID}"
     RG1_ATTACKER_KEY="player_${RG1_ATTACKER_PLAYER}"
     RG1_ATK_CS_COUNT=$(echo "${SA_RG1}" | jq -r --arg pid "${RG1_ATTACKER_PID}" \
         '[.Struct[] | select(.owner==$pid and (.type|tonumber)==1)] | length')
     if [ "${RG1_ATK_CS_COUNT}" = "0" ]; then
-        info "RG1: ${RG1_ATTACKER_KEY} has no Command Ship — rebuilding (destroyed in AR phase)"
+        info "RG1: ${RG1_ATTACKER_KEY} has no Command Ship — rebuilding (needed for the co-location fleet-move; destroyed in AR phase)"
         wait_for_charge "${RG1_ATTACKER_PID}" "${CHARGE_BUILD}"
         run_tx "RG1: Initiating fresh ${RG1_ATTACKER_KEY} Command Ship (type=1, space, slot=1)" \
             tx structs struct-build-initiate "${RG1_ATTACKER_PID}" 1 space 1 --from "${RG1_ATTACKER_KEY}"

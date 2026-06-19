@@ -37,10 +37,6 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 		return emptyResponse, readinessError
 	}
 
-	if !structure.IsCommandable() {
-		return emptyResponse, types.NewFleetCommandError(structure.GetFleet().GetFleetId(), "command_offline").WithStructId(structure.GetStructId())
-	}
-
 	weaponSystem, weaponSystemExists := types.TechWeaponSystem_enum[msg.WeaponSystem]
 	if !weaponSystemExists {
 		return emptyResponse, types.NewParameterValidationError("weapon_system", 0, "invalid")
