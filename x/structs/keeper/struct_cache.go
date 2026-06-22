@@ -366,7 +366,7 @@ func (cache *StructCache) GoOnline() {
 	cache.StatusAddOnline()
 
 	// Command Ship back online raises the raid shields on the owner's planet
-	cache.CommandStructRaidStatusHook(true)
+	cache.CommandStructRaidStatusHook()
 }
 
 func (cache *StructCache) GoOffline() {
@@ -416,7 +416,7 @@ func (cache *StructCache) GoOffline() {
     	cache.StatusRemoveOnline()
 
     	// Command Ship going down drops the raid shields on the owner's planet
-    	cache.CommandStructRaidStatusHook(false)
+    	cache.CommandStructRaidStatusHook()
     }
 }
 
@@ -425,9 +425,16 @@ func (cache *StructCache) GoOffline() {
 // progress, the hashing puzzle can only be won while the defending Command
 // Ship is down (shieldsVulnerable); blockStartRaid tracks that window.
 //
+// The actual vulnerability decision (and clock/event handling) is delegated
+// to PlanetCache.RefreshRaidVulnerability so the online/offline path stays
+// consistent with the fleet-movement path. In particular, a Command Ship
+// coming back online while the fleet is away must NOT restore shields, which
+// recomputing the full predicate (rather than trusting the online flag)
+// correctly handles.
+//
 // Checks are ordered cheapest-first: the struct type is already loaded in
 // the cache, so the common non-Command-Ship case pays nothing here.
-func (cache *StructCache) CommandStructRaidStatusHook(online bool) {
+func (cache *StructCache) CommandStructRaidStatusHook() {
 	if cache.GetStructType().Type != types.CommandStruct {
 		return
 	}
@@ -446,25 +453,7 @@ func (cache *StructCache) CommandStructRaidStatusHook(online bool) {
 		return
 	}
 
-	planet := owner.GetPlanet()
-
-	// No raid in progress, nothing to update
-	raidFleetId := planet.GetLocationListStart()
-	if raidFleetId == "" {
-		return
-	}
-
-	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
-	if online {
-		// Shields restored: the raid can no longer be won until the
-		// Command Ship goes down again
-		planet.ClearBlockStartRaid()
-		_ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: raidFleetId, PlanetId: planet.GetPlanetId(), Status: types.RaidStatus_ongoing}})
-	} else {
-		// Shields down: the raid vulnerability clock starts now
-		planet.ResetBlockStartRaid()
-		_ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: raidFleetId, PlanetId: planet.GetPlanetId(), Status: types.RaidStatus_shieldsVulnerable}})
-	}
+	owner.GetPlanet().RefreshRaidVulnerability()
 }
 
 func (cache *StructCache) ReadinessCheck() error {
@@ -640,6 +629,10 @@ func (cache *StructCache) IsProtecting(target *StructCache) bool {
 func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem types.TechWeaponSystem) (err error) {
 	if targetStruct.IsDestroyed() {
 		return types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "destroyed")
+	}
+	// A struct must be fully built before it can be attacked (online status is irrelevant).
+	if !targetStruct.IsBuilt() {
+		return types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "unbuilt")
 	}
 	if !cache.GetStructType().CanTargetAmbit(weaponSystem, cache.GetOperatingAmbit(), targetStruct.GetOperatingAmbit()) {
 		return types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "out_of_range").WithAmbits(cache.GetOperatingAmbit().String(), targetStruct.GetOperatingAmbit().String())

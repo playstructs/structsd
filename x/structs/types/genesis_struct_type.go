@@ -137,14 +137,14 @@ structType = StructType{
  SecondaryWeaponAmbits: 16,                          
  SecondaryWeaponTargets: 1,                                       
  SecondaryWeaponShots: 1,                                           
- SecondaryWeaponDamage: 1,                                         
+ SecondaryWeaponDamage: 2,                                         
  SecondaryWeaponBlockable:  true,                                  
  SecondaryWeaponCounterable: true,
  SecondaryWeaponArmourPiercing: false,
  SecondaryWeaponRecoilDamage:0,                              
  SecondaryWeaponShotSuccessRateNumerator: 1,   
  SecondaryWeaponShotSuccessRateDenominator: 1, 
-            
+           
  PassiveWeaponry: TechPassiveWeaponry_counterAttack,           
  UnitDefenses: TechUnitDefenses_signalJamming,                    
  OreReserveDefenses: TechOreReserveDefenses_noOreReserveDefenses,  

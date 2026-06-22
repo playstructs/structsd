@@ -35,10 +35,6 @@ func (k msgServer) StructStealthDeactivate(goCtx context.Context, msg *types.Msg
         return emptyResponse, readinessError
     }
 
-    if !structure.IsCommandable() {
-        return emptyResponse, types.NewFleetCommandError(structure.GetStructId(), "no_command_struct")
-    }
-
     // Is Struct Stealth Mode already activated?
     if !structure.IsHidden() {
         return emptyResponse, types.NewStructStateError(msg.StructId, "visible", "hidden", "stealth_deactivate")
