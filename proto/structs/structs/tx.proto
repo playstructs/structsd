@@ -109,6 +109,7 @@ service Msg {
 
   rpc StructActivate                 (MsgStructActivate                ) returns (MsgStructStatusResponse                  );
   rpc StructDeactivate               (MsgStructDeactivate              ) returns (MsgStructStatusResponse                  );
+  rpc StructDeactivateBatch          (MsgStructDeactivateBatch         ) returns (MsgStructDeactivateBatchResponse         );
 
   rpc StructBuildInitiate            (MsgStructBuildInitiate           ) returns (MsgStructStatusResponse                  );
   rpc StructBuildComplete            (MsgStructBuildComplete           ) returns (MsgStructStatusResponse                  );
@@ -769,6 +770,17 @@ message MsgStructDeactivate {
 
   string creator      = 1;
   string structId     = 2;
+}
+
+message MsgStructDeactivateBatch {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator             = 1;
+  repeated string structId   = 2;
+}
+
+message MsgStructDeactivateBatchResponse {
+  repeated Struct structs = 1 [(gogoproto.nullable) = false];
 }
 
 

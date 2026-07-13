@@ -1,0 +1,34 @@
+package v0_20_0
+
+// UpgradeName is the on-chain upgrade plan name for the v0.20.0 binary.
+//
+// Consensus / handler changes (binary):
+//
+//   - Combat defender resolution no longer lets a destroyed attacker land
+//     blocked damage. ResolveDefenders now resolves every defender counter
+//     before any block: defender counters are simultaneous from the attacker's
+//     perspective, so if their combined damage destroys the attacker the attack
+//     is fully neutralized and no block volley may land. Previously the counter
+//     and block were interleaved per defender in struct-ID iteration order, so
+//     a blocker that sorted ahead of the lethal counter unit would absorb the
+//     attacker's volley (taking blocker damage) even though a later defender's
+//     counter destroyed the attacker in the same action - an "attack from the
+//     dead".
+//
+//   - StructDeactivate no longer rejects players who are offline due to power
+//     overload. Players can deactivate online structs to reduce structsLoad and
+//     return to power compliance.
+//
+//   - New StructDeactivateBatch message deactivates up to 65 structs in a
+//     single transaction. All structs are validated (existence, PermPlay,
+//     built, online) before any are taken offline, so the batch is atomic:
+//     an ineligible struct rejects the entire message with no partial changes.
+//
+//   - MsgAllocationUpdate no longer double-counts the allocation's own power
+//     in the source capacity check. Dynamic allocations can grow into capacity
+//     they already hold (e.g. after MsgReactorInfuse increases source capacity).
+//
+// This is a binary-only behavior fix. There is no state migration: no struct
+// type, planet attribute, or other persisted state is read or written by this
+// upgrade, and there are no store-key changes.
+const UpgradeName = "v0.20.0"

@@ -92,4 +92,73 @@ func TestMsgAllocationUpdate(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("update to full source capacity when load equals current power", func(t *testing.T) {
+		regressionAllocation := types.Allocation{
+			SourceObjectId: reactor.Id,
+			DestinationId:  "",
+			Type:           types.AllocationType_dynamic,
+			Controller:     player.Id,
+		}
+		regressionAllocation, err := testAppendAllocation(k, ctx, regressionAllocation, 100)
+		require.NoError(t, err)
+
+		loadAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_load, reactor.Id)
+		k.SetGridAttribute(ctx, loadAttrId, uint64(100))
+
+		resp, err := ms.AllocationUpdate(wctx, &types.MsgAllocationUpdate{
+			Creator:      player.Creator,
+			AllocationId: regressionAllocation.Id,
+			Power:        1000,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		powerAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_power, regressionAllocation.Id)
+		require.Equal(t, uint64(1000), k.GetGridAttribute(ctx, powerAttrId))
+	})
+
+	t.Run("no-op re-set to current power succeeds", func(t *testing.T) {
+		regressionAllocation := types.Allocation{
+			SourceObjectId: reactor.Id,
+			DestinationId:  "",
+			Type:           types.AllocationType_dynamic,
+			Controller:     player.Id,
+		}
+		regressionAllocation, err := testAppendAllocation(k, ctx, regressionAllocation, 1000)
+		require.NoError(t, err)
+
+		loadAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_load, reactor.Id)
+		k.SetGridAttribute(ctx, loadAttrId, uint64(1000))
+
+		resp, err := ms.AllocationUpdate(wctx, &types.MsgAllocationUpdate{
+			Creator:      player.Creator,
+			AllocationId: regressionAllocation.Id,
+			Power:        1000,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
+
+	t.Run("update above total capacity still rejected", func(t *testing.T) {
+		regressionAllocation := types.Allocation{
+			SourceObjectId: reactor.Id,
+			DestinationId:  "",
+			Type:           types.AllocationType_dynamic,
+			Controller:     player.Id,
+		}
+		regressionAllocation, err := testAppendAllocation(k, ctx, regressionAllocation, 500)
+		require.NoError(t, err)
+
+		loadAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_load, reactor.Id)
+		k.SetGridAttribute(ctx, loadAttrId, uint64(500))
+
+		_, err = ms.AllocationUpdate(wctx, &types.MsgAllocationUpdate{
+			Creator:      player.Creator,
+			AllocationId: regressionAllocation.Id,
+			Power:        1001,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "does not have capacity")
+	})
 }

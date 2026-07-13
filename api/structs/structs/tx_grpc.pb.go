@@ -88,6 +88,7 @@ const (
 	Msg_ReactorCancelDefusion_FullMethodName                         = "/structs.structs.Msg/ReactorCancelDefusion"
 	Msg_StructActivate_FullMethodName                                = "/structs.structs.Msg/StructActivate"
 	Msg_StructDeactivate_FullMethodName                              = "/structs.structs.Msg/StructDeactivate"
+	Msg_StructDeactivateBatch_FullMethodName                         = "/structs.structs.Msg/StructDeactivateBatch"
 	Msg_StructBuildInitiate_FullMethodName                           = "/structs.structs.Msg/StructBuildInitiate"
 	Msg_StructBuildComplete_FullMethodName                           = "/structs.structs.Msg/StructBuildComplete"
 	Msg_StructBuildCancel_FullMethodName                             = "/structs.structs.Msg/StructBuildCancel"
@@ -188,6 +189,7 @@ type MsgClient interface {
 	ReactorCancelDefusion(ctx context.Context, in *MsgReactorCancelDefusion, opts ...grpc.CallOption) (*MsgReactorCancelDefusionResponse, error)
 	StructActivate(ctx context.Context, in *MsgStructActivate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructDeactivate(ctx context.Context, in *MsgStructDeactivate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
+	StructDeactivateBatch(ctx context.Context, in *MsgStructDeactivateBatch, opts ...grpc.CallOption) (*MsgStructDeactivateBatchResponse, error)
 	StructBuildInitiate(ctx context.Context, in *MsgStructBuildInitiate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructBuildComplete(ctx context.Context, in *MsgStructBuildComplete, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructBuildCancel(ctx context.Context, in *MsgStructBuildCancel, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
@@ -909,6 +911,16 @@ func (c *msgClient) StructDeactivate(ctx context.Context, in *MsgStructDeactivat
 	return out, nil
 }
 
+func (c *msgClient) StructDeactivateBatch(ctx context.Context, in *MsgStructDeactivateBatch, opts ...grpc.CallOption) (*MsgStructDeactivateBatchResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgStructDeactivateBatchResponse)
+	err := c.cc.Invoke(ctx, Msg_StructDeactivateBatch_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) StructBuildInitiate(ctx context.Context, in *MsgStructBuildInitiate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgStructStatusResponse)
@@ -1196,6 +1208,7 @@ type MsgServer interface {
 	ReactorCancelDefusion(context.Context, *MsgReactorCancelDefusion) (*MsgReactorCancelDefusionResponse, error)
 	StructActivate(context.Context, *MsgStructActivate) (*MsgStructStatusResponse, error)
 	StructDeactivate(context.Context, *MsgStructDeactivate) (*MsgStructStatusResponse, error)
+	StructDeactivateBatch(context.Context, *MsgStructDeactivateBatch) (*MsgStructDeactivateBatchResponse, error)
 	StructBuildInitiate(context.Context, *MsgStructBuildInitiate) (*MsgStructStatusResponse, error)
 	StructBuildComplete(context.Context, *MsgStructBuildComplete) (*MsgStructStatusResponse, error)
 	StructBuildCancel(context.Context, *MsgStructBuildCancel) (*MsgStructStatusResponse, error)
@@ -1433,6 +1446,9 @@ func (UnimplementedMsgServer) StructActivate(context.Context, *MsgStructActivate
 }
 func (UnimplementedMsgServer) StructDeactivate(context.Context, *MsgStructDeactivate) (*MsgStructStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructDeactivate not implemented")
+}
+func (UnimplementedMsgServer) StructDeactivateBatch(context.Context, *MsgStructDeactivateBatch) (*MsgStructDeactivateBatchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StructDeactivateBatch not implemented")
 }
 func (UnimplementedMsgServer) StructBuildInitiate(context.Context, *MsgStructBuildInitiate) (*MsgStructStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructBuildInitiate not implemented")
@@ -2760,6 +2776,24 @@ func _Msg_StructDeactivate_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_StructDeactivateBatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStructDeactivateBatch)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).StructDeactivateBatch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_StructDeactivateBatch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).StructDeactivateBatch(ctx, req.(*MsgStructDeactivateBatch))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_StructBuildInitiate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgStructBuildInitiate)
 	if err := dec(in); err != nil {
@@ -3420,6 +3454,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StructDeactivate",
 			Handler:    _Msg_StructDeactivate_Handler,
+		},
+		{
+			MethodName: "StructDeactivateBatch",
+			Handler:    _Msg_StructDeactivateBatch_Handler,
 		},
 		{
 			MethodName: "StructBuildInitiate",

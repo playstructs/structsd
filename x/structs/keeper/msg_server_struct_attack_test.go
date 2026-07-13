@@ -637,6 +637,246 @@ func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
 		"target HP should be unchanged when attacker is destroyed before volley")
 }
 
+// TestMsgStructAttackBlockerSortedBeforeLethalCounter reproduces the live
+// "dead bomber deals damage" report (player 1-61, bombers 5-2116 / 5-2249): an
+// air Stealth-Bomber-style attacker hits a land-operating Command Ship that is
+// defended by BOTH a Tank (land — can block but cannot counter an air unit) and
+// a counter unit that CAN counter air and whose counter is lethal.
+//
+// The defenders are iterated in byte-sorted struct-ID order, and the Tank is
+// created first so it sorts ahead of the counter unit. Pre-fix, ResolveDefenders
+// interleaved counter-then-block per defender, so the Tank blocked (absorbing
+// the bomber's volley) while the bomber was still alive, and only the later
+// counter unit destroyed it — the destroyed bomber still dealt blocker damage.
+// Post-fix, all counters resolve before any block, so the lethal counter
+// destroys the bomber first and no block lands: the Tank and the target take no
+// damage.
+func TestMsgStructAttackBlockerSortedBeforeLethalCounter(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
+
+	// --- players ---
+	atkPlayer := types.Player{Creator: "cosmos1bdatk", PrimaryAddress: "cosmos1bdatk"}
+	atkPlayer = testAppendPlayer(k, sdkCtx, atkPlayer)
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, atkPlayer.Id), uint64(100000))
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, atkPlayer.Id), uint64(0))
+
+	tgtPlayer := types.Player{Creator: "cosmos1bdtgt", PrimaryAddress: "cosmos1bdtgt"}
+	tgtPlayer = testAppendPlayer(k, sdkCtx, tgtPlayer)
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, tgtPlayer.Id), uint64(100000))
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, tgtPlayer.Id), uint64(0))
+
+	planet := testAppendPlanet(k, sdkCtx, types.Planet{
+		Creator:   tgtPlayer.Creator,
+		Owner:     tgtPlayer.Id,
+		LandSlots: 4,
+		Land:      []string{"", "", "", ""},
+	})
+	tgtPlayer.PlanetId = planet.Id
+	k.SetPlayer(sdkCtx, tgtPlayer)
+
+	landAmbitFlag := uint64(1) << uint64(types.Ambit_land)
+	airAmbitFlag := uint64(1) << uint64(types.Ambit_air)
+
+	// --- struct types ---
+	cmdStructType := types.StructType{
+		Id:       310,
+		Type:     types.CommandStruct,
+		Category: types.ObjectType_fleet,
+	}
+	k.SetStructType(sdkCtx, cmdStructType)
+
+	// Attacker: air Stealth-Bomber style. 3 HP, guided primary (2 dmg),
+	// blockable + counterable. Primary targets land so it can hit the
+	// land-operating Command Ship.
+	atkType := types.StructType{
+		Id:                                      311,
+		Type:                                    "AirBomber",
+		Category:                                types.ObjectType_fleet,
+		MaxHealth:                               3,
+		PossibleAmbit:                           airAmbitFlag,
+		PrimaryWeapon:                           types.TechActiveWeaponry_guidedWeaponry,
+		PrimaryWeaponControl:                    types.TechWeaponControl_guided,
+		PrimaryWeaponCharge:                     1,
+		PrimaryWeaponTargets:                    1,
+		PrimaryWeaponShots:                      1,
+		PrimaryWeaponDamage:                     2,
+		PrimaryWeaponAmbits:                     landAmbitFlag,
+		PrimaryWeaponBlockable:                  true,
+		PrimaryWeaponCounterable:                true,
+		PrimaryWeaponShotSuccessRateNumerator:   1,
+		PrimaryWeaponShotSuccessRateDenominator: 1,
+		AttackCounterable:                       true,
+	}
+	k.SetStructType(sdkCtx, atkType)
+
+	// Target: land-operating Command Ship style, full HP.
+	tgtType := types.StructType{
+		Id:            312,
+		Type:          "LandCommandShip",
+		Category:      types.ObjectType_planet,
+		MaxHealth:     6,
+		PossibleAmbit: landAmbitFlag,
+	}
+	k.SetStructType(sdkCtx, tgtType)
+
+	// Tank defender: land ambit (matches target → can block), but its weapon
+	// ambits are land-only so CanCounterTargetAmbit(land, air) fails and it
+	// cannot counter the air attacker. AttackReduction 1 mirrors the live Tank.
+	tankType := types.StructType{
+		Id:                     313,
+		Type:                   "TankBlocker",
+		Category:               types.ObjectType_planet,
+		MaxHealth:              3,
+		PossibleAmbit:          landAmbitFlag,
+		PrimaryWeaponAmbits:    landAmbitFlag,
+		AttackReduction:        1,
+		AttackCounterable:      true,
+		PassiveWeaponry:        types.TechPassiveWeaponry_counterAttack,
+		CounterAttack:          1,
+		CounterAttackSameAmbit: 1,
+	}
+	k.SetStructType(sdkCtx, tankType)
+
+	// Counter defender: can counter air (weapon ambits include air) and its
+	// counter is lethal to the 3 HP bomber in a single shot.
+	counterType := types.StructType{
+		Id:                     314,
+		Type:                   "AirCounter",
+		Category:               types.ObjectType_planet,
+		MaxHealth:              3,
+		PossibleAmbit:          landAmbitFlag,
+		PrimaryWeaponAmbits:    airAmbitFlag,
+		AttackCounterable:      true,
+		PassiveWeaponry:        types.TechPassiveWeaponry_counterAttack,
+		CounterAttack:          3,
+		CounterAttackSameAmbit: 3,
+	}
+	k.SetStructType(sdkCtx, counterType)
+
+	// --- attacker fleet + command struct so IsCommandable passes ---
+	afleet := testAppendFleet(k, sdkCtx, types.Fleet{
+		Owner:      atkPlayer.Id,
+		LocationId: planet.Id,
+		Status:     types.FleetStatus_away,
+	})
+	cmd := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator:        atkPlayer.Creator,
+		Owner:          atkPlayer.Id,
+		Type:           cmdStructType.Id,
+		LocationId:     afleet.Id,
+		LocationType:   types.ObjectType_fleet,
+		OperatingAmbit: types.Ambit_land,
+	})
+	cmdSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, cmd.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, cmdSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, cmdSAttr, uint64(types.StructStateOnline))
+	afleet.CommandStruct = cmd.Id
+	k.SetFleet(sdkCtx, afleet)
+	atkPlayer.FleetId = afleet.Id
+	k.SetPlayer(sdkCtx, atkPlayer)
+
+	// Wire the planet's location list so the planet-located defenders can reach
+	// the fleet-located attacker (isReachable), mirroring the live raid setup.
+	planet.LocationListStart = afleet.Id
+	k.SetPlanet(sdkCtx, planet)
+
+	// --- attacker struct (air), force health to 3 ---
+	atkStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator:        atkPlayer.Creator,
+		Owner:          atkPlayer.Id,
+		Type:           atkType.Id,
+		LocationId:     afleet.Id,
+		LocationType:   types.ObjectType_fleet,
+		OperatingAmbit: types.Ambit_air,
+	})
+	atkSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, atkStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, atkSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, atkSAttr, uint64(types.StructStateOnline))
+	atkHAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, atkStruct.Id)
+	k.SetStructAttribute(sdkCtx, atkHAttr, atkType.MaxHealth)
+
+	// --- target struct (land) ---
+	tgtStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator:        tgtPlayer.Creator,
+		Owner:          tgtPlayer.Id,
+		Type:           tgtType.Id,
+		LocationId:     planet.Id,
+		LocationType:   types.ObjectType_planet,
+		OperatingAmbit: types.Ambit_land,
+	})
+	tgtSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, tgtStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, tgtSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, tgtSAttr, uint64(types.StructStateOnline))
+	tgtHAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, tgtStruct.Id)
+	k.SetStructAttribute(sdkCtx, tgtHAttr, tgtType.MaxHealth)
+
+	// --- Tank defender (created FIRST so it sorts ahead of the counter unit) ---
+	tankStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator:        tgtPlayer.Creator,
+		Owner:          tgtPlayer.Id,
+		Type:           tankType.Id,
+		LocationId:     planet.Id,
+		LocationType:   types.ObjectType_planet,
+		OperatingAmbit: types.Ambit_land,
+	})
+	tankSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, tankStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, tankSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, tankSAttr, uint64(types.StructStateOnline))
+	tankHAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, tankStruct.Id)
+	k.SetStructAttribute(sdkCtx, tankHAttr, tankType.MaxHealth)
+	k.SetStructDefender(sdkCtx, tgtStruct.Id, tgtStruct.Index, tankStruct.Id)
+
+	// --- Counter defender (created second; lethal air counter) ---
+	counterStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator:        tgtPlayer.Creator,
+		Owner:          tgtPlayer.Id,
+		Type:           counterType.Id,
+		LocationId:     planet.Id,
+		LocationType:   types.ObjectType_planet,
+		OperatingAmbit: types.Ambit_land,
+	})
+	counterSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, counterStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, counterSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, counterSAttr, uint64(types.StructStateOnline))
+	counterHAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, counterStruct.Id)
+	k.SetStructAttribute(sdkCtx, counterHAttr, counterType.MaxHealth)
+	k.SetStructDefender(sdkCtx, tgtStruct.Id, tgtStruct.Index, counterStruct.Id)
+
+	// Sanity: the Tank must sort ahead of the counter unit so it is processed
+	// first; this is what reproduced the bug.
+	require.Less(t, tankStruct.Id, counterStruct.Id,
+		"test setup expects the Tank defender to sort before the counter unit")
+
+	// --- act ---
+	_, err := ms.StructAttack(wctx, &types.MsgStructAttack{
+		Creator:           atkPlayer.Creator,
+		OperatingStructId: atkStruct.Id,
+		WeaponSystem:      "primaryWeapon",
+		TargetStructId:    []string{tgtStruct.Id},
+	})
+	require.NoError(t, err)
+
+	// --- assert ---
+	// Bomber destroyed by the lethal counter.
+	require.Equal(t, uint64(0), k.GetStructAttribute(sdkCtx, atkHAttr),
+		"bomber should be at 0 HP after the lethal counter")
+	require.True(t,
+		testStructAttributeFlagHasAll(k, sdkCtx, atkSAttr, uint64(types.StructStateDestroyed)),
+		"bomber should be flagged destroyed")
+
+	// The blocking Tank takes no damage: the bomber was destroyed by counters
+	// before any block could land. Pre-fix the Tank would be at MaxHealth-1.
+	require.Equal(t, tankType.MaxHealth, k.GetStructAttribute(sdkCtx, tankHAttr),
+		"Tank (blocker) HP should be unchanged when counters destroyed the attacker before any block")
+
+	// The target takes no damage either.
+	require.Equal(t, tgtType.MaxHealth, k.GetStructAttribute(sdkCtx, tgtHAttr),
+		"target HP should be unchanged when the attacker is destroyed before its volley")
+}
+
 // TestMsgStructAttackDefenderFleetMovedNoSupport reproduces the "fleet away on
 // a raid" scenario: a defender registered via SetStructDefender when its fleet
 // was at the target's planet should NOT be able to counter or block once its

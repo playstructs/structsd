@@ -496,6 +496,31 @@ func (cache *StructCache) CanBePlayedBy(callingPlayer *PlayerCache) error {
     return cache.CC.PermissionCheck(cache.GetOwner(), callingPlayer, types.PermPlay)
 }
 
+// CanBeDeactivatedBy reports whether callingPlayer may take this struct
+// offline. The check order (existence -> permission -> built -> online) yields
+// correct error precedence: a non-existent struct reports "not found" rather
+// than a permission error against an empty owner, and the struct is only read
+// from the store once.
+func (cache *StructCache) CanBeDeactivatedBy(callingPlayer *PlayerCache) error {
+    if existenceError := cache.CheckStruct(); existenceError != nil {
+        return existenceError
+    }
+
+    if permissionError := cache.CanBePlayedBy(callingPlayer); permissionError != nil {
+        return permissionError
+    }
+
+    if !cache.IsBuilt() {
+        return types.NewStructStateError(cache.StructId, "building", "built", "deactivate")
+    }
+
+    if cache.IsOffline() {
+        return types.NewStructStateError(cache.StructId, "offline", "online", "deactivate")
+    }
+
+    return nil
+}
+
 func (cache *StructCache) CanAllocateAsSourceBy(_ *PlayerCache) error {
     return types.NewAllocationError(cache.ID(), "unacceptable_source")
 }

@@ -731,6 +731,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
                  },
                  {
+                     RpcMethod:      "StructDeactivateBatch",
+                     Use:            "struct-deactivate-batch [struct id,struct id2,...]",
+                     Short:          "Take multiple Structs offline in one transaction",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
+                 },
+                 {
                      RpcMethod:      "StructAttack",
                      Use:            "struct-attack [operating struct id] [target struct id,target struct id2,...] [weapon system]",
                      Short:          "Attack a Struct with a Struct",
