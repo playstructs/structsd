@@ -114,6 +114,7 @@ service Msg {
   rpc StructBuildInitiate            (MsgStructBuildInitiate           ) returns (MsgStructStatusResponse                  );
   rpc StructBuildComplete            (MsgStructBuildComplete           ) returns (MsgStructStatusResponse                  );
   rpc StructBuildCancel              (MsgStructBuildCancel             ) returns (MsgStructStatusResponse                  );
+  rpc StructTrash                    (MsgStructTrash                   ) returns (MsgStructStatusResponse                  );
 
   // Not MVP
   // rpc StructBuildCompleteAndStash    (MsgStructBuildCompleteAndStash   ) returns (MsgStructStatusResponse                  );
@@ -807,6 +808,13 @@ message MsgStructBuildComplete {
 }
 
 message MsgStructBuildCancel {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string structId     = 2;
+}
+
+message MsgStructTrash {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator      = 1;

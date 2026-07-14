@@ -92,6 +92,7 @@ const (
 	Msg_StructBuildInitiate_FullMethodName                           = "/structs.structs.Msg/StructBuildInitiate"
 	Msg_StructBuildComplete_FullMethodName                           = "/structs.structs.Msg/StructBuildComplete"
 	Msg_StructBuildCancel_FullMethodName                             = "/structs.structs.Msg/StructBuildCancel"
+	Msg_StructTrash_FullMethodName                                   = "/structs.structs.Msg/StructTrash"
 	Msg_StructDefenseSet_FullMethodName                              = "/structs.structs.Msg/StructDefenseSet"
 	Msg_StructDefenseClear_FullMethodName                            = "/structs.structs.Msg/StructDefenseClear"
 	Msg_StructMove_FullMethodName                                    = "/structs.structs.Msg/StructMove"
@@ -193,6 +194,7 @@ type MsgClient interface {
 	StructBuildInitiate(ctx context.Context, in *MsgStructBuildInitiate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructBuildComplete(ctx context.Context, in *MsgStructBuildComplete, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructBuildCancel(ctx context.Context, in *MsgStructBuildCancel, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
+	StructTrash(ctx context.Context, in *MsgStructTrash, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructDefenseSet(ctx context.Context, in *MsgStructDefenseSet, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructDefenseClear(ctx context.Context, in *MsgStructDefenseClear, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructMove(ctx context.Context, in *MsgStructMove, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
@@ -951,6 +953,16 @@ func (c *msgClient) StructBuildCancel(ctx context.Context, in *MsgStructBuildCan
 	return out, nil
 }
 
+func (c *msgClient) StructTrash(ctx context.Context, in *MsgStructTrash, opts ...grpc.CallOption) (*MsgStructStatusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgStructStatusResponse)
+	err := c.cc.Invoke(ctx, Msg_StructTrash_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) StructDefenseSet(ctx context.Context, in *MsgStructDefenseSet, opts ...grpc.CallOption) (*MsgStructStatusResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgStructStatusResponse)
@@ -1212,6 +1224,7 @@ type MsgServer interface {
 	StructBuildInitiate(context.Context, *MsgStructBuildInitiate) (*MsgStructStatusResponse, error)
 	StructBuildComplete(context.Context, *MsgStructBuildComplete) (*MsgStructStatusResponse, error)
 	StructBuildCancel(context.Context, *MsgStructBuildCancel) (*MsgStructStatusResponse, error)
+	StructTrash(context.Context, *MsgStructTrash) (*MsgStructStatusResponse, error)
 	StructDefenseSet(context.Context, *MsgStructDefenseSet) (*MsgStructStatusResponse, error)
 	StructDefenseClear(context.Context, *MsgStructDefenseClear) (*MsgStructStatusResponse, error)
 	StructMove(context.Context, *MsgStructMove) (*MsgStructStatusResponse, error)
@@ -1458,6 +1471,9 @@ func (UnimplementedMsgServer) StructBuildComplete(context.Context, *MsgStructBui
 }
 func (UnimplementedMsgServer) StructBuildCancel(context.Context, *MsgStructBuildCancel) (*MsgStructStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructBuildCancel not implemented")
+}
+func (UnimplementedMsgServer) StructTrash(context.Context, *MsgStructTrash) (*MsgStructStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StructTrash not implemented")
 }
 func (UnimplementedMsgServer) StructDefenseSet(context.Context, *MsgStructDefenseSet) (*MsgStructStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructDefenseSet not implemented")
@@ -2848,6 +2864,24 @@ func _Msg_StructBuildCancel_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_StructTrash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStructTrash)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).StructTrash(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_StructTrash_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).StructTrash(ctx, req.(*MsgStructTrash))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_StructDefenseSet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgStructDefenseSet)
 	if err := dec(in); err != nil {
@@ -3470,6 +3504,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StructBuildCancel",
 			Handler:    _Msg_StructBuildCancel_Handler,
+		},
+		{
+			MethodName: "StructTrash",
+			Handler:    _Msg_StructTrash_Handler,
 		},
 		{
 			MethodName: "StructDefenseSet",

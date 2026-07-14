@@ -97,6 +97,7 @@ var KnownStructsMessages = map[string]bool{
 	"/structs.structs.MsgStructOreRefineryComplete":                      true,
 	"/structs.structs.MsgStructStealthActivate":                          true,
 	"/structs.structs.MsgStructStealthDeactivate":                        true,
+	"/structs.structs.MsgStructTrash":                                    true,
 	"/structs.structs.MsgSubstationAllocationConnect":                    true,
 	"/structs.structs.MsgSubstationAllocationDisconnect":                 true,
 	"/structs.structs.MsgSubstationCreate":                               true,
@@ -127,6 +128,7 @@ var PermissionMap = map[string]types.Permission{
 	"/structs.structs.MsgStructMove":             types.PermPlay,
 	"/structs.structs.MsgStructStealthActivate":  types.PermPlay,
 	"/structs.structs.MsgStructStealthDeactivate": types.PermPlay,
+	"/structs.structs.MsgStructTrash":            types.PermPlay,
 
 	// Proof-of-work actions (require specific hash permissions)
 	"/structs.structs.MsgStructBuildComplete":      types.PermHashBuild,

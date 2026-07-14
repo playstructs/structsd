@@ -30,7 +30,7 @@
 #   --resume-from N    Skip phases before N and resume execution from phase N.
 #                      Recovers all IDs by querying the running chain.
 #                      Phase names: 0 1 2 3 3b 4 4b 4c 4d 4e 4f 4g 5 5b 6
-#                        7 7b 8 9 10 11 12 13 13b 14 15 15b 16
+#                        7 7b 7c 8 9 10 11 12 13 13b 14 15 15b 16
 #                        17 17b 17c 18 eb1-eb6 ev1 ar1-ar4 rg1 rg2
 #
 
@@ -608,7 +608,7 @@ phase_order() {
         4) echo 400;; 4b) echo 450;; 4c) echo 460;; 4d) echo 470;;
         4e) echo 480;; 4e2) echo 482;; 4e3) echo 484;; 4f) echo 490;; 4g) echo 495;;
         5) echo 500;; 5b) echo 550;; 6) echo 600;;
-        7) echo 700;; 7b) echo 750;; 8) echo 800;;
+        7) echo 700;; 7b) echo 750;; 7c) echo 760;; 8) echo 800;;
         9) echo 900;; 10) echo 1000;; 11) echo 1100;;
         12) echo 1200;; 13) echo 1300;; 13b) echo 1350;;
         14) echo 1400;; 15) echo 1500;; 15b) echo 1550;; 16) echo 1600;;
@@ -3403,6 +3403,56 @@ info "All struct types count:"
 echo "  $(query query structs struct-type-all 2>/dev/null | jq '.structType | length' || echo '?') types"
 
 fi # phase 7b
+
+if run_phase 760; then
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  PHASE 7c: Struct Trash
+# ═════════════════════════════════════════════════════════════════════════════
+
+section "PHASE 7c: Struct Trash"
+
+# Unlike struct-build-cancel (which only removes an unfinished struct), struct-trash
+# destroys any non-destroyed struct as long as the caller has play permission and the
+# owner holds at least the struct type's build charge (which the action consumes). This
+# integration phase exercises the on-chain trash path on a freshly-initiated (still
+# building) struct; it deliberately skips a build-compute so it does not pay the
+# peak-difficulty proof-of-work (this phase initiates and would compute immediately, so
+# difficulty has not decayed). Trashing a fully BUILT struct is covered deterministically
+# by the Go unit test TestMsgStructTrash. Skips gracefully if the build cannot be initiated.
+
+P2_TRASH_LOAD_BASELINE=$(jqr "$(query query structs player "${PLAYER_2_ID}")" '.gridAttributes.structsLoad' '0')
+info "Player 2 structsLoad before trash-target build: ${P2_TRASH_LOAD_BASELINE}"
+
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
+wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
+run_tx "Initiating Ore Bunker for trash (type=18, land, slot=3)" \
+    tx structs struct-build-initiate "${PLAYER_2_ID}" 18 land 3 --from player_2
+
+TRASH_STRUCT_ID=$(get_newest_struct_id)
+if [ -z "${TRASH_STRUCT_ID}" ] || [ "${TRASH_STRUCT_ID}" = "${PREV_NEWEST_STRUCT_ID}" ]; then
+    info "SKIP 7c: Could not initiate build for trash test (slot/charge)"
+else
+    info "Trash target struct: ${TRASH_STRUCT_ID} (still building)"
+
+    P2_TRASH_LOAD_MID=$(jqr "$(query query structs player "${PLAYER_2_ID}")" '.gridAttributes.structsLoad' '0')
+    info "Player 2 structsLoad after build-initiate: ${P2_TRASH_LOAD_MID}"
+
+    # Trash the struct. This consumes the struct type's build charge.
+    wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
+    run_tx "Trashing Ore Bunker ${TRASH_STRUCT_ID}" \
+        tx structs struct-trash "${TRASH_STRUCT_ID}" --from player_2
+
+    # Authoritative check: the struct is now flagged destroyed.
+    TRASH_GONE_JSON=$(query query structs struct "${TRASH_STRUCT_ID}" 2>/dev/null || echo '{}')
+    assert_eq "7c — struct is destroyed after trash" "true" "$(jqr "${TRASH_GONE_JSON}" '.structAttributes.isDestroyed' 'false')"
+
+    P2_TRASH_LOAD_AFTER=$(jqr "$(query query structs player "${PLAYER_2_ID}")" '.gridAttributes.structsLoad' '0')
+    info "Player 2 structsLoad after trash: ${P2_TRASH_LOAD_AFTER}"
+    assert_eq "7c — structsLoad released after trash" "${P2_TRASH_LOAD_BASELINE}" "${P2_TRASH_LOAD_AFTER}"
+fi
+
+fi # phase 7c
 
 if run_phase 800; then
 

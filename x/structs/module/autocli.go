@@ -755,6 +755,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
                  },
                  {
+                     RpcMethod:      "StructTrash",
+                     Use:            "struct-trash [struct id]",
+                     Short:          "Destroy (trash) a Struct, consuming the build charge",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
+                 },
+                 {
                      RpcMethod:      "StructBuildInitiate",
                      Use:            "struct-build-initiate [player id] [struct type id] [operating ambit] [slot]",
                      Short:          "Initiate the construction of a Struct",

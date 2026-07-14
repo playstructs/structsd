@@ -97,6 +97,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructBuildInitiate{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructBuildComplete{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructBuildCancel{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructTrash{},)
     // Not MVP
     //registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructBuildCompleteAndStash{},)
 

@@ -37,7 +37,14 @@ package v0_20_0
 //     jammed unguided weapons in that geometry. The ambit constraints are
 //     removed; the requirements are now planetary target + guided weapon.
 //
-// This is a binary-only behavior fix. There is no state migration: no struct
-// type, planet attribute, or other persisted state is read or written by this
-// upgrade, and there are no store-key changes.
+//   - New StructTrash message destroys any non-destroyed struct (built or
+//     still building) that the caller has PermPlay permission over. It mirrors
+//     StructBuildCancel but gates on the owner having at least the struct type's
+//     BuildCharge and consumes that charge (Discharge) on success. Attempting to
+//     trash an already-destroyed struct returns a state error with no penalty.
+//
+// This upgrade is binary-only. There is no state migration: no struct type,
+// planet attribute, or other persisted state is read or written by this
+// upgrade, and there are no store-key changes. The new StructTrash message adds
+// a transaction type but no new persisted state.
 const UpgradeName = "v0.20.0"
