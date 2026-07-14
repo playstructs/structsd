@@ -3301,16 +3301,18 @@ else
             tx structs struct-ore-mine-compute "${MINER_STRUCT_ID}" --from player_2
     done
 
-    # Check player 2 ore inventory
+    # Check player 2 ore inventory. Stored ore is a grid attribute
+    # (GridAttributeType_ore) keyed by the player, surfaced at
+    # .gridAttributes.ore; PlayerInventory only carries spendable rocks.
     P2_JSON=$(query query structs player "${PLAYER_2_ID}")
-    P2_ORE=$(jqr "${P2_JSON}" '.playerInventory.ore' '0')
+    P2_ORE=$(jqr "${P2_JSON}" '.gridAttributes.ore' '0')
     info "Player 2 ore after mining: ${P2_ORE}"
     assert_gt "Player 2 ore after mining" 0 "${P2_ORE}"
 
-    # ─── Build Refinery (struct type 16, land, slot 2) ───
+    # ─── Build Refinery (struct type 15 = Ore Refinery, land, slot 2) ───
     wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
-    run_tx "Initiating Refinery build (type=16, ambit=land, slot=2)" \
-        tx structs struct-build-initiate "${PLAYER_2_ID}" 16 land 2 --from player_2
+    run_tx "Initiating Refinery build (type=15, ambit=land, slot=2)" \
+        tx structs struct-build-initiate "${PLAYER_2_ID}" 15 land 2 --from player_2
 
     # Find the new struct
     STRUCT_ALL_JSON=$(query query structs struct-all)
@@ -3326,7 +3328,7 @@ else
     REFINERY_BUILT=$(jqr "${REFINERY_JSON}" '.structAttributes.isBuilt' 'false')
     REFINERY_TYPE=$(jqr "${REFINERY_JSON}" '.Struct.type')
     assert_eq "Refinery built" "true" "${REFINERY_BUILT}"
-    assert_eq "Refinery type" "16" "${REFINERY_TYPE}"
+    assert_eq "Refinery type" "15" "${REFINERY_TYPE}"
 
     # ─── Refine ore ───
     # NOTE: old command was struct-refine-compute, now struct-ore-refine-compute
@@ -3573,8 +3575,8 @@ assert_gt "blockStartRaid re-anchored for the raid attempt" "0" "${P2_RAID_CLOCK
 
 P3_JSON=$(query query structs player "${PLAYER_3_ID}")
 P2_JSON=$(query query structs player "${PLAYER_2_ID}")
-P3_ORE_BEFORE=$(jqr "${P3_JSON}" '.playerInventory.ore' '0')
-P2_ORE_BEFORE=$(jqr "${P2_JSON}" '.playerInventory.ore' '0')
+P3_ORE_BEFORE=$(jqr "${P3_JSON}" '.gridAttributes.ore' '0')
+P2_ORE_BEFORE=$(jqr "${P2_JSON}" '.gridAttributes.ore' '0')
 info "Player 3 ore before raid: ${P3_ORE_BEFORE}"
 info "Player 2 ore before raid: ${P2_ORE_BEFORE}"
 
@@ -3583,8 +3585,8 @@ run_compute "Completing planet raid (defender Command Ship offline)" \
 
 P3_JSON=$(query query structs player "${PLAYER_3_ID}")
 P2_JSON=$(query query structs player "${PLAYER_2_ID}")
-P3_ORE_AFTER=$(jqr "${P3_JSON}" '.playerInventory.ore' '0')
-P2_ORE_AFTER=$(jqr "${P2_JSON}" '.playerInventory.ore' '0')
+P3_ORE_AFTER=$(jqr "${P3_JSON}" '.gridAttributes.ore' '0')
+P2_ORE_AFTER=$(jqr "${P2_JSON}" '.gridAttributes.ore' '0')
 info "Player 3 ore after raid: ${P3_ORE_AFTER}"
 info "Player 2 ore after raid: ${P2_ORE_AFTER}"
 echo "  Raid results: P3 ore ${P3_ORE_BEFORE} -> ${P3_ORE_AFTER}, P2 ore ${P2_ORE_BEFORE} -> ${P2_ORE_AFTER}"
@@ -3835,8 +3837,23 @@ assert_eq "Battleship #1 still online after failed batch (atomic)" "true" "${BB1
 run_tx "Batch deactivating P3 Battleships" \
     tx structs struct-deactivate-batch "${BATTLESHIP_1_ID},${BATTLESHIP_2_ID}" --from player_3
 
-BB1_OFFLINE=$(jqr "$(query query structs struct "${BATTLESHIP_1_ID}")" '.structAttributes.isOnline' 'true')
-BB2_OFFLINE=$(jqr "$(query query structs struct "${BATTLESHIP_2_ID}")" '.structAttributes.isOnline' 'true')
+# Batch deactivate commits asynchronously; poll (up to ~10s) for both to
+# report offline instead of relying on run_tx's fixed sleep. Falls through on
+# timeout so a genuine regression still fails the assertions below.
+#
+# NOTE: isOnline is a proto3 bool, so the query JSON OMITS it when false (an
+# offline struct has no .structAttributes.isOnline key at all). The fallback
+# here must therefore be 'false' — an absent field means offline. While the
+# struct is still online (or the tx hasn't committed) isOnline is present as
+# true, so the loop keeps polling until the deactivate lands.
+for _ in $(seq 1 10); do
+    BB1_OFFLINE=$(jqr "$(query query structs struct "${BATTLESHIP_1_ID}")" '.structAttributes.isOnline' 'false')
+    BB2_OFFLINE=$(jqr "$(query query structs struct "${BATTLESHIP_2_ID}")" '.structAttributes.isOnline' 'false')
+    if [ "${BB1_OFFLINE}" = "false" ] && [ "${BB2_OFFLINE}" = "false" ]; then
+        break
+    fi
+    sleep 1
+done
 assert_eq "Battleship #1 offline after batch deactivate" "false" "${BB1_OFFLINE}"
 assert_eq "Battleship #2 offline after batch deactivate" "false" "${BB2_OFFLINE}"
 
@@ -7126,6 +7143,142 @@ assert_eq "GP1: guild.primaryReactorId matches configured reactor" \
     "${REACTOR_ID}" "${GP1_AFTER}"
 
 fi # phase GP1
+
+if run_phase 3850; then
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  PHASE JS1: Jamming Satellite — Guided-Only Planetary Defense (v0.20.0)
+# ═════════════════════════════════════════════════════════════════════════════
+#
+# The Jamming Satellite (struct type 17) grants the planetary defense
+# lowOrbitBallisticInterceptorNetwork. As of v0.20.0 it shields a planetary
+# (non-fleet) struct on its own planet from GUIDED ordnance, regardless of the
+# source or target ambit; unguided ordnance must pass through untouched.
+# Before v0.20.0 the planetary evasion required a fleet attacker striking from
+# air/space against a land/water target and — the bug this fixes — ignored
+# weapon control, so it could also evade unguided attacks.
+#
+# Guided evasion is probabilistic (a single interceptor gives a 1/3 evade
+# chance) and ambit-independence / the planetary-target requirement are
+# deterministic-only concerns, so those guarantees live in the Go unit test:
+#   x/structs/keeper/msg_server_struct_attack_test.go
+#     TestMsgStructAttackPlanetaryDefenseGuidedOnly
+#
+# This phase is the integration guard for the unguided-bypass direction: an
+# unguided fleet attack against a target on the defended planet must always land
+# damage. It reuses P6's planet (defender) and a P3 Battleship (space ambit,
+# unguided armour-piercing primary that targets land/water, shot success 1/1).
+# Preconditions are checked and the phase skips gracefully when the
+# extended-battle state is not available.
+
+section "PHASE JS1: Jamming Satellite — Guided-Only Planetary Defense (v0.20.0)"
+
+# find_free_space_slot: echo the first unoccupied space slot index on a planet,
+# or empty when the planet's space slots are all full.
+find_free_space_slot() {
+    local planet_json="$1"
+    local slot_count idx occ
+    slot_count=$(jqr "${planet_json}" '.Planet.spaceSlots' '0')
+    for idx in $(seq 0 $((slot_count - 1))); do
+        occ=$(echo "${planet_json}" | jq -r ".Planet.space[${idx}] // \"\"" 2>/dev/null || echo "")
+        if [ -z "${occ}" ] || [ "${occ}" = "null" ]; then
+            echo "${idx}"
+            return
+        fi
+    done
+    echo ""
+}
+
+if [ -z "${PLAYER_6_PLANET_ID:-}" ] || [ -z "${PLAYER_3_ID:-}" ] || [ -z "${PLAYER_3_FLEET_ID:-}" ]; then
+    info "SKIP JS1: extended-battle state (P6 planet / P3 fleet) not available"
+else
+    P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
+    JS_SLOT=$(find_free_space_slot "${P6_PLANET_JSON}")
+
+    if [ -z "${JS_SLOT}" ]; then
+        info "SKIP JS1: no free space slot on P6's planet for a Jamming Satellite"
+    else
+        # ─── Build the Jamming Satellite (type 17, space) on P6's planet ───
+        PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
+        wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
+        run_tx "Initiating P6 Jamming Satellite (type=17, space, slot=${JS_SLOT})" \
+            tx structs struct-build-initiate "${PLAYER_6_ID}" 17 space "${JS_SLOT}" --from player_6
+
+        JS_SAT_ID=$(get_newest_struct_id)
+        if [ "${JS_SAT_ID}" = "${PREV_NEWEST_STRUCT_ID}" ] || [ -z "${JS_SAT_ID}" ]; then
+            info "SKIP JS1: Jamming Satellite build did not materialize (slot/charge)"
+        else
+            echo "  P6 Jamming Satellite ID: ${JS_SAT_ID}"
+            run_compute "Building Jamming Satellite ${JS_SAT_ID}" \
+                tx structs struct-build-compute "${JS_SAT_ID}" --from player_6
+
+            # ─── Deterministic: the interceptor network is now active ───
+            P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
+            JS_QTY=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.lowOrbitBallisticsInterceptorNetworkQuantity' '0')
+            JS_RATE_NUM=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator' '0')
+            assert_gt "JS1 — interceptor network quantity increased" 0 "${JS_QTY}"
+            assert_gt "JS1 — interceptor network success rate is active" 0 "${JS_RATE_NUM}"
+
+            # ─── Locate an unguided air/space attacker and a land/water target ───
+            STRUCT_ALL_JSON=$(query query structs struct-all)
+            JS_ATTACKER_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 2 1 "${STRUCT_ALL_JSON}")   # P3 Battleship (space, unguided primary)
+
+            # Prefer the Ore Extractor (no counter/defense) for clean accounting,
+            # then fall back to other P6 land/water structs.
+            JS_TARGET_ID=""
+            for CAND in "${EB_ORE_EXTRACTOR_ID:-}" "${EB_P6_TANK_ID:-}" "${EB_P6_CRUISER_ID:-}"; do
+                if [ -n "${CAND}" ] && [ "$(eb_health "${CAND}")" != "0" ]; then
+                    JS_TARGET_ID="${CAND}"
+                    break
+                fi
+            done
+
+            if [ -z "${JS_ATTACKER_ID}" ] || [ "$(eb_health "${JS_ATTACKER_ID}")" = "0" ]; then
+                info "SKIP JS1 attack: no live P3 Battleship (unguided air/space attacker) available"
+            elif [ -z "${JS_TARGET_ID}" ]; then
+                info "SKIP JS1 attack: no live P6 land/water target available"
+            else
+                info "JS1 attack: P3 Battleship ${JS_ATTACKER_ID} (unguided, space) → P6 target ${JS_TARGET_ID} (land/water)"
+
+                # Bring the P3 fleet to P6's planet so the Battleship is in range.
+                run_tx "Moving P3 fleet to P6 planet for JS1" \
+                    tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_6_PLANET_ID}" --from player_3
+
+                # Fire several unguided shots. Every shot must land damage: the
+                # Jamming Satellite only jams guided ordnance, so unguided shots
+                # bypass it regardless of ambit. Pre-v0.20.0 each shot had a
+                # ~1/3 chance of being (incorrectly) jammed.
+                JS_LANDED=0
+                JS_SHOTS=0
+                for JS_ROUND in 1 2 3; do
+                    ATK_HP=$(eb_health "${JS_ATTACKER_ID}")
+                    TGT_HP=$(eb_health "${JS_TARGET_ID}")
+                    if [ "${ATK_HP}" = "0" ] || [ "${TGT_HP}" = "0" ]; then
+                        break
+                    fi
+                    JS_SHOTS=$((JS_SHOTS + 1))
+                    JS_TGT_BEFORE="${TGT_HP}"
+                    eb_attack "JS1 round ${JS_ROUND}: unguided Battleship primary vs planetary defense" \
+                        "${JS_ATTACKER_ID}" "${JS_TARGET_ID}" primaryWeapon 3
+                    JS_TGT_AFTER=$(eb_health "${JS_TARGET_ID}")
+                    if [ "${JS_TGT_AFTER}" -lt "${JS_TGT_BEFORE}" ]; then
+                        JS_LANDED=$((JS_LANDED + 1))
+                    else
+                        info "  round ${JS_ROUND}: target HP unchanged (${JS_TGT_BEFORE} -> ${JS_TGT_AFTER}) — possible planetary evasion"
+                    fi
+                done
+
+                if [ "${JS_SHOTS}" -gt 0 ]; then
+                    assert_eq "JS1 — every unguided shot bypassed the Jamming Satellite" "${JS_SHOTS}" "${JS_LANDED}"
+                else
+                    info "SKIP JS1 attack assertion: no shots could be fired (structs destroyed early)"
+                fi
+            fi
+        fi
+    fi
+fi
+
+fi # phase JS1
 
 
 # ═════════════════════════════════════════════════════════════════════════════

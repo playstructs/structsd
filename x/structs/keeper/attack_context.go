@@ -136,8 +136,10 @@ func (ac *AttackContext) resolveEvasion() bool {
 
 	result := &EvasionResult{}
 
+	weaponControl := attacker.GetStructType().GetWeaponControl(ac.WeaponSystem)
+
 	var successRate fraction.Fraction
-	switch attacker.GetStructType().GetWeaponControl(ac.WeaponSystem) {
+	switch weaponControl {
 	case types.TechWeaponControl_guided:
 		successRate = target.GetStructType().GetGuidedDefensiveSuccessRate()
 	case types.TechWeaponControl_unguided:
@@ -153,19 +155,21 @@ func (ac *AttackContext) resolveEvasion() bool {
 	}
 
 	if !result.Evaded {
-		if attacker.GetLocationType() == types.ObjectType_fleet {
-			if target.GetPlanet().GetOwnerId() == target.GetOwnerId() {
-				planetaryRate, planetaryErr := target.GetPlanet().GetLowOrbitBallisticsInterceptorNetworkSuccessRate()
-				if planetaryErr == nil {
-					if (attacker.GetOperatingAmbit() == types.Ambit_air) || (attacker.GetOperatingAmbit() == types.Ambit_space) {
-						if (target.GetOperatingAmbit() == types.Ambit_water) || (target.GetOperatingAmbit() == types.Ambit_land) {
-							result.PlanetaryEvaded = target.IsSuccessful(planetaryRate)
-							if result.PlanetaryEvaded {
-								result.Evaded = true
-								result.PlanetaryCause = types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork
-							}
-						}
-					}
+		// The Jamming Satellite (lowOrbitBallisticInterceptorNetwork) defends
+		// planetary structs from guided ordnance by disrupting its guidance.
+		// Source and target ambit are irrelevant: the only requirements are
+		// that the target is a planetary (non-fleet) struct sitting on its own
+		// planet and the incoming weapon is guided. Unguided ordnance carries
+		// no guidance to jam and passes through untouched.
+		if target.GetLocationType() == types.ObjectType_planet &&
+			weaponControl == types.TechWeaponControl_guided &&
+			target.GetPlanet().GetOwnerId() == target.GetOwnerId() {
+			planetaryRate, planetaryErr := target.GetPlanet().GetLowOrbitBallisticsInterceptorNetworkSuccessRate()
+			if planetaryErr == nil {
+				result.PlanetaryEvaded = target.IsSuccessful(planetaryRate)
+				if result.PlanetaryEvaded {
+					result.Evaded = true
+					result.PlanetaryCause = types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork
 				}
 			}
 		}

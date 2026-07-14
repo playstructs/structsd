@@ -1413,3 +1413,278 @@ func TestMsgStructAttackCommandShipNotRequired(t *testing.T) {
 		require.NoError(t, attack(t))
 	})
 }
+
+// TestMsgStructAttackPlanetaryDefenseGuidedOnly verifies the Jamming Satellite
+// planetary defense (lowOrbitBallisticInterceptorNetwork). The defense shields
+// a planetary struct from guided ordnance regardless of source/target ambit and
+// never shields fleet-located structs. It covers:
+//   - a guided weapon is jammed (fully evaded);
+//   - an otherwise identical unguided weapon passes through and lands damage;
+//   - ambit-independence: a guided attack is jammed even when attacker and
+//     target both operate in space (excluded under the old air/space -> land/water rule);
+//   - a fleet-located target is never shielded, even for a guided weapon;
+//   - with no active interceptor network, a guided attack lands normally.
+//
+// The planet's interceptor success rate is forced to 1/1 so IsSuccessful is
+// deterministic: a guided shot always evades, and passing shots are proven to
+// bypass the planetary defense entirely rather than merely winning a roll.
+// Targets carry no unit defenses, so the only possible evasion is planetary.
+func TestMsgStructAttackPlanetaryDefenseGuidedOnly(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1000)
+
+	atkPlayer := testAppendPlayer(k, sdkCtx, types.Player{
+		Creator:        "cosmos1pdatk",
+		PrimaryAddress: "cosmos1pdatk",
+	})
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, atkPlayer.Id), uint64(100000))
+	atkLastActionAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, atkPlayer.Id)
+	k.SetGridAttribute(sdkCtx, atkLastActionAttrId, uint64(0))
+
+	tgtPlayer := testAppendPlayer(k, sdkCtx, types.Player{
+		Creator:        "cosmos1pdtgt",
+		PrimaryAddress: "cosmos1pdtgt",
+	})
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, tgtPlayer.Id), uint64(100000))
+
+	planet := testAppendPlanet(k, sdkCtx, types.Planet{
+		Creator:   tgtPlayer.Creator,
+		Owner:     tgtPlayer.Id,
+		LandSlots: 4,
+		Land:      []string{"", "", "", ""},
+	})
+	tgtPlayer.PlanetId = planet.Id
+	k.SetPlayer(sdkCtx, tgtPlayer)
+
+	// Force a guaranteed interceptor success (1/1) so evasion is deterministic.
+	k.SetPlanetAttribute(sdkCtx, keeperlib.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator, planet.Id), uint64(1))
+	k.SetPlanetAttribute(sdkCtx, keeperlib.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator, planet.Id), uint64(1))
+
+	landAmbitFlag := uint64(1) << uint64(types.Ambit_land)
+
+	cmdType := types.StructType{Id: 700, Type: types.CommandStruct, Category: types.ObjectType_fleet}
+	k.SetStructType(sdkCtx, cmdType)
+
+	// Guided attacker: space fleet struct that can target land, 1 shot, 3 damage.
+	guidedType := types.StructType{
+		Id:                                      701,
+		Type:                                    "GuidedGunship",
+		Category:                                types.ObjectType_fleet,
+		MaxHealth:                               3,
+		PossibleAmbit:                           1 << uint64(types.Ambit_space),
+		PrimaryWeapon:                           types.TechActiveWeaponry_guidedWeaponry,
+		PrimaryWeaponControl:                    types.TechWeaponControl_guided,
+		PrimaryWeaponCharge:                     1,
+		PrimaryWeaponTargets:                    1,
+		PrimaryWeaponShots:                      1,
+		PrimaryWeaponDamage:                     3,
+		PrimaryWeaponAmbits:                     landAmbitFlag,
+		PrimaryWeaponBlockable:                  true,
+		PrimaryWeaponShotSuccessRateNumerator:   1,
+		PrimaryWeaponShotSuccessRateDenominator: 1,
+	}
+	k.SetStructType(sdkCtx, guidedType)
+
+	// Unguided attacker: identical except for weapon control.
+	unguidedType := guidedType
+	unguidedType.Id = 702
+	unguidedType.Type = "UnguidedGunship"
+	unguidedType.PrimaryWeapon = types.TechActiveWeaponry_unguidedWeaponry
+	unguidedType.PrimaryWeaponControl = types.TechWeaponControl_unguided
+	k.SetStructType(sdkCtx, unguidedType)
+
+	// Target: land planetary struct with no unit defenses.
+	targetType := types.StructType{
+		Id:            703,
+		Type:          "GroundTarget",
+		Category:      types.ObjectType_planet,
+		MaxHealth:     10,
+		PossibleAmbit: landAmbitFlag,
+	}
+	k.SetStructType(sdkCtx, targetType)
+
+	spaceAmbitFlag := uint64(1) << uint64(types.Ambit_space)
+
+	// Guided attacker whose weapon reaches the space ambit. Used to prove the
+	// planetary defense no longer depends on source/target ambit: under the old
+	// rules a space attacker striking a space target was excluded.
+	spaceGuidedType := guidedType
+	spaceGuidedType.Id = 704
+	spaceGuidedType.Type = "SpaceGuidedGunship"
+	spaceGuidedType.PrimaryWeaponAmbits = spaceAmbitFlag
+	k.SetStructType(sdkCtx, spaceGuidedType)
+
+	// Planetary target operating in space. The old ambit rules only jammed
+	// water/land targets, so this target proves ambit-independence.
+	spaceTargetType := targetType
+	spaceTargetType.Id = 705
+	spaceTargetType.Type = "SpaceGroundTarget"
+	spaceTargetType.PossibleAmbit = spaceAmbitFlag
+	k.SetStructType(sdkCtx, spaceTargetType)
+
+	// Fleet-located target: planetary defenses must never shield a fleet struct.
+	fleetTargetType := targetType
+	fleetTargetType.Id = 706
+	fleetTargetType.Type = "FleetTarget"
+	fleetTargetType.Category = types.ObjectType_fleet
+	fleetTargetType.PossibleAmbit = spaceAmbitFlag
+	k.SetStructType(sdkCtx, fleetTargetType)
+
+	fleet := testAppendFleet(k, sdkCtx, types.Fleet{
+		Owner:      atkPlayer.Id,
+		LocationId: planet.Id,
+		Status:     types.FleetStatus_away,
+	})
+	cmd := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator: atkPlayer.Creator, Owner: atkPlayer.Id, Type: cmdType.Id,
+		LocationId: fleet.Id, LocationType: types.ObjectType_fleet, OperatingAmbit: types.Ambit_space,
+	})
+	cmdSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, cmd.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, cmdSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, cmdSAttr, uint64(types.StructStateOnline))
+	fleet.CommandStruct = cmd.Id
+	k.SetFleet(sdkCtx, fleet)
+	atkPlayer.FleetId = fleet.Id
+	k.SetPlayer(sdkCtx, atkPlayer)
+
+	makeStruct := func(player types.Player, typeId uint64, locationId string, locationType types.ObjectType, ambit types.Ambit) (types.Struct, string) {
+		structure := testAppendStruct(k, sdkCtx, types.Struct{
+			Creator: player.Creator, Owner: player.Id, Type: typeId,
+			LocationId: locationId, LocationType: locationType, OperatingAmbit: ambit,
+		})
+		sAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id)
+		testSetStructAttributeFlagAdd(k, sdkCtx, sAttr, uint64(types.StructStateBuilt))
+		testSetStructAttributeFlagAdd(k, sdkCtx, sAttr, uint64(types.StructStateOnline))
+		hAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, structure.Id)
+		return structure, hAttr
+	}
+
+	guidedAttacker, _ := makeStruct(atkPlayer, guidedType.Id, fleet.Id, types.ObjectType_fleet, types.Ambit_space)
+	unguidedAttacker, _ := makeStruct(atkPlayer, unguidedType.Id, fleet.Id, types.ObjectType_fleet, types.Ambit_space)
+	spaceGuidedAttacker, _ := makeStruct(atkPlayer, spaceGuidedType.Id, fleet.Id, types.ObjectType_fleet, types.Ambit_space)
+	target, targetHAttr := makeStruct(tgtPlayer, targetType.Id, planet.Id, types.ObjectType_planet, types.Ambit_land)
+	spaceTarget, spaceTargetHAttr := makeStruct(tgtPlayer, spaceTargetType.Id, planet.Id, types.ObjectType_planet, types.Ambit_space)
+
+	// Fleet-located target sits in the defender's own fleet docked at the planet
+	// so it is reachable, but is not a planetary struct. The struct cache
+	// resolves a fleet struct's planet via its owner's FleetId, so wire it up.
+	tgtFleet := testAppendFleet(k, sdkCtx, types.Fleet{
+		Owner:      tgtPlayer.Id,
+		LocationId: planet.Id,
+		Status:     types.FleetStatus_away,
+	})
+	tgtPlayer.FleetId = tgtFleet.Id
+	k.SetPlayer(sdkCtx, tgtPlayer)
+	fleetTarget, fleetTargetHAttr := makeStruct(tgtPlayer, fleetTargetType.Id, tgtFleet.Id, types.ObjectType_fleet, types.Ambit_space)
+
+	// attack runs one StructAttack with a fresh event manager and returns the
+	// emitted EventAttack for shot-detail assertions.
+	attack := func(t *testing.T, attackerId string, targetId string) *types.EventAttack {
+		t.Helper()
+		k.SetGridAttribute(sdkCtx, atkLastActionAttrId, uint64(0))
+		eventCtx := sdkCtx.WithEventManager(sdk.NewEventManager())
+		_, err := ms.StructAttack(sdk.WrapSDKContext(eventCtx), &types.MsgStructAttack{
+			Creator:           atkPlayer.Creator,
+			OperatingStructId: attackerId,
+			WeaponSystem:      "primaryWeapon",
+			TargetStructId:    []string{targetId},
+		})
+		require.NoError(t, err)
+
+		for _, abciEvent := range eventCtx.EventManager().ABCIEvents() {
+			if abciEvent.Type != "structs.structs.EventAttack" {
+				continue
+			}
+			msg, err := sdk.ParseTypedEvent(abciEvent)
+			require.NoError(t, err)
+			attackEvent, ok := msg.(*types.EventAttack)
+			require.True(t, ok)
+			return attackEvent
+		}
+		t.Fatal("no EventAttack emitted")
+		return nil
+	}
+
+	t.Run("guided weapon is jammed by the planetary defense", func(t *testing.T) {
+		k.SetStructAttribute(sdkCtx, targetHAttr, targetType.MaxHealth)
+
+		attackEvent := attack(t, guidedAttacker.Id, target.Id)
+
+		require.Equal(t, targetType.MaxHealth, k.GetStructAttribute(sdkCtx, targetHAttr),
+			"guided attack must be fully evaded by the planetary defense")
+
+		shots := attackEvent.EventAttackDetail.EventAttackShotDetail
+		require.Len(t, shots, 1)
+		require.True(t, shots[0].EvadedByPlanetaryDefenses, "guided shot must be evaded by planetary defense")
+		require.Equal(t, types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork, shots[0].EvadedByPlanetaryDefensesCause)
+	})
+
+	t.Run("unguided weapon bypasses the planetary defense", func(t *testing.T) {
+		k.SetStructAttribute(sdkCtx, targetHAttr, targetType.MaxHealth)
+
+		attackEvent := attack(t, unguidedAttacker.Id, target.Id)
+
+		require.Equal(t, targetType.MaxHealth-3, k.GetStructAttribute(sdkCtx, targetHAttr),
+			"unguided attack must land full damage (not jammed)")
+
+		shots := attackEvent.EventAttackDetail.EventAttackShotDetail
+		require.Len(t, shots, 1)
+		require.False(t, shots[0].EvadedByPlanetaryDefenses, "unguided shot must not be evaded by planetary defense")
+	})
+
+	// Ambit-independence: a guided attack on a planetary target is jammed even
+	// when source and target share the space ambit, which the old rule excluded.
+	t.Run("guided weapon is jammed regardless of ambit", func(t *testing.T) {
+		k.SetStructAttribute(sdkCtx, spaceTargetHAttr, spaceTargetType.MaxHealth)
+
+		attackEvent := attack(t, spaceGuidedAttacker.Id, spaceTarget.Id)
+
+		require.Equal(t, spaceTargetType.MaxHealth, k.GetStructAttribute(sdkCtx, spaceTargetHAttr),
+			"guided attack on a planetary target must be jammed even when both structs operate in space")
+
+		shots := attackEvent.EventAttackDetail.EventAttackShotDetail
+		require.Len(t, shots, 1)
+		require.True(t, shots[0].EvadedByPlanetaryDefenses, "guided shot must be evaded regardless of ambit")
+		require.Equal(t, types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork, shots[0].EvadedByPlanetaryDefensesCause)
+	})
+
+	// Planetary-target requirement: a fleet-located target is never shielded by
+	// the planetary defense, even for guided weapons on a defended planet.
+	t.Run("fleet-located target is not shielded by the planetary defense", func(t *testing.T) {
+		k.SetStructAttribute(sdkCtx, fleetTargetHAttr, fleetTargetType.MaxHealth)
+
+		attackEvent := attack(t, spaceGuidedAttacker.Id, fleetTarget.Id)
+
+		require.Equal(t, fleetTargetType.MaxHealth-3, k.GetStructAttribute(sdkCtx, fleetTargetHAttr),
+			"guided attack on a fleet target must land full damage; only planetary structs are shielded")
+
+		shots := attackEvent.EventAttackDetail.EventAttackShotDetail
+		require.Len(t, shots, 1)
+		require.False(t, shots[0].EvadedByPlanetaryDefenses, "fleet target must not be evaded by planetary defense")
+	})
+
+	// Active-network requirement: with no interceptor network on the planet, a
+	// guided attack on a planetary target lands normally.
+	t.Run("guided weapon is not evaded when no satellite is active", func(t *testing.T) {
+		numId := keeperlib.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator, planet.Id)
+		denomId := keeperlib.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator, planet.Id)
+		k.SetPlanetAttribute(sdkCtx, numId, uint64(0))
+		k.SetPlanetAttribute(sdkCtx, denomId, uint64(0))
+		t.Cleanup(func() {
+			k.SetPlanetAttribute(sdkCtx, numId, uint64(1))
+			k.SetPlanetAttribute(sdkCtx, denomId, uint64(1))
+		})
+
+		k.SetStructAttribute(sdkCtx, targetHAttr, targetType.MaxHealth)
+
+		attackEvent := attack(t, guidedAttacker.Id, target.Id)
+
+		require.Equal(t, targetType.MaxHealth-3, k.GetStructAttribute(sdkCtx, targetHAttr),
+			"guided attack must land when the planet has no active interceptor network")
+
+		shots := attackEvent.EventAttackDetail.EventAttackShotDetail
+		require.Len(t, shots, 1)
+		require.False(t, shots[0].EvadedByPlanetaryDefenses, "shot must not be evaded when no satellite is active")
+	})
+}

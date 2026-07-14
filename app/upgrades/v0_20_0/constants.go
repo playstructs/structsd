@@ -28,6 +28,15 @@ package v0_20_0
 //     in the source capacity check. Dynamic allocations can grow into capacity
 //     they already hold (e.g. after MsgReactorInfuse increases source capacity).
 //
+//   - The Jamming Satellite planetary defense (lowOrbitBallisticInterceptorNetwork)
+//     now shields a planetary (non-fleet) struct on its own planet from guided
+//     ordnance regardless of the source or target ambit. Its evasion runs off a
+//     jamming/guidance disruption model, so unguided ordnance is unaffected.
+//     Previously evasion required the attacker to be on a fleet and only applied
+//     to an air/space source striking a land/water target - and it incorrectly
+//     jammed unguided weapons in that geometry. The ambit constraints are
+//     removed; the requirements are now planetary target + guided weapon.
+//
 // This is a binary-only behavior fix. There is no state migration: no struct
 // type, planet attribute, or other persisted state is read or written by this
 // upgrade, and there are no store-key changes.
