@@ -2,12 +2,12 @@ package keeper
 
 import (
 	"context"
-    //"strconv"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 )
 
-func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStructBuildCancel) (*types.MsgStructStatusResponse, error) {
+func (k msgServer) StructTrash(goCtx context.Context, msg *types.MsgStructTrash) (*types.MsgStructStatusResponse, error) {
     emptyResponse := &types.MsgStructStatusResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
@@ -34,11 +34,20 @@ func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStruct
         return emptyResponse, types.NewObjectNotFoundError("struct", msg.StructId)
     }
 
-    if structure.IsBuilt() {
-        return emptyResponse, types.NewStructStateError(msg.StructId, "built", "building", "build_cancel")
+    if structure.IsDestroyed() {
+        return emptyResponse, types.NewStructStateError(msg.StructId, "destroyed", "active", "trash")
+    }
+
+    // Trashing a struct costs the same charge as building it. Confirm the owner
+    // can pay before destroying anything.
+    owner := structure.GetOwner()
+    buildCharge := structure.GetStructType().BuildCharge
+    if (owner.GetCharge() < buildCharge) {
+        return emptyResponse, types.NewInsufficientChargeError(owner.GetPlayerId(), buildCharge, owner.GetCharge(), "trash").WithStructType(structure.GetTypeId())
     }
 
     structure.DestroyAndCommit()
+    owner.Discharge()
 
 	cc.CommitAll()
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil

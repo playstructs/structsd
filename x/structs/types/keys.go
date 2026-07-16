@@ -23,6 +23,9 @@ const (
 	// Starting value for Keeper IDs
     KeeperStartValue = 1
 
+    // Maximum number of struct IDs accepted by a single StructDeactivateBatch message
+    MaxStructDeactivateBatchSize = 65
+
     // Starting value for Reactor Owner Initialization
     InitialReactorOwnerEnergy = 100
 

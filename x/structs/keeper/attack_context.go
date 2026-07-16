@@ -136,8 +136,10 @@ func (ac *AttackContext) resolveEvasion() bool {
 
 	result := &EvasionResult{}
 
+	weaponControl := attacker.GetStructType().GetWeaponControl(ac.WeaponSystem)
+
 	var successRate fraction.Fraction
-	switch attacker.GetStructType().GetWeaponControl(ac.WeaponSystem) {
+	switch weaponControl {
 	case types.TechWeaponControl_guided:
 		successRate = target.GetStructType().GetGuidedDefensiveSuccessRate()
 	case types.TechWeaponControl_unguided:
@@ -153,19 +155,21 @@ func (ac *AttackContext) resolveEvasion() bool {
 	}
 
 	if !result.Evaded {
-		if attacker.GetLocationType() == types.ObjectType_fleet {
-			if target.GetPlanet().GetOwnerId() == target.GetOwnerId() {
-				planetaryRate, planetaryErr := target.GetPlanet().GetLowOrbitBallisticsInterceptorNetworkSuccessRate()
-				if planetaryErr == nil {
-					if (attacker.GetOperatingAmbit() == types.Ambit_air) || (attacker.GetOperatingAmbit() == types.Ambit_space) {
-						if (target.GetOperatingAmbit() == types.Ambit_water) || (target.GetOperatingAmbit() == types.Ambit_land) {
-							result.PlanetaryEvaded = target.IsSuccessful(planetaryRate)
-							if result.PlanetaryEvaded {
-								result.Evaded = true
-								result.PlanetaryCause = types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork
-							}
-						}
-					}
+		// The Jamming Satellite (lowOrbitBallisticInterceptorNetwork) defends
+		// planetary structs from guided ordnance by disrupting its guidance.
+		// Source and target ambit are irrelevant: the only requirements are
+		// that the target is a planetary (non-fleet) struct sitting on its own
+		// planet and the incoming weapon is guided. Unguided ordnance carries
+		// no guidance to jam and passes through untouched.
+		if target.GetLocationType() == types.ObjectType_planet &&
+			weaponControl == types.TechWeaponControl_guided &&
+			target.GetPlanet().GetOwnerId() == target.GetOwnerId() {
+			planetaryRate, planetaryErr := target.GetPlanet().GetLowOrbitBallisticsInterceptorNetworkSuccessRate()
+			if planetaryErr == nil {
+				result.PlanetaryEvaded = target.IsSuccessful(planetaryRate)
+				if result.PlanetaryEvaded {
+					result.Evaded = true
+					result.PlanetaryCause = types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork
 				}
 			}
 		}
@@ -420,50 +424,88 @@ func (ac *AttackContext) ResolveDefenders(skipBlock bool) {
 		"counterable", weaponCounterable,
 	)
 
-	blocked := false
+	// Counters from multiple defenders are simultaneous from the attacker's
+	// perspective: if their combined damage destroys the attacker, the attack
+	// is fully neutralized and no block volley may land. So all counters must
+	// resolve before any block.
+	//
+	// This is done in a single pass: resolve each eligible defender's counter
+	// and, in the same pass, remember the first defender that is eligible to
+	// block (the volley always goes to the first eligible blocker in iteration
+	// order). After the pass, gate on the attacker's survival before blocking.
+	//
+	// Capturing the blocker during the counter pass is safe because counters
+	// only damage the attacker — no defender's health, status, location, or
+	// ambit changes mid-pass — so the first ready, in-range, ambit-matching
+	// defender stays a valid blocker through the death gate. resolveBlock keeps
+	// its own live destroyed/online/ambit guards, so the captured candidate is
+	// re-validated before any damage is applied.
+	//
+	// Interleaving counter-then-block per defender (the previous behavior) made
+	// this iteration-order dependent: a defender that sorts earlier in the list
+	// would block and absorb the attacker's volley even though a later
+	// defender's counter destroys the attacker in the same action, i.e. an
+	// "attack from the dead".
+	wantBlock := weaponBlockable && !skipBlock
+	var blocker *StructCache
+
 	defenders := ac.Target.GetDefenders()
 	for _, defender := range defenders {
 		ac.Attacker.CC.k.logger.Debug("Defender at Location", "defender", defender.GetStructId(), "locationId", defender.GetLocationId())
 
 		defender = ac.Attacker.CC.GetStruct(defender.GetStructId())
 
-		defenderReadinessError := defender.ReadinessCheck()
-		if defenderReadinessError == nil {
-			// StructDefender registrations are sticky across fleet moves, so
-			// re-validate the inRange rule that MsgStructDefenseSet enforces
-			// at registration time. Without this, a defender whose fleet has
-			// moved away after registration could still counter or block for
-			// a target it is no longer co-located with.
-			if !defender.IsProtecting(ac.Target) {
-				ac.Attacker.CC.k.logger.Debug("Defender no longer in range of protected target", "defender", defender.GetStructId(), "target", ac.Target.GetStructId())
-				continue
-			}
+		if defender.ReadinessCheck() != nil {
+			continue
+		}
 
-			ac.Attacker.CC.k.logger.Debug("Defender seems ready to defend")
+		// StructDefender registrations are sticky across fleet moves, so
+		// re-validate the inRange rule that MsgStructDefenseSet enforces
+		// at registration time. Without this, a defender whose fleet has
+		// moved away after registration could still counter or block for
+		// a target it is no longer co-located with.
+		if !defender.IsProtecting(ac.Target) {
+			ac.Attacker.CC.k.logger.Debug("Defender no longer in range of protected target", "defender", defender.GetStructId(), "target", ac.Target.GetStructId())
+			continue
+		}
 
-			if weaponCounterable {
-				ac.Attacker.CC.k.logger.Debug("Defender trying to counter")
-				counterErrors := defender.CanCounterAttack(ac.Attacker)
-				if counterErrors == nil {
-					ac.Attacker.CC.k.logger.Debug("Defender counter-attacking")
-					cr := ac.resolveCounterDamage(defender, false)
-					ac.DefenderCounters = append(ac.DefenderCounters, cr)
-				}
-			}
+		ac.Attacker.CC.k.logger.Debug("Defender seems ready to defend")
 
-			// If the attacker was destroyed by this defender's counter, stop
-			// processing further defenders. No block can land for a dead
-			// attacker, and any subsequent defender's counter would already be
-			// rejected by CanCounterAttack's IsDestroyed check.
-			if ac.Attacker.IsDestroyed() {
-				break
-			}
-
-			if !blocked && !skipBlock && weaponBlockable {
-				ac.Attacker.CC.k.logger.Debug("Defender to attempt a block")
-				blocked = ac.resolveBlock(defender)
+		if weaponCounterable {
+			ac.Attacker.CC.k.logger.Debug("Defender trying to counter")
+			counterErrors := defender.CanCounterAttack(ac.Attacker)
+			if counterErrors == nil {
+				ac.Attacker.CC.k.logger.Debug("Defender counter-attacking")
+				cr := ac.resolveCounterDamage(defender, false)
+				ac.DefenderCounters = append(ac.DefenderCounters, cr)
 			}
 		}
+
+		// Remember the first eligible blocker (ambit must match the target).
+		// The block itself is deferred until after every counter has resolved.
+		if wantBlock && blocker == nil && defender.GetOperatingAmbit() == ac.Target.GetOperatingAmbit() {
+			blocker = defender
+		}
+
+		// Once the attacker is destroyed, no further counters can land (they
+		// would be rejected by CanCounterAttack's IsDestroyed check) and no
+		// block may occur, so stop iterating. This is the ONLY early exit: when
+		// the attacker survives we make a full pass and always find the first
+		// eligible blocker.
+		if ac.Attacker.IsDestroyed() {
+			break
+		}
+	}
+
+	// A destroyed attacker has no volley left to block. Stop here so no blocker
+	// takes damage from an attacker the counter pass already destroyed.
+	if ac.Attacker.IsDestroyed() {
+		return
+	}
+
+	if blocker != nil {
+		ac.Attacker.CC.k.logger.Debug("Defender to attempt a block")
+		ac.resolveBlock(blocker)
 	}
 }
 

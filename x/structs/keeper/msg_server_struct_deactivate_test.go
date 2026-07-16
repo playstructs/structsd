@@ -92,4 +92,36 @@ func TestMsgStructDeactivate(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "offline")
 	})
+
+	t.Run("deactivation succeeds when owner is offline", func(t *testing.T) {
+		offlinePlayer := types.Player{
+			Creator:        "cosmos1offline",
+			PrimaryAddress: "cosmos1offline",
+		}
+		offlinePlayer = testAppendPlayer(k, ctx, offlinePlayer)
+
+		capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, offlinePlayer.Id)
+		k.SetGridAttribute(ctx, capacityAttrId, uint64(1000))
+
+		structsLoadAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, offlinePlayer.Id)
+		k.SetGridAttribute(ctx, structsLoadAttrId, uint64(2000))
+
+		structObj := types.Struct{
+			Creator: offlinePlayer.Creator,
+			Owner:   offlinePlayer.Id,
+			Type:    structType.Id,
+		}
+		structObj = testAppendStruct(k, ctx, structObj)
+
+		statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structObj.Id)
+		testSetStructAttributeFlagAdd(k, ctx, statusAttrId, uint64(types.StructStateBuilt))
+		testSetStructAttributeFlagAdd(k, ctx, statusAttrId, uint64(types.StructStateOnline))
+
+		resp, err := ms.StructDeactivate(wctx, &types.MsgStructDeactivate{
+			Creator:  offlinePlayer.Creator,
+			StructId: structObj.Id,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
 }

@@ -731,6 +731,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
                  },
                  {
+                     RpcMethod:      "StructDeactivateBatch",
+                     Use:            "struct-deactivate-batch [struct id,struct id2,...]",
+                     Short:          "Take multiple Structs offline in one transaction",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
+                 },
+                 {
                      RpcMethod:      "StructAttack",
                      Use:            "struct-attack [operating struct id] [target struct id,target struct id2,...] [weapon system]",
                      Short:          "Attack a Struct with a Struct",
@@ -746,6 +752,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      RpcMethod:      "StructBuildCancel",
                      Use:            "struct-build-cancel [struct id]",
                      Short:          "Cancel an unfinished Struct",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
+                 },
+                 {
+                     RpcMethod:      "StructTrash",
+                     Use:            "struct-trash [struct id]",
+                     Short:          "Destroy (trash) a Struct, consuming the build charge",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
                  },
                  {

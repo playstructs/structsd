@@ -199,13 +199,22 @@ func (cache *AllocationCache) SetDynamicPower(newPower uint64) (uint64, error) {
         return 0, types.NewAllocationError(cache.GetAllocation().SourceObjectId, "new_power_zero")
     }
 
+    currentPower := cache.GetPower()
     sourceLoad := cache.CC.GetGridAttribute(cache.SourceLoadAttributeId)
     sourceCapacity := cache.CC.GetGridAttribute(cache.SourceCapacityAttributeId)
-    if sourceLoad >= sourceCapacity {
+
+    // Release this allocation's current power before checking: the capacity it
+    // already holds belongs to it (create-vs-update asymmetry).
+    effectiveLoad := sourceLoad
+    if sourceLoad >= currentPower {
+        effectiveLoad = sourceLoad - currentPower
+    }
+
+    if effectiveLoad >= sourceCapacity {
         return 0, types.NewAllocationError(cache.GetAllocation().SourceObjectId, "capacity_exceeded").WithCapacity(0, newPower)
     }
-    availableCapacity := sourceCapacity - sourceLoad
-    if (availableCapacity < newPower) {
+    availableCapacity := sourceCapacity - effectiveLoad
+    if availableCapacity < newPower {
         return 0, types.NewAllocationError(cache.GetAllocation().SourceObjectId, "capacity_exceeded").WithCapacity(availableCapacity, newPower)
     }
 

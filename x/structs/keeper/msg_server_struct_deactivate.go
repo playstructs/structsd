@@ -22,31 +22,10 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
        return emptyResponse, err
     }
 
-    // load struct
     structure := cc.GetStruct(msg.StructId)
-
-    // Check to see if the caller has permissions to proceed
-    permissionError := structure.CanBePlayedBy(callingPlayer)
-    if (permissionError != nil) {
-        return emptyResponse, permissionError
+    if err := structure.CanBeDeactivatedBy(callingPlayer); err != nil {
+        return emptyResponse, err
     }
-
-    if !structure.LoadStruct(){
-        return emptyResponse, types.NewObjectNotFoundError("struct", msg.StructId)
-    }
-
-    if !structure.IsBuilt() {
-        return emptyResponse, types.NewStructStateError(msg.StructId, "building", "built", "deactivate")
-    }
-
-    if structure.IsOffline() {
-        return emptyResponse, types.NewStructStateError(msg.StructId, "offline", "online", "deactivate")
-    }
-
-    if structure.GetOwner().IsOffline(){
-        return emptyResponse, types.NewPlayerPowerError(structure.GetOwnerId(), "offline")
-    }
-
 
     structure.GoOffline()
 

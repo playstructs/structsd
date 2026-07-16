@@ -30,7 +30,7 @@
 #   --resume-from N    Skip phases before N and resume execution from phase N.
 #                      Recovers all IDs by querying the running chain.
 #                      Phase names: 0 1 2 3 3b 4 4b 4c 4d 4e 4f 4g 5 5b 6
-#                        7 7b 8 9 10 11 12 13 13b 14 15 15b 16
+#                        7 7b 7c 8 9 10 11 12 13 13b 14 15 15b 16
 #                        17 17b 17c 18 eb1-eb6 ev1 ar1-ar4 rg1 rg2
 #
 
@@ -608,7 +608,7 @@ phase_order() {
         4) echo 400;; 4b) echo 450;; 4c) echo 460;; 4d) echo 470;;
         4e) echo 480;; 4e2) echo 482;; 4e3) echo 484;; 4f) echo 490;; 4g) echo 495;;
         5) echo 500;; 5b) echo 550;; 6) echo 600;;
-        7) echo 700;; 7b) echo 750;; 8) echo 800;;
+        7) echo 700;; 7b) echo 750;; 7c) echo 760;; 8) echo 800;;
         9) echo 900;; 10) echo 1000;; 11) echo 1100;;
         12) echo 1200;; 13) echo 1300;; 13b) echo 1350;;
         14) echo 1400;; 15) echo 1500;; 15b) echo 1550;; 16) echo 1600;;
@@ -1298,6 +1298,19 @@ run_tx "Updating allocation ${P5_ALLOC_ID} power to ${QUARTER_CAP}" \
 ALLOC_JSON=$(query query structs allocation "${P5_ALLOC_ID}")
 ALLOC_POWER=$(jqr "${ALLOC_JSON}" '.gridAttributes.power' '0')
 assert_eq "Allocation power updated" "${QUARTER_CAP}" "${ALLOC_POWER}"
+
+# v0.20.0: growing an existing allocation must release its own power first.
+# Re-set to half capacity, then raise to 3/4 — exceeds free (1/4) but fits total.
+run_tx "Updating allocation ${P5_ALLOC_ID} power back to ${HALF_CAP}" \
+    tx structs allocation-update "${P5_ALLOC_ID}" "${HALF_CAP}" --from player_5
+
+THREE_QUARTER_CAP=$(( (P5_CAP * 3) / 4 ))
+run_tx "Updating allocation ${P5_ALLOC_ID} power up to ${THREE_QUARTER_CAP} (own power released)" \
+    tx structs allocation-update "${P5_ALLOC_ID}" "${THREE_QUARTER_CAP}" --from player_5
+
+ALLOC_JSON=$(query query structs allocation "${P5_ALLOC_ID}")
+ALLOC_POWER=$(jqr "${ALLOC_JSON}" '.gridAttributes.power' '0')
+assert_eq "Allocation grew past prior free capacity" "${THREE_QUARTER_CAP}" "${ALLOC_POWER}"
 
 # ─── allocation-transfer: transfer controller to alice ───
 info "Transferring allocation controller from player_5 to alice"
@@ -3288,16 +3301,18 @@ else
             tx structs struct-ore-mine-compute "${MINER_STRUCT_ID}" --from player_2
     done
 
-    # Check player 2 ore inventory
+    # Check player 2 ore inventory. Stored ore is a grid attribute
+    # (GridAttributeType_ore) keyed by the player, surfaced at
+    # .gridAttributes.ore; PlayerInventory only carries spendable rocks.
     P2_JSON=$(query query structs player "${PLAYER_2_ID}")
-    P2_ORE=$(jqr "${P2_JSON}" '.playerInventory.ore' '0')
+    P2_ORE=$(jqr "${P2_JSON}" '.gridAttributes.ore' '0')
     info "Player 2 ore after mining: ${P2_ORE}"
     assert_gt "Player 2 ore after mining" 0 "${P2_ORE}"
 
-    # ─── Build Refinery (struct type 16, land, slot 2) ───
+    # ─── Build Refinery (struct type 15 = Ore Refinery, land, slot 2) ───
     wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
-    run_tx "Initiating Refinery build (type=16, ambit=land, slot=2)" \
-        tx structs struct-build-initiate "${PLAYER_2_ID}" 16 land 2 --from player_2
+    run_tx "Initiating Refinery build (type=15, ambit=land, slot=2)" \
+        tx structs struct-build-initiate "${PLAYER_2_ID}" 15 land 2 --from player_2
 
     # Find the new struct
     STRUCT_ALL_JSON=$(query query structs struct-all)
@@ -3313,7 +3328,7 @@ else
     REFINERY_BUILT=$(jqr "${REFINERY_JSON}" '.structAttributes.isBuilt' 'false')
     REFINERY_TYPE=$(jqr "${REFINERY_JSON}" '.Struct.type')
     assert_eq "Refinery built" "true" "${REFINERY_BUILT}"
-    assert_eq "Refinery type" "16" "${REFINERY_TYPE}"
+    assert_eq "Refinery type" "15" "${REFINERY_TYPE}"
 
     # ─── Refine ore ───
     # NOTE: old command was struct-refine-compute, now struct-ore-refine-compute
@@ -3388,6 +3403,56 @@ info "All struct types count:"
 echo "  $(query query structs struct-type-all 2>/dev/null | jq '.structType | length' || echo '?') types"
 
 fi # phase 7b
+
+if run_phase 760; then
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  PHASE 7c: Struct Trash
+# ═════════════════════════════════════════════════════════════════════════════
+
+section "PHASE 7c: Struct Trash"
+
+# Unlike struct-build-cancel (which only removes an unfinished struct), struct-trash
+# destroys any non-destroyed struct as long as the caller has play permission and the
+# owner holds at least the struct type's build charge (which the action consumes). This
+# integration phase exercises the on-chain trash path on a freshly-initiated (still
+# building) struct; it deliberately skips a build-compute so it does not pay the
+# peak-difficulty proof-of-work (this phase initiates and would compute immediately, so
+# difficulty has not decayed). Trashing a fully BUILT struct is covered deterministically
+# by the Go unit test TestMsgStructTrash. Skips gracefully if the build cannot be initiated.
+
+P2_TRASH_LOAD_BASELINE=$(jqr "$(query query structs player "${PLAYER_2_ID}")" '.gridAttributes.structsLoad' '0')
+info "Player 2 structsLoad before trash-target build: ${P2_TRASH_LOAD_BASELINE}"
+
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
+wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
+run_tx "Initiating Ore Bunker for trash (type=18, land, slot=3)" \
+    tx structs struct-build-initiate "${PLAYER_2_ID}" 18 land 3 --from player_2
+
+TRASH_STRUCT_ID=$(get_newest_struct_id)
+if [ -z "${TRASH_STRUCT_ID}" ] || [ "${TRASH_STRUCT_ID}" = "${PREV_NEWEST_STRUCT_ID}" ]; then
+    info "SKIP 7c: Could not initiate build for trash test (slot/charge)"
+else
+    info "Trash target struct: ${TRASH_STRUCT_ID} (still building)"
+
+    P2_TRASH_LOAD_MID=$(jqr "$(query query structs player "${PLAYER_2_ID}")" '.gridAttributes.structsLoad' '0')
+    info "Player 2 structsLoad after build-initiate: ${P2_TRASH_LOAD_MID}"
+
+    # Trash the struct. This consumes the struct type's build charge.
+    wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
+    run_tx "Trashing Ore Bunker ${TRASH_STRUCT_ID}" \
+        tx structs struct-trash "${TRASH_STRUCT_ID}" --from player_2
+
+    # Authoritative check: the struct is now flagged destroyed.
+    TRASH_GONE_JSON=$(query query structs struct "${TRASH_STRUCT_ID}" 2>/dev/null || echo '{}')
+    assert_eq "7c — struct is destroyed after trash" "true" "$(jqr "${TRASH_GONE_JSON}" '.structAttributes.isDestroyed' 'false')"
+
+    P2_TRASH_LOAD_AFTER=$(jqr "$(query query structs player "${PLAYER_2_ID}")" '.gridAttributes.structsLoad' '0')
+    info "Player 2 structsLoad after trash: ${P2_TRASH_LOAD_AFTER}"
+    assert_eq "7c — structsLoad released after trash" "${P2_TRASH_LOAD_BASELINE}" "${P2_TRASH_LOAD_AFTER}"
+fi
+
+fi # phase 7c
 
 if run_phase 800; then
 
@@ -3560,8 +3625,8 @@ assert_gt "blockStartRaid re-anchored for the raid attempt" "0" "${P2_RAID_CLOCK
 
 P3_JSON=$(query query structs player "${PLAYER_3_ID}")
 P2_JSON=$(query query structs player "${PLAYER_2_ID}")
-P3_ORE_BEFORE=$(jqr "${P3_JSON}" '.playerInventory.ore' '0')
-P2_ORE_BEFORE=$(jqr "${P2_JSON}" '.playerInventory.ore' '0')
+P3_ORE_BEFORE=$(jqr "${P3_JSON}" '.gridAttributes.ore' '0')
+P2_ORE_BEFORE=$(jqr "${P2_JSON}" '.gridAttributes.ore' '0')
 info "Player 3 ore before raid: ${P3_ORE_BEFORE}"
 info "Player 2 ore before raid: ${P2_ORE_BEFORE}"
 
@@ -3570,8 +3635,8 @@ run_compute "Completing planet raid (defender Command Ship offline)" \
 
 P3_JSON=$(query query structs player "${PLAYER_3_ID}")
 P2_JSON=$(query query structs player "${PLAYER_2_ID}")
-P3_ORE_AFTER=$(jqr "${P3_JSON}" '.playerInventory.ore' '0')
-P2_ORE_AFTER=$(jqr "${P2_JSON}" '.playerInventory.ore' '0')
+P3_ORE_AFTER=$(jqr "${P3_JSON}" '.gridAttributes.ore' '0')
+P2_ORE_AFTER=$(jqr "${P2_JSON}" '.gridAttributes.ore' '0')
 info "Player 3 ore after raid: ${P3_ORE_AFTER}"
 info "Player 2 ore after raid: ${P2_ORE_AFTER}"
 echo "  Raid results: P3 ore ${P3_ORE_BEFORE} -> ${P3_ORE_AFTER}, P2 ore ${P2_ORE_BEFORE} -> ${P2_ORE_AFTER}"
@@ -3799,6 +3864,61 @@ run_compute "Building P3 Tank #2 ${AP_TANK_ID}" \
     tx structs struct-build-compute "${AP_TANK_ID}" --from player_3
 
 assert_eq "P3 Tank #2 built" "true" "$(query query structs struct "${AP_TANK_ID}" | jq -r '.structAttributes.isBuilt')"
+
+# ═══════════════════════════════════════════════════════════════
+# Batch deactivation (v0.20.0): struct-deactivate-batch
+# Uses P3's two freshly-built Battleships (online) as a self-contained
+# target set, then reactivates them so later phases are unaffected.
+# ═══════════════════════════════════════════════════════════════
+
+BB1_ONLINE_BEFORE=$(jqr "$(query query structs struct "${BATTLESHIP_1_ID}")" '.structAttributes.isOnline' 'false')
+BB2_ONLINE_BEFORE=$(jqr "$(query query structs struct "${BATTLESHIP_2_ID}")" '.structAttributes.isOnline' 'false')
+assert_eq "Battleship #1 online before batch deactivate" "true" "${BB1_ONLINE_BEFORE}"
+assert_eq "Battleship #2 online before batch deactivate" "true" "${BB2_ONLINE_BEFORE}"
+
+# Atomicity: a batch containing a bogus ID must fail without deactivating any struct
+run_tx_expect_fail "Batch deactivate with a bogus ID (should fail atomically)" \
+    tx structs struct-deactivate-batch "${BATTLESHIP_1_ID},invalid-struct" --from player_3
+
+BB1_ONLINE_AFTER_FAIL=$(jqr "$(query query structs struct "${BATTLESHIP_1_ID}")" '.structAttributes.isOnline' 'false')
+assert_eq "Battleship #1 still online after failed batch (atomic)" "true" "${BB1_ONLINE_AFTER_FAIL}"
+
+# Happy path: deactivate both battleships in one transaction (deactivate is not charge-gated)
+run_tx "Batch deactivating P3 Battleships" \
+    tx structs struct-deactivate-batch "${BATTLESHIP_1_ID},${BATTLESHIP_2_ID}" --from player_3
+
+# Batch deactivate commits asynchronously; poll (up to ~10s) for both to
+# report offline instead of relying on run_tx's fixed sleep. Falls through on
+# timeout so a genuine regression still fails the assertions below.
+#
+# NOTE: isOnline is a proto3 bool, so the query JSON OMITS it when false (an
+# offline struct has no .structAttributes.isOnline key at all). The fallback
+# here must therefore be 'false' — an absent field means offline. While the
+# struct is still online (or the tx hasn't committed) isOnline is present as
+# true, so the loop keeps polling until the deactivate lands.
+for _ in $(seq 1 10); do
+    BB1_OFFLINE=$(jqr "$(query query structs struct "${BATTLESHIP_1_ID}")" '.structAttributes.isOnline' 'false')
+    BB2_OFFLINE=$(jqr "$(query query structs struct "${BATTLESHIP_2_ID}")" '.structAttributes.isOnline' 'false')
+    if [ "${BB1_OFFLINE}" = "false" ] && [ "${BB2_OFFLINE}" = "false" ]; then
+        break
+    fi
+    sleep 1
+done
+assert_eq "Battleship #1 offline after batch deactivate" "false" "${BB1_OFFLINE}"
+assert_eq "Battleship #2 offline after batch deactivate" "false" "${BB2_OFFLINE}"
+
+# Cleanup: reactivate both (activation IS charge-gated) so downstream phases see them online
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
+run_tx "Reactivating P3 Battleship #1 (batch cleanup)" \
+    tx structs struct-activate "${BATTLESHIP_1_ID}" --from player_3
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
+run_tx "Reactivating P3 Battleship #2 (batch cleanup)" \
+    tx structs struct-activate "${BATTLESHIP_2_ID}" --from player_3
+
+BB1_ONLINE_RESTORED=$(jqr "$(query query structs struct "${BATTLESHIP_1_ID}")" '.structAttributes.isOnline' 'false')
+BB2_ONLINE_RESTORED=$(jqr "$(query query structs struct "${BATTLESHIP_2_ID}")" '.structAttributes.isOnline' 'false')
+assert_eq "Battleship #1 back online after batch cleanup" "true" "${BB1_ONLINE_RESTORED}"
+assert_eq "Battleship #2 back online after batch cleanup" "true" "${BB2_ONLINE_RESTORED}"
 
 fi # phase 12
 
@@ -5651,6 +5771,70 @@ else
     info "SKIP: Stealth Bomber destroyed, cannot test stealth mechanics"
 fi
 
+# C1b: Dead-attacker defender ordering (v0.20.0 regression) ─────────────────────
+# Guards the "dead bomber deals damage" fix (player 1-61 report). When defender
+# counters destroy the attacker, NO block volley may land: a blocker must not
+# absorb damage from an attacker the counters already killed.
+#
+# Setup: P3's air Stealth Bomber attacks the land P6 Mobile Artillery, which is
+# defended by the land P6 Tank (a valid blocker for a land target that cannot
+# counter into air) plus the air-capable P6 HAI (a counter). The Tank was built
+# before the HAI, so it sorts ahead of it in defender iteration order — the
+# arrangement that exposed the bug (blocker processed before the lethal counter).
+#
+# The HAI counter is only 1 damage, so the bomber is first softened with one HAI
+# strike (2 dmg) to make the counter lethal; otherwise the dead-attacker path
+# would not be exercised. The precise, order-controlled unit test is
+# TestMsgStructAttackBlockerSortedBeforeLethalCounter; this is the live-chain
+# end-to-end confirmation. All assertions are conditional on the bomber actually
+# dying so this never produces a false failure if balance numbers change.
+info "Testing dead-attacker defender ordering (v0.20.0): bomber vs Tank-blocked, counter-defended land target"
+DA_SB_HP=$(eb_health "${STEALTH_BOMBER_ID}")
+DA_MA_HP=$(eb_health "${EB_MOBILE_ART_ID}")
+DA_TANK_HP=$(eb_health "${EB_P6_TANK_ID}")
+DA_HAI_HP=$(eb_health "${EB_P6_HAI_ID}")
+if [ "${DA_SB_HP}" != "0" ] && [ "${DA_MA_HP}" != "0" ] && [ "${DA_TANK_HP}" != "0" ] && [ "${DA_HAI_HP}" != "0" ]; then
+    # Add the air-capable HAI as a counter defender alongside the land Tank
+    # blocker (the Tank already defends the Mobile Artillery from PHASE EB4).
+    # HAI is not assigned elsewhere, so this does not disturb other defenses.
+    wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
+    run_tx "P6 HAI defends Mobile Artillery (air counter alongside Tank blocker)" \
+        tx structs struct-defense-set "${EB_P6_HAI_ID}" "${EB_MOBILE_ART_ID}" --from player_6
+
+    # Soften the bomber so the combined counters are lethal (HAI primary = 2).
+    eb_attack "Dead-attacker setup: P6 HAI(air) softens P3 Stealth Bomber(air)" \
+        "${EB_P6_HAI_ID}" "${STEALTH_BOMBER_ID}" primaryWeapon 6
+
+    # Reveal the bomber if it re-hid, then fire at the defended land target.
+    SB_HIDDEN=$(query query structs struct "${STEALTH_BOMBER_ID}" 2>/dev/null | jq -r '.structAttributes.isHidden // "false"' 2>/dev/null || echo "false")
+    if [ "${SB_HIDDEN}" = "true" ]; then
+        wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
+        run_tx "Deactivating stealth on Stealth Bomber for dead-attacker test" \
+            tx structs struct-stealth-deactivate "${STEALTH_BOMBER_ID}" --from player_3
+    fi
+
+    DA_TANK_BEFORE=$(eb_health "${EB_P6_TANK_ID}")
+    DA_MA_BEFORE=$(eb_health "${EB_MOBILE_ART_ID}")
+
+    eb_attack "Dead-attacker: P3 Stealth Bomber(air) → P6 Mobile Artillery(land) [Tank blocker + HAI counter]" \
+        "${STEALTH_BOMBER_ID}" "${EB_MOBILE_ART_ID}" primaryWeapon 3
+
+    DA_SB_AFTER=$(eb_health "${STEALTH_BOMBER_ID}")
+    DA_TANK_AFTER=$(eb_health "${EB_P6_TANK_ID}")
+    DA_MA_AFTER=$(eb_health "${EB_MOBILE_ART_ID}")
+    info "  Result: Bomber HP→${DA_SB_AFTER}, Tank(blocker) HP ${DA_TANK_BEFORE}→${DA_TANK_AFTER}, MobileArt(target) HP ${DA_MA_BEFORE}→${DA_MA_AFTER}"
+
+    if [ "${DA_SB_AFTER}" = "0" ]; then
+        info "  Bomber destroyed by counters — asserting no block/volley damage landed"
+        assert_eq "v0.20.0: blocker Tank undamaged when counters destroyed the attacker" "${DA_TANK_BEFORE}" "${DA_TANK_AFTER}"
+        assert_eq "v0.20.0: target undamaged when counters destroyed the attacker" "${DA_MA_BEFORE}" "${DA_MA_AFTER}"
+    else
+        info "  Bomber survived the counters (HP=${DA_SB_AFTER}); dead-attacker invariant not exercised this run"
+    fi
+else
+    info "SKIP: bomber/target/Tank/HAI not all alive for dead-attacker ordering test"
+fi
+
 # C2: Blocking — Attack P6 Battleship (defended by Frigate + Starfighter)
 # At least one defender should attempt to block
 info "Testing blocking: attack P6 Battleship (defended by Frigate + Starfighter)"
@@ -7009,6 +7193,142 @@ assert_eq "GP1: guild.primaryReactorId matches configured reactor" \
     "${REACTOR_ID}" "${GP1_AFTER}"
 
 fi # phase GP1
+
+if run_phase 3850; then
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  PHASE JS1: Jamming Satellite — Guided-Only Planetary Defense (v0.20.0)
+# ═════════════════════════════════════════════════════════════════════════════
+#
+# The Jamming Satellite (struct type 17) grants the planetary defense
+# lowOrbitBallisticInterceptorNetwork. As of v0.20.0 it shields a planetary
+# (non-fleet) struct on its own planet from GUIDED ordnance, regardless of the
+# source or target ambit; unguided ordnance must pass through untouched.
+# Before v0.20.0 the planetary evasion required a fleet attacker striking from
+# air/space against a land/water target and — the bug this fixes — ignored
+# weapon control, so it could also evade unguided attacks.
+#
+# Guided evasion is probabilistic (a single interceptor gives a 1/3 evade
+# chance) and ambit-independence / the planetary-target requirement are
+# deterministic-only concerns, so those guarantees live in the Go unit test:
+#   x/structs/keeper/msg_server_struct_attack_test.go
+#     TestMsgStructAttackPlanetaryDefenseGuidedOnly
+#
+# This phase is the integration guard for the unguided-bypass direction: an
+# unguided fleet attack against a target on the defended planet must always land
+# damage. It reuses P6's planet (defender) and a P3 Battleship (space ambit,
+# unguided armour-piercing primary that targets land/water, shot success 1/1).
+# Preconditions are checked and the phase skips gracefully when the
+# extended-battle state is not available.
+
+section "PHASE JS1: Jamming Satellite — Guided-Only Planetary Defense (v0.20.0)"
+
+# find_free_space_slot: echo the first unoccupied space slot index on a planet,
+# or empty when the planet's space slots are all full.
+find_free_space_slot() {
+    local planet_json="$1"
+    local slot_count idx occ
+    slot_count=$(jqr "${planet_json}" '.Planet.spaceSlots' '0')
+    for idx in $(seq 0 $((slot_count - 1))); do
+        occ=$(echo "${planet_json}" | jq -r ".Planet.space[${idx}] // \"\"" 2>/dev/null || echo "")
+        if [ -z "${occ}" ] || [ "${occ}" = "null" ]; then
+            echo "${idx}"
+            return
+        fi
+    done
+    echo ""
+}
+
+if [ -z "${PLAYER_6_PLANET_ID:-}" ] || [ -z "${PLAYER_3_ID:-}" ] || [ -z "${PLAYER_3_FLEET_ID:-}" ]; then
+    info "SKIP JS1: extended-battle state (P6 planet / P3 fleet) not available"
+else
+    P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
+    JS_SLOT=$(find_free_space_slot "${P6_PLANET_JSON}")
+
+    if [ -z "${JS_SLOT}" ]; then
+        info "SKIP JS1: no free space slot on P6's planet for a Jamming Satellite"
+    else
+        # ─── Build the Jamming Satellite (type 17, space) on P6's planet ───
+        PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
+        wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
+        run_tx "Initiating P6 Jamming Satellite (type=17, space, slot=${JS_SLOT})" \
+            tx structs struct-build-initiate "${PLAYER_6_ID}" 17 space "${JS_SLOT}" --from player_6
+
+        JS_SAT_ID=$(get_newest_struct_id)
+        if [ "${JS_SAT_ID}" = "${PREV_NEWEST_STRUCT_ID}" ] || [ -z "${JS_SAT_ID}" ]; then
+            info "SKIP JS1: Jamming Satellite build did not materialize (slot/charge)"
+        else
+            echo "  P6 Jamming Satellite ID: ${JS_SAT_ID}"
+            run_compute "Building Jamming Satellite ${JS_SAT_ID}" \
+                tx structs struct-build-compute "${JS_SAT_ID}" --from player_6
+
+            # ─── Deterministic: the interceptor network is now active ───
+            P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
+            JS_QTY=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.lowOrbitBallisticsInterceptorNetworkQuantity' '0')
+            JS_RATE_NUM=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator' '0')
+            assert_gt "JS1 — interceptor network quantity increased" 0 "${JS_QTY}"
+            assert_gt "JS1 — interceptor network success rate is active" 0 "${JS_RATE_NUM}"
+
+            # ─── Locate an unguided air/space attacker and a land/water target ───
+            STRUCT_ALL_JSON=$(query query structs struct-all)
+            JS_ATTACKER_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 2 1 "${STRUCT_ALL_JSON}")   # P3 Battleship (space, unguided primary)
+
+            # Prefer the Ore Extractor (no counter/defense) for clean accounting,
+            # then fall back to other P6 land/water structs.
+            JS_TARGET_ID=""
+            for CAND in "${EB_ORE_EXTRACTOR_ID:-}" "${EB_P6_TANK_ID:-}" "${EB_P6_CRUISER_ID:-}"; do
+                if [ -n "${CAND}" ] && [ "$(eb_health "${CAND}")" != "0" ]; then
+                    JS_TARGET_ID="${CAND}"
+                    break
+                fi
+            done
+
+            if [ -z "${JS_ATTACKER_ID}" ] || [ "$(eb_health "${JS_ATTACKER_ID}")" = "0" ]; then
+                info "SKIP JS1 attack: no live P3 Battleship (unguided air/space attacker) available"
+            elif [ -z "${JS_TARGET_ID}" ]; then
+                info "SKIP JS1 attack: no live P6 land/water target available"
+            else
+                info "JS1 attack: P3 Battleship ${JS_ATTACKER_ID} (unguided, space) → P6 target ${JS_TARGET_ID} (land/water)"
+
+                # Bring the P3 fleet to P6's planet so the Battleship is in range.
+                run_tx "Moving P3 fleet to P6 planet for JS1" \
+                    tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_6_PLANET_ID}" --from player_3
+
+                # Fire several unguided shots. Every shot must land damage: the
+                # Jamming Satellite only jams guided ordnance, so unguided shots
+                # bypass it regardless of ambit. Pre-v0.20.0 each shot had a
+                # ~1/3 chance of being (incorrectly) jammed.
+                JS_LANDED=0
+                JS_SHOTS=0
+                for JS_ROUND in 1 2 3; do
+                    ATK_HP=$(eb_health "${JS_ATTACKER_ID}")
+                    TGT_HP=$(eb_health "${JS_TARGET_ID}")
+                    if [ "${ATK_HP}" = "0" ] || [ "${TGT_HP}" = "0" ]; then
+                        break
+                    fi
+                    JS_SHOTS=$((JS_SHOTS + 1))
+                    JS_TGT_BEFORE="${TGT_HP}"
+                    eb_attack "JS1 round ${JS_ROUND}: unguided Battleship primary vs planetary defense" \
+                        "${JS_ATTACKER_ID}" "${JS_TARGET_ID}" primaryWeapon 3
+                    JS_TGT_AFTER=$(eb_health "${JS_TARGET_ID}")
+                    if [ "${JS_TGT_AFTER}" -lt "${JS_TGT_BEFORE}" ]; then
+                        JS_LANDED=$((JS_LANDED + 1))
+                    else
+                        info "  round ${JS_ROUND}: target HP unchanged (${JS_TGT_BEFORE} -> ${JS_TGT_AFTER}) — possible planetary evasion"
+                    fi
+                done
+
+                if [ "${JS_SHOTS}" -gt 0 ]; then
+                    assert_eq "JS1 — every unguided shot bypassed the Jamming Satellite" "${JS_SHOTS}" "${JS_LANDED}"
+                else
+                    info "SKIP JS1 attack assertion: no shots could be fired (structs destroyed early)"
+                fi
+            fi
+        fi
+    fi
+fi
+
+fi # phase JS1
 
 
 # ═════════════════════════════════════════════════════════════════════════════
