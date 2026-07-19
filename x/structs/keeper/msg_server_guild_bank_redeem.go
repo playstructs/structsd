@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
-	"strings"
+	"cosmossdk.io/math"
 
 )
 
@@ -29,17 +29,17 @@ func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBan
         return emptyResponse, permissionErr
     }
 
-    denomSlice := strings.Split(msg.AmountToken.Denom,".")
-    if len(denomSlice) != 2 {
-        return emptyResponse, types.NewParameterValidationError("denom", 0, "invalid_format")
+    guildId, denomErr := types.ParseGuildBankDenom(msg.AmountToken.Denom)
+    if denomErr != nil {
+        return emptyResponse, denomErr
     }
 
-    guild := cc.GetGuild(denomSlice[1])
+    guild := cc.GetGuild(guildId)
     if !guild.LoadGuild() {
         return emptyResponse, types.NewObjectNotFoundError("guild", guild.GetGuildId())
     }
 
-    err := guild.BankRedeem(msg.AmountToken.Amount, activePlayer);
+    _, err := guild.BankRedeem(msg.AmountToken.Amount, math.NewIntFromUint64(msg.MinAmountAlpha), activePlayer);
     if err != nil {
         return emptyResponse, err
     }

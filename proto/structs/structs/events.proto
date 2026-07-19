@@ -89,11 +89,26 @@ option go_package = "structs/x/structs/types";
   message EventGuildBankMint { EventGuildBankMintDetail eventGuildBankMintDetail = 1;}
   message EventGuildBankMintDetail { string guildId = 1; uint64 amountAlpha = 2; uint64 amountToken = 3; string playerId = 4;}
 
+  // amountAlpha is the net alpha paid out to the player (after fee); fee is the
+  // portion retained in the collateral pool. When fee > 0 the amountAlpha
+  // semantics differ from pre-v0.21.0 (which had no fee).
   message EventGuildBankRedeem { EventGuildBankRedeemDetail eventGuildBankRedeemDetail = 1;}
-  message EventGuildBankRedeemDetail { string guildId = 1; uint64 amountAlpha = 2; uint64 amountToken = 3; string playerId = 4;}
+  message EventGuildBankRedeemDetail { string guildId = 1; uint64 amountAlpha = 2; uint64 amountToken = 3; string playerId = 4; uint64 fee = 5;}
 
   message EventGuildBankConfiscateAndBurn { EventGuildBankConfiscateAndBurnDetail eventGuildBankConfiscateAndBurnDetail = 1;}
   message EventGuildBankConfiscateAndBurnDetail { string guildId = 1; uint64 amountAlpha = 2; uint64 amountToken = 3; string address = 4;}
+
+  // amountAlpha is the gross ualpha moved into collateral; fee is the portion of
+  // that alpha retained as the convert-in fee; amountToken is the token minted
+  // to the player.
+  message EventGuildBankConvert { EventGuildBankConvertDetail eventGuildBankConvertDetail = 1;}
+  message EventGuildBankConvertDetail { string guildId = 1; uint64 amountAlpha = 2; uint64 fee = 3; uint64 amountToken = 4; string playerId = 5;}
+
+  // Composite cross-guild convert. sourceGuildId token -> ualpha (bridgeAlpha,
+  // after source out-fee) -> targetGuildId token (amountTokenOut). The two
+  // underlying legs also emit EventGuildBankRedeem and EventGuildBankConvert.
+  message EventGuildBankConvertToken { EventGuildBankConvertTokenDetail eventGuildBankConvertTokenDetail = 1;}
+  message EventGuildBankConvertTokenDetail { string sourceGuildId = 1; string targetGuildId = 2; uint64 amountTokenIn = 3; uint64 bridgeAlpha = 4; uint64 amountTokenOut = 5; string playerId = 6;}
 
   message EventGuildMembershipApplication { GuildMembershipApplication guildMembershipApplication = 1; }
 

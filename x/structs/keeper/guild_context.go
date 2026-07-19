@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/math"
 	"structs/x/structs/types"
 )
 
@@ -20,6 +21,17 @@ func (cc *CurrentContext) GetGuild(guildId string) *GuildCache {
 }
 
 func (cc *CurrentContext) GenesisImportGuild(guild types.Guild) {
+	// State exported by a pre-v0.21.0 binary carries no bank fee fields, so the
+	// non-nullable LegacyDec members decode as nil and would panic when the
+	// cache commits (marshal). Normalize to zero on import; the upgrade
+	// migration never runs on the genesis path.
+	if guild.BankConvertInFee.IsNil() {
+		guild.BankConvertInFee = math.LegacyZeroDec()
+	}
+	if guild.BankConvertOutFee.IsNil() {
+		guild.BankConvertOutFee = math.LegacyZeroDec()
+	}
+
 	cache := cc.GetGuild(guild.Id)
 	cache.Guild = guild
 	cache.GuildLoaded = true

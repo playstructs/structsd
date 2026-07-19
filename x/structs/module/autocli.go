@@ -402,15 +402,27 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                 },
                 {
                     RpcMethod:      "GuildBankRedeem",
-                    Use:            "guild-bank-redeem [token]",
-                    Short:          "Redeem a Guild Token for the underlying Alpha asset",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountToken"}},
+                    Use:            "guild-bank-redeem [token] [min-amount-alpha]",
+                    Short:          "Redeem a Guild Token for the underlying Alpha asset (optional slippage guard)",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountToken"},{ProtoField: "minAmountAlpha", Optional: true}},
                 },
                 {
                     RpcMethod:      "GuildBankConfiscateAndBurn",
                     Use:            "guild-bank-confiscate-and-burn [token amount] [address]",
                     Short:          "Confiscate a Guild Token from an address and burn it",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountToken"},{ProtoField: "address"}},
+                },
+                {
+                    RpcMethod:      "GuildBankConvert",
+                    Use:            "guild-bank-convert [guild id] [alpha amount] [min-amount-token]",
+                    Short:          "Convert Alpha into a Guild Token at the current collateral ratio (optional slippage guard)",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "amountAlpha"},{ProtoField: "minAmountToken", Optional: true}},
+                },
+                {
+                    RpcMethod:      "GuildBankConvertToken",
+                    Use:            "guild-bank-convert-token [source token] [target guild id] [min-amount-token]",
+                    Short:          "Convert one Guild Token into another via Alpha in a single transaction (optional slippage guard)",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountToken"},{ProtoField: "guildId"},{ProtoField: "minAmountToken", Optional: true}},
                 },
                 {
                     RpcMethod:      "GuildCreate",
@@ -501,6 +513,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      Use:            "guild-update-join-infusion-minimum [guild id] [join infusion minimum]",
                      Short:          "Update the infusion minimum Guild setting",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "joinInfusionMinimum"}},
+                 },
+                 {
+                     RpcMethod:      "GuildUpdateBankConvertInFee",
+                     Use:            "guild-update-bank-convert-in-fee [guild id] [fee]",
+                     Short:          "Update the guild bank convert-in fee (0.0-1.0)",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "bankConvertInFee"}},
+                 },
+                 {
+                     RpcMethod:      "GuildUpdateBankConvertOutFee",
+                     Use:            "guild-update-bank-convert-out-fee [guild id] [fee]",
+                     Short:          "Update the guild bank convert-out fee (0.0-1.0)",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "bankConvertOutFee"}},
                  },
                  {
                      RpcMethod:      "GuildUpdateJoinInfusionMinimumBypassByRequest",

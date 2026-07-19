@@ -36,6 +36,10 @@ const (
 	Msg_GuildBankMint_FullMethodName                                 = "/structs.structs.Msg/GuildBankMint"
 	Msg_GuildBankRedeem_FullMethodName                               = "/structs.structs.Msg/GuildBankRedeem"
 	Msg_GuildBankConfiscateAndBurn_FullMethodName                    = "/structs.structs.Msg/GuildBankConfiscateAndBurn"
+	Msg_GuildBankConvert_FullMethodName                              = "/structs.structs.Msg/GuildBankConvert"
+	Msg_GuildBankConvertToken_FullMethodName                         = "/structs.structs.Msg/GuildBankConvertToken"
+	Msg_GuildUpdateBankConvertInFee_FullMethodName                   = "/structs.structs.Msg/GuildUpdateBankConvertInFee"
+	Msg_GuildUpdateBankConvertOutFee_FullMethodName                  = "/structs.structs.Msg/GuildUpdateBankConvertOutFee"
 	Msg_GuildUpdateOwnerId_FullMethodName                            = "/structs.structs.Msg/GuildUpdateOwnerId"
 	Msg_GuildUpdateEntrySubstationId_FullMethodName                  = "/structs.structs.Msg/GuildUpdateEntrySubstationId"
 	Msg_GuildUpdateEndpoint_FullMethodName                           = "/structs.structs.Msg/GuildUpdateEndpoint"
@@ -138,6 +142,10 @@ type MsgClient interface {
 	GuildBankMint(ctx context.Context, in *MsgGuildBankMint, opts ...grpc.CallOption) (*MsgGuildBankMintResponse, error)
 	GuildBankRedeem(ctx context.Context, in *MsgGuildBankRedeem, opts ...grpc.CallOption) (*MsgGuildBankRedeemResponse, error)
 	GuildBankConfiscateAndBurn(ctx context.Context, in *MsgGuildBankConfiscateAndBurn, opts ...grpc.CallOption) (*MsgGuildBankConfiscateAndBurnResponse, error)
+	GuildBankConvert(ctx context.Context, in *MsgGuildBankConvert, opts ...grpc.CallOption) (*MsgGuildBankConvertResponse, error)
+	GuildBankConvertToken(ctx context.Context, in *MsgGuildBankConvertToken, opts ...grpc.CallOption) (*MsgGuildBankConvertTokenResponse, error)
+	GuildUpdateBankConvertInFee(ctx context.Context, in *MsgGuildUpdateBankConvertInFee, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
+	GuildUpdateBankConvertOutFee(ctx context.Context, in *MsgGuildUpdateBankConvertOutFee, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateOwnerId(ctx context.Context, in *MsgGuildUpdateOwnerId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEntrySubstationId(ctx context.Context, in *MsgGuildUpdateEntrySubstationId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEndpoint(ctx context.Context, in *MsgGuildUpdateEndpoint, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
@@ -387,6 +395,46 @@ func (c *msgClient) GuildBankConfiscateAndBurn(ctx context.Context, in *MsgGuild
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgGuildBankConfiscateAndBurnResponse)
 	err := c.cc.Invoke(ctx, Msg_GuildBankConfiscateAndBurn_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildBankConvert(ctx context.Context, in *MsgGuildBankConvert, opts ...grpc.CallOption) (*MsgGuildBankConvertResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgGuildBankConvertResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildBankConvert_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildBankConvertToken(ctx context.Context, in *MsgGuildBankConvertToken, opts ...grpc.CallOption) (*MsgGuildBankConvertTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgGuildBankConvertTokenResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildBankConvertToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildUpdateBankConvertInFee(ctx context.Context, in *MsgGuildUpdateBankConvertInFee, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgGuildUpdateResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildUpdateBankConvertInFee_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildUpdateBankConvertOutFee(ctx context.Context, in *MsgGuildUpdateBankConvertOutFee, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgGuildUpdateResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildUpdateBankConvertOutFee_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1168,6 +1216,10 @@ type MsgServer interface {
 	GuildBankMint(context.Context, *MsgGuildBankMint) (*MsgGuildBankMintResponse, error)
 	GuildBankRedeem(context.Context, *MsgGuildBankRedeem) (*MsgGuildBankRedeemResponse, error)
 	GuildBankConfiscateAndBurn(context.Context, *MsgGuildBankConfiscateAndBurn) (*MsgGuildBankConfiscateAndBurnResponse, error)
+	GuildBankConvert(context.Context, *MsgGuildBankConvert) (*MsgGuildBankConvertResponse, error)
+	GuildBankConvertToken(context.Context, *MsgGuildBankConvertToken) (*MsgGuildBankConvertTokenResponse, error)
+	GuildUpdateBankConvertInFee(context.Context, *MsgGuildUpdateBankConvertInFee) (*MsgGuildUpdateResponse, error)
+	GuildUpdateBankConvertOutFee(context.Context, *MsgGuildUpdateBankConvertOutFee) (*MsgGuildUpdateResponse, error)
 	GuildUpdateOwnerId(context.Context, *MsgGuildUpdateOwnerId) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEntrySubstationId(context.Context, *MsgGuildUpdateEntrySubstationId) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEndpoint(context.Context, *MsgGuildUpdateEndpoint) (*MsgGuildUpdateResponse, error)
@@ -1303,6 +1355,18 @@ func (UnimplementedMsgServer) GuildBankRedeem(context.Context, *MsgGuildBankRede
 }
 func (UnimplementedMsgServer) GuildBankConfiscateAndBurn(context.Context, *MsgGuildBankConfiscateAndBurn) (*MsgGuildBankConfiscateAndBurnResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildBankConfiscateAndBurn not implemented")
+}
+func (UnimplementedMsgServer) GuildBankConvert(context.Context, *MsgGuildBankConvert) (*MsgGuildBankConvertResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildBankConvert not implemented")
+}
+func (UnimplementedMsgServer) GuildBankConvertToken(context.Context, *MsgGuildBankConvertToken) (*MsgGuildBankConvertTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildBankConvertToken not implemented")
+}
+func (UnimplementedMsgServer) GuildUpdateBankConvertInFee(context.Context, *MsgGuildUpdateBankConvertInFee) (*MsgGuildUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildUpdateBankConvertInFee not implemented")
+}
+func (UnimplementedMsgServer) GuildUpdateBankConvertOutFee(context.Context, *MsgGuildUpdateBankConvertOutFee) (*MsgGuildUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildUpdateBankConvertOutFee not implemented")
 }
 func (UnimplementedMsgServer) GuildUpdateOwnerId(context.Context, *MsgGuildUpdateOwnerId) (*MsgGuildUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildUpdateOwnerId not implemented")
@@ -1852,6 +1916,78 @@ func _Msg_GuildBankConfiscateAndBurn_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).GuildBankConfiscateAndBurn(ctx, req.(*MsgGuildBankConfiscateAndBurn))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildBankConvert_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildBankConvert)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildBankConvert(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildBankConvert_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildBankConvert(ctx, req.(*MsgGuildBankConvert))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildBankConvertToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildBankConvertToken)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildBankConvertToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildBankConvertToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildBankConvertToken(ctx, req.(*MsgGuildBankConvertToken))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildUpdateBankConvertInFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildUpdateBankConvertInFee)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildUpdateBankConvertInFee(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildUpdateBankConvertInFee_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildUpdateBankConvertInFee(ctx, req.(*MsgGuildUpdateBankConvertInFee))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildUpdateBankConvertOutFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildUpdateBankConvertOutFee)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildUpdateBankConvertOutFee(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildUpdateBankConvertOutFee_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildUpdateBankConvertOutFee(ctx, req.(*MsgGuildUpdateBankConvertOutFee))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3280,6 +3416,22 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GuildBankConfiscateAndBurn",
 			Handler:    _Msg_GuildBankConfiscateAndBurn_Handler,
+		},
+		{
+			MethodName: "GuildBankConvert",
+			Handler:    _Msg_GuildBankConvert_Handler,
+		},
+		{
+			MethodName: "GuildBankConvertToken",
+			Handler:    _Msg_GuildBankConvertToken_Handler,
+		},
+		{
+			MethodName: "GuildUpdateBankConvertInFee",
+			Handler:    _Msg_GuildUpdateBankConvertInFee_Handler,
+		},
+		{
+			MethodName: "GuildUpdateBankConvertOutFee",
+			Handler:    _Msg_GuildUpdateBankConvertOutFee_Handler,
 		},
 		{
 			MethodName: "GuildUpdateOwnerId",

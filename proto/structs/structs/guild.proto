@@ -4,6 +4,8 @@ package structs.structs;
 
 import "structs/structs/keys.proto";
 import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "structs/x/structs/types";
 
@@ -26,6 +28,17 @@ message Guild {
 
   string name                = 12;
   string pfp                 = 13;
+
+  string bankConvertInFee    = 14 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+  string bankConvertOutFee   = 15 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
 }
 
 

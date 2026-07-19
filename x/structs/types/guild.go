@@ -1,8 +1,26 @@
 package types
 
 import (
+	"strings"
+
+	"cosmossdk.io/math"
 	//sdk "github.com/cosmos/cosmos-sdk/types"
 )
+
+// GuildBankDenomPrefix is the base-denom prefix for guild tokens: the full
+// denom is "uguild.{guildId}". Kept in sync with GuildCache.GetBankDenom.
+const GuildBankDenomPrefix = "uguild"
+
+// ParseGuildBankDenom extracts the guild id from a guild bank token denom
+// ("uguild.{guildId}"). It enforces the exact prefix so an arbitrary
+// "foo.{guildId}" denom cannot be routed to a guild bank operation.
+func ParseGuildBankDenom(denom string) (string, error) {
+	denomSlice := strings.Split(denom, ".")
+	if len(denomSlice) != 2 || denomSlice[0] != GuildBankDenomPrefix || denomSlice[1] == "" {
+		return "", NewParameterValidationError("denom", 0, "invalid_format")
+	}
+	return denomSlice[1], nil
+}
 
 func (guild *Guild) SetCreator(creator string) error {
 
@@ -60,6 +78,8 @@ func CreateEmptyGuild() Guild {
         JoinInfusionMinimumBypassByRequest: GuildJoinBypassLevel_closed,
         PrimaryReactorId: "",
         EntrySubstationId: "",
+        BankConvertInFee: math.LegacyZeroDec(),
+        BankConvertOutFee: math.LegacyZeroDec(),
 	}
 }
 

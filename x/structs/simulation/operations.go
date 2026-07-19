@@ -341,6 +341,95 @@ func SimulateMsgGuildBankRedeem(
 	}
 }
 
+// SimulateMsgGuildBankConvert generates a MsgGuildBankConvert with random values
+func SimulateMsgGuildBankConvert(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		if account == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConvert{}), "account not found"), nil, nil
+		}
+
+		if _, err := cc.GetPlayerByAddress(simAccount.Address.String()); err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConvert{}), "player not found"), nil, nil
+		}
+
+		guilds := k.GetAllGuild(ctx)
+		if len(guilds) == 0 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConvert{}), "no guilds found"), nil, nil
+		}
+		guildId := guilds[r.Intn(len(guilds))].Id
+
+		msg := &types.MsgGuildBankConvert{
+			Creator:     simAccount.Address.String(),
+			GuildId:     guildId,
+			AmountAlpha: uint64(r.Int63n(100000) + 100),
+		}
+
+		msgServer := keeper.NewMsgServerImpl(k)
+		if _, err := msgServer.GuildBankConvert(sdk.WrapSDKContext(ctx), msg); err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
+// SimulateMsgGuildBankConvertToken generates a MsgGuildBankConvertToken with random values
+func SimulateMsgGuildBankConvertToken(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		if account == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConvertToken{}), "account not found"), nil, nil
+		}
+
+		if _, err := cc.GetPlayerByAddress(simAccount.Address.String()); err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConvertToken{}), "player not found"), nil, nil
+		}
+
+		guilds := k.GetAllGuild(ctx)
+		if len(guilds) < 2 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConvertToken{}), "need two guilds"), nil, nil
+		}
+		sourceId := guilds[r.Intn(len(guilds))].Id
+		targetId := guilds[r.Intn(len(guilds))].Id
+		if sourceId == targetId {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConvertToken{}), "same guild"), nil, nil
+		}
+
+		msg := &types.MsgGuildBankConvertToken{
+			Creator: simAccount.Address.String(),
+			AmountToken: sdk.Coin{
+				Denom:  "uguild." + sourceId,
+				Amount: math.NewIntFromUint64(uint64(r.Int63n(100000) + 100)),
+			},
+			GuildId: targetId,
+		}
+
+		msgServer := keeper.NewMsgServerImpl(k)
+		if _, err := msgServer.GuildBankConvertToken(sdk.WrapSDKContext(ctx), msg); err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
 // SimulateMsgGuildBankConfiscateAndBurn generates a MsgGuildBankConfiscateAndBurn with random values
 func SimulateMsgGuildBankConfiscateAndBurn(
 	k keeper.Keeper,
@@ -3830,6 +3919,103 @@ func SimulateMsgGuildUpdateJoinInfusionMinimum(
 		msgServer := keeper.NewMsgServerImpl(k)
 		_, err := msgServer.GuildUpdateJoinInfusionMinimum(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
+// SimulateMsgGuildUpdateBankConvertInFee generates a MsgGuildUpdateBankConvertInFee with random values
+func SimulateMsgGuildUpdateBankConvertInFee(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		if ak.GetAccount(ctx, simAccount.Address) == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateBankConvertInFee{}), "account not found"), nil, nil
+		}
+
+		player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, simAccount.Address.String()))
+		if !playerFound {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateBankConvertInFee{}), "player not found"), nil, nil
+		}
+
+		validGuilds := make([]types.Guild, 0)
+		for _, guild := range k.GetAllGuild(ctx) {
+			if cc.PermissionHasOneOf(keeper.GetObjectPermissionIDBytes(guild.Id, player.Id), types.PermAdmin) {
+				validGuilds = append(validGuilds, guild)
+			}
+		}
+		if len(validGuilds) == 0 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateBankConvertInFee{}), "no updatable guilds"), nil, nil
+		}
+
+		guild := validGuilds[r.Intn(len(validGuilds))]
+		// Random fee in [0, 1].
+		fee := math.LegacyNewDecWithPrec(r.Int63n(101), 2)
+
+		msg := &types.MsgGuildUpdateBankConvertInFee{
+			Creator:          simAccount.Address.String(),
+			GuildId:          guild.Id,
+			BankConvertInFee: fee,
+		}
+
+		msgServer := keeper.NewMsgServerImpl(k)
+		if _, err := msgServer.GuildUpdateBankConvertInFee(sdk.WrapSDKContext(ctx), msg); err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
+// SimulateMsgGuildUpdateBankConvertOutFee generates a MsgGuildUpdateBankConvertOutFee with random values
+func SimulateMsgGuildUpdateBankConvertOutFee(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		if ak.GetAccount(ctx, simAccount.Address) == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateBankConvertOutFee{}), "account not found"), nil, nil
+		}
+
+		player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, simAccount.Address.String()))
+		if !playerFound {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateBankConvertOutFee{}), "player not found"), nil, nil
+		}
+
+		validGuilds := make([]types.Guild, 0)
+		for _, guild := range k.GetAllGuild(ctx) {
+			if cc.PermissionHasOneOf(keeper.GetObjectPermissionIDBytes(guild.Id, player.Id), types.PermAdmin) {
+				validGuilds = append(validGuilds, guild)
+			}
+		}
+		if len(validGuilds) == 0 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateBankConvertOutFee{}), "no updatable guilds"), nil, nil
+		}
+
+		guild := validGuilds[r.Intn(len(validGuilds))]
+		fee := math.LegacyNewDecWithPrec(r.Int63n(101), 2)
+
+		msg := &types.MsgGuildUpdateBankConvertOutFee{
+			Creator:           simAccount.Address.String(),
+			GuildId:           guild.Id,
+			BankConvertOutFee: fee,
+		}
+
+		msgServer := keeper.NewMsgServerImpl(k)
+		if _, err := msgServer.GuildUpdateBankConvertOutFee(sdk.WrapSDKContext(ctx), msg); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
 

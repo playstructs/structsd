@@ -1548,10 +1548,144 @@ P2_TOKEN_AFTER_BAD_MINT=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM
 assert_eq "Unauthorized mint did not change Player 2 balance" "${P2_TOKEN_BEFORE_BAD_MINT}" "${P2_TOKEN_AFTER_BAD_MINT}"
 info "Unauthorized mint result code: ${BAD_MINT_CODE} (non-zero expected)"
 
+# ═════════════════════════════════════════════════════════════════════════════
+#  Convert-in, convert fees, and cross-guild convert (v0.21.0)
+# ═════════════════════════════════════════════════════════════════════════════
+info "--- Guild Bank Convert & Fees (v0.21.0) ---"
+
+# guild_supply <denom>: total supply of a guild token denom
+guild_supply() {
+    query query bank total | jq -r --arg d "$1" '.supply[] | select(.denom == $d) | .amount // "0"' 2>/dev/null || echo "0"
+}
+
+# ─── Set a 10% convert-in fee and verify it is stored ───
+run_tx "Setting guild convert-in fee to 0.1" \
+    tx structs guild-update-bank-convert-in-fee "${GUILD_ID}" "0.1" --from alice
+
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+assert_eq "Guild convert-in fee stored" "0.100000000000000000" "$(jqr "${GUILD_JSON}" '.Guild.bankConvertInFee' '0')"
+
+# ─── Player 2 converts 100000 ualpha into guild tokens at the current ratio ───
+# feeAlpha = ceil(0.1 * 100000) = 10000; netAlpha = 90000;
+# tokensOut = floor(90000 * supply / collateral); full 100000 -> collateral.
+CONVERT_ALPHA=100000
+CONVERT_FEE=10000
+CONVERT_NET=$((CONVERT_ALPHA - CONVERT_FEE))
+
+SUPPLY_BEFORE_CONVERT=$(guild_supply "${GUILD_TOKEN_DENOM}")
+COLLATERAL_BEFORE_CONVERT=$(get_balance "${COLLATERAL_ADDR}" ualpha)
+P2_TOKEN_BEFORE_CONVERT=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+EXPECTED_CONVERT_TOKENS=$((CONVERT_NET * SUPPLY_BEFORE_CONVERT / COLLATERAL_BEFORE_CONVERT))
+info "Convert quote: ${CONVERT_ALPHA} ualpha (fee ${CONVERT_FEE}) -> ${EXPECTED_CONVERT_TOKENS} tokens (supply=${SUPPLY_BEFORE_CONVERT}, collateral=${COLLATERAL_BEFORE_CONVERT})"
+
+run_tx "Player 2 converts ${CONVERT_ALPHA} ualpha into guild tokens" \
+    tx structs guild-bank-convert "${GUILD_ID}" "${CONVERT_ALPHA}" --from player_2
+
+P2_TOKEN_AFTER_CONVERT=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+assert_eq "Player 2 received converted tokens" "$((P2_TOKEN_BEFORE_CONVERT + EXPECTED_CONVERT_TOKENS))" "${P2_TOKEN_AFTER_CONVERT}"
+
+COLLATERAL_AFTER_CONVERT=$(get_balance "${COLLATERAL_ADDR}" ualpha)
+assert_eq "Full convert alpha (incl fee) entered collateral" "$((COLLATERAL_BEFORE_CONVERT + CONVERT_ALPHA))" "${COLLATERAL_AFTER_CONVERT}"
+
+# ─── Convert-in slippage guard: demand an impossibly high min output ───
+info "Testing convert-in slippage guard (min-amount-token too high)"
+P2_TOKEN_BEFORE_GUARD=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+run_tx "Player 2 convert with min-amount-token 999999999 (should fail)" \
+    tx structs guild-bank-convert "${GUILD_ID}" "${CONVERT_ALPHA}" 999999999 --from player_2
+assert_eq "Slippage-guarded convert left Player 2 tokens unchanged" "${P2_TOKEN_BEFORE_GUARD}" "$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")"
+
+# ─── Set a 10% convert-out fee and redeem: fee stays in collateral ───
+run_tx "Setting guild convert-out fee to 0.1" \
+    tx structs guild-update-bank-convert-out-fee "${GUILD_ID}" "0.1" --from alice
+
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+assert_eq "Guild convert-out fee stored" "0.100000000000000000" "$(jqr "${GUILD_JSON}" '.Guild.bankConvertOutFee' '0')"
+
+FEE_REDEEM_AMOUNT=40000
+SUPPLY_BEFORE_FEE_REDEEM=$(guild_supply "${GUILD_TOKEN_DENOM}")
+COLLATERAL_BEFORE_FEE_REDEEM=$(get_balance "${COLLATERAL_ADDR}" ualpha)
+P2_ALPHA_BEFORE_FEE_REDEEM=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
+# grossAlpha = floor(amount * collateral / supply); feeAlpha = ceil(0.1 * gross); net = gross - fee.
+GROSS_ALPHA=$((FEE_REDEEM_AMOUNT * COLLATERAL_BEFORE_FEE_REDEEM / SUPPLY_BEFORE_FEE_REDEEM))
+OUT_FEE=$(( (GROSS_ALPHA + 9) / 10 ))   # ceil(gross/10)
+NET_ALPHA=$((GROSS_ALPHA - OUT_FEE))
+info "Redeem-with-fee quote: ${FEE_REDEEM_AMOUNT} tokens -> gross ${GROSS_ALPHA}, fee ${OUT_FEE}, net ${NET_ALPHA}"
+
+run_tx "Player 2 redeems ${FEE_REDEEM_AMOUNT}${GUILD_TOKEN_DENOM} with 10% out-fee" \
+    tx structs guild-bank-redeem "${FEE_REDEEM_AMOUNT}${GUILD_TOKEN_DENOM}" --from player_2
+
+P2_ALPHA_AFTER_FEE_REDEEM=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
+# Player 2 pays a tx fee in ualpha too, so assert the net credit is at least gross-minus-fee-minus-slack.
+P2_ALPHA_DELTA=$((P2_ALPHA_AFTER_FEE_REDEEM - P2_ALPHA_BEFORE_FEE_REDEEM))
+info "Player 2 ualpha delta after fee redeem: ${P2_ALPHA_DELTA} (net payout ${NET_ALPHA} minus tx fee)"
+COLLATERAL_AFTER_FEE_REDEEM=$(get_balance "${COLLATERAL_ADDR}" ualpha)
+assert_eq "Collateral retained out-fee (dropped only net payout)" "$((COLLATERAL_BEFORE_FEE_REDEEM - NET_ALPHA))" "${COLLATERAL_AFTER_FEE_REDEEM}"
+
+# ─── Cross-guild convert: Guild A token -> Guild B token in one tx ───
+if [ -n "${GUILD_B_ID:-}" ]; then
+    info "--- Cross-guild convert (A -> B) ---"
+    GUILD_B_TOKEN_DENOM="uguild.${GUILD_B_ID}"
+
+    # Bootstrap Guild B's bank so it has a defined ratio (supply>0, collateral>0).
+    run_tx "Guild Leader B bootstraps Guild B bank (500000 ualpha -> 500000 token)" \
+        tx structs guild-bank-mint 500000 500000 --from guild_leader_b
+
+    B_COLLATERAL_JSON=$(query query structs guild-bank-collateral-address "${GUILD_B_ID}")
+    B_COLLATERAL_ADDR=$(jqr "${B_COLLATERAL_JSON}" '.internalAddressAssociation[0].address')
+    assert_not_empty "Guild B collateral address" "${B_COLLATERAL_ADDR}"
+
+    # Guild B charges a 10% convert-in fee; Guild A already charges 10% out.
+    run_tx "Setting Guild B convert-in fee to 0.1" \
+        tx structs guild-update-bank-convert-in-fee "${GUILD_B_ID}" "0.1" --from guild_leader_b
+
+    XCONVERT_TOKENS=20000
+    A_SUPPLY_X=$(guild_supply "${GUILD_TOKEN_DENOM}")
+    A_COLL_X=$(get_balance "${COLLATERAL_ADDR}" ualpha)
+    B_SUPPLY_X=$(guild_supply "${GUILD_B_TOKEN_DENOM}")
+    B_COLL_X=$(get_balance "${B_COLLATERAL_ADDR}" ualpha)
+
+    # Leg 1 (redeem A): gross = floor(tokens * A_coll / A_supply); A out-fee = ceil(gross/10); bridge = gross - fee.
+    X_GROSS=$((XCONVERT_TOKENS * A_COLL_X / A_SUPPLY_X))
+    X_A_FEE=$(( (X_GROSS + 9) / 10 ))
+    X_BRIDGE=$((X_GROSS - X_A_FEE))
+    # Leg 2 (convert B): B in-fee = ceil(bridge/10); net = bridge - fee; out = floor(net * B_supply / B_coll).
+    X_B_FEE=$(( (X_BRIDGE + 9) / 10 ))
+    X_B_NET=$((X_BRIDGE - X_B_FEE))
+    X_OUT=$((X_B_NET * B_SUPPLY_X / B_COLL_X))
+    info "Cross quote: ${XCONVERT_TOKENS} A-tok -> gross ${X_GROSS} (A fee ${X_A_FEE}) -> bridge ${X_BRIDGE} -> (B fee ${X_B_FEE}) -> ${X_OUT} B-tok"
+
+    P2_B_TOKEN_BEFORE_X=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_B_TOKEN_DENOM}")
+    run_tx "Player 2 converts ${XCONVERT_TOKENS}${GUILD_TOKEN_DENOM} into Guild B tokens" \
+        tx structs guild-bank-convert-token "${XCONVERT_TOKENS}${GUILD_TOKEN_DENOM}" "${GUILD_B_ID}" --from player_2
+
+    P2_B_TOKEN_AFTER_X=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_B_TOKEN_DENOM}")
+    assert_eq "Player 2 received cross-converted Guild B tokens" "$((P2_B_TOKEN_BEFORE_X + X_OUT))" "${P2_B_TOKEN_AFTER_X}"
+
+    # Guild A collateral drops by the net bridge alpha (gross out, fee retained).
+    assert_eq "Guild A collateral dropped by bridge alpha (fee retained)" "$((A_COLL_X - X_BRIDGE))" "$(get_balance "${COLLATERAL_ADDR}" ualpha)"
+    # Guild B collateral gains the full bridge alpha (B in-fee stays in B's pool).
+    assert_eq "Guild B collateral gained full bridge alpha" "$((B_COLL_X + X_BRIDGE))" "$(get_balance "${B_COLLATERAL_ADDR}" ualpha)"
+
+    # Same-guild convert-token is rejected.
+    info "Testing same-guild convert-token rejection"
+    P2_A_TOKEN_BEFORE_SAME=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+    run_tx "Player 2 same-guild convert-token A->A (should fail)" \
+        tx structs guild-bank-convert-token "1000${GUILD_TOKEN_DENOM}" "${GUILD_ID}" --from player_2
+    assert_eq "Same-guild convert left Player 2 A-token balance unchanged" "${P2_A_TOKEN_BEFORE_SAME}" "$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")"
+else
+    info "SKIP: Guild B not available, skipping cross-guild convert test"
+fi
+
+# ─── Reset Guild A convert fees to 0 so later phases are unaffected ───
+run_tx "Resetting Guild A convert-in fee to 0" \
+    tx structs guild-update-bank-convert-in-fee "${GUILD_ID}" "0" --from alice
+run_tx "Resetting Guild A convert-out fee to 0" \
+    tx structs guild-update-bank-convert-out-fee "${GUILD_ID}" "0" --from alice
+
 # ─── Summary of token state ───
 info "Guild token summary:"
 echo "  Denom: ${GUILD_TOKEN_DENOM}"
-echo "  Total supply: ${TOTAL_SUPPLY}"
+echo "  Total supply: $(guild_supply "${GUILD_TOKEN_DENOM}")"
 echo "  Alice: $(get_balance "${PLAYER_1_ADDRESS}" "${GUILD_TOKEN_DENOM}")"
 echo "  Player 2: $(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")"
 echo "  Player 3: $(get_balance "${PLAYER_3_ADDRESS}" "${GUILD_TOKEN_DENOM}")"
@@ -2071,6 +2205,39 @@ run_tx "Resetting request bypass to closed" \
     tx structs guild-update-join-infusion-minimum-by-request "${GUILD_ID}" closed --from alice
 run_tx "Resetting invite bypass to closed" \
     tx structs guild-update-join-infusion-minimum-by-invite "${GUILD_ID}" closed --from alice
+
+# ─── guild-update-bank-convert-in-fee / -out-fee (v0.21.0) ───
+info "--- Guild Bank Convert Fee Settings ---"
+
+run_tx "Setting guild convert-in fee to 0.05" \
+    tx structs guild-update-bank-convert-in-fee "${GUILD_ID}" "0.05" --from alice
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+assert_eq "Guild convert-in fee set to 0.05" "0.050000000000000000" "$(jqr "${GUILD_JSON}" '.Guild.bankConvertInFee' '0')"
+
+run_tx "Setting guild convert-out fee to 0.25" \
+    tx structs guild-update-bank-convert-out-fee "${GUILD_ID}" "0.25" --from alice
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+assert_eq "Guild convert-out fee set to 0.25" "0.250000000000000000" "$(jqr "${GUILD_JSON}" '.Guild.bankConvertOutFee' '0')"
+
+# Out-of-range fee (> 1.0) must be rejected and leave the stored rate unchanged.
+info "Testing out-of-range fee rejection (1.5)"
+run_tx "Setting convert-in fee to 1.5 (should fail)" \
+    tx structs guild-update-bank-convert-in-fee "${GUILD_ID}" "1.5" --from alice
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+assert_eq "Out-of-range fee rejected (still 0.05)" "0.050000000000000000" "$(jqr "${GUILD_JSON}" '.Guild.bankConvertInFee' '0')"
+
+# Non-admin (Player 3) cannot change bank fees.
+info "Testing unauthorized bank fee update (Player 3)"
+run_tx "Player 3 tries to set convert-in fee (should fail)" \
+    tx structs guild-update-bank-convert-in-fee "${GUILD_ID}" "0.9" --from player_3
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+assert_eq "Unauthorized fee update did not change rate" "0.050000000000000000" "$(jqr "${GUILD_JSON}" '.Guild.bankConvertInFee' '0')"
+
+# Reset fees to 0 so later phases (e.g. bank redeem/mint) are unaffected.
+run_tx "Resetting convert-in fee to 0" \
+    tx structs guild-update-bank-convert-in-fee "${GUILD_ID}" "0" --from alice
+run_tx "Resetting convert-out fee to 0" \
+    tx structs guild-update-bank-convert-out-fee "${GUILD_ID}" "0" --from alice
 
 # ─── guild-update-owner-id: transfer ownership ───
 # Grant Player 2 PermAdmin (2) on guild so they can transfer ownership back.
