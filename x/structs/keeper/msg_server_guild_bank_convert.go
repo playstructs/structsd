@@ -22,8 +22,12 @@ func (k msgServer) GuildBankConvert(goCtx context.Context, msg *types.MsgGuildBa
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_bank_convert")
 	}
 
-	// Convert-in is always open (a guild "closes" it via a 100% fee); the only
-	// gate is the player's own token-transfer permission, matching redeem.
+	if msg.MinAmountToken == 0 {
+		return emptyResponse, types.NewParameterValidationError("minAmountToken", 0, "must_be_positive")
+	}
+
+	// The only authorization gate is the player's own token-transfer
+	// permission, matching redeem.
 	permissionErr := activePlayer.CanTransferTokensBy(activePlayer)
 	if permissionErr != nil {
 		return emptyResponse, permissionErr

@@ -1497,7 +1497,7 @@ P2_ALPHA_BEFORE_REDEEM=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
 info "Player 2 ualpha before redeem: ${P2_ALPHA_BEFORE_REDEEM}"
 
 run_tx "Player 2 redeeming ${REDEEM_AMOUNT}${GUILD_TOKEN_DENOM} for Alpha" \
-    tx structs guild-bank-redeem "${REDEEM_AMOUNT}${GUILD_TOKEN_DENOM}" --from player_2
+    tx structs guild-bank-redeem "${REDEEM_AMOUNT}${GUILD_TOKEN_DENOM}" 1 --from player_2
 
 # Verify: Player 2 token balance decreased
 P2_TOKEN_AFTER_REDEEM=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
@@ -1579,7 +1579,7 @@ EXPECTED_CONVERT_TOKENS=$((CONVERT_NET * SUPPLY_BEFORE_CONVERT / COLLATERAL_BEFO
 info "Convert quote: ${CONVERT_ALPHA} ualpha (fee ${CONVERT_FEE}) -> ${EXPECTED_CONVERT_TOKENS} tokens (supply=${SUPPLY_BEFORE_CONVERT}, collateral=${COLLATERAL_BEFORE_CONVERT})"
 
 run_tx "Player 2 converts ${CONVERT_ALPHA} ualpha into guild tokens" \
-    tx structs guild-bank-convert "${GUILD_ID}" "${CONVERT_ALPHA}" --from player_2
+    tx structs guild-bank-convert "${GUILD_ID}" "${CONVERT_ALPHA}" 1 --from player_2
 
 P2_TOKEN_AFTER_CONVERT=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
 assert_eq "Player 2 received converted tokens" "$((P2_TOKEN_BEFORE_CONVERT + EXPECTED_CONVERT_TOKENS))" "${P2_TOKEN_AFTER_CONVERT}"
@@ -1612,7 +1612,7 @@ NET_ALPHA=$((GROSS_ALPHA - OUT_FEE))
 info "Redeem-with-fee quote: ${FEE_REDEEM_AMOUNT} tokens -> gross ${GROSS_ALPHA}, fee ${OUT_FEE}, net ${NET_ALPHA}"
 
 run_tx "Player 2 redeems ${FEE_REDEEM_AMOUNT}${GUILD_TOKEN_DENOM} with 10% out-fee" \
-    tx structs guild-bank-redeem "${FEE_REDEEM_AMOUNT}${GUILD_TOKEN_DENOM}" --from player_2
+    tx structs guild-bank-redeem "${FEE_REDEEM_AMOUNT}${GUILD_TOKEN_DENOM}" 1 --from player_2
 
 P2_ALPHA_AFTER_FEE_REDEEM=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
 # Player 2 pays a tx fee in ualpha too, so assert the net credit is at least gross-minus-fee-minus-slack.
@@ -1656,7 +1656,7 @@ if [ -n "${GUILD_B_ID:-}" ]; then
 
     P2_B_TOKEN_BEFORE_X=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_B_TOKEN_DENOM}")
     run_tx "Player 2 converts ${XCONVERT_TOKENS}${GUILD_TOKEN_DENOM} into Guild B tokens" \
-        tx structs guild-bank-convert-token "${XCONVERT_TOKENS}${GUILD_TOKEN_DENOM}" "${GUILD_B_ID}" --from player_2
+        tx structs guild-bank-convert-token "${XCONVERT_TOKENS}${GUILD_TOKEN_DENOM}" "${GUILD_B_ID}" 1 --from player_2
 
     P2_B_TOKEN_AFTER_X=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_B_TOKEN_DENOM}")
     assert_eq "Player 2 received cross-converted Guild B tokens" "$((P2_B_TOKEN_BEFORE_X + X_OUT))" "${P2_B_TOKEN_AFTER_X}"
@@ -1670,7 +1670,7 @@ if [ -n "${GUILD_B_ID:-}" ]; then
     info "Testing same-guild convert-token rejection"
     P2_A_TOKEN_BEFORE_SAME=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
     run_tx "Player 2 same-guild convert-token A->A (should fail)" \
-        tx structs guild-bank-convert-token "1000${GUILD_TOKEN_DENOM}" "${GUILD_ID}" --from player_2
+        tx structs guild-bank-convert-token "1000${GUILD_TOKEN_DENOM}" "${GUILD_ID}" 1 --from player_2
     assert_eq "Same-guild convert left Player 2 A-token balance unchanged" "${P2_A_TOKEN_BEFORE_SAME}" "$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")"
 else
     info "SKIP: Guild B not available, skipping cross-guild convert test"

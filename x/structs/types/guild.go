@@ -22,6 +22,21 @@ func ParseGuildBankDenom(denom string) (string, error) {
 	return denomSlice[1], nil
 }
 
+// NormalizeBankFees replaces the nil LegacyDec values produced when records
+// written before v0.21.0 are decoded. It reports whether the guild changed.
+func (guild *Guild) NormalizeBankFees() bool {
+	changed := false
+	if guild.BankConvertInFee.IsNil() {
+		guild.BankConvertInFee = math.LegacyZeroDec()
+		changed = true
+	}
+	if guild.BankConvertOutFee.IsNil() {
+		guild.BankConvertOutFee = math.LegacyZeroDec()
+		changed = true
+	}
+	return changed
+}
+
 func (guild *Guild) SetCreator(creator string) error {
 
 	guild.Creator = creator
@@ -43,14 +58,12 @@ func (guild *Guild) SetEntrySubstationId(substationId string) error {
 	return nil
 }
 
-
 func (guild *Guild) SetPrimaryReactorId(reactorId string) error {
 
 	guild.PrimaryReactorId = reactorId
 
 	return nil
 }
-
 
 func (guild *Guild) SetOwner(playerId string) error {
 
@@ -59,7 +72,6 @@ func (guild *Guild) SetOwner(playerId string) error {
 	return nil
 }
 
-
 func (guild *Guild) SetJoinInfusionMinimum(joinInfusionMinimum uint64) error {
 
 	guild.JoinInfusionMinimum = joinInfusionMinimum
@@ -67,20 +79,17 @@ func (guild *Guild) SetJoinInfusionMinimum(joinInfusionMinimum uint64) error {
 	return nil
 }
 
-
 func CreateEmptyGuild() Guild {
 	return Guild{
-		Endpoint: "",
-		Creator:  "",
-		Owner: "",
-        JoinInfusionMinimum: 0,
-        JoinInfusionMinimumBypassByInvite: GuildJoinBypassLevel_closed,
-        JoinInfusionMinimumBypassByRequest: GuildJoinBypassLevel_closed,
-        PrimaryReactorId: "",
-        EntrySubstationId: "",
-        BankConvertInFee: math.LegacyZeroDec(),
-        BankConvertOutFee: math.LegacyZeroDec(),
+		Endpoint:                           "",
+		Creator:                            "",
+		Owner:                              "",
+		JoinInfusionMinimum:                0,
+		JoinInfusionMinimumBypassByInvite:  GuildJoinBypassLevel_closed,
+		JoinInfusionMinimumBypassByRequest: GuildJoinBypassLevel_closed,
+		PrimaryReactorId:                   "",
+		EntrySubstationId:                  "",
+		BankConvertInFee:                   math.LegacyZeroDec(),
+		BankConvertOutFee:                  math.LegacyZeroDec(),
 	}
 }
-
-

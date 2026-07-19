@@ -535,3 +535,15 @@ func WriteRawGridAttribute(t testing.TB, _ keeper.Keeper, ctx sdk.Context, gridA
 	rawStore := ctx.KVStore(storeKey)
 	rawStore.Set(append([]byte(types.GridAttributeKey), []byte(gridAttributeId)...), bz)
 }
+
+// WriteRawGuild plants protobuf bytes directly under a guild key. It is used to
+// exercise migrations and queries against records encoded by pre-upgrade
+// schemas that cannot be produced through the current keeper.
+func WriteRawGuild(t testing.TB, ctx sdk.Context, guildID string, bz []byte) {
+	t.Helper()
+	storeKey, ok := ctx.Value(testStoreKeyCtx{}).(*storetypes.KVStoreKey)
+	require.True(t, ok, "WriteRawGuild: ctx not produced by keepertest.StructsKeeper")
+
+	rawStore := ctx.KVStore(storeKey)
+	rawStore.Set(append([]byte(types.GuildKey), []byte(guildID)...), bz)
+}

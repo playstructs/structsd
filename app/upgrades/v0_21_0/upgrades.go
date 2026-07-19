@@ -3,7 +3,6 @@ package v0_21_0
 import (
 	"context"
 
-	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -52,16 +51,7 @@ func MigrateGuildBankFees(ctx context.Context, keepers *upgrades.Keepers) error 
 
 	var guildsMigrated int
 	for _, guild := range k.GetAllGuild(ctx) {
-		changed := false
-		if guild.BankConvertInFee.IsNil() {
-			guild.BankConvertInFee = math.LegacyZeroDec()
-			changed = true
-		}
-		if guild.BankConvertOutFee.IsNil() {
-			guild.BankConvertOutFee = math.LegacyZeroDec()
-			changed = true
-		}
-		if changed {
+		if guild.NormalizeBankFees() {
 			k.SetGuild(ctx, guild)
 			guildsMigrated++
 		}

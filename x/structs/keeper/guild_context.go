@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"cosmossdk.io/math"
 	"structs/x/structs/types"
 )
 
@@ -12,10 +11,10 @@ func (cc *CurrentContext) GetGuild(guildId string) *GuildCache {
 	}
 
 	cc.guilds[guildId] = &GuildCache{
-                          		GuildId: guildId,
-                          		CC: cc,
-                          		Changed: false,
-                          	}
+		GuildId: guildId,
+		CC:      cc,
+		Changed: false,
+	}
 
 	return cc.guilds[guildId]
 }
@@ -25,12 +24,7 @@ func (cc *CurrentContext) GenesisImportGuild(guild types.Guild) {
 	// non-nullable LegacyDec members decode as nil and would panic when the
 	// cache commits (marshal). Normalize to zero on import; the upgrade
 	// migration never runs on the genesis path.
-	if guild.BankConvertInFee.IsNil() {
-		guild.BankConvertInFee = math.LegacyZeroDec()
-	}
-	if guild.BankConvertOutFee.IsNil() {
-		guild.BankConvertOutFee = math.LegacyZeroDec()
-	}
+	guild.NormalizeBankFees()
 
 	cache := cc.GetGuild(guild.Id)
 	cache.Guild = guild

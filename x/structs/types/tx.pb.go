@@ -966,9 +966,11 @@ func (m *MsgGuildBankMintResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgGuildBankMintResponse proto.InternalMessageInfo
 
 type MsgGuildBankRedeem struct {
-	Creator        string     `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	AmountToken    types.Coin `protobuf:"bytes,2,opt,name=amountToken,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"amountToken"`
-	MinAmountAlpha uint64     `protobuf:"varint,3,opt,name=minAmountAlpha,proto3" json:"minAmountAlpha,omitempty"`
+	Creator     string     `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	AmountToken types.Coin `protobuf:"bytes,2,opt,name=amountToken,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"amountToken"`
+	// Required and nonzero. The transaction fails rather than burning tokens
+	// when fees or the collateral ratio would return less alpha.
+	MinAmountAlpha uint64 `protobuf:"varint,3,opt,name=minAmountAlpha,proto3" json:"minAmountAlpha,omitempty"`
 }
 
 func (m *MsgGuildBankRedeem) Reset()         { *m = MsgGuildBankRedeem{} }
@@ -1160,8 +1162,8 @@ var xxx_messageInfo_MsgGuildBankConfiscateAndBurnResponse proto.InternalMessageI
 // MsgGuildBankConvert converts ualpha into a guild's alpha-backed token at the
 // current collateral ratio (ratio-preserving: increases collateral and supply
 // proportionally). The guild's bankConvertInFee is retained in the collateral
-// pool. minAmountToken guards against ratio movement earlier in the block
-// (0 = no guard).
+// pool. minAmountToken is required and nonzero; it guards against ratio or fee
+// movement earlier in the block.
 type MsgGuildBankConvert struct {
 	Creator        string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	GuildId        string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
@@ -1271,7 +1273,7 @@ var xxx_messageInfo_MsgGuildBankConvertResponse proto.InternalMessageInfo
 // -> target token (target guild bankConvertInFee). Both guilds retain their fee
 // in their own collateral pool. The source guild is identified by the
 // amountToken denom (uguild.{guildId}); guildId names the target. minAmountToken
-// guards the final target-token output (0 = no guard).
+// is required and nonzero and guards the final target-token output.
 type MsgGuildBankConvertToken struct {
 	Creator        string     `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	AmountToken    types.Coin `protobuf:"bytes,2,opt,name=amountToken,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"amountToken"`
@@ -1735,7 +1737,8 @@ func (m *MsgGuildUpdatePrimaryReactor) GetReactorId() string {
 	return ""
 }
 
-// MsgGuildUpdateBankConvertInFee sets the fee (LegacyDec, 0.0-1.0) retained in
+// MsgGuildUpdateBankConvertInFee sets the fee (LegacyDec, 0.0 inclusive to 1.0
+// exclusive) retained in
 // collateral when converting ualpha into this guild's token. Permission:
 // PermAdmin on the guild object.
 type MsgGuildUpdateBankConvertInFee struct {
@@ -1791,7 +1794,8 @@ func (m *MsgGuildUpdateBankConvertInFee) GetGuildId() string {
 	return ""
 }
 
-// MsgGuildUpdateBankConvertOutFee sets the fee (LegacyDec, 0.0-1.0) retained in
+// MsgGuildUpdateBankConvertOutFee sets the fee (LegacyDec, 0.0 inclusive to 1.0
+// exclusive) retained in
 // collateral when redeeming this guild's token for ualpha. Permission:
 // PermAdmin on the guild object.
 type MsgGuildUpdateBankConvertOutFee struct {

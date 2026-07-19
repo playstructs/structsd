@@ -57,26 +57,28 @@ func TestMsgGuildBankRedeem(t *testing.T) {
 		{
 			name: "valid bank redeem",
 			input: &types.MsgGuildBankRedeem{
-				Creator:     player.Creator,
-				AmountToken: sdk.NewCoin("uguild."+guild.Id, math.NewInt(5)),
+				Creator:        player.Creator,
+				AmountToken:    sdk.NewCoin("uguild."+guild.Id, math.NewInt(5)),
+				MinAmountAlpha: 1,
 			},
 			expErr: false,
 		},
 		{
 			name: "invalid denom format",
 			input: &types.MsgGuildBankRedeem{
-				Creator:     player.Creator,
-				AmountToken: sdk.NewCoin("invalid-denom", math.NewInt(5)),
+				Creator:        player.Creator,
+				AmountToken:    sdk.NewCoin("invalid-denom", math.NewInt(5)),
+				MinAmountAlpha: 1,
 			},
 			expErr:    true,
-			expErrMsg: "not in Guild Bank Token format",
-			skip:      true, // Skip - validation may not work as expected in test setup
+			expErrMsg: "invalid_format",
 		},
 		{
 			name: "guild not found",
 			input: &types.MsgGuildBankRedeem{
-				Creator:     player.Creator,
-				AmountToken: sdk.NewCoin("uguild.invalid-guild", math.NewInt(5)),
+				Creator:        player.Creator,
+				AmountToken:    sdk.NewCoin("uguild.invalid-guild", math.NewInt(5)),
+				MinAmountAlpha: 1,
 			},
 			expErr:    true,
 			expErrMsg: "not found",
@@ -95,7 +97,7 @@ func TestMsgGuildBankRedeem(t *testing.T) {
 			if tc.expErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
+				require.NotNil(t, resp)
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, resp)

@@ -28,6 +28,10 @@ func (k msgServer) GuildBankConvertToken(goCtx context.Context, msg *types.MsgGu
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_bank_convert_token")
 	}
 
+	if msg.MinAmountToken == 0 {
+		return emptyResponse, types.NewParameterValidationError("minAmountToken", 0, "must_be_positive")
+	}
+
 	permissionErr := activePlayer.CanTransferTokensBy(activePlayer)
 	if permissionErr != nil {
 		return emptyResponse, permissionErr
@@ -66,7 +70,13 @@ func (k msgServer) GuildBankConvertToken(goCtx context.Context, msg *types.MsgGu
 		return emptyResponse, convertErr
 	}
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventGuildBankConvertToken{&types.EventGuildBankConvertTokenDetail{SourceGuildId: sourceGuildId, TargetGuildId: msg.GuildId, AmountTokenIn: msg.AmountToken.Amount.Uint64(), BridgeAlpha: bridgeAlpha.Uint64(), AmountTokenOut: tokensOut.Uint64(), PlayerId: activePlayer.GetPlayerId()}})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventGuildBankConvertToken{
+		EventGuildBankConvertTokenDetail: &types.EventGuildBankConvertTokenDetail{
+			SourceGuildId: sourceGuildId, TargetGuildId: msg.GuildId,
+			AmountTokenIn: msg.AmountToken.Amount.Uint64(), BridgeAlpha: bridgeAlpha.Uint64(),
+			AmountTokenOut: tokensOut.Uint64(), PlayerId: activePlayer.GetPlayerId(),
+		},
+	})
 
 	cc.CommitAll()
 	return &types.MsgGuildBankConvertTokenResponse{}, nil

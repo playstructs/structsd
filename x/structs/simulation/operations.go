@@ -323,7 +323,8 @@ func SimulateMsgGuildBankRedeem(
 		denom := "uguild." + guildId
 
 		msg := &types.MsgGuildBankRedeem{
-			Creator: simAccount.Address.String(),
+			Creator:        simAccount.Address.String(),
+			MinAmountAlpha: 1,
 			AmountToken: sdk.Coin{
 				Denom:  denom,
 				Amount: math.NewIntFromUint64(amountToken),
@@ -368,9 +369,10 @@ func SimulateMsgGuildBankConvert(
 		guildId := guilds[r.Intn(len(guilds))].Id
 
 		msg := &types.MsgGuildBankConvert{
-			Creator:     simAccount.Address.String(),
-			GuildId:     guildId,
-			AmountAlpha: uint64(r.Int63n(100000) + 100),
+			Creator:        simAccount.Address.String(),
+			GuildId:        guildId,
+			AmountAlpha:    uint64(r.Int63n(100000) + 100),
+			MinAmountToken: 1,
 		}
 
 		msgServer := keeper.NewMsgServerImpl(k)
@@ -418,7 +420,8 @@ func SimulateMsgGuildBankConvertToken(
 				Denom:  "uguild." + sourceId,
 				Amount: math.NewIntFromUint64(uint64(r.Int63n(100000) + 100)),
 			},
-			GuildId: targetId,
+			GuildId:        targetId,
+			MinAmountToken: 1,
 		}
 
 		msgServer := keeper.NewMsgServerImpl(k)

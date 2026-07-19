@@ -27,11 +27,16 @@ func TestMigrateGuildBankFees(t *testing.T) {
 	withFee.BankConvertOutFee = math.LegacyMustNewDecFromStr("0.5")
 	k.SetGuild(ctx, withFee)
 
-	// A freshly created guild carries zero fees.
-	zeroFee := types.CreateEmptyGuild()
-	zeroFee.Id = "4-1"
-	zeroFee.Index = 1
-	k.SetGuild(ctx, zeroFee)
+	// Pre-v0.21 protobuf bytes containing only Guild.id. The absent fee fields
+	// decode as nil LegacyDec values and cannot be produced via current SetGuild.
+	legacyID := "4-1"
+	legacyBytes := append([]byte{0x0a, byte(len(legacyID))}, []byte(legacyID)...)
+	keepertest.WriteRawGuild(t, ctx, legacyID, legacyBytes)
+
+	before, found := k.GetGuild(ctx, legacyID)
+	require.True(t, found)
+	require.True(t, before.BankConvertInFee.IsNil())
+	require.True(t, before.BankConvertOutFee.IsNil())
 
 	require.NoError(t, v0_21_0.MigrateGuildBankFees(ctx, keepers))
 
@@ -40,10 +45,12 @@ func TestMigrateGuildBankFees(t *testing.T) {
 	require.Equal(t, "0.250000000000000000", got0.BankConvertInFee.String(), "explicit fee preserved")
 	require.Equal(t, "0.500000000000000000", got0.BankConvertOutFee.String())
 
-	got1, found := k.GetGuild(ctx, "4-1")
+	got1, found := k.GetGuild(ctx, legacyID)
 	require.True(t, found)
 	require.False(t, got1.BankConvertInFee.IsNil())
+	require.False(t, got1.BankConvertOutFee.IsNil())
 	require.True(t, got1.BankConvertInFee.IsZero())
+	require.True(t, got1.BankConvertOutFee.IsZero())
 
 	// Idempotent: a re-run produces identical values.
 	require.NoError(t, v0_21_0.MigrateGuildBankFees(ctx, keepers))
