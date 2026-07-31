@@ -30154,6 +30154,49 @@ paths:
               cancel unbonding delegation for delegator
       tags:
         - Msg
+  /structs.structs.Msg/ReactorRestart:
+    post:
+      operationId: StructsStructsMsg_ReactorRestart
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            title: MsgReactorRestartResponse
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              validator_address:
+                type: string
+            title: >-
+              MsgReactorRestart reconciles a reactor's infusions against live
+              staking state
+      tags:
+        - Msg
   /structs.structs.Msg/ReactorDefuse:
     post:
       operationId: StructsStructsMsg_ReactorDefuse
@@ -45332,6 +45375,26 @@ definitions:
     type: object
     description: 'Since: cosmos-sdk 0.46'
     title: MsgReactorCancelDefusionResponse
+  structs.structs.MsgReactorRestart:
+    type: object
+    properties:
+      creator:
+        type: string
+      validator_address:
+        type: string
+    description: >-
+      Reconciles a reactor's infusions against live staking state. Energy is
+      gated to zero while a validator is jailed; a routine unjail recovers
+      automatically when staking rebonds the validator, but an operator who
+      unjails while below the active-set cutoff is never rebonded and needs this
+      message. Permissionless, because it only writes state derived from the
+      staking module, which also makes it usable to force-gate a jailed reactor.
+    title: >-
+      MsgReactorRestart reconciles a reactor's infusions against live staking
+      state
+  structs.structs.MsgReactorRestartResponse:
+    type: object
+    title: MsgReactorRestartResponse
   structs.structs.MsgReactorDefuse:
     type: object
     properties:

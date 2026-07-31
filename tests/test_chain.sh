@@ -2418,15 +2418,26 @@ run_tx "Player 5 revoking own address PermDelete (8)" \
 # ─── permission-set-on-address ───
 # NOTE: permission-set-on-address prevents privilege escalation — the caller
 # needs ALL bits of the target value. After revoking PermDelete (8),
-# the address has PermAll minus PermDelete = 16777207. We demonstrate set
+# the address has PermAll minus PermDelete = 33554423. We demonstrate set
 # by setting to that value (proving the command works).
-run_tx "Player 5 setting own address permissions to 16777207 (PermAll minus PermDelete)" \
-    tx structs permission-set-on-address "${PLAYER_5_ADDRESS}" 16777207 --from player_5
+# (33554423 = (2^25 - 1) ^ 8; the older 16777207 constant predates the UGC bit.)
+run_tx "Player 5 setting own address permissions to 33554423 (PermAll minus PermDelete)" \
+    tx structs permission-set-on-address "${PLAYER_5_ADDRESS}" 33554423 --from player_5
+
+# While below PermAll, player-update-primary-address must fail. Passing the
+# player's own already-registered address clears both lookups and hits the
+# new PermAll gate without needing a crypto proof for a second address.
+run_tx_expect_fail "Player 5 cannot update primary address without PermAll" \
+    tx structs player-update-primary-address "${PLAYER_5_ADDRESS}" --from player_5
 
 # Restore Player 5 address to full permissions for later phases.
 # Player 5 can't re-grant PermDelete (escalation prevention), so Alice does it.
 run_tx "Alice restoring Player 5 address PermDelete" \
     tx structs permission-grant-on-address "${PLAYER_5_ADDRESS}" 8 --from alice
+
+# With PermAll restored, the same self-update clears the gate (noop swap).
+run_tx "Player 5 can update primary address with PermAll" \
+    tx structs player-update-primary-address "${PLAYER_5_ADDRESS}" --from player_5
 
 # ─── General permission query ───
 info "All permissions sample:"
@@ -4621,10 +4632,11 @@ if [ -n "${P3_BALANCE_BEFORE}" ] && [ -n "${P3_BALANCE_AFTER}" ] && [ "${P3_BALA
     assert_gt "Player 3 balance increased after player-send" "${P3_BALANCE_BEFORE}" "${P3_BALANCE_AFTER}"
 fi
 
-# Note: player-update-primary-address requires a second address registered with
-# a valid cryptographic proof signature, which is complex to generate in bash.
-# Skipping that test but noting the limitation.
-info "player-update-primary-address: SKIP (requires crypto proof for second address)"
+# Note: the PermAll gate for player-update-primary-address is covered in the
+# Player 5 permission phase (self-update while reduced / restored). The happy
+# path that swaps onto a second address still needs a crypto proof signature,
+# which is complex to generate in bash, so that case stays skipped here.
+info "player-update-primary-address second-address swap: SKIP (requires crypto proof)"
 
 fi # phase 15b
 

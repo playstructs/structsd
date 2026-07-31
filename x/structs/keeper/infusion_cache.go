@@ -91,10 +91,16 @@ func (cache *InfusionCache) GetOwner() *PlayerCache {
     return player
 }
 
+// IsEmpty reports whether nothing of value remains in the infusion, making it
+// safe to reclaim. Fuel is part of the test because Power alone can be zeroed
+// while the underlying stake is still live: a reactor whose validator is jailed
+// runs at a zero energy ratio, which drives Power to zero without touching the
+// delegation. Reclaiming on Power alone would delete that record and strand the
+// delegator's fuel.
 func (cache *InfusionCache) IsEmpty() bool {
     if !cache.InfusionLoaded { cache.LoadInfusion() }
 
-    return cache.Infusion.Power == 0 && cache.Infusion.Defusing == 0
+    return cache.Infusion.Fuel == 0 && cache.Infusion.Power == 0 && cache.Infusion.Defusing == 0
 }
 
 // =========================================================================

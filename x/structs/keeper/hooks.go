@@ -22,8 +22,17 @@ func (k Keeper) Hooks() Hooks {
 	return Hooks{k}
 }
 
-// AfterValidatorBonded updates the signing info start height or create a new signing info
-func (h Hooks) AfterValidatorBonded(ctx context.Context, _ sdk.ConsAddress, _ sdk.ValAddress) error {
+// AfterValidatorBonded restores reactor energy once a validator is back in the
+// active set, which is the path a routine unjail takes: MsgUnjail clears the
+// flag and staking rebonds the validator at the end of that block.
+//
+// An operator who unjails but stays below the active-set cutoff never reaches
+// here, and recovers through the permissionless MsgReactorRestart instead.
+//
+// Restoring is a reconciliation against live staking state, so calling it for a
+// validator that was never gated is harmless.
+func (h Hooks) AfterValidatorBonded(ctx context.Context, _ sdk.ConsAddress, valAddr sdk.ValAddress) error {
+	h.k.ReactorRestoreEnergy(ctx, valAddr)
 
 	return nil
 }
@@ -43,7 +52,24 @@ func (h Hooks) AfterValidatorCreated(ctx context.Context, valAddr sdk.ValAddress
 	return nil
 }
 
-func (h Hooks) AfterValidatorBeginUnbonding(_ context.Context, _ sdk.ConsAddress, _ sdk.ValAddress) error {
+// AfterValidatorBeginUnbonding is the primary jail gate for reactor energy.
+//
+// A jail sets the Jailed flag and drops the validator from the power index, and
+// staking's EndBlock in that same block moves it out of the bonded set through
+// bondedToUnbonding, which is what calls us here. Because the structs module is
+// last in the EndBlocker order, the gate lands before our own GridCascade, so
+// the capacity drop and its fallout resolve in the block the jail happened.
+//
+// Gating is conditional on the jail flag: leaving the active set voluntarily is
+// not a reason to stop producing energy, so an unjailed validator that is merely
+// unbonding keeps its reactor running.
+func (h Hooks) AfterValidatorBeginUnbonding(ctx context.Context, _ sdk.ConsAddress, valAddr sdk.ValAddress) error {
+	validator, err := h.k.stakingKeeper.GetValidator(ctx, valAddr)
+	if err != nil || validator.IsJailed() {
+		// A validator that cannot be read is treated as unhealthy, matching the
+		// fail-closed behaviour of reactorEnergyRatio.
+		h.k.ReactorGateEnergy(ctx, valAddr)
+	}
 
 	return nil
 }

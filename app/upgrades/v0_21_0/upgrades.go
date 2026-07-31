@@ -51,6 +51,14 @@ func CreateUpgradeHandler(
 			return newVM, err
 		}
 
+		if err := MigrateJailedReactorEnergy(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
+		if err := MigratePrimaryAddressPermissions(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
 		return newVM, nil
 	}
 }
@@ -322,6 +330,93 @@ func MigrateRaiderArrived(ctx context.Context, keepers *upgrades.Keepers) error 
 	}
 
 	logger.Info("v0.21.0 raider-arrived seed complete", "planetsMarked", planetsMarked)
+	return nil
+}
+
+// MigrateJailedReactorEnergy zeroes the energy ratio on every reactor whose
+// validator is currently jailed or no longer exists in staking.
+//
+// From this release forward, reactor energy is gated by validator health and the
+// AfterValidatorBeginUnbonding hook applies that gate as jails happen. Reactors
+// jailed before the upgrade never passed through that hook, so without this
+// backfill they would keep producing energy indefinitely, which is the exact
+// exploit the release closes.
+//
+// Missing validators are gated as well, matching the fail-closed behaviour of
+// reactorEnergyRatio: a reactor whose validator has been removed from staking
+// entirely has no claim to energy.
+//
+// Idempotent. ReactorGateEnergy skips infusions already at a zero ratio, so a
+// re-run writes nothing and emits no duplicate indexer events. Recovery for any
+// reactor gated here is the same as for any other: it unjails and rebonds, or
+// someone sends MsgReactorRestart.
+func MigrateJailedReactorEnergy(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateJailedReactorEnergy")
+
+	k := keepers.StructsKeeper
+
+	var reactorsGated int
+	for _, reactor := range k.GetAllReactor(ctx) {
+		valAddr, err := sdk.ValAddressFromBech32(reactor.Validator)
+		if err != nil {
+			logger.Error("skipping reactor with unparsable validator address",
+				"reactorId", reactor.Id, "validator", reactor.Validator, "error", err)
+			continue
+		}
+
+		// Read through the structs keeper's staking adapter rather than
+		// keepers.StakingKeeper so this migration is exercisable with the same
+		// mock staking keeper the structs unit tests use, matching v0.17.0.
+		validator, validatorErr := k.StakingKeeper().GetValidator(ctx, valAddr)
+		if validatorErr == nil && !validator.IsJailed() {
+			continue
+		}
+
+		k.ReactorGateEnergy(ctx, valAddr)
+		reactorsGated++
+	}
+
+	logger.Info("v0.21.0 jailed reactor energy gate complete", "reactorsGated", reactorsGated)
+	return nil
+}
+
+// MigratePrimaryAddressPermissions grants PermAll to every player's current
+// primary address.
+//
+// PlayerUpdatePrimaryAddress now requires the caller to hold PermAll, matching
+// the unconditional grant SetPrimaryAddress writes onto the incoming address. A
+// player can reduce their own primary address below PermAll via
+// permission-set/revoke-on-address and cannot restore bits to themself, so
+// without this backfill those accounts would be permanently locked out of the
+// primary-address swap.
+//
+// Idempotent: addresses that already hold PermAll are left untouched, so a
+// re-run writes nothing and emits no duplicate EventPermission.
+func MigratePrimaryAddressPermissions(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migratePrimaryAddressPermissions")
+
+	k := keepers.StructsKeeper
+
+	var addressesUpgraded int
+	for _, player := range k.GetAllPlayer(ctx) {
+		if player.PrimaryAddress == "" {
+			continue
+		}
+
+		permissionId := structskeeper.GetAddressPermissionIDBytes(player.PrimaryAddress)
+		current := k.GetPermissionsByBytes(ctx, permissionId)
+		if current == structstypes.PermAll {
+			continue
+		}
+
+		k.SetPermissionsByBytes(ctx, permissionId, structstypes.PermAll)
+		addressesUpgraded++
+	}
+
+	logger.Info("v0.21.0 primary address permission normalize complete",
+		"addressesUpgraded", addressesUpgraded)
 	return nil
 }
 

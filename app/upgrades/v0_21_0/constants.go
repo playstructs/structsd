@@ -55,6 +55,34 @@ package v0_21_0
 //     is set (planet under raid); on raid end the clocks are shifted forward by
 //     the paused duration so difficulty age is preserved.
 //
+//   - Reactor energy is gated on validator health. A reactor whose validator is
+//     jailed (or has vanished from staking) runs at a zero fuel-to-energy ratio,
+//     which zeroes both the operator's commission energy and every delegator's
+//     share. Fuel and the underlying delegations are untouched, so no stake
+//     moves. The gate is applied by AfterValidatorBeginUnbonding during staking's
+//     EndBlock, which is the same block the jail happens in, and the resulting
+//     capacity drop cascades through the grid in that block. Recovery runs
+//     through AfterValidatorBonded on rebond, or through the new
+//     MsgReactorRestart for an operator who unjails but stays below the
+//     active-set cutoff. Restoration reconciles against live staking state, so
+//     a validator slashed while jailed returns proportionally less energy.
+//
+//   - New permissionless MsgReactorRestart reconciles a reactor's infusions with
+//     live staking state. It writes only derived state, so it carries no
+//     ownership or permission requirement beyond the standard ante-level player
+//     registration, and it force-gates a still-jailed reactor rather than
+//     reviving one.
+//
+//   - Infusion emptiness now requires Fuel == 0 in addition to Power == 0 and
+//     Defusing == 0. Without this, a ratio-zero infusion would be treated as
+//     empty and destroyed by the EndBlock destruction queue, stranding the
+//     delegator's fuel.
+//
+//   - PlayerUpdatePrimaryAddress now requires the caller to hold PermAll. The
+//     handler grants PermAll to the incoming address and moves the player's
+//     balance and delegations with it, so a narrower PermAdmin gate was a
+//     privilege-escalation path. The ante PermissionMap entry matches.
+//
 // State migrations:
 //
 //   - MigrateGuildBankFees: backfill bankConvertInFee / bankConvertOutFee to
@@ -73,4 +101,12 @@ package v0_21_0
 //   - MigrateRaiderArrived: seed blockRaiderArrived on planets with an
 //     in-progress raid so the pause-shift math does not treat the whole clock
 //     age as paused time.
+//
+//   - MigrateJailedReactorEnergy: gate every reactor whose validator is already
+//     jailed or missing at the upgrade height. These never passed through the new
+//     hook, so without the backfill they would keep producing energy forever.
+//
+//   - MigratePrimaryAddressPermissions: grant PermAll to every player's current
+//     primary address so the tightened update gate cannot lock out accounts that
+//     reduced their own address permissions under the old rule.
 const UpgradeName = "v0.21.0"

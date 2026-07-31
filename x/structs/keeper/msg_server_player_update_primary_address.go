@@ -21,12 +21,21 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
         return emptyResponse, err
     }
 
-    player, err := cc.GetPlayerByAddress(msg.PrimaryAddress)
+    // Resolve the target player without GetPlayerByAddress: that helper writes
+    // ActiveAddress onto the shared PlayerCache, and when creator and the new
+    // primary belong to the same player (the normal case) the second call would
+    // overwrite the caller's ActiveAddress. PermissionCheck would then gate on
+    // the incoming address's bits instead of the signer's.
+    targetIndex := cc.GetPlayerIndexFromAddress(msg.PrimaryAddress)
+    if targetIndex == 0 {
+        return emptyResponse, types.NewAddressValidationError(msg.PrimaryAddress, "not_registered")
+    }
+    player, err := cc.GetPlayer(GetObjectID(types.ObjectType_player, targetIndex))
     if err != nil {
        return emptyResponse, err
     }
 
-    err = player.CanBeAdministeredBy(callingPlayer)
+    err = player.CanUpdatePrimaryAddressBy(callingPlayer)
     if err != nil {
        return emptyResponse, err
     }

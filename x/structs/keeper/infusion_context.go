@@ -107,7 +107,7 @@ func (cc *CurrentContext) ProcessInfusionDestructionQueue() {
 
         for _, infusionId := range queue {
             infusion := cc.GetInfusionById(infusionId)
-            if (infusion.CheckInfusion() == nil && infusion.GetInfusion().Power == 0 && infusion.GetInfusion().Defusing == 0) {
+            if (infusion.CheckInfusion() == nil && infusion.IsEmpty()) {
                 infusion.Destroy()
             }
         }

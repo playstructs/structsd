@@ -367,6 +367,15 @@ func (cache *PlayerCache) CanBeAdministeredBy(activePlayer *PlayerCache) (err er
 	return cache.CC.PermissionCheck(cache, activePlayer, types.PermAdmin)
 }
 
+// CanUpdatePrimaryAddressBy gates the primary address swap on the caller holding
+// every right rather than just PermAdmin. SetPrimaryAddress grants PermAll to the
+// incoming address and the handler moves the balance and delegations with it, so
+// anything less would let a narrowly scoped delegate escalate itself -- the same
+// escalation CanRegisterAddressBy already prevents.
+func (cache *PlayerCache) CanUpdatePrimaryAddressBy(activePlayer *PlayerCache) error {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermAll)
+}
+
 func (cache *PlayerCache) CanTransferTokensBy(activePlayer *PlayerCache) (err error) {
 	return cache.CC.PermissionCheck(cache, activePlayer, types.PermTokenTransfer)
 }

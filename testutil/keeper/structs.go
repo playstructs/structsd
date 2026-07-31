@@ -232,6 +232,43 @@ func (m *MockStakingKeeper) JailValidator(operatorAddr sdk.ValAddress) {
 	m.validators[operatorAddr.String()] = val
 }
 
+// UnjailValidator clears the jail flag but leaves the bond status alone, which
+// is exactly what MsgUnjail does: rebonding is a separate decision staking makes
+// in EndBlock, and only if the validator is inside the active-set cutoff. Pair
+// with BondValidator to model the full recovery. Used by tests for the reactor
+// energy recovery path.
+func (m *MockStakingKeeper) UnjailValidator(operatorAddr sdk.ValAddress) {
+	val, ok := m.validators[operatorAddr.String()]
+	if !ok {
+		return
+	}
+	val.Jailed = false
+	m.validators[operatorAddr.String()] = val
+}
+
+// BondValidator returns a validator to the bonded set, modelling the rebond that
+// staking performs in EndBlock for an unjailed validator inside the active set.
+func (m *MockStakingKeeper) BondValidator(operatorAddr sdk.ValAddress) {
+	val, ok := m.validators[operatorAddr.String()]
+	if !ok {
+		return
+	}
+	val.Status = stakingtypes.Bonded
+	m.validators[operatorAddr.String()] = val
+}
+
+// SlashValidatorTokens reduces a validator's token pool while leaving its
+// delegator shares alone, which is how Cosmos slashing devalues each share.
+// Used by tests that check energy returns proportionally lower after a slash.
+func (m *MockStakingKeeper) SlashValidatorTokens(operatorAddr sdk.ValAddress, remaining math.Int) {
+	val, ok := m.validators[operatorAddr.String()]
+	if !ok {
+		return
+	}
+	val.Tokens = remaining
+	m.validators[operatorAddr.String()] = val
+}
+
 // RemoveValidator deletes a validator from the mock. Used by tests that
 // simulate a permanently retired validator (the recovery scenario for
 // MsgGuildUpdatePrimaryReactor).

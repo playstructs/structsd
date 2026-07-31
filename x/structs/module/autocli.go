@@ -743,6 +743,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "delegator_address"},{ProtoField: "validator_address"},{ProtoField: "amount"},{ProtoField: "creation_height"}},
                  },
                  {
+                    RpcMethod:      "ReactorRestart",
+                    Use:            "reactor-restart [reactor address]",
+                    Short:          "Resync a Reactor's energy output with its validator, restoring it after an unjail",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "validator_address"}},
+                 },
+                 {
                      RpcMethod:      "StructActivate",
                      Use:            "struct-activate [struct id]",
                      Short:          "Bring a Struct online",

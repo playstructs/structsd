@@ -82,6 +82,7 @@ var KnownStructsMessages = map[string]bool{
 	"/structs.structs.MsgReactorCancelDefusion":                          true,
 	"/structs.structs.MsgReactorDefuse":                                  true,
 	"/structs.structs.MsgReactorInfuse":                                  true,
+	"/structs.structs.MsgReactorRestart":                                 true,
 	"/structs.structs.MsgStructActivate":                                 true,
 	"/structs.structs.MsgStructAttack":                                   true,
 	"/structs.structs.MsgStructBuildCancel":                              true,
@@ -166,8 +167,11 @@ var PermissionMap = map[string]types.Permission{
 	"/structs.structs.MsgAllocationTransfer":           types.PermAdmin,
 	"/structs.structs.MsgGuildUpdateOwnerId":           types.PermAdmin,
 	"/structs.structs.MsgGuildUpdatePrimaryReactor":    types.PermAdmin,
-	"/structs.structs.MsgPlayerUpdatePrimaryAddress":   types.PermAdmin,
 	"/structs.structs.MsgGuildUpdateEntryRank":        types.PermUpdate,
+
+	// Primary address swap grants PermAll to the incoming address and moves
+	// balances/delegations with it, so the caller must already hold every bit.
+	"/structs.structs.MsgPlayerUpdatePrimaryAddress": types.PermAll,
 
 	// Object updates
 	"/structs.structs.MsgAgreementCapacityDecrease":   types.PermUpdate,
@@ -237,6 +241,11 @@ var DynamicPermissionMessages = map[string]bool{
 	"/structs.structs.MsgSubstationUpdateName":                  true,
 	"/structs.structs.MsgSubstationUpdatePfp":                   true,
 	"/structs.structs.MsgPlanetUpdateName":                      true,
+
+	// MsgReactorRestart requires no permission at all. It only writes state
+	// derived from the staking module, so any player may reconcile any reactor;
+	// the ante-level player registration check is the whole gate.
+	"/structs.structs.MsgReactorRestart":                        true,
 }
 
 // ChargeMessages are messages that check charge (blockHeight - lastAction) in

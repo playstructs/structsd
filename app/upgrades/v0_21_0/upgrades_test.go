@@ -259,3 +259,142 @@ func TestMigrateRaiderArrived(t *testing.T) {
 	require.NoError(t, v0_21_0.MigrateRaiderArrived(ctx, keepers))
 	require.Equal(t, uint64(upgradeHeight), k.GetPlanetAttribute(ctx, raidedAttrId))
 }
+
+// TestMigrateJailedReactorEnergy covers the backfill for reactors that were
+// already jailed when the upgrade lands. They never passed through the new
+// AfterValidatorBeginUnbonding gate, so without this they would keep producing
+// energy forever, which is the exploit the release closes.
+func TestMigrateJailedReactorEnergy(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+	mock := k.StakingKeeper().(*keepertest.MockStakingKeeper)
+
+	// Three reactors: one healthy, one jailed, one whose validator is gone.
+	setup := func(seed string) (types.Reactor, sdk.AccAddress, sdk.ValAddress) {
+		playerAcc := sdk.AccAddress(fmt.Sprintf("%-36s", seed)[:36])
+		player := types.Player{Creator: playerAcc.String(), PrimaryAddress: playerAcc.String()}
+		player.Index = k.GetPlayerCount(ctx)
+		player.Id = fmt.Sprintf("%d-%d", types.ObjectType_player, player.Index)
+		k.SetPlayer(ctx, player)
+		k.SetPlayerCount(ctx, player.Index+1)
+		k.SetPlayerIndexForAddress(ctx, player.PrimaryAddress, player.Index)
+
+		valAddr := sdk.ValAddress(playerAcc.Bytes())
+		mock.AddValidator(valAddr, math.NewInt(1000))
+
+		reactor := k.AppendReactor(ctx, types.Reactor{
+			Validator:         valAddr.String(),
+			RawAddress:        valAddr.Bytes(),
+			DefaultCommission: math.LegacyZeroDec(),
+		})
+
+		k.SetInfusion(ctx, types.Infusion{
+			DestinationType: types.ObjectType_reactor,
+			DestinationId:   reactor.Id,
+			Address:         playerAcc.String(),
+			PlayerId:        player.Id,
+			Ratio:           types.ReactorFuelToEnergyConversion,
+			Fuel:            1000,
+			Power:           1000,
+			Commission:      math.LegacyZeroDec(),
+		})
+		k.SetGridAttribute(ctx, structskeeper.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id), uint64(1000))
+
+		return reactor, playerAcc, valAddr
+	}
+
+	healthyReactor, healthyAcc, _ := setup("migratehealthy")
+	jailedReactor, jailedAcc, jailedVal := setup("migratejailed")
+	goneReactor, goneAcc, goneVal := setup("migrategone")
+
+	mock.JailValidator(jailedVal)
+	mock.RemoveValidator(goneVal)
+
+	require.NoError(t, v0_21_0.MigrateJailedReactorEnergy(ctx, keepers))
+
+	healthy, found := k.GetInfusion(ctx, healthyReactor.Id, healthyAcc.String())
+	require.True(t, found)
+	require.Equal(t, uint64(types.ReactorFuelToEnergyConversion), healthy.Ratio, "a bonded validator is left alone")
+	require.Equal(t, uint64(1000), healthy.Power)
+
+	jailed, found := k.GetInfusion(ctx, jailedReactor.Id, jailedAcc.String())
+	require.True(t, found)
+	require.Equal(t, uint64(0), jailed.Ratio, "an already-jailed reactor is gated")
+	require.Equal(t, uint64(0), jailed.Power)
+	require.Equal(t, uint64(1000), jailed.Fuel, "the delegator's stake survives the migration")
+
+	gone, found := k.GetInfusion(ctx, goneReactor.Id, goneAcc.String())
+	require.True(t, found)
+	require.Equal(t, uint64(0), gone.Ratio, "a missing validator fails closed")
+	require.Equal(t, uint64(1000), gone.Fuel)
+
+	// Idempotent: a replayed upgrade block produces identical rows.
+	require.NoError(t, v0_21_0.MigrateJailedReactorEnergy(ctx, keepers))
+
+	replayed, found := k.GetInfusion(ctx, jailedReactor.Id, jailedAcc.String())
+	require.True(t, found)
+	require.Equal(t, jailed, replayed)
+}
+
+func TestMigratePrimaryAddressPermissions(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+
+	appendPlayer := func(seed string) types.Player {
+		playerAcc := sdk.AccAddress(fmt.Sprintf("%-36s", seed)[:36])
+		player := types.Player{
+			Creator:        playerAcc.String(),
+			PrimaryAddress: playerAcc.String(),
+		}
+		player.Index = k.GetPlayerCount(ctx)
+		player.Id = fmt.Sprintf("%d-%d", types.ObjectType_player, player.Index)
+		k.SetPlayer(ctx, player)
+		k.SetPlayerCount(ctx, player.Index+1)
+		k.SetPlayerIndexForAddress(ctx, player.PrimaryAddress, player.Index)
+		return player
+	}
+
+	reduced := appendPlayer("migrateprimaryreduced")
+	absent := appendPlayer("migrateprimaryabsent")
+	alreadyFull := appendPlayer("migrateprimaryfull")
+	nonPrimaryOwner := appendPlayer("migrateprimarynonprim")
+
+	reducedId := structskeeper.GetAddressPermissionIDBytes(reduced.PrimaryAddress)
+	k.SetPermissionsByBytes(ctx, reducedId, types.PermAll&^types.PermDelete)
+
+	// Absent: leave the primary-address permission record unset.
+	absentId := structskeeper.GetAddressPermissionIDBytes(absent.PrimaryAddress)
+	require.Equal(t, types.Permissionless, k.GetPermissionsByBytes(ctx, absentId))
+
+	fullId := structskeeper.GetAddressPermissionIDBytes(alreadyFull.PrimaryAddress)
+	k.SetPermissionsByBytes(ctx, fullId, types.PermAll)
+
+	// A secondary address associated with the player but not its primary —
+	// must not be rewritten by the migration.
+	nonPrimaryAcc := sdk.AccAddress(fmt.Sprintf("%-36s", "migrateprimarysecondary")[:36])
+	nonPrimaryAddress := nonPrimaryAcc.String()
+	k.SetPlayerIndexForAddress(ctx, nonPrimaryAddress, nonPrimaryOwner.Index)
+	nonPrimaryId := structskeeper.GetAddressPermissionIDBytes(nonPrimaryAddress)
+	k.SetPermissionsByBytes(ctx, nonPrimaryId, types.PermPlay)
+
+	// The non-primary owner's primary address starts full so only the
+	// secondary-address assertion is interesting for that player.
+	ownerPrimaryId := structskeeper.GetAddressPermissionIDBytes(nonPrimaryOwner.PrimaryAddress)
+	k.SetPermissionsByBytes(ctx, ownerPrimaryId, types.PermAll)
+
+	require.NoError(t, v0_21_0.MigratePrimaryAddressPermissions(ctx, keepers))
+
+	require.Equal(t, types.PermAll, k.GetPermissionsByBytes(ctx, reducedId),
+		"a reduced primary address is upgraded to PermAll")
+	require.Equal(t, types.PermAll, k.GetPermissionsByBytes(ctx, absentId),
+		"a missing primary-address permission record is created as PermAll")
+	require.Equal(t, types.PermAll, k.GetPermissionsByBytes(ctx, fullId),
+		"an already-full primary address is left alone")
+	require.Equal(t, types.PermPlay, k.GetPermissionsByBytes(ctx, nonPrimaryId),
+		"a non-primary address is not rewritten")
+
+	// Idempotent: a re-run writes nothing further.
+	require.NoError(t, v0_21_0.MigratePrimaryAddressPermissions(ctx, keepers))
+	require.Equal(t, types.PermAll, k.GetPermissionsByBytes(ctx, reducedId))
+	require.Equal(t, types.PermPlay, k.GetPermissionsByBytes(ctx, nonPrimaryId))
+}

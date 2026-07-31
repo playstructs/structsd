@@ -110,6 +110,7 @@ service Msg {
   rpc ReactorDefuse                  (MsgReactorDefuse                 ) returns (MsgReactorDefuseResponse);
   rpc ReactorBeginMigration          (MsgReactorBeginMigration         ) returns (MsgReactorBeginMigrationResponse);
   rpc ReactorCancelDefusion          (MsgReactorCancelDefusion         ) returns (MsgReactorCancelDefusionResponse);
+  rpc ReactorRestart                 (MsgReactorRestart                ) returns (MsgReactorRestartResponse);
 
   rpc StructActivate                 (MsgStructActivate                ) returns (MsgStructStatusResponse                  );
   rpc StructDeactivate               (MsgStructDeactivate              ) returns (MsgStructStatusResponse                  );
@@ -831,6 +832,28 @@ message MsgReactorCancelDefusion {
 //
 // Since: cosmos-sdk 0.46
 message MsgReactorCancelDefusionResponse {}
+
+// MsgReactorRestart reconciles a reactor's infusions against live staking state.
+//
+// Energy is gated to zero while a validator is jailed. A routine unjail restores
+// it automatically when staking rebonds the validator, but an operator who
+// unjails while sitting below the active-set cutoff is never rebonded and so
+// never recovers on its own. This message is that recovery path.
+//
+// Intentionally permissionless: it only ever writes state derived from the
+// staking module, so it cannot grant energy that the validator is not owed. That
+// also makes it usable in the other direction, to force-gate a jailed reactor.
+message MsgReactorRestart {
+  option (cosmos.msg.v1.signer)      = "creator";
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string creator           = 1;
+  string validator_address = 2 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
+}
+
+// MsgReactorRestartResponse
+message MsgReactorRestartResponse {}
 
 
 message MsgStructStatusResponse {

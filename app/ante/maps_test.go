@@ -91,3 +91,10 @@ func TestProofMessagesHaveCorrectPermissions(t *testing.T) {
 		require.Equal(t, expectedPerm, actualPerm, "wrong permission for %s", typeURL)
 	}
 }
+
+func TestPlayerUpdatePrimaryAddressRequiresPermAll(t *testing.T) {
+	actualPerm, ok := PermissionMap["/structs.structs.MsgPlayerUpdatePrimaryAddress"]
+	require.True(t, ok, "MsgPlayerUpdatePrimaryAddress missing from PermissionMap")
+	require.Equal(t, types.PermAll, actualPerm,
+		"primary address swap grants PermAll and must require it from the caller")
+}
