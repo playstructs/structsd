@@ -121,6 +121,7 @@ var (
 	ErrStructNoRefiningSystem = sdkerrors.Register(ModuleName, 1262, "struct has no refining system")
 	ErrStructNoStealthSystem = sdkerrors.Register(ModuleName, 1263, "struct has no stealth system")
 	ErrStructNoGenerationSystem = sdkerrors.Register(ModuleName, 1264, "struct has no generation system")
+	ErrStructCannotDefend    = sdkerrors.Register(ModuleName, 1265, "struct cannot defend")
 	ErrStructInfuse          = sdkerrors.Register(ModuleName, 1270, "struct fuel infusion failed")
 )
 

@@ -52,6 +52,11 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
         return emptyResponse, types.NewStructStateError(msg.DefenderStructId, "offline", "online", "defense_set")
     }
 
+    // Only struct types flagged as able to defend may register as a defender
+    if defenseCapabilityError := structure.CanDefend(); defenseCapabilityError != nil {
+        return emptyResponse, defenseCapabilityError
+    }
+
     // Check Player Charge
     if (structure.GetOwner().GetCharge() < structure.GetStructType().DefendChangeCharge) {
         err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().DefendChangeCharge, structure.GetOwner().GetCharge(), "defend").WithStructType(structure.GetStructType().Id)

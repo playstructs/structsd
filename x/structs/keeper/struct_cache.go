@@ -558,6 +558,13 @@ func (cache *StructCache) OreMinePlanet() {
 	cache.ResetBlockStartOreMine()
 }
 
+func (cache *StructCache) CanDefend() error {
+	if !cache.GetStructType().CanDefend {
+		return types.NewStructCannotDefendError(cache.StructId)
+	}
+	return nil
+}
+
 func (cache *StructCache) CanOreRefine() error {
 
 	if !cache.GetStructType().HasOreRefiningSystem() {

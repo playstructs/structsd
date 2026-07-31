@@ -18,6 +18,7 @@ structType = StructType{
  DefaultCosmeticModelNumber: "ST-21", 
  DefaultCosmeticName: "Spearpoint",               
  Category: ObjectType_fleet,       
+ CanDefend: true,
                                                                          
  BuildLimit: 1,                                 
  BuildDifficulty: 200,                       
@@ -106,6 +107,7 @@ structType = StructType{
  DefaultCosmeticModelNumber: "CT-C", 
  DefaultCosmeticName: "Cataclysm",               
  Category: ObjectType_fleet,       
+ CanDefend: true,
                                                                          
  BuildLimit: 0,                                 
  BuildDifficulty: 765,                       
@@ -192,6 +194,7 @@ structType = StructType{
  DefaultCosmeticModelNumber: "GB-1", 
  DefaultCosmeticName: "Gambit",               
  Category: ObjectType_fleet,       
+ CanDefend: true,
                                                                          
  BuildLimit: 0,                                 
  BuildDifficulty: 250,                       
@@ -279,6 +282,7 @@ structType = StructType{
  DefaultCosmeticModelNumber: "SK-4", 
  DefaultCosmeticName: "Skylight",               
  Category: ObjectType_fleet,       
+ CanDefend: true,
                                                                          
  BuildLimit: 0,                                 
  BuildDifficulty: 450,                       
@@ -365,6 +369,7 @@ structType = StructType{
  DefaultCosmeticModelNumber: "SQ-11", 
  DefaultCosmeticName: "Squall",               
  Category: ObjectType_fleet,       
+ CanDefend: true,
                                                                          
  BuildLimit: 0,                                 
  BuildDifficulty: 215,                       
@@ -451,6 +456,7 @@ structType = StructType{
  DefaultCosmeticModelNumber: "RT-4", 
  DefaultCosmeticName: "Rolling Thunder",               
  Category: ObjectType_fleet,       
+ CanDefend: true,
                                                                          
  BuildLimit: 0,                                 
  BuildDifficulty: 455,                       
@@ -537,6 +543,7 @@ structType = StructType{
  DefaultCosmeticModelNumber: "SKMR", 
  DefaultCosmeticName: "Skimmer",               
  Category: ObjectType_fleet,       
+ CanDefend: true,
                                                                          
  BuildLimit: 0,                                 
  BuildDifficulty: 460,                       
@@ -623,6 +630,7 @@ structType = StructType{
  DefaultCosmeticModelNumber: "AC-4", 
  DefaultCosmeticName: "Archer",               
  Category: ObjectType_fleet,       
+ CanDefend: true,
                                                                          
  BuildLimit: 0,                                 
  BuildDifficulty: 305,                       
@@ -709,6 +717,7 @@ structType = StructType{
  DefaultCosmeticModelNumber: "BR-9", 
  DefaultCosmeticName: "Breakaway",               
  Category: ObjectType_fleet,       
+ CanDefend: true,
                                                                          
  BuildLimit: 0,                                 
  BuildDifficulty: 220,                       
@@ -795,6 +804,7 @@ structType = StructType{
  DefaultCosmeticModelNumber: "LG-5", 
  DefaultCosmeticName: "Longshot",               
  Category: ObjectType_fleet,       
+ CanDefend: true,
                                                                          
  BuildLimit: 0,                                 
  BuildDifficulty: 450,                       
@@ -881,6 +891,7 @@ structType = StructType{
  DefaultCosmeticModelNumber: "HD-44", 
  DefaultCosmeticName: "Hydra",               
  Category: ObjectType_fleet,       
+ CanDefend: true,
                                                                          
  BuildLimit: 0,                                 
  BuildDifficulty: 515,                       
@@ -967,6 +978,7 @@ structType = StructType{
  DefaultCosmeticModelNumber: "KR-3", 
  DefaultCosmeticName: "Kraken",               
  Category: ObjectType_fleet,       
+ CanDefend: true,
                                                                          
  BuildLimit: 0,                                 
  BuildDifficulty: 600,                       
@@ -1053,6 +1065,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      DefaultCosmeticModelNumber: "LV-2",
      DefaultCosmeticName: "Leviathan",
      Category: ObjectType_fleet,
+     CanDefend: true,
 
      BuildLimit: 0,
      BuildDifficulty: 455,
@@ -1139,6 +1152,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      DefaultCosmeticModelNumber: "LS-0",
      DefaultCosmeticName: "Lasersword",
      Category: ObjectType_planet,
+     CanDefend: false,
 
      BuildLimit: 1,
      BuildDifficulty: 700,
@@ -1225,6 +1239,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      DefaultCosmeticModelNumber: "GR-3",
      DefaultCosmeticName: "Greybox",
      Category: ObjectType_planet,
+     CanDefend: false,
 
      BuildLimit: 1,
      BuildDifficulty: 700,
@@ -1311,6 +1326,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      DefaultCosmeticModelNumber: "T70",
      DefaultCosmeticName: "Shieldwall",
      Category: ObjectType_planet,
+     CanDefend: false,
 
      BuildLimit: 0,
      BuildDifficulty: 720,
@@ -1397,6 +1413,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      DefaultCosmeticModelNumber: "OB-6",
      DefaultCosmeticName: "Observer",
      Category: ObjectType_planet,
+     CanDefend: false,
 
      BuildLimit: 1,
      BuildDifficulty: 2880,
@@ -1483,6 +1500,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      DefaultCosmeticModelNumber: "HS-99",
      DefaultCosmeticName: "Hardshell",
      Category: ObjectType_planet,
+     CanDefend: false,
 
      BuildLimit: 0,
      BuildDifficulty: 3600,
@@ -1569,6 +1587,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      DefaultCosmeticModelNumber: "LK-7",
      DefaultCosmeticName: "Lookout",
      Category: ObjectType_planet,
+     CanDefend: false,
 
      BuildLimit: 1,
      BuildDifficulty: 2880,
@@ -1655,6 +1674,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      DefaultCosmeticModelNumber: "MG-4",
      DefaultCosmeticName: "Magenta",
      Category: ObjectType_planet,
+     CanDefend: false,
 
      BuildLimit: 1,
      BuildDifficulty: 700,
@@ -1741,6 +1761,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      DefaultCosmeticModelNumber: "HS-5",
      DefaultCosmeticName: "Homestead",
      Category: ObjectType_planet,
+     CanDefend: false,
 
      BuildLimit: 1,
      BuildDifficulty: 1440,
@@ -1827,6 +1848,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      DefaultCosmeticModelNumber: "CS-8",
      DefaultCosmeticName: "Constellation",
      Category: ObjectType_planet,
+     CanDefend: false,
 
      BuildLimit: 1,
      BuildDifficulty: 5000,

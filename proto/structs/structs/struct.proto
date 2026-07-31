@@ -139,6 +139,8 @@ message StructType {
 
   bool primaryWeaponArmourPiercing   = 69;
   bool secondaryWeaponArmourPiercing = 70;
+
+  bool canDefend = 71; // Can this struct register as a defender? (fleet: true, planetary: false)
 }
 
 message StructDefender {

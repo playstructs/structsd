@@ -5784,6 +5784,15 @@ MA_DEFENDERS=$(echo "${MOBILE_ART_JSON}" | jq -r '.structDefenders | length' 2>/
 assert_gt "Mobile Artillery has defenders" 0 "${MA_DEFENDERS}"
 info "Mobile Artillery defender count: ${MA_DEFENDERS}"
 
+# ─── v0.21.0: planetary structs cannot defend (canDefend=false) ───
+# The Ore Extractor (type 14, planet-category) is co-located with the docked
+# Mobile Artillery, so the range check passes; the canDefend gate is the
+# isolated failure. canDefend gates the DEFENDER, not the protected struct —
+# a fleet struct defending the Ore Extractor is still allowed (see line 7186).
+wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
+run_tx_expect_fail "P6 Ore Extractor cannot defend (planetary struct, canDefend=false, v0.21.0)" \
+    tx structs struct-defense-set "${EB_ORE_EXTRACTOR_ID}" "${EB_MOBILE_ART_ID}" --from player_6
+
 # ─── P6: Frigate + Starfighter defend P6 Battleship (multiple defenders, space) ───
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
 run_tx "P6 Frigate defends P6 Battleship" \

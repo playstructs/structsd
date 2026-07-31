@@ -355,6 +355,32 @@ func (e *StructCapabilityError) LogFields() []interface{} {
 
 func (e *StructCapabilityError) Unwrap() error { return ErrStructCapability }
 
+// StructCannotDefendError indicates a struct's type is not permitted to defend.
+type StructCannotDefendError struct {
+	StructId string
+}
+
+func NewStructCannotDefendError(structId string) *StructCannotDefendError {
+	return &StructCannotDefendError{
+		StructId: structId,
+	}
+}
+
+func (e *StructCannotDefendError) Error() string {
+	return fmt.Sprintf("struct (%s) cannot defend", e.StructId)
+}
+
+func (e *StructCannotDefendError) Code() uint32 { return 1265 }
+
+func (e *StructCannotDefendError) LogFields() []interface{} {
+	return []interface{}{
+		"error_type", "struct_cannot_defend",
+		"struct_id", e.StructId,
+	}
+}
+
+func (e *StructCannotDefendError) Unwrap() error { return ErrStructCannotDefend }
+
 // =============================================================================
 // 8. FleetCommandError
 // =============================================================================

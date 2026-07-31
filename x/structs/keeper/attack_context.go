@@ -469,6 +469,14 @@ func (ac *AttackContext) ResolveDefenders(skipBlock bool) {
 			continue
 		}
 
+		// A struct type that cannot defend must never act as a defender, even
+		// if a stale registration survived (e.g. a planetary defender created
+		// before the canDefend rule and not yet pruned).
+		if defender.CanDefend() != nil {
+			ac.Attacker.CC.k.logger.Debug("Defender struct type cannot defend", "defender", defender.GetStructId())
+			continue
+		}
+
 		ac.Attacker.CC.k.logger.Debug("Defender seems ready to defend")
 
 		if weaponCounterable {
