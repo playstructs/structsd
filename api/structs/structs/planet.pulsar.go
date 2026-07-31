@@ -2020,6 +2020,11 @@ var (
 	fd_PlanetAttributes_orbitalJammingStationQuantity                              protoreflect.FieldDescriptor
 	fd_PlanetAttributes_advancedOrbitalJammingStationQuantity                      protoreflect.FieldDescriptor
 	fd_PlanetAttributes_blockStartRaid                                             protoreflect.FieldDescriptor
+	fd_PlanetAttributes_blockRaiderArrived                                         protoreflect.FieldDescriptor
+	fd_PlanetAttributes_blockStartOreMine                                          protoreflect.FieldDescriptor
+	fd_PlanetAttributes_blockStartOreRefine                                        protoreflect.FieldDescriptor
+	fd_PlanetAttributes_oreMiningActiveQuantity                                    protoreflect.FieldDescriptor
+	fd_PlanetAttributes_oreRefiningActiveQuantity                                  protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -2036,6 +2041,11 @@ func init() {
 	fd_PlanetAttributes_orbitalJammingStationQuantity = md_PlanetAttributes.Fields().ByName("orbitalJammingStationQuantity")
 	fd_PlanetAttributes_advancedOrbitalJammingStationQuantity = md_PlanetAttributes.Fields().ByName("advancedOrbitalJammingStationQuantity")
 	fd_PlanetAttributes_blockStartRaid = md_PlanetAttributes.Fields().ByName("blockStartRaid")
+	fd_PlanetAttributes_blockRaiderArrived = md_PlanetAttributes.Fields().ByName("blockRaiderArrived")
+	fd_PlanetAttributes_blockStartOreMine = md_PlanetAttributes.Fields().ByName("blockStartOreMine")
+	fd_PlanetAttributes_blockStartOreRefine = md_PlanetAttributes.Fields().ByName("blockStartOreRefine")
+	fd_PlanetAttributes_oreMiningActiveQuantity = md_PlanetAttributes.Fields().ByName("oreMiningActiveQuantity")
+	fd_PlanetAttributes_oreRefiningActiveQuantity = md_PlanetAttributes.Fields().ByName("oreRefiningActiveQuantity")
 }
 
 var _ protoreflect.Message = (*fastReflection_PlanetAttributes)(nil)
@@ -2169,6 +2179,36 @@ func (x *fastReflection_PlanetAttributes) Range(f func(protoreflect.FieldDescrip
 			return
 		}
 	}
+	if x.BlockRaiderArrived != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.BlockRaiderArrived)
+		if !f(fd_PlanetAttributes_blockRaiderArrived, value) {
+			return
+		}
+	}
+	if x.BlockStartOreMine != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.BlockStartOreMine)
+		if !f(fd_PlanetAttributes_blockStartOreMine, value) {
+			return
+		}
+	}
+	if x.BlockStartOreRefine != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.BlockStartOreRefine)
+		if !f(fd_PlanetAttributes_blockStartOreRefine, value) {
+			return
+		}
+	}
+	if x.OreMiningActiveQuantity != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.OreMiningActiveQuantity)
+		if !f(fd_PlanetAttributes_oreMiningActiveQuantity, value) {
+			return
+		}
+	}
+	if x.OreRefiningActiveQuantity != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.OreRefiningActiveQuantity)
+		if !f(fd_PlanetAttributes_oreRefiningActiveQuantity, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -2206,6 +2246,16 @@ func (x *fastReflection_PlanetAttributes) Has(fd protoreflect.FieldDescriptor) b
 		return x.AdvancedOrbitalJammingStationQuantity != uint64(0)
 	case "structs.structs.PlanetAttributes.blockStartRaid":
 		return x.BlockStartRaid != uint64(0)
+	case "structs.structs.PlanetAttributes.blockRaiderArrived":
+		return x.BlockRaiderArrived != uint64(0)
+	case "structs.structs.PlanetAttributes.blockStartOreMine":
+		return x.BlockStartOreMine != uint64(0)
+	case "structs.structs.PlanetAttributes.blockStartOreRefine":
+		return x.BlockStartOreRefine != uint64(0)
+	case "structs.structs.PlanetAttributes.oreMiningActiveQuantity":
+		return x.OreMiningActiveQuantity != uint64(0)
+	case "structs.structs.PlanetAttributes.oreRefiningActiveQuantity":
+		return x.OreRefiningActiveQuantity != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.PlanetAttributes"))
@@ -2244,6 +2294,16 @@ func (x *fastReflection_PlanetAttributes) Clear(fd protoreflect.FieldDescriptor)
 		x.AdvancedOrbitalJammingStationQuantity = uint64(0)
 	case "structs.structs.PlanetAttributes.blockStartRaid":
 		x.BlockStartRaid = uint64(0)
+	case "structs.structs.PlanetAttributes.blockRaiderArrived":
+		x.BlockRaiderArrived = uint64(0)
+	case "structs.structs.PlanetAttributes.blockStartOreMine":
+		x.BlockStartOreMine = uint64(0)
+	case "structs.structs.PlanetAttributes.blockStartOreRefine":
+		x.BlockStartOreRefine = uint64(0)
+	case "structs.structs.PlanetAttributes.oreMiningActiveQuantity":
+		x.OreMiningActiveQuantity = uint64(0)
+	case "structs.structs.PlanetAttributes.oreRefiningActiveQuantity":
+		x.OreRefiningActiveQuantity = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.PlanetAttributes"))
@@ -2293,6 +2353,21 @@ func (x *fastReflection_PlanetAttributes) Get(descriptor protoreflect.FieldDescr
 	case "structs.structs.PlanetAttributes.blockStartRaid":
 		value := x.BlockStartRaid
 		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.blockRaiderArrived":
+		value := x.BlockRaiderArrived
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.blockStartOreMine":
+		value := x.BlockStartOreMine
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.blockStartOreRefine":
+		value := x.BlockStartOreRefine
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.oreMiningActiveQuantity":
+		value := x.OreMiningActiveQuantity
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.oreRefiningActiveQuantity":
+		value := x.OreRefiningActiveQuantity
+		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.PlanetAttributes"))
@@ -2335,6 +2410,16 @@ func (x *fastReflection_PlanetAttributes) Set(fd protoreflect.FieldDescriptor, v
 		x.AdvancedOrbitalJammingStationQuantity = value.Uint()
 	case "structs.structs.PlanetAttributes.blockStartRaid":
 		x.BlockStartRaid = value.Uint()
+	case "structs.structs.PlanetAttributes.blockRaiderArrived":
+		x.BlockRaiderArrived = value.Uint()
+	case "structs.structs.PlanetAttributes.blockStartOreMine":
+		x.BlockStartOreMine = value.Uint()
+	case "structs.structs.PlanetAttributes.blockStartOreRefine":
+		x.BlockStartOreRefine = value.Uint()
+	case "structs.structs.PlanetAttributes.oreMiningActiveQuantity":
+		x.OreMiningActiveQuantity = value.Uint()
+	case "structs.structs.PlanetAttributes.oreRefiningActiveQuantity":
+		x.OreRefiningActiveQuantity = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.PlanetAttributes"))
@@ -2377,6 +2462,16 @@ func (x *fastReflection_PlanetAttributes) Mutable(fd protoreflect.FieldDescripto
 		panic(fmt.Errorf("field advancedOrbitalJammingStationQuantity of message structs.structs.PlanetAttributes is not mutable"))
 	case "structs.structs.PlanetAttributes.blockStartRaid":
 		panic(fmt.Errorf("field blockStartRaid of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.blockRaiderArrived":
+		panic(fmt.Errorf("field blockRaiderArrived of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.blockStartOreMine":
+		panic(fmt.Errorf("field blockStartOreMine of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.blockStartOreRefine":
+		panic(fmt.Errorf("field blockStartOreRefine of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.oreMiningActiveQuantity":
+		panic(fmt.Errorf("field oreMiningActiveQuantity of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.oreRefiningActiveQuantity":
+		panic(fmt.Errorf("field oreRefiningActiveQuantity of message structs.structs.PlanetAttributes is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.PlanetAttributes"))
@@ -2411,6 +2506,16 @@ func (x *fastReflection_PlanetAttributes) NewField(fd protoreflect.FieldDescript
 	case "structs.structs.PlanetAttributes.advancedOrbitalJammingStationQuantity":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.PlanetAttributes.blockStartRaid":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.blockRaiderArrived":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.blockStartOreMine":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.blockStartOreRefine":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.oreMiningActiveQuantity":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.oreRefiningActiveQuantity":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
@@ -2514,6 +2619,21 @@ func (x *fastReflection_PlanetAttributes) ProtoMethods() *protoiface.Methods {
 		if x.BlockStartRaid != 0 {
 			n += 1 + runtime.Sov(uint64(x.BlockStartRaid))
 		}
+		if x.BlockRaiderArrived != 0 {
+			n += 1 + runtime.Sov(uint64(x.BlockRaiderArrived))
+		}
+		if x.BlockStartOreMine != 0 {
+			n += 1 + runtime.Sov(uint64(x.BlockStartOreMine))
+		}
+		if x.BlockStartOreRefine != 0 {
+			n += 1 + runtime.Sov(uint64(x.BlockStartOreRefine))
+		}
+		if x.OreMiningActiveQuantity != 0 {
+			n += 1 + runtime.Sov(uint64(x.OreMiningActiveQuantity))
+		}
+		if x.OreRefiningActiveQuantity != 0 {
+			n += 2 + runtime.Sov(uint64(x.OreRefiningActiveQuantity))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -2542,6 +2662,33 @@ func (x *fastReflection_PlanetAttributes) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.OreRefiningActiveQuantity != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.OreRefiningActiveQuantity))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x80
+		}
+		if x.OreMiningActiveQuantity != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.OreMiningActiveQuantity))
+			i--
+			dAtA[i] = 0x78
+		}
+		if x.BlockStartOreRefine != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockStartOreRefine))
+			i--
+			dAtA[i] = 0x70
+		}
+		if x.BlockStartOreMine != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockStartOreMine))
+			i--
+			dAtA[i] = 0x68
+		}
+		if x.BlockRaiderArrived != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockRaiderArrived))
+			i--
+			dAtA[i] = 0x60
 		}
 		if x.BlockStartRaid != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockStartRaid))
@@ -2856,6 +3003,101 @@ func (x *fastReflection_PlanetAttributes) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
+			case 12:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockRaiderArrived", wireType)
+				}
+				x.BlockRaiderArrived = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockRaiderArrived |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 13:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockStartOreMine", wireType)
+				}
+				x.BlockStartOreMine = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockStartOreMine |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 14:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockStartOreRefine", wireType)
+				}
+				x.BlockStartOreRefine = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockStartOreRefine |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 15:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OreMiningActiveQuantity", wireType)
+				}
+				x.OreMiningActiveQuantity = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.OreMiningActiveQuantity |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 16:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OreRefiningActiveQuantity", wireType)
+				}
+				x.OreRefiningActiveQuantity = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.OreRefiningActiveQuantity |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -3118,6 +3360,11 @@ type PlanetAttributes struct {
 	OrbitalJammingStationQuantity                              uint64 `protobuf:"varint,9,opt,name=orbitalJammingStationQuantity,proto3" json:"orbitalJammingStationQuantity,omitempty"`
 	AdvancedOrbitalJammingStationQuantity                      uint64 `protobuf:"varint,10,opt,name=advancedOrbitalJammingStationQuantity,proto3" json:"advancedOrbitalJammingStationQuantity,omitempty"`
 	BlockStartRaid                                             uint64 `protobuf:"varint,11,opt,name=blockStartRaid,proto3" json:"blockStartRaid,omitempty"`
+	BlockRaiderArrived                                         uint64 `protobuf:"varint,12,opt,name=blockRaiderArrived,proto3" json:"blockRaiderArrived,omitempty"`
+	BlockStartOreMine                                          uint64 `protobuf:"varint,13,opt,name=blockStartOreMine,proto3" json:"blockStartOreMine,omitempty"`
+	BlockStartOreRefine                                        uint64 `protobuf:"varint,14,opt,name=blockStartOreRefine,proto3" json:"blockStartOreRefine,omitempty"`
+	OreMiningActiveQuantity                                    uint64 `protobuf:"varint,15,opt,name=oreMiningActiveQuantity,proto3" json:"oreMiningActiveQuantity,omitempty"`
+	OreRefiningActiveQuantity                                  uint64 `protobuf:"varint,16,opt,name=oreRefiningActiveQuantity,proto3" json:"oreRefiningActiveQuantity,omitempty"`
 }
 
 func (x *PlanetAttributes) Reset() {
@@ -3217,6 +3464,41 @@ func (x *PlanetAttributes) GetBlockStartRaid() uint64 {
 	return 0
 }
 
+func (x *PlanetAttributes) GetBlockRaiderArrived() uint64 {
+	if x != nil {
+		return x.BlockRaiderArrived
+	}
+	return 0
+}
+
+func (x *PlanetAttributes) GetBlockStartOreMine() uint64 {
+	if x != nil {
+		return x.BlockStartOreMine
+	}
+	return 0
+}
+
+func (x *PlanetAttributes) GetBlockStartOreRefine() uint64 {
+	if x != nil {
+		return x.BlockStartOreRefine
+	}
+	return 0
+}
+
+func (x *PlanetAttributes) GetOreMiningActiveQuantity() uint64 {
+	if x != nil {
+		return x.OreMiningActiveQuantity
+	}
+	return 0
+}
+
+func (x *PlanetAttributes) GetOreRefiningActiveQuantity() uint64 {
+	if x != nil {
+		return x.OreRefiningActiveQuantity
+	}
+	return 0
+}
+
 var File_structs_structs_planet_proto protoreflect.FileDescriptor
 
 var file_structs_structs_planet_proto_rawDesc = []byte{
@@ -3260,7 +3542,7 @@ var file_structs_structs_planet_proto_rawDesc = []byte{
 	0x72, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49,
 	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75,
 	0x74, 0x65, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x9c, 0x07, 0x0a, 0x10, 0x50,
+	0x01, 0x28, 0x04, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0xa4, 0x09, 0x0a, 0x10, 0x50,
 	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x12,
 	0x28, 0x0a, 0x0f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x53, 0x68, 0x69, 0x65,
 	0x6c, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74,
@@ -3318,18 +3600,34 @@ var file_structs_structs_planet_proto_rawDesc = []byte{
 	0x6e, 0x67, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74,
 	0x79, 0x12, 0x26, 0x0a, 0x0e, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x52,
 	0x61, 0x69, 0x64, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x62, 0x6c, 0x6f, 0x63, 0x6b,
-	0x53, 0x74, 0x61, 0x72, 0x74, 0x52, 0x61, 0x69, 0x64, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f,
-	0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x42, 0x0b, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
-	0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47,
-	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x53, 0x74, 0x61, 0x72, 0x74, 0x52, 0x61, 0x69, 0x64, 0x12, 0x2e, 0x0a, 0x12, 0x62, 0x6c, 0x6f,
+	0x63, 0x6b, 0x52, 0x61, 0x69, 0x64, 0x65, 0x72, 0x41, 0x72, 0x72, 0x69, 0x76, 0x65, 0x64, 0x18,
+	0x0c, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x52, 0x61, 0x69, 0x64,
+	0x65, 0x72, 0x41, 0x72, 0x72, 0x69, 0x76, 0x65, 0x64, 0x12, 0x2c, 0x0a, 0x11, 0x62, 0x6c, 0x6f,
+	0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x18, 0x0d,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x11, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74,
+	0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b,
+	0x53, 0x74, 0x61, 0x72, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x18, 0x0e,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74,
+	0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x12, 0x38, 0x0a, 0x17, 0x6f, 0x72, 0x65,
+	0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x51, 0x75, 0x61, 0x6e,
+	0x74, 0x69, 0x74, 0x79, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x04, 0x52, 0x17, 0x6f, 0x72, 0x65, 0x4d,
+	0x69, 0x6e, 0x69, 0x6e, 0x67, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x51, 0x75, 0x61, 0x6e, 0x74,
+	0x69, 0x74, 0x79, 0x12, 0x3c, 0x0a, 0x19, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x69,
+	0x6e, 0x67, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x51, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79,
+	0x18, 0x10, 0x20, 0x01, 0x28, 0x04, 0x52, 0x19, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e,
+	0x69, 0x6e, 0x67, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x51, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74,
+	0x79, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x50, 0x6c, 0x61, 0x6e, 0x65,
+	0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58,
+	0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
+	0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

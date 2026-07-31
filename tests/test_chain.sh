@@ -3749,6 +3749,60 @@ P2_CMD_JSON=$(query query structs struct "${PLAYER_2_CMD_SHIP_ID}" || echo '{}')
 P2_CMD_ONLINE=$(jqr "${P2_CMD_JSON}" '.structAttributes.isOnline' 'false')
 assert_eq "P2 Command Ship online before raid scenarios" "true" "${P2_CMD_ONLINE}"
 
+# ─── Mining/refining pause while under raid (v0.21.0) ───
+# Phase 9 parks P3's fleet on P2's planet (LocationListStart set) and often
+# destroys the miner. Rebuild an Ore Extractor if needed so the mine-pause
+# and clock-shift assertions have an active mining system to observe.
+if [ "${SKIP_MINING}" = true ]; then
+    info "Skipping mining/refining-pause assertions (--skip-mining)"
+else
+    MINER_JSON=$(query query structs struct "${MINER_STRUCT_ID}" || echo '{}')
+    MINER_ONLINE=$(jqr "${MINER_JSON}" '.structAttributes.isOnline' 'false')
+    MINER_DESTROYED=$(jqr "${MINER_JSON}" '.structAttributes.isDestroyed' 'true')
+    if [ "${MINER_DESTROYED}" = "true" ]; then
+        info "Miner ${MINER_STRUCT_ID} destroyed in Phase 9; rebuilding for raid-pause coverage"
+        wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
+        run_tx "Rebuilding Ore Extractor for raid-pause tests (type=14, land, slot=1)" \
+            tx structs struct-build-initiate "${PLAYER_2_ID}" 14 land 1 --from player_2
+        STRUCT_ALL_JSON=$(query query structs struct-all)
+        MINER_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
+        assert_not_empty "Rebuilt miner struct ID" "${MINER_STRUCT_ID}"
+        run_compute "Building rebuilt Ore Extractor ${MINER_STRUCT_ID}" \
+            tx structs struct-build-compute "${MINER_STRUCT_ID}" --from player_2
+        MINER_JSON=$(query query structs struct "${MINER_STRUCT_ID}")
+        assert_eq "Rebuilt miner online" "true" "$(jqr "${MINER_JSON}" '.structAttributes.isOnline' 'false')"
+    elif [ "${MINER_ONLINE}" != "true" ]; then
+        # The miner still occupies land slot 1, so reactivate it rather than
+        # rebuilding into a taken slot.
+        info "Miner ${MINER_STRUCT_ID} offline; reactivating for raid-pause coverage"
+        wait_for_charge "${PLAYER_2_ID}" "${CHARGE_ACTIVATE}"
+        run_tx "Reactivating Ore Extractor ${MINER_STRUCT_ID} for raid-pause tests" \
+            tx structs struct-activate "${MINER_STRUCT_ID}" --from player_2
+        MINER_JSON=$(query query structs struct "${MINER_STRUCT_ID}")
+        assert_eq "Reactivated miner online" "true" "$(jqr "${MINER_JSON}" '.structAttributes.isOnline' 'false')"
+    fi
+
+    P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
+    P2_RAIDER_ARRIVED=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockRaiderArrived' '0')
+    P2_MINE_CLOCK_BEFORE=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartOreMine' '0')
+    P2_REFINE_CLOCK_BEFORE=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartOreRefine' '0')
+    P2_MINE_QTY=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.oreMiningActiveQuantity' '0')
+    P2_REFINE_QTY=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.oreRefiningActiveQuantity' '0')
+    info "Raid pause pre-check: blockRaiderArrived=${P2_RAIDER_ARRIVED} mineClock=${P2_MINE_CLOCK_BEFORE} refineClock=${P2_REFINE_CLOCK_BEFORE} mineQty=${P2_MINE_QTY} refineQty=${P2_REFINE_QTY}"
+    assert_gt "blockRaiderArrived set while P3 fleet is on P2 planet" "0" "${P2_RAIDER_ARRIVED}"
+    assert_gt "oreMiningActiveQuantity while miner is online" "0" "${P2_MINE_QTY}"
+
+    run_tx_expect_fail "Ore mine compute fast-fails during raid (should fail)" \
+        tx structs struct-ore-mine-compute "${MINER_STRUCT_ID}" --from player_2
+
+    if [ -n "${REFINERY_STRUCT_ID}" ] && [ "${P2_REFINE_QTY}" != "0" ]; then
+        run_tx_expect_fail "Ore refine compute fast-fails during raid (should fail)" \
+            tx structs struct-ore-refine-compute "${REFINERY_STRUCT_ID}" --from player_2
+    else
+        info "Skipping refine-during-raid assertion (no active refinery)"
+    fi
+fi
+
 # ─── Scenario A (expected bad): raid cannot be won while defender CMD online ───
 
 assert_eq "blockStartRaid unset while defender Command Ship is online" "0" "${P2_RAID_CLOCK}"
@@ -3824,6 +3878,20 @@ assert_eq "P3 fleet returned home after successful raid" "${PLAYER_3_PLANET_ID}"
 P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
 P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
 assert_eq "blockStartRaid cleared after raid completed" "0" "${P2_RAID_CLOCK}"
+
+# ─── Post-raid: ore clocks shifted, raider-arrived cleared, mining works again ───
+if [ "${SKIP_MINING}" = true ]; then
+    info "Skipping post-raid ore-clock assertions (--skip-mining)"
+else
+    P2_RAIDER_ARRIVED_AFTER=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockRaiderArrived' '0')
+    P2_MINE_CLOCK_AFTER=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartOreMine' '0')
+    assert_eq "blockRaiderArrived cleared after raid ended" "0" "${P2_RAIDER_ARRIVED_AFTER}"
+    assert_gt "mine clock shifted forward by raid pause" "${P2_MINE_CLOCK_BEFORE}" "${P2_MINE_CLOCK_AFTER}"
+    info "Mine clock ${P2_MINE_CLOCK_BEFORE} -> ${P2_MINE_CLOCK_AFTER} after raid pause shift"
+
+    run_compute "Mining ore after raid ends (planet productive again)" \
+        tx structs struct-ore-mine-compute "${MINER_STRUCT_ID}" --from player_2
+fi
 
 # ─── Restore: bring P2's Command Ship back online for later phases ───
 

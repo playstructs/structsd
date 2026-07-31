@@ -145,3 +145,117 @@ func TestMigrateDefenderCanDefend(t *testing.T) {
 	_, fleetFound = k.GetStructDefender(ctx, protectedId, fleetDefenderId)
 	require.True(t, fleetFound)
 }
+
+func TestMigrateOreClocksToPlanet(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockHeight(9000)
+	ctx = sdkCtx
+
+	k.SetStructType(ctx, types.StructType{
+		Id: 14, Category: types.ObjectType_planet,
+		PlanetaryMining: types.TechPlanetaryMining_oreMiningRig,
+	})
+	k.SetStructType(ctx, types.StructType{
+		Id: 15, Category: types.ObjectType_planet,
+		PlanetaryRefinery: types.TechPlanetaryRefineries_oreRefinery,
+	})
+	k.SetStructType(ctx, types.StructType{
+		Id: 1, Category: types.ObjectType_fleet,
+	})
+
+	planetId := fmt.Sprintf("%d-%d", types.ObjectType_planet, 0)
+	k.SetPlanet(ctx, types.Planet{Id: planetId})
+
+	onlineStatus := uint64(types.StructStateMaterialized | types.StructStateBuilt | types.StructStateOnline)
+	offlineStatus := uint64(types.StructStateMaterialized | types.StructStateBuilt)
+
+	minerA := types.Struct{
+		Id: fmt.Sprintf("%d-%d", types.ObjectType_struct, 1), Index: 1,
+		Type: 14, LocationId: planetId, LocationType: types.ObjectType_planet,
+	}
+	minerB := types.Struct{
+		Id: fmt.Sprintf("%d-%d", types.ObjectType_struct, 2), Index: 2,
+		Type: 14, LocationId: planetId, LocationType: types.ObjectType_planet,
+	}
+	refinery := types.Struct{
+		Id: fmt.Sprintf("%d-%d", types.ObjectType_struct, 3), Index: 3,
+		Type: 15, LocationId: planetId, LocationType: types.ObjectType_planet,
+	}
+	offlineMiner := types.Struct{
+		Id: fmt.Sprintf("%d-%d", types.ObjectType_struct, 4), Index: 4,
+		Type: 14, LocationId: planetId, LocationType: types.ObjectType_planet,
+	}
+	fleetStruct := types.Struct{
+		Id: fmt.Sprintf("%d-%d", types.ObjectType_struct, 5), Index: 5,
+		Type: 1, LocationId: "5-0", LocationType: types.ObjectType_fleet,
+	}
+
+	for _, s := range []types.Struct{minerA, minerB, refinery, offlineMiner, fleetStruct} {
+		k.SetStruct(ctx, s)
+	}
+
+	setStatus := func(id string, status uint64) {
+		attrId := structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_status, id)
+		k.SetStructAttribute(ctx, attrId, status)
+	}
+	setStatus(minerA.Id, onlineStatus)
+	setStatus(minerB.Id, onlineStatus)
+	setStatus(refinery.Id, onlineStatus)
+	setStatus(offlineMiner.Id, offlineStatus)
+	setStatus(fleetStruct.Id, onlineStatus)
+
+	// minerA clock 100, minerB clock 50 -> planet should get min=50
+	k.SetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, minerA.Id), 100)
+	k.SetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, minerB.Id), 50)
+	k.SetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, offlineMiner.Id), 25)
+	k.SetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, refinery.Id), 75)
+
+	require.NoError(t, v0_21_0.MigrateOreClocksToPlanet(ctx, keepers))
+
+	mineQtyId := structskeeper.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_oreMiningActiveQuantity, planetId)
+	refineQtyId := structskeeper.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_oreRefiningActiveQuantity, planetId)
+	mineClockId := structskeeper.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetBlockStartOreMine, planetId)
+	refineClockId := structskeeper.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetBlockStartOreRefine, planetId)
+
+	require.Equal(t, uint64(2), k.GetPlanetAttribute(ctx, mineQtyId), "two online miners")
+	require.Equal(t, uint64(1), k.GetPlanetAttribute(ctx, refineQtyId), "one online refinery")
+	require.Equal(t, uint64(50), k.GetPlanetAttribute(ctx, mineClockId), "min of online miner clocks")
+	require.Equal(t, uint64(75), k.GetPlanetAttribute(ctx, refineClockId))
+
+	// Old struct clocks cleared.
+	require.Equal(t, uint64(0), k.GetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, minerA.Id)))
+	require.Equal(t, uint64(0), k.GetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, minerB.Id)))
+	require.Equal(t, uint64(0), k.GetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, offlineMiner.Id)))
+	require.Equal(t, uint64(0), k.GetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, refinery.Id)))
+
+	// Idempotent: re-run preserves planet clocks and counters.
+	require.NoError(t, v0_21_0.MigrateOreClocksToPlanet(ctx, keepers))
+	require.Equal(t, uint64(2), k.GetPlanetAttribute(ctx, mineQtyId))
+	require.Equal(t, uint64(50), k.GetPlanetAttribute(ctx, mineClockId))
+	require.Equal(t, uint64(75), k.GetPlanetAttribute(ctx, refineClockId))
+}
+
+func TestMigrateRaiderArrived(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+	upgradeHeight := int64(7777)
+	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockHeight(upgradeHeight)
+	ctx = sdkCtx
+
+	raided := types.Planet{Id: "3-0", LocationListStart: "5-1"}
+	idle := types.Planet{Id: "3-1", LocationListStart: ""}
+	k.SetPlanet(ctx, raided)
+	k.SetPlanet(ctx, idle)
+
+	require.NoError(t, v0_21_0.MigrateRaiderArrived(ctx, keepers))
+
+	raidedAttrId := structskeeper.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockRaiderArrived, raided.Id)
+	idleAttrId := structskeeper.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockRaiderArrived, idle.Id)
+	require.Equal(t, uint64(upgradeHeight), k.GetPlanetAttribute(ctx, raidedAttrId))
+	require.Equal(t, uint64(0), k.GetPlanetAttribute(ctx, idleAttrId))
+
+	// Idempotent.
+	require.NoError(t, v0_21_0.MigrateRaiderArrived(ctx, keepers))
+	require.Equal(t, uint64(upgradeHeight), k.GetPlanetAttribute(ctx, raidedAttrId))
+}

@@ -132,6 +132,16 @@ enum planetAttributeType {
     advancedOrbitalJammingStationQuantity                   = 9;
 
     blockStartRaid                                         = 10;
+
+    // planetBlockStartOreMine/Refine are uniquely named because protobuf
+    // enums share a package-level namespace with structAttributeType's
+    // blockStartOreMine/Refine. PlanetAttributes message fields and the
+    // PlanetAttributeType_enum string keys still use blockStartOreMine.
+    blockRaiderArrived                                     = 11;
+    planetBlockStartOreMine                                = 12;
+    planetBlockStartOreRefine                              = 13;
+    oreMiningActiveQuantity                                = 14;
+    oreRefiningActiveQuantity                              = 15;
 }
 
 enum techWeaponSystem {

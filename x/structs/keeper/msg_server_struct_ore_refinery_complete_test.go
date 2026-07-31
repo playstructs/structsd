@@ -56,8 +56,10 @@ func TestMsgStructOreRefineryComplete(t *testing.T) {
 	testSetStructAttributeFlagAdd(k, sdkCtx, statusAttrId, uint64(types.StructStateBuilt))
 	testSetStructAttributeFlagAdd(k, sdkCtx, statusAttrId, uint64(types.StructStateOnline))
 
-	blockStartAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structObj.Id)
-	k.SetStructAttribute(sdkCtx, blockStartAttrId, uint64(1))
+	refineClockAttrId := keeperlib.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetBlockStartOreRefine, planet.Id)
+	k.SetPlanetAttribute(sdkCtx, refineClockAttrId, uint64(1))
+	refineQtyAttrId := keeperlib.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_oreRefiningActiveQuantity, planet.Id)
+	k.SetPlanetAttribute(sdkCtx, refineQtyAttrId, uint64(1))
 
 	t.Run("valid ore refinery complete", func(t *testing.T) {
 		hashTemplate := structObj.Id + "REFINE1NONCE%s"
@@ -71,6 +73,12 @@ func TestMsgStructOreRefineryComplete(t *testing.T) {
 		})
 		require.NoError(t, err)
 		require.NotNil(t, resp)
+
+		// A successful refine re-anchors the shared planet clock to the
+		// current height so the next round starts from zero age, and leaves
+		// the active-refinery counter untouched.
+		require.Equal(t, uint64(sdkCtx.BlockHeight()), k.GetPlanetAttribute(sdkCtx, refineClockAttrId))
+		require.Equal(t, uint64(1), k.GetPlanetAttribute(sdkCtx, refineQtyAttrId))
 	})
 
 	t.Run("struct not found", func(t *testing.T) {

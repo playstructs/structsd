@@ -899,9 +899,11 @@ func (m *StructAttributeRecord) GetValue() uint64 {
 }
 
 type StructAttributes struct {
-	Health               uint64 `protobuf:"varint,1,opt,name=health,proto3" json:"health,omitempty"`
-	Status               uint64 `protobuf:"varint,2,opt,name=status,proto3" json:"status,omitempty"`
-	BlockStartBuild      uint64 `protobuf:"varint,3,opt,name=blockStartBuild,proto3" json:"blockStartBuild,omitempty"`
+	Health          uint64 `protobuf:"varint,1,opt,name=health,proto3" json:"health,omitempty"`
+	Status          uint64 `protobuf:"varint,2,opt,name=status,proto3" json:"status,omitempty"`
+	BlockStartBuild uint64 `protobuf:"varint,3,opt,name=blockStartBuild,proto3" json:"blockStartBuild,omitempty"`
+	// Deprecated: ore mine/refine clocks live on PlanetAttributes as of v0.21.0.
+	// These fields remain for wire compatibility and always read 0 after migration.
 	BlockStartOreMine    uint64 `protobuf:"varint,4,opt,name=blockStartOreMine,proto3" json:"blockStartOreMine,omitempty"`
 	BlockStartOreRefine  uint64 `protobuf:"varint,5,opt,name=blockStartOreRefine,proto3" json:"blockStartOreRefine,omitempty"`
 	ProtectedStructIndex uint64 `protobuf:"varint,6,opt,name=protectedStructIndex,proto3" json:"protectedStructIndex,omitempty"`

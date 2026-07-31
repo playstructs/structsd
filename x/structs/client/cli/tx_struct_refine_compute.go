@@ -59,20 +59,28 @@ func CmdStructRefineCompute() *cobra.Command {
 
 			fmt.Printf("Loaded Struct (%s) for refining process \n", performingStructure.Id)
 
-			struct_attribute_block_start_params := &types.QueryGetStructAttributeRequest{
-				StructId:      argStructId,
-				AttributeType: "blockStartOreRefine",
+			planet_params := &types.QueryGetPlanetRequest{
+				Id: performingStructure.LocationId,
 			}
 
-			refineStartBlock_res, refineStartBlock_err := queryClient.StructAttribute(context.Background(), struct_attribute_block_start_params)
-			if refineStartBlock_err != nil {
-				return refineStartBlock_err
+			planet_res, planet_err := queryClient.Planet(context.Background(), planet_params)
+			if planet_err != nil {
+				return planet_err
 			}
-			refineStartBlock := refineStartBlock_res.Attribute
+			planet := planet_res.Planet
+			planetAttributes := planet_res.PlanetAttributes
 
+			if planet.LocationListStart != "" {
+				return fmt.Errorf("planet (%s) is under raid: refining is paused until the raid ends", planet.Id)
+			}
+
+			if planetAttributes.OreRefiningActiveQuantity == 0 {
+				return fmt.Errorf("planet (%s) has no active refining system", planet.Id)
+			}
+
+			refineStartBlock := planetAttributes.BlockStartOreRefine
 			if refineStartBlock == 0 {
-				fmt.Printf("Struct (%s) has no Active refining system \n", performingStructure.Id)
-				return nil
+				return fmt.Errorf("planet (%s) refining clock is unset", planet.Id)
 			}
 
 			struct_type_params := &types.QueryGetStructTypeRequest{

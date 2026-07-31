@@ -3,8 +3,8 @@ package v0_21_0
 // UpgradeName is the on-chain upgrade plan name for the v0.21.0 binary.
 //
 // v0.21.0 expands the guild bank with alpha<->token conversion and per-guild
-// convert fees. It carries both consensus/behavior changes and a one-time state
-// migration.
+// convert fees. It carries both consensus/behavior changes and one-time state
+// migrations.
 //
 // Consensus / handler changes (binary):
 //
@@ -45,16 +45,32 @@ package v0_21_0
 //     uint64, matching the transaction and event schema. Values outside that
 //     range are rejected before arithmetic or state mutation.
 //
-// State migration (MigrateGuildBankFees):
+//   - StructType gains canDefend (fleet=true, planetary=false). StructDefenseSet
+//     and combat defender resolution reject non-defending types.
 //
-//   - Guild records written before v0.21.0 have no bankConvertInFee /
-//     bankConvertOutFee fields, so those non-nullable LegacyDec members decode
-//     as nil. Arithmetic on a nil LegacyDec panics, and re-marshaling one panics
-//     as well. The migration iterates every stored Guild and backfills both fee
-//     fields to LegacyZeroDec. Idempotent by construction: it is a pure backfill
-//     of the zero value, so a re-run (e.g. a validator replaying the upgrade
-//     block) writes identical rows. Runtime read paths and genesis import are
-//     independently hardened (cache loading, genesis import, and guild queries
-//     normalize nil fees to zero), so the migration is defense-in-depth for live
-//     state.
+//   - Ore mine/refine clocks move from StructAttributes onto PlanetAttributes.
+//     Rigs on a planet share one mine clock and one refine clock.
+//     oreMiningActiveQuantity / oreRefiningActiveQuantity are the authoritative
+//     on/off signals. Mining and refining are blocked while LocationListStart
+//     is set (planet under raid); on raid end the clocks are shifted forward by
+//     the paused duration so difficulty age is preserved.
+//
+// State migrations:
+//
+//   - MigrateGuildBankFees: backfill bankConvertInFee / bankConvertOutFee to
+//     zero on every stored Guild (nil LegacyDec panic defense).
+//
+//   - MigrateStructTypes: rewrite every StructType from CreateStructTypeGenesis
+//     so canDefend is populated.
+//
+//   - MigrateDefenderCanDefend: prune defender registrations whose defending
+//     struct can no longer defend, emitting the same events as a clear tx.
+//
+//   - MigrateOreClocksToPlanet: move per-struct ore clocks onto the planet,
+//     seed active-quantity counters from online planet-located systems, and
+//     clear the old struct attributes.
+//
+//   - MigrateRaiderArrived: seed blockRaiderArrived on planets with an
+//     in-progress raid so the pause-shift math does not treat the whole clock
+//     age as paused time.
 const UpgradeName = "v0.21.0"

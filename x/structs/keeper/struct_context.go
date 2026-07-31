@@ -21,9 +21,7 @@ func (cc *CurrentContext) GetStruct(structId string) *StructCache {
             HealthAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_health, structId),
             StatusAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_status, structId),
 
-            BlockStartBuildAttributeId:     GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structId),
-            BlockStartOreMineAttributeId:   GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structId),
-            BlockStartOreRefineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structId),
+            BlockStartBuildAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structId),
 
             ProtectedStructIndexAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structId),
 
@@ -75,13 +73,6 @@ func (cc *CurrentContext) GenesisImportStruct(
 
 	if isOnline {
 		cache.GoOnline()
-	} else {
-		if structType.HasOreMiningSystem() {
-			cc.SetStructAttribute(cache.BlockStartOreMineAttributeId, 0)
-		}
-		if structType.HasOreRefiningSystem() {
-			cc.SetStructAttribute(cache.BlockStartOreRefineAttributeId, 0)
-		}
 	}
 }
 
@@ -132,9 +123,7 @@ func (cc *CurrentContext) InitialCommandShipStruct(fleet *FleetCache) *StructCac
         HealthAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_health, structId),
         StatusAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_status, structId),
 
-        BlockStartBuildAttributeId:     GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structId),
-        BlockStartOreMineAttributeId:   GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structId),
-        BlockStartOreRefineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structId),
+        BlockStartBuildAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structId),
 
         ProtectedStructIndexAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structId),
 
@@ -221,9 +210,7 @@ func (cc *CurrentContext) InitiateStruct(creatorAddress string, owner *PlayerCac
         HealthAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_health, structId),
         StatusAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_status, structId),
 
-        BlockStartBuildAttributeId:     GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structId),
-        BlockStartOreMineAttributeId:   GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structId),
-        BlockStartOreRefineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structId),
+        BlockStartBuildAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structId),
 
         ProtectedStructIndexAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structId),
 

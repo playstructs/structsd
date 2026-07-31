@@ -27,8 +27,6 @@ type StructCache struct {
 	StatusAttributeId string
 
 	BlockStartBuildAttributeId string
-	BlockStartOreMineAttributeId string
-	BlockStartOreRefineAttributeId string
 	ProtectedStructIndexAttributeId string
 	ReadyAttributeId string
 
@@ -108,14 +106,6 @@ func (cache *StructCache) GetStatus() types.StructState {
 
 func (cache *StructCache) GetBlockStartBuild() uint64 {
 	return cache.CC.GetStructAttribute(cache.BlockStartBuildAttributeId)
-}
-
-func (cache *StructCache) GetBlockStartOreMine() uint64 {
-    return cache.CC.GetStructAttribute(cache.BlockStartOreMineAttributeId)
-}
-
-func (cache *StructCache) GetBlockStartOreRefine() uint64 {
-    return cache.CC.GetStructAttribute(cache.BlockStartOreRefineAttributeId)
 }
 
 func (cache *StructCache) GetStructType() types.StructType {
@@ -204,24 +194,6 @@ func (cache *StructCache) SetOwnerId(owner string) {
 
 	cache.Structure.Owner = owner
 	cache.Changed = true
-}
-
-func (cache *StructCache) ResetBlockStartOreMine() {
-	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
-	cache.CC.SetStructAttribute(cache.BlockStartOreMineAttributeId, uint64(uctx.BlockHeight()))
-}
-
-func (cache *StructCache) ResetBlockStartOreRefine() {
-	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
-	cache.CC.SetStructAttribute(cache.BlockStartOreRefineAttributeId, uint64(uctx.BlockHeight()))
-}
-
-func (cache *StructCache) ClearBlockStartOreMine() {
-	cache.CC.SetStructAttribute(cache.BlockStartOreMineAttributeId, 0)
-}
-
-func (cache *StructCache) ClearBlockStartOreRefine() {
-	cache.CC.SetStructAttribute(cache.BlockStartOreRefineAttributeId, 0)
 }
 
 
@@ -333,12 +305,12 @@ func (cache *StructCache) GoOnline() {
 
 	// Turn on the mining systems
 	if cache.GetStructType().HasOreMiningSystem() {
-		cache.ResetBlockStartOreMine()
+		cache.GetPlanet().OreMiningActivate()
 	}
 
 	// Turn on the refinery
 	if cache.GetStructType().HasOreRefiningSystem() {
-		cache.ResetBlockStartOreRefine()
+		cache.GetPlanet().OreRefiningActivate()
 	}
 
 	// Raise the planetary shields
@@ -377,12 +349,12 @@ func (cache *StructCache) GoOffline() {
 
     	// Turn off the mining systems
     	if cache.GetStructType().HasOreMiningSystem() {
-    		cache.ClearBlockStartOreMine()
+    		cache.GetPlanet().OreMiningDeactivate()
     	}
 
     	// Turn off the refinery
     	if cache.GetStructType().HasOreRefiningSystem() {
-    		cache.ClearBlockStartOreRefine()
+    		cache.GetPlanet().OreRefiningDeactivate()
     	}
 
     	// Lower the planetary shields
@@ -533,11 +505,13 @@ func (cache *StructCache) CanOreMinePlanet() error {
 		return types.NewStructCapabilityError(cache.StructId, "mining")
 	}
 
-    /*
-	if cache.GetBlockStartOreMine() == 0 {
+	if cache.GetPlanet().GetOreMiningActiveQuantity() == 0 {
 		return types.NewStructStateError(cache.StructId, "not_mining", "mining", "ore_mine")
 	}
-	*/
+
+	if cache.GetPlanet().GetLocationListStart() != "" {
+		return types.NewPlanetStateError(cache.GetPlanet().GetPlanetId(), "under_raid", "mine")
+	}
 
 	if cache.GetPlanet().IsComplete() {
 		return types.NewPlanetStateError(cache.GetPlanet().GetPlanetId(), "complete", "mine")
@@ -555,7 +529,7 @@ func (cache *StructCache) OreMinePlanet() {
 	cache.GetOwner().StoredOreIncrement(1)
 	cache.GetPlanet().BuriedOreDecrement(1)
 
-	cache.ResetBlockStartOreMine()
+	cache.GetPlanet().ResetBlockStartOreMine()
 }
 
 func (cache *StructCache) CanDefend() error {
@@ -571,11 +545,13 @@ func (cache *StructCache) CanOreRefine() error {
 		return types.NewStructCapabilityError(cache.StructId, "refining")
 	}
 
-    /*
-	if cache.GetBlockStartOreRefine() == 0 {
+	if cache.GetPlanet().GetOreRefiningActiveQuantity() == 0 {
 		return types.NewStructStateError(cache.StructId, "not_refining", "refining", "ore_refine")
 	}
-	*/
+
+	if cache.GetPlanet().GetLocationListStart() != "" {
+		return types.NewPlanetStateError(cache.GetPlanet().GetPlanetId(), "under_raid", "refine")
+	}
 
 	if !cache.GetOwner().HasStoredOre() {
 		return types.NewPlayerAffordabilityError(cache.GetOwner().PlayerId, "refine", "ore")
@@ -592,7 +568,7 @@ func (cache *StructCache) OreRefine() error {
 		return err
 	}
 
-	cache.ResetBlockStartOreRefine()
+	cache.GetPlanet().ResetBlockStartOreRefine()
 	return nil
 }
 
@@ -747,16 +723,6 @@ func (cache *StructCache) DestroyAndCommit() {
 
 	// It's possible the build was never complete, so clear out this attribute to be safe
 	cache.CC.ClearStructAttribute(cache.BlockStartBuildAttributeId)
-
-	// Destroy mining systems
-	if cache.GetStructType().HasOreMiningSystem() {
-		cache.CC.ClearStructAttribute(cache.BlockStartOreMineAttributeId)
-	}
-
-	// Turn off the refinery
-	if cache.GetStructType().HasOreRefiningSystem() {
-		cache.CC.ClearStructAttribute(cache.BlockStartOreRefineAttributeId)
-	}
 
 	// Clear Defensive Relationships
 	cache.CC.k.DestroyStructDefender(cache.CC.ctx, cache.GetStructId())

@@ -357,6 +357,12 @@ var PlanetAttributeType_enum = map[string]PlanetAttributeType {
 
     "blockStartRaid":                                           PlanetAttributeType_blockStartRaid,
 
+    "blockRaiderArrived":                                       PlanetAttributeType_blockRaiderArrived,
+    "blockStartOreMine":                                        PlanetAttributeType_planetBlockStartOreMine,
+    "blockStartOreRefine":                                      PlanetAttributeType_planetBlockStartOreRefine,
+    "oreMiningActiveQuantity":                                  PlanetAttributeType_oreMiningActiveQuantity,
+    "oreRefiningActiveQuantity":                                PlanetAttributeType_oreRefiningActiveQuantity,
+
 }
 
 var TechWeaponSystem_enum = map[string]TechWeaponSystem {

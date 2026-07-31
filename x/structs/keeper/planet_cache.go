@@ -40,6 +40,12 @@ type PlanetCache struct {
     LowOrbitBallisticsInterceptorNetworkSuccessRateDenominatorAttributeId string
     OrbitalJammingStationQuantityAttributeId string
     AdvancedOrbitalJammingStationQuantityAttributeId string
+
+    BlockRaiderArrivedAttributeId string
+    BlockStartOreMineAttributeId string
+    BlockStartOreRefineAttributeId string
+    OreMiningActiveQuantityAttributeId string
+    OreRefiningActiveQuantityAttributeId string
 }
 
 
@@ -132,6 +138,26 @@ func (cache *PlanetCache) GetOrbitalJammingStationQuantity() (uint64) {
 
 func (cache *PlanetCache) GetAdvancedOrbitalJammingStationQuantity() (uint64) {
     return cache.CC.GetPlanetAttribute(cache.AdvancedOrbitalJammingStationQuantityAttributeId)
+}
+
+func (cache *PlanetCache) GetBlockRaiderArrived() (uint64) {
+    return cache.CC.GetPlanetAttribute(cache.BlockRaiderArrivedAttributeId)
+}
+
+func (cache *PlanetCache) GetBlockStartOreMine() (uint64) {
+    return cache.CC.GetPlanetAttribute(cache.BlockStartOreMineAttributeId)
+}
+
+func (cache *PlanetCache) GetBlockStartOreRefine() (uint64) {
+    return cache.CC.GetPlanetAttribute(cache.BlockStartOreRefineAttributeId)
+}
+
+func (cache *PlanetCache) GetOreMiningActiveQuantity() (uint64) {
+    return cache.CC.GetPlanetAttribute(cache.OreMiningActiveQuantityAttributeId)
+}
+
+func (cache *PlanetCache) GetOreRefiningActiveQuantity() (uint64) {
+    return cache.CC.GetPlanetAttribute(cache.OreRefiningActiveQuantityAttributeId)
 }
 
 func (cache *PlanetCache) GetPlanetId() string {
@@ -241,9 +267,18 @@ func (cache *PlanetCache) SetLocationListStart(fleetId string) {
     cache.Changed = true
 
     if (fleetId == "") {
-        // Raid is over, stop the vulnerability clock
+        // Raid is over: shift ore clocks by the paused duration, then clear
+        // both the raider-arrived marker and the vulnerability clock.
+        cache.PauseOreClocksForRaid()
+        cache.ClearBlockRaiderArrived()
         cache.ClearBlockStartRaid()
         return
+    }
+
+    // First raider to arrive anchors the mining/refining pause window.
+    // A promotion (front fleet replaced mid-raid) leaves the marker alone.
+    if (previousStart == "") {
+        cache.ResetBlockRaiderArrived()
     }
 
     uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
@@ -278,6 +313,103 @@ func (cache *PlanetCache) ResetBlockStartRaid() {
 
 func (cache *PlanetCache) ClearBlockStartRaid() {
     cache.CC.ClearPlanetAttribute(cache.BlockStartRaidAttributeId)
+}
+
+func (cache *PlanetCache) ResetBlockRaiderArrived() {
+    uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
+    cache.CC.SetPlanetAttribute(cache.BlockRaiderArrivedAttributeId, uint64(uctx.BlockHeight()))
+}
+
+func (cache *PlanetCache) ClearBlockRaiderArrived() {
+    cache.CC.ClearPlanetAttribute(cache.BlockRaiderArrivedAttributeId)
+}
+
+func (cache *PlanetCache) ResetBlockStartOreMine() {
+    uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
+    cache.CC.SetPlanetAttribute(cache.BlockStartOreMineAttributeId, uint64(uctx.BlockHeight()))
+}
+
+func (cache *PlanetCache) ClearBlockStartOreMine() {
+    cache.CC.ClearPlanetAttribute(cache.BlockStartOreMineAttributeId)
+}
+
+func (cache *PlanetCache) ResetBlockStartOreRefine() {
+    uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
+    cache.CC.SetPlanetAttribute(cache.BlockStartOreRefineAttributeId, uint64(uctx.BlockHeight()))
+}
+
+func (cache *PlanetCache) ClearBlockStartOreRefine() {
+    cache.CC.ClearPlanetAttribute(cache.BlockStartOreRefineAttributeId)
+}
+
+// OreMiningActivate records that a mining rig came online. The shared
+// planet clock is only re-anchored when the first rig activates (0 -> 1);
+// additional online rigs leave the accrued age alone.
+func (cache *PlanetCache) OreMiningActivate() {
+    if cache.GetOreMiningActiveQuantity() == 0 {
+        cache.ResetBlockStartOreMine()
+    }
+    cache.CC.SetPlanetAttributeIncrement(cache.OreMiningActiveQuantityAttributeId, 1)
+}
+
+// OreMiningDeactivate records that a mining rig went offline. The clock
+// is left alone: oreMiningActiveQuantity is the authoritative on/off
+// signal, so a stale clock with a zero counter is harmless.
+func (cache *PlanetCache) OreMiningDeactivate() {
+    cache.CC.SetPlanetAttributeDecrement(cache.OreMiningActiveQuantityAttributeId, 1)
+}
+
+// OreRefiningActivate mirrors OreMiningActivate for refineries.
+func (cache *PlanetCache) OreRefiningActivate() {
+    if cache.GetOreRefiningActiveQuantity() == 0 {
+        cache.ResetBlockStartOreRefine()
+    }
+    cache.CC.SetPlanetAttributeIncrement(cache.OreRefiningActiveQuantityAttributeId, 1)
+}
+
+// OreRefiningDeactivate mirrors OreMiningDeactivate for refineries.
+func (cache *PlanetCache) OreRefiningDeactivate() {
+    cache.CC.SetPlanetAttributeDecrement(cache.OreRefiningActiveQuantityAttributeId, 1)
+}
+
+// shiftOreClockForRaid advances an ore clock past the window a raid held it
+// paused. The pause starts at whichever came later, the raid or the clock
+// itself, so a clock stamped before the raid keeps its pre-raid age while a
+// clock anchored mid-raid lands at age zero. A clock already at or beyond the
+// raid end is returned untouched, which keeps the subtraction underflow-free.
+func shiftOreClockForRaid(clock uint64, raiderArrived uint64, raidEnd uint64) uint64 {
+    pauseStart := clock
+    if raiderArrived > pauseStart {
+        pauseStart = raiderArrived
+    }
+    if pauseStart >= raidEnd {
+        return clock
+    }
+    return clock + (raidEnd - pauseStart)
+}
+
+// PauseOreClocksForRaid shifts the planet's ore mine/refine clocks forward
+// by the duration the raid paused them, so difficulty age is preserved
+// across the raid window. No-op when no raider-arrived marker is set
+// (e.g. migration miss or empty call).
+func (cache *PlanetCache) PauseOreClocksForRaid() {
+    raiderArrived := cache.GetBlockRaiderArrived()
+    if raiderArrived == 0 {
+        return
+    }
+
+    uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
+    raidEnd := uint64(uctx.BlockHeight())
+
+    if cache.GetOreMiningActiveQuantity() != 0 {
+        shifted := shiftOreClockForRaid(cache.GetBlockStartOreMine(), raiderArrived, raidEnd)
+        cache.CC.SetPlanetAttribute(cache.BlockStartOreMineAttributeId, shifted)
+    }
+
+    if cache.GetOreRefiningActiveQuantity() != 0 {
+        shifted := shiftOreClockForRaid(cache.GetBlockStartOreRefine(), raiderArrived, raidEnd)
+        cache.CC.SetPlanetAttribute(cache.BlockStartOreRefineAttributeId, shifted)
+    }
 }
 
 func (cache *PlanetCache) BuriedOreDecrement(amount uint64) {

@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"structs/app/upgrades"
+	structskeeper "structs/x/structs/keeper"
 	structstypes "structs/x/structs/types"
 )
 
@@ -39,6 +40,14 @@ func CreateUpgradeHandler(
 		}
 
 		if err := MigrateDefenderCanDefend(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
+		if err := MigrateOreClocksToPlanet(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
+		if err := MigrateRaiderArrived(ctx, keepers); err != nil {
 			return newVM, err
 		}
 
@@ -143,6 +152,176 @@ func MigrateDefenderCanDefend(ctx context.Context, keepers *upgrades.Keepers) er
 	}
 
 	logger.Info("v0.21.0 defender canDefend prune complete", "defendersCleared", defendersCleared)
+	return nil
+}
+
+// planetOreMigration holds the per-planet aggregation built while scanning
+// structs during MigrateOreClocksToPlanet.
+type planetOreMigration struct {
+	mineCount   uint64
+	refineCount uint64
+	mineClock   uint64 // minimum non-zero struct mine clock; 0 means unset
+	refineClock uint64 // minimum non-zero struct refine clock; 0 means unset
+}
+
+// MigrateOreClocksToPlanet moves ore mine/refine clocks from per-struct
+// attributes onto the planet, and seeds oreMiningActiveQuantity /
+// oreRefiningActiveQuantity from the count of online planet-located
+// mining/refining structs. The planet clock is seeded from the minimum
+// existing struct clock so no player loses accrued difficulty age.
+//
+// Counters are assigned (not incremented) so a re-run is idempotent.
+// Old struct-level clock attributes are cleared afterward, emitting
+// EventStructAttribute with value 0 so the indexer drops them.
+//
+// Cost is O(S + P) where S is the number of structs and P the number of
+// planets that had at least one mining/refining system online.
+func MigrateOreClocksToPlanet(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateOreClocksToPlanet")
+
+	k := keepers.StructsKeeper
+
+	structTypeCache := make(map[uint64]structstypes.StructType)
+	byPlanet := make(map[string]*planetOreMigration)
+	var structClocksCleared int
+
+	for _, structure := range k.GetAllStruct(ctx) {
+		if structure.LocationType != structstypes.ObjectType_planet {
+			continue
+		}
+
+		structType, cached := structTypeCache[structure.Type]
+		if !cached {
+			loadedType, typeFound := k.GetStructType(ctx, structure.Type)
+			if !typeFound {
+				logger.Warn("struct references unknown type; skipping ore clock migration", "structId", structure.Id, "structType", structure.Type)
+				continue
+			}
+			structType = loadedType
+			structTypeCache[structure.Type] = structType
+		}
+
+		hasMining := structType.HasOreMiningSystem()
+		hasRefining := structType.HasOreRefiningSystem()
+		if !hasMining && !hasRefining {
+			continue
+		}
+
+		// Retire the struct-level clocks regardless of online state so the
+		// indexer converges on the planet as the only source of truth.
+		var mineClock, refineClock uint64
+		if hasMining {
+			mineAttrId := structskeeper.GetStructAttributeIDByObjectId(structstypes.StructAttributeType_blockStartOreMine, structure.Id)
+			if mineClock = k.GetStructAttribute(ctx, mineAttrId); mineClock != 0 {
+				k.ClearStructAttribute(ctx, mineAttrId)
+				structClocksCleared++
+			}
+		}
+		if hasRefining {
+			refineAttrId := structskeeper.GetStructAttributeIDByObjectId(structstypes.StructAttributeType_blockStartOreRefine, structure.Id)
+			if refineClock = k.GetStructAttribute(ctx, refineAttrId); refineClock != 0 {
+				k.ClearStructAttribute(ctx, refineAttrId)
+				structClocksCleared++
+			}
+		}
+
+		// Only online rigs contribute to the planet counters and clocks.
+		statusAttrId := structskeeper.GetStructAttributeIDByObjectId(structstypes.StructAttributeType_status, structure.Id)
+		status := structstypes.StructState(k.GetStructAttribute(ctx, statusAttrId))
+		if status&structstypes.StructStateOnline == 0 {
+			continue
+		}
+
+		agg, ok := byPlanet[structure.LocationId]
+		if !ok {
+			agg = &planetOreMigration{}
+			byPlanet[structure.LocationId] = agg
+		}
+
+		if hasMining {
+			agg.mineCount++
+			if mineClock != 0 && (agg.mineClock == 0 || mineClock < agg.mineClock) {
+				agg.mineClock = mineClock
+			}
+		}
+		if hasRefining {
+			agg.refineCount++
+			if refineClock != 0 && (agg.refineClock == 0 || refineClock < agg.refineClock) {
+				agg.refineClock = refineClock
+			}
+		}
+	}
+
+	upgradeHeight := uint64(sdkCtx.BlockHeight())
+	var planetsUpdated int
+	for planetId, agg := range byPlanet {
+		if agg.mineCount > 0 {
+			mineQtyId := structskeeper.GetPlanetAttributeIDByObjectId(structstypes.PlanetAttributeType_oreMiningActiveQuantity, planetId)
+			k.SetPlanetAttribute(ctx, mineQtyId, agg.mineCount)
+
+			mineClockId := structskeeper.GetPlanetAttributeIDByObjectId(structstypes.PlanetAttributeType_planetBlockStartOreMine, planetId)
+			clock := agg.mineClock
+			if existing := k.GetPlanetAttribute(ctx, mineClockId); existing != 0 {
+				if clock == 0 || existing < clock {
+					clock = existing
+				}
+			}
+			if clock == 0 {
+				clock = upgradeHeight
+			}
+			k.SetPlanetAttribute(ctx, mineClockId, clock)
+		}
+		if agg.refineCount > 0 {
+			refineQtyId := structskeeper.GetPlanetAttributeIDByObjectId(structstypes.PlanetAttributeType_oreRefiningActiveQuantity, planetId)
+			k.SetPlanetAttribute(ctx, refineQtyId, agg.refineCount)
+
+			refineClockId := structskeeper.GetPlanetAttributeIDByObjectId(structstypes.PlanetAttributeType_planetBlockStartOreRefine, planetId)
+			clock := agg.refineClock
+			if existing := k.GetPlanetAttribute(ctx, refineClockId); existing != 0 {
+				if clock == 0 || existing < clock {
+					clock = existing
+				}
+			}
+			if clock == 0 {
+				clock = upgradeHeight
+			}
+			k.SetPlanetAttribute(ctx, refineClockId, clock)
+		}
+		planetsUpdated++
+	}
+
+	logger.Info("v0.21.0 ore clock migration complete",
+		"planetsUpdated", planetsUpdated,
+		"structClocksCleared", structClocksCleared)
+	return nil
+}
+
+// MigrateRaiderArrived seeds blockRaiderArrived on every planet that
+// currently has a raid in progress (LocationListStart != ""). Without this,
+// an in-flight raid would treat the pause window as starting at block 0 and
+// shift ore clocks by their entire age at raid end.
+//
+// The marker is set to the upgrade block height. Idempotent: a re-run
+// overwrites with the same height while the raid is still active.
+func MigrateRaiderArrived(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateRaiderArrived")
+
+	k := keepers.StructsKeeper
+	upgradeHeight := uint64(sdkCtx.BlockHeight())
+
+	var planetsMarked int
+	for _, planet := range k.GetAllPlanet(ctx) {
+		if planet.LocationListStart == "" {
+			continue
+		}
+		attrId := structskeeper.GetPlanetAttributeIDByObjectId(structstypes.PlanetAttributeType_blockRaiderArrived, planet.Id)
+		k.SetPlanetAttribute(ctx, attrId, upgradeHeight)
+		planetsMarked++
+	}
+
+	logger.Info("v0.21.0 raider-arrived seed complete", "planetsMarked", planetsMarked)
 	return nil
 }
 

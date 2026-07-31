@@ -55,4 +55,10 @@ message PlanetAttributes {
   uint64  advancedOrbitalJammingStationQuantity                   = 10;
 
   uint64  blockStartRaid                                          = 11;
+
+  uint64  blockRaiderArrived                                      = 12;
+  uint64  blockStartOreMine                                       = 13;
+  uint64  blockStartOreRefine                                     = 14;
+  uint64  oreMiningActiveQuantity                                 = 15;
+  uint64  oreRefiningActiveQuantity                               = 16;
 }

@@ -35,6 +35,12 @@ func (cc *CurrentContext) GetPlanet(planetId string) *PlanetCache {
 
                 OrbitalJammingStationQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_orbitalJammingStationQuantity, planetId),
                 AdvancedOrbitalJammingStationQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_advancedOrbitalJammingStationQuantity, planetId),
+
+                BlockRaiderArrivedAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockRaiderArrived, planetId),
+                BlockStartOreMineAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetBlockStartOreMine, planetId),
+                BlockStartOreRefineAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetBlockStartOreRefine, planetId),
+                OreMiningActiveQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_oreMiningActiveQuantity, planetId),
+                OreRefiningActiveQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_oreRefiningActiveQuantity, planetId),
             }
 
 
@@ -99,6 +105,12 @@ func (cc *CurrentContext) NewPlanet(creator string, playerId string) (*PlanetCac
 
                 OrbitalJammingStationQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_orbitalJammingStationQuantity, planetId),
                 AdvancedOrbitalJammingStationQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_advancedOrbitalJammingStationQuantity, planetId),
+
+                BlockRaiderArrivedAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockRaiderArrived, planetId),
+                BlockStartOreMineAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetBlockStartOreMine, planetId),
+                BlockStartOreRefineAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetBlockStartOreRefine, planetId),
+                OreMiningActiveQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_oreMiningActiveQuantity, planetId),
+                OreRefiningActiveQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_oreRefiningActiveQuantity, planetId),
             }
 
 

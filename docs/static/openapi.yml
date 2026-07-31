@@ -23192,6 +23192,21 @@ paths:
                   blockStartRaid:
                     type: string
                     format: uint64
+                  blockRaiderArrived:
+                    type: string
+                    format: uint64
+                  blockStartOreMine:
+                    type: string
+                    format: uint64
+                  blockStartOreRefine:
+                    type: string
+                    format: uint64
+                  oreMiningActiveQuantity:
+                    type: string
+                    format: uint64
+                  oreRefiningActiveQuantity:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -40461,6 +40476,21 @@ definitions:
       blockStartRaid:
         type: string
         format: uint64
+      blockRaiderArrived:
+        type: string
+        format: uint64
+      blockStartOreMine:
+        type: string
+        format: uint64
+      blockStartOreRefine:
+        type: string
+        format: uint64
+      oreMiningActiveQuantity:
+        type: string
+        format: uint64
+      oreRefiningActiveQuantity:
+        type: string
+        format: uint64
   structs.structs.Player:
     type: object
     properties:
@@ -42536,6 +42566,21 @@ definitions:
           blockStartRaid:
             type: string
             format: uint64
+          blockRaiderArrived:
+            type: string
+            format: uint64
+          blockStartOreMine:
+            type: string
+            format: uint64
+          blockStartOreRefine:
+            type: string
+            format: uint64
+          oreMiningActiveQuantity:
+            type: string
+            format: uint64
+          oreRefiningActiveQuantity:
+            type: string
+            format: uint64
   structs.structs.QueryGetPlayerResponse:
     type: object
     properties:
@@ -43531,9 +43576,11 @@ definitions:
       blockStartOreMine:
         type: string
         format: uint64
+        description: 'Deprecated as of v0.21.0: ore mine clock lives on PlanetAttributes.blockStartOreMine. Always 0 after migration.'
       blockStartOreRefine:
         type: string
         format: uint64
+        description: 'Deprecated as of v0.21.0: ore refine clock lives on PlanetAttributes.blockStartOreRefine. Always 0 after migration.'
       protectedStructIndex:
         type: string
         format: uint64
