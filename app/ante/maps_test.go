@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"structs/x/structs/types"
@@ -66,6 +67,34 @@ func TestKnownMessagesCompleteness(t *testing.T) {
 	// Every message in ThrottleKeyExtractors must be in KnownStructsMessages
 	for typeURL := range ThrottleKeyExtractors {
 		require.True(t, KnownStructsMessages[typeURL], "ThrottleKeyExtractors entry %s not in KnownStructsMessages", typeURL)
+	}
+}
+
+// TestEveryRegisteredMsgIsKnown is the guard against the failure mode where a
+// new Msg is added to the proto and codec but nobody updates the ante maps: the
+// message then registers fine, routes fine, and is rejected at the ante with
+// "unknown structs message type" the first time anyone submits it. The maps can
+// only be trusted if they are checked against the module's real message set
+// rather than against each other.
+func TestEveryRegisteredMsgIsKnown(t *testing.T) {
+	registry := codectypes.NewInterfaceRegistry()
+	sdk.RegisterInterfaces(registry)
+	types.RegisterInterfaces(registry)
+
+	registered := registry.ListImplementations(sdk.MsgInterfaceProtoName)
+	require.NotEmpty(t, registered, "no structs messages registered; test would be vacuous")
+
+	for _, typeURL := range registered {
+		if !IsStructsMessage(typeURL) {
+			continue
+		}
+		// MsgUpdateParams is a gov-gated paid tx, so it never reaches the
+		// StructsDecorator (which only runs for free Structs txs).
+		if typeURL == "/structs.structs.MsgUpdateParams" {
+			continue
+		}
+		require.True(t, KnownStructsMessages[typeURL],
+			"registered message %s is missing from KnownStructsMessages (update app/ante/maps.go)", typeURL)
 	}
 }
 

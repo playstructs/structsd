@@ -132,6 +132,8 @@ run_tx() {
     else
         OUTPUT=$(structsd ${PARAMS_TX} "$@" 2>&1) || true
     fi
+    # Exposed so callers can inspect a rejection reason without re-running the tx.
+    LAST_TX_OUTPUT="${OUTPUT}"
     _check_tx_output "${OUTPUT}"
     sleep "${SLEEP}"
     if [ "${LOG_BATTLE}" = true ] && [[ "$*" == *"struct-attack"* ]]; then
@@ -352,20 +354,74 @@ get_newest_struct_id() {
 # assert_new_struct: fail loudly if a struct-build-initiate did not produce a
 # NEW struct of the expected type (guards against get_newest_struct_id silently
 # returning a stale id when an initiate is rejected).
+# Returns non-zero, which under `set -e` aborts the run: every later assertion in
+# the phase would be measuring the wrong struct, and the stale id may even belong
+# to a struct that a subsequent sweep deletes, so stopping here is far cheaper
+# than letting hours of proof-of-work run against corrupt bookkeeping.
 # Usage: assert_new_struct <label> <new_id> <prev_newest_id> <expected_type>
 assert_new_struct() {
     local label="$1" new_id="$2" prev_id="$3" exp_type="$4"
     if [ -z "${new_id}" ] || [ "${new_id}" = "${prev_id}" ]; then
         echo -e "  ${RED}FAIL${NC}: ${label} - initiate produced no new struct (id='${new_id}', prev='${prev_id}')"
+        echo -e "  ${RED}Aborting: the phase would continue against a stale struct id.${NC}"
         FAIL_COUNT=$((FAIL_COUNT + 1)); return 1
     fi
-    local t; t=$(query query structs struct "${new_id}" | jq -r '.Struct.type // empty')
+    local t; t=$(query query structs struct "${new_id}" 2>/dev/null | jq -r '.Struct.type // empty' 2>/dev/null || echo "")
     if [ "${t}" != "${exp_type}" ]; then
         echo -e "  ${RED}FAIL${NC}: ${label} - new struct ${new_id} type='${t}', expected '${exp_type}'"
+        echo -e "  ${RED}Aborting: the phase would continue against the wrong struct.${NC}"
         FAIL_COUNT=$((FAIL_COUNT + 1)); return 1
     fi
     echo -e "  ${GREEN}PASS${NC}: ${label} = ${new_id} (type ${exp_type})"
     PASS_COUNT=$((PASS_COUNT + 1))
+}
+
+# first_free_slot: lowest unoccupied slot index for an ambit on a planet or fleet.
+# Occupancy lives in the location record's per-ambit array (empty string = free),
+# which is the same state the chain checks on build-initiate, so this stays
+# correct as earlier phases consume slots. Echoes nothing when the ambit is full.
+# Usage: first_free_slot <planet|fleet> <location id> <space|air|land|water>
+first_free_slot() {
+    local kind="$1" id="$2" ambit="$3"
+    local root
+    case "${kind}" in
+        planet) root="Planet" ;;
+        fleet)  root="Fleet" ;;
+        *)      echo ""; return 0 ;;
+    esac
+    query query structs "${kind}" "${id}" 2>/dev/null | jq -r --arg root "${root}" --arg ambit "${ambit}" '
+        (.[$root] // {}) as $loc
+        | ((($loc[$ambit + "Slots"]) // "0") | tonumber) as $n
+        | (($loc[$ambit]) // []) as $used
+        | [range(0; $n) | select(((($used[.]) // "") | length) == 0)]
+        | if length == 0 then "" else (.[0] | tostring) end
+    ' 2>/dev/null || echo ""
+}
+
+# wait_for_free_slot: like first_free_slot, but tolerates the rubble window.
+# A destroyed struct is not swept immediately: AppendStructDestructionQueue
+# schedules it for blockHeight + StructSweepDelay (5 blocks, "Rubble Length"),
+# and only then does StructSweepDestroyed clear planet.Land[slot] in the
+# BeginBlocker. So for ~5 blocks after a kill the slot still reads occupied and
+# build-initiate correctly rejects with "already has a struct on that slot".
+# Poll instead of racing it. Echoes the slot index, or nothing on timeout.
+# Usage: wait_for_free_slot <planet|fleet> <location id> <space|air|land|water> [timeout_seconds]
+wait_for_free_slot() {
+    local kind="$1" id="$2" ambit="$3" timeout="${4:-30}"
+    local slot elapsed=0
+    while [ "${elapsed}" -lt "${timeout}" ]; do
+        slot=$(first_free_slot "${kind}" "${id}" "${ambit}")
+        if [ -n "${slot}" ]; then
+            # Progress goes to stderr so only the slot index lands on stdout.
+            [ "${elapsed}" -gt 0 ] && echo -e "  ${GREEN}Slot free${NC}: ${kind} ${id} ${ambit} slot=${slot} (after ${elapsed}s)" >&2
+            echo "${slot}"
+            return 0
+        fi
+        [ "${elapsed}" -eq 0 ] && echo -e "  ${YELLOW}Waiting for free ${ambit} slot${NC}: ${kind} ${id} (rubble sweep takes ~5 blocks)" >&2
+        sleep 3
+        elapsed=$((elapsed + 3))
+    done
+    echo ""
 }
 
 # get_latest_allocation_for_source: find the most recent allocation for a given source
@@ -772,6 +828,8 @@ recover_state() {
     assert_not_empty "Recovered validator" "${VALIDATOR_ADDRESS}"
 
     PLAYER_1_ADDRESS=$(structsd ${PARAMS_KEYS} keys show alice 2>/dev/null | jq -r .address || echo "")
+    # Phase 0 / GP1 still reference ALICE_ADDRESS; keep both names in sync on resume.
+    ALICE_ADDRESS="${PLAYER_1_ADDRESS}"
     BOB_ADDRESS=$(structsd ${PARAMS_KEYS} keys show bob 2>/dev/null | jq -r .address || echo "")
 
     ADDR_JSON=$(query query structs address "${PLAYER_1_ADDRESS}")
@@ -838,7 +896,9 @@ recover_state() {
     PLAYER_2_CMD_SHIP_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 1 1 "${SA}")
     PLAYER_3_CMD_SHIP_ID="${COMMAND_SHIP_ID}"
     MINER_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 14 1 "${SA}")
-    REFINERY_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 16 1 "${SA}")
+    # Ore Refinery is type 15 (type 16 is unused / different); a wrong lookup
+    # silently blanks REFINERY_STRUCT_ID and skips refine-during-raid asserts.
+    REFINERY_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 15 1 "${SA}")
     DESTROYER_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 9 1 "${SA}")
     AP_TANK_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 9 2 "${SA}")
     DEFENDER_STRUCT_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 9 1 "${SA}")
@@ -927,6 +987,43 @@ declare -a RP_KEYS
 
 if [ -n "${RESUME_FROM}" ]; then
     recover_state
+fi
+
+# ─── Fresh-chain precondition ─────────────────────────────────────────────────
+# Every phase assumes it is the only writer: player/planet/fleet ids, struct
+# slots and charge budgets are all hardcoded against a genesis-only chain.
+# Running against leftover state produces slot collisions dozens of phases in
+# (and hours of proof-of-work later), so refuse up front instead. --resume-from
+# deliberately targets an in-progress chain and is exempt.
+assert_fresh_chain() {
+    # Phase 1 is also a writer, so an aborted earlier run leaves guilds,
+    # substations and allocations behind even when no planet or struct exists.
+    # Count those too, otherwise a half-finished run looks fresh.
+    local structs planets players guilds substations allocations
+    structs=$(query query structs struct-all 2>/dev/null | jq '.Struct | length' 2>/dev/null || echo "0")
+    planets=$(query query structs planet-all 2>/dev/null | jq '.Planet | length' 2>/dev/null || echo "0")
+    players=$(query query structs player-all 2>/dev/null | jq '.Player | length' 2>/dev/null || echo "0")
+    guilds=$(query query structs guild-all 2>/dev/null | jq '.Guild | length' 2>/dev/null || echo "0")
+    substations=$(query query structs substation-all 2>/dev/null | jq '.Substation | length' 2>/dev/null || echo "0")
+    allocations=$(query query structs allocation-all 2>/dev/null | jq '.Allocation | length' 2>/dev/null || echo "0")
+
+    if [ "${structs}" = "0" ] && [ "${planets}" = "0" ] && [ "${guilds}" = "0" ] \
+        && [ "${substations}" = "0" ] && [ "${allocations}" = "0" ] && [ "${players}" -le 1 ] 2>/dev/null; then
+        info "Fresh chain confirmed (players=${players}, planets=${planets}, structs=${structs}, guilds=${guilds}, substations=${substations}, allocations=${allocations})"
+        return 0
+    fi
+
+    echo ""
+    echo -e "${RED}${BOLD}  ABORT: chain is not freshly reset${NC}"
+    echo -e "${RED}  players=${players} (expected <=1), planets=${planets}, structs=${structs}, guilds=${guilds}, substations=${substations}, allocations=${allocations} (all expected 0)${NC}"
+    echo -e "${RED}  Leftover state makes the hardcoded slots and ids in later phases collide.${NC}"
+    echo -e "${RED}  Reset the chain and restart it, then re-run. Use --resume-from to skip this check.${NC}"
+    echo ""
+    exit 1
+}
+
+if [ -z "${RESUME_FROM}" ]; then
+    assert_fresh_chain
 fi
 
 if [ "${LOG_BATTLE}" = true ]; then
@@ -3452,6 +3549,7 @@ else
     # ─── Build Mine Shaft (struct type 14, land, slot 1) ───
     STRUCT_COUNT_BEFORE=$(query query structs struct-all | jq '.Struct | length' 2>/dev/null || echo 0)
 
+    PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
     wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
     run_tx "Initiating Mine Shaft build (type=14, ambit=land, slot=1)" \
         tx structs struct-build-initiate "${PLAYER_2_ID}" 14 land 1 --from player_2
@@ -3459,7 +3557,7 @@ else
     STRUCT_ALL_JSON=$(query query structs struct-all)
     STRUCT_COUNT_AFTER=$(echo "${STRUCT_ALL_JSON}" | jq '.Struct | length' 2>/dev/null || echo 0)
     MINER_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-    assert_not_empty "Miner struct ID" "${MINER_STRUCT_ID}"
+    assert_new_struct "Miner struct ID" "${MINER_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 14
     echo "  Miner Struct ID: ${MINER_STRUCT_ID}"
 
     run_compute "Building Mine Shaft ${MINER_STRUCT_ID}" \
@@ -3488,6 +3586,7 @@ else
     assert_gt "Player 2 ore after mining" 0 "${P2_ORE}"
 
     # ─── Build Refinery (struct type 15 = Ore Refinery, land, slot 2) ───
+    PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
     wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
     run_tx "Initiating Refinery build (type=15, ambit=land, slot=2)" \
         tx structs struct-build-initiate "${PLAYER_2_ID}" 15 land 2 --from player_2
@@ -3495,7 +3594,7 @@ else
     # Find the new struct
     STRUCT_ALL_JSON=$(query query structs struct-all)
     REFINERY_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-    assert_not_empty "Refinery struct ID" "${REFINERY_STRUCT_ID}"
+    assert_new_struct "Refinery struct ID" "${REFINERY_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 15
     echo "  Refinery Struct ID: ${REFINERY_STRUCT_ID}"
 
     run_compute "Building Refinery ${REFINERY_STRUCT_ID}" \
@@ -3534,17 +3633,34 @@ info "Player 2 structsLoad before build-initiate: ${P2_LOAD_BEFORE_CANCEL}"
 
 # struct-type query coverage
 info "Querying struct types:"
-query query structs struct-type 18 2>/dev/null | jq -r '.structType | "  Type \(.id): \(.type) buildDraw=\(.buildDraw) category=\(.category)"' || echo "  (query failed)"
+query query structs struct-type 18 2>/dev/null | jq -r '.StructType | "  Type \(.id): \(.type) buildDraw=\(.buildDraw) category=\(.category)"' || echo "  (query failed)"
 
-# Initiate the build (Ore Bunker type 18, land, slot 2)
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Ore Bunker build (type=18, land, slot=2)" \
-    tx structs struct-build-initiate "${PLAYER_2_ID}" 18 land 2 --from player_2
+# Initiate the build (Ore Bunker type 18, land). Both the slot and the build
+# itself are conditional: with mining enabled Phase 7 has already taken land
+# slots 1 and 2 for the Mine Shaft and Refinery, and their 500k+500k passive
+# draw can leave Player 2 without the 750k of grid headroom an Ore Bunker needs.
+# Neither is a defect, so this phase skips rather than fails; the cancel path
+# itself is covered deterministically by msg_server_struct_build_cancel_test.go.
+CANCEL_SLOT=$(first_free_slot planet "${PLAYER_2_PLANET_ID}" land)
+CANCEL_STRUCT_ID=""
+if [ -z "${CANCEL_SLOT}" ]; then
+    info "SKIP 7b: Player 2's planet has no free land slot for the cancel test"
+else
+    PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
+    wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
+    run_tx "Initiating Ore Bunker build (type=18, land, slot=${CANCEL_SLOT})" \
+        tx structs struct-build-initiate "${PLAYER_2_ID}" 18 land "${CANCEL_SLOT}" --from player_2
 
-# Find the new struct
-STRUCT_ALL_JSON=$(query query structs struct-all)
-CANCEL_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-info "Struct to cancel: ${CANCEL_STRUCT_ID}"
+    STRUCT_ALL_JSON=$(query query structs struct-all)
+    CANCEL_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
+    if [ -z "${CANCEL_STRUCT_ID}" ] || [ "${CANCEL_STRUCT_ID}" = "${PREV_NEWEST_STRUCT_ID}" ]; then
+        CANCEL_STRUCT_ID=""
+        info "SKIP 7b: build-initiate rejected — $(echo "${LAST_TX_OUTPUT}" | grep -o 'failed to execute message[^[]*' | head -1)"
+    else
+        assert_new_struct "Ore Bunker for cancel initiated" "${CANCEL_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 18
+        info "Struct to cancel: ${CANCEL_STRUCT_ID}"
+    fi
+fi
 
 if [ -n "${CANCEL_STRUCT_ID}" ]; then
     # Check if struct is built yet (may auto-complete with low difficulty)
@@ -3578,7 +3694,7 @@ fi
 
 # struct-type-all query coverage
 info "All struct types count:"
-echo "  $(query query structs struct-type-all 2>/dev/null | jq '.structType | length' || echo '?') types"
+echo "  $(query query structs struct-type-all 2>/dev/null | jq '.StructType | length' || echo '?') types"
 
 fi # phase 7b
 
@@ -3602,15 +3718,26 @@ section "PHASE 7c: Struct Trash"
 P2_TRASH_LOAD_BASELINE=$(jqr "$(query query structs player "${PLAYER_2_ID}")" '.gridAttributes.structsLoad' '0')
 info "Player 2 structsLoad before trash-target build: ${P2_TRASH_LOAD_BASELINE}"
 
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Ore Bunker for trash (type=18, land, slot=3)" \
-    tx structs struct-build-initiate "${PLAYER_2_ID}" 18 land 3 --from player_2
-
-TRASH_STRUCT_ID=$(get_newest_struct_id)
-if [ -z "${TRASH_STRUCT_ID}" ] || [ "${TRASH_STRUCT_ID}" = "${PREV_NEWEST_STRUCT_ID}" ]; then
-    info "SKIP 7c: Could not initiate build for trash test (slot/charge)"
+# Same load squeeze as 7b: with mining enabled the extractor+refinery can leave
+# Player 2 short of the Ore Bunker's 750k buildDraw. Skip with the chain's reason.
+TRASH_SLOT=$(first_free_slot planet "${PLAYER_2_PLANET_ID}" land)
+TRASH_STRUCT_ID=""
+if [ -z "${TRASH_SLOT}" ]; then
+    info "SKIP 7c: Player 2's planet has no free land slot for the trash test"
 else
+    PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
+    wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
+    run_tx "Initiating Ore Bunker for trash (type=18, land, slot=${TRASH_SLOT})" \
+        tx structs struct-build-initiate "${PLAYER_2_ID}" 18 land "${TRASH_SLOT}" --from player_2
+
+    TRASH_STRUCT_ID=$(get_newest_struct_id)
+    if [ -z "${TRASH_STRUCT_ID}" ] || [ "${TRASH_STRUCT_ID}" = "${PREV_NEWEST_STRUCT_ID}" ]; then
+        TRASH_STRUCT_ID=""
+        info "SKIP 7c: build-initiate rejected — $(echo "${LAST_TX_OUTPUT}" | grep -o 'failed to execute message[^[]*' | head -1)"
+    fi
+fi
+
+if [ -n "${TRASH_STRUCT_ID}" ]; then
     info "Trash target struct: ${TRASH_STRUCT_ID} (still building)"
 
     P2_TRASH_LOAD_MID=$(jqr "$(query query structs player "${PLAYER_2_ID}")" '.gridAttributes.structsLoad' '0')
@@ -3643,13 +3770,14 @@ section "PHASE 8: Player 3 Combat Setup"
 echo "  Player 3 Planet: ${PLAYER_3_PLANET_ID}"
 
 # ─── Build Guided Missile Destroyer (type 9, land, slot 1) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating Guided Missile Destroyer (type=9, ambit=land, slot=1)" \
     tx structs struct-build-initiate "${PLAYER_3_ID}" 9 land 1 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 DESTROYER_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Destroyer struct ID" "${DESTROYER_STRUCT_ID}"
+assert_new_struct "Destroyer struct ID" "${DESTROYER_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 9
 echo "  Destroyer Struct ID: ${DESTROYER_STRUCT_ID}"
 
 # ─── Pre-seed builds for other players while P3's Destroyer computes ────────
@@ -3657,23 +3785,25 @@ echo "  Destroyer Struct ID: ${DESTROYER_STRUCT_ID}"
 # P2 and P4 have independent charge — no waiting on P3.
 
 info "Pre-seeding P2 Defender Destroyer (type=9, land, slot=0) — needed Phase 11"
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
 run_tx "Pre-seed: P2 Defender Destroyer (type=9, land, slot=0)" \
     tx structs struct-build-initiate "${PLAYER_2_ID}" 9 land 0 --from player_2
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 DEFENDER_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Defender struct ID" "${DEFENDER_STRUCT_ID}"
+assert_new_struct "Defender struct ID" "${DEFENDER_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 9
 echo "  Defender Struct ID: ${DEFENDER_STRUCT_ID} (pre-seeded, compute deferred to Phase 11)"
 
 info "Pre-seeding P4 Field Generator (type=20, land, slot=0) — needed Phase 15"
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_4_ID}" "${CHARGE_BUILD}"
 run_tx "Pre-seed: P4 Field Generator (type=20, land, slot=0)" \
     tx structs struct-build-initiate "${PLAYER_4_ID}" 20 land 0 --from player_4
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 GENERATOR_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Generator struct ID" "${GENERATOR_STRUCT_ID}"
+assert_new_struct "Generator struct ID" "${GENERATOR_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 20
 echo "  Generator Struct ID: ${GENERATOR_STRUCT_ID} (pre-seeded, compute deferred to Phase 15)"
 
 # ─── Now compute P3's Destroyer (P2 Defender and P4 Generator age during this) ───
@@ -3772,16 +3902,32 @@ else
     MINER_DESTROYED=$(jqr "${MINER_JSON}" '.structAttributes.isDestroyed' 'true')
     if [ "${MINER_DESTROYED}" = "true" ]; then
         info "Miner ${MINER_STRUCT_ID} destroyed in Phase 9; rebuilding for raid-pause coverage"
-        wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
-        run_tx "Rebuilding Ore Extractor for raid-pause tests (type=14, land, slot=1)" \
-            tx structs struct-build-initiate "${PLAYER_2_ID}" 14 land 1 --from player_2
-        STRUCT_ALL_JSON=$(query query structs struct-all)
-        MINER_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-        assert_not_empty "Rebuilt miner struct ID" "${MINER_STRUCT_ID}"
-        run_compute "Building rebuilt Ore Extractor ${MINER_STRUCT_ID}" \
-            tx structs struct-build-compute "${MINER_STRUCT_ID}" --from player_2
-        MINER_JSON=$(query query structs struct "${MINER_STRUCT_ID}")
-        assert_eq "Rebuilt miner online" "true" "$(jqr "${MINER_JSON}" '.structAttributes.isOnline' 'false')"
+        # The kill only just happened, so the corpse still holds its land slot
+        # until the rubble sweep runs (StructSweepDelay=5). Prefer any already-free
+        # slot (planet land usually has spare capacity); otherwise wait out rubble.
+        # Never hardcode the dead miner's slot — that races the BeginBlocker sweep.
+        REBUILD_SLOT=$(wait_for_free_slot planet "${PLAYER_2_PLANET_ID}" land)
+        if [ -z "${REBUILD_SLOT}" ]; then
+            info "SKIP: no free land slot on ${PLAYER_2_PLANET_ID} after rubble sweep; raid-pause mining assertions skipped"
+            MINER_STRUCT_ID=""
+        else
+            wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
+            PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
+            run_tx "Rebuilding Ore Extractor for raid-pause tests (type=14, land, slot=${REBUILD_SLOT})" \
+                tx structs struct-build-initiate "${PLAYER_2_ID}" 14 land "${REBUILD_SLOT}" --from player_2
+            STRUCT_ALL_JSON=$(query query structs struct-all)
+            MINER_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
+            if [ -z "${MINER_STRUCT_ID}" ] || [ "${MINER_STRUCT_ID}" = "${PREV_NEWEST_STRUCT_ID}" ]; then
+                info "SKIP: rebuild-initiate rejected — $(echo "${LAST_TX_OUTPUT}" | grep -o 'failed to execute message[^[]*' | head -1)"
+                MINER_STRUCT_ID=""
+            else
+                assert_new_struct "Rebuilt miner struct ID" "${MINER_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 14
+                run_compute "Building rebuilt Ore Extractor ${MINER_STRUCT_ID}" \
+                    tx structs struct-build-compute "${MINER_STRUCT_ID}" --from player_2
+                MINER_JSON=$(query query structs struct "${MINER_STRUCT_ID}")
+                assert_eq "Rebuilt miner online" "true" "$(jqr "${MINER_JSON}" '.structAttributes.isOnline' 'false')"
+            fi
+        fi
     elif [ "${MINER_ONLINE}" != "true" ]; then
         # The miner still occupies land slot 1, so reactivate it rather than
         # rebuilding into a taken slot.
@@ -3793,24 +3939,28 @@ else
         assert_eq "Reactivated miner online" "true" "$(jqr "${MINER_JSON}" '.structAttributes.isOnline' 'false')"
     fi
 
-    P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
-    P2_RAIDER_ARRIVED=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockRaiderArrived' '0')
-    P2_MINE_CLOCK_BEFORE=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartOreMine' '0')
-    P2_REFINE_CLOCK_BEFORE=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartOreRefine' '0')
-    P2_MINE_QTY=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.oreMiningActiveQuantity' '0')
-    P2_REFINE_QTY=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.oreRefiningActiveQuantity' '0')
-    info "Raid pause pre-check: blockRaiderArrived=${P2_RAIDER_ARRIVED} mineClock=${P2_MINE_CLOCK_BEFORE} refineClock=${P2_REFINE_CLOCK_BEFORE} mineQty=${P2_MINE_QTY} refineQty=${P2_REFINE_QTY}"
-    assert_gt "blockRaiderArrived set while P3 fleet is on P2 planet" "0" "${P2_RAIDER_ARRIVED}"
-    assert_gt "oreMiningActiveQuantity while miner is online" "0" "${P2_MINE_QTY}"
-
-    run_tx_expect_fail "Ore mine compute fast-fails during raid (should fail)" \
-        tx structs struct-ore-mine-compute "${MINER_STRUCT_ID}" --from player_2
-
-    if [ -n "${REFINERY_STRUCT_ID}" ] && [ "${P2_REFINE_QTY}" != "0" ]; then
-        run_tx_expect_fail "Ore refine compute fast-fails during raid (should fail)" \
-            tx structs struct-ore-refine-compute "${REFINERY_STRUCT_ID}" --from player_2
+    if [ -z "${MINER_STRUCT_ID}" ]; then
+        info "Skipping raid-pause mining assertions (no miner could be rebuilt)"
     else
-        info "Skipping refine-during-raid assertion (no active refinery)"
+        P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
+        P2_RAIDER_ARRIVED=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockRaiderArrived' '0')
+        P2_MINE_CLOCK_BEFORE=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartOreMine' '0')
+        P2_REFINE_CLOCK_BEFORE=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartOreRefine' '0')
+        P2_MINE_QTY=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.oreMiningActiveQuantity' '0')
+        P2_REFINE_QTY=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.oreRefiningActiveQuantity' '0')
+        info "Raid pause pre-check: blockRaiderArrived=${P2_RAIDER_ARRIVED} mineClock=${P2_MINE_CLOCK_BEFORE} refineClock=${P2_REFINE_CLOCK_BEFORE} mineQty=${P2_MINE_QTY} refineQty=${P2_REFINE_QTY}"
+        assert_gt "blockRaiderArrived set while P3 fleet is on P2 planet" "0" "${P2_RAIDER_ARRIVED}"
+        assert_gt "oreMiningActiveQuantity while miner is online" "0" "${P2_MINE_QTY}"
+
+        run_tx_expect_fail "Ore mine compute fast-fails during raid (should fail)" \
+            tx structs struct-ore-mine-compute "${MINER_STRUCT_ID}" --from player_2
+
+        if [ -n "${REFINERY_STRUCT_ID}" ] && [ "${P2_REFINE_QTY}" != "0" ]; then
+            run_tx_expect_fail "Ore refine compute fast-fails during raid (should fail)" \
+                tx structs struct-ore-refine-compute "${REFINERY_STRUCT_ID}" --from player_2
+        else
+            info "Skipping refine-during-raid assertion (no active refinery)"
+        fi
     fi
 fi
 
@@ -3893,6 +4043,10 @@ assert_eq "blockStartRaid cleared after raid completed" "0" "${P2_RAID_CLOCK}"
 # ─── Post-raid: ore clocks shifted, raider-arrived cleared, mining works again ───
 if [ "${SKIP_MINING}" = true ]; then
     info "Skipping post-raid ore-clock assertions (--skip-mining)"
+elif [ -z "${MINER_STRUCT_ID}" ]; then
+    # The pre-raid block never captured P2_MINE_CLOCK_BEFORE, so there is
+    # nothing to compare the post-raid clock against.
+    info "Skipping post-raid ore-clock assertions (no miner during raid)"
 else
     P2_RAIDER_ARRIVED_AFTER=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockRaiderArrived' '0')
     P2_MINE_CLOCK_AFTER=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartOreMine' '0')
@@ -3980,73 +4134,80 @@ run_tx "Moving Player 3's fleet home for building" \
 info "Batch-initiating all builds for Phases 12-14 (difficulty decays while computing)"
 
 # ─── P3: SAM Launcher (type 10, land, slot 2) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating SAM Launcher (type=10, land, slot=2)" \
     tx structs struct-build-initiate "${PLAYER_3_ID}" 10 land 2 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 SAM_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "SAM struct ID" "${SAM_STRUCT_ID}"
+assert_new_struct "SAM struct ID" "${SAM_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 10
 echo "  SAM Struct ID: ${SAM_STRUCT_ID}"
 
 # ─── P2: Battleship (type 2, space, slot 1) — independent charge, no wait ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P2 Battleship (type=2, space, slot=1)" \
     tx structs struct-build-initiate "${PLAYER_2_ID}" 2 space 1 --from player_2
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 P2_BATTLESHIP_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Player 2 Battleship struct ID" "${P2_BATTLESHIP_ID}"
+assert_new_struct "Player 2 Battleship struct ID" "${P2_BATTLESHIP_ID}" "${PREV_NEWEST_STRUCT_ID}" 2
 echo "  P2 Battleship Struct ID: ${P2_BATTLESHIP_ID} (compute deferred to Phase 13)"
 
 # ─── P3: Submarine (type 13, water, slot 1) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating Submarine (type=13, water, slot=1)" \
     tx structs struct-build-initiate "${PLAYER_3_ID}" 13 water 1 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 SUB_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Submarine struct ID" "${SUB_STRUCT_ID}"
+assert_new_struct "Submarine struct ID" "${SUB_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 13
 echo "  Submarine Struct ID: ${SUB_STRUCT_ID}"
 
 # ─── P2: Interceptor (type 7, air, slot 0) — P2 charge recovered ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P2 Interceptor (type=7, air, slot=0)" \
     tx structs struct-build-initiate "${PLAYER_2_ID}" 7 air 0 --from player_2
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 INTERCEPTOR_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Interceptor struct ID" "${INTERCEPTOR_ID}"
+assert_new_struct "Interceptor struct ID" "${INTERCEPTOR_ID}" "${PREV_NEWEST_STRUCT_ID}" 7
 echo "  P2 Interceptor Struct ID: ${INTERCEPTOR_ID} (compute deferred to Phase 14)"
 
 # ─── P3: Battleship #1 (type 2, space, slot 2) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating Battleship #1 (type=2, space, slot=2)" \
     tx structs struct-build-initiate "${PLAYER_3_ID}" 2 space 2 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 BATTLESHIP_1_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Battleship #1 struct ID" "${BATTLESHIP_1_ID}"
+assert_new_struct "Battleship #1 struct ID" "${BATTLESHIP_1_ID}" "${PREV_NEWEST_STRUCT_ID}" 2
 echo "  Battleship #1 Struct ID: ${BATTLESHIP_1_ID}"
 
 # ─── P3: Battleship #2 (type 2, space, slot 0) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating Battleship #2 (type=2, space, slot=0)" \
     tx structs struct-build-initiate "${PLAYER_3_ID}" 2 space 0 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 BATTLESHIP_2_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Battleship #2 struct ID" "${BATTLESHIP_2_ID}"
+assert_new_struct "Battleship #2 struct ID" "${BATTLESHIP_2_ID}" "${PREV_NEWEST_STRUCT_ID}" 2
 echo "  Battleship #2 Struct ID: ${BATTLESHIP_2_ID}"
 
 # ─── P3: Stealth Bomber (type 6, air, slot 0) — needed Phase 13b ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating Stealth Bomber (type=6, air, slot=0)" \
     tx structs struct-build-initiate "${PLAYER_3_ID}" 6 air 0 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 STEALTH_BOMBER_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Stealth Bomber struct ID" "${STEALTH_BOMBER_ID}"
+assert_new_struct "Stealth Bomber struct ID" "${STEALTH_BOMBER_ID}" "${PREV_NEWEST_STRUCT_ID}" 6
 echo "  Stealth Bomber Struct ID: ${STEALTH_BOMBER_ID} (compute deferred to Phase 13b)"
 
 # ─── P3: Cruiser (type 11, water, slot 0) — needed Phase 14 ───
@@ -4097,13 +4258,14 @@ assert_eq "Battleship #2 built" "true" "$(query query structs struct "${BATTLESH
 
 # ─── P3: Tank #2 (type 9, land, slot 0) — armour-piercing target for Phase 13 ───
 # Dedicated target so the AP test never disturbs the main Tank's HP.
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P3 Tank #2 (type=9, land, slot=0) — armour piercing target" \
     tx structs struct-build-initiate "${PLAYER_3_ID}" 9 land 0 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 AP_TANK_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "P3 Tank #2 struct ID" "${AP_TANK_ID}"
+assert_new_struct "P3 Tank #2 struct ID" "${AP_TANK_ID}" "${PREV_NEWEST_STRUCT_ID}" 9
 echo "  P3 Tank #2 Struct ID: ${AP_TANK_ID}"
 
 run_compute "Building P3 Tank #2 ${AP_TANK_ID}" \
@@ -5598,93 +5760,102 @@ run_tx "Moving P3 fleet home before building" \
     tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_3_PLANET_ID}" --from player_3
 
 # ─── P3: Pursuit Fighter (type 5, air, slot 1) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating Pursuit Fighter (type=5, air, slot=1) for P3" \
     tx structs struct-build-initiate "${PLAYER_3_ID}" 5 air 1 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_PURSUIT_FIGHTER_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Pursuit Fighter struct ID" "${EB_PURSUIT_FIGHTER_ID}"
+assert_new_struct "Pursuit Fighter struct ID" "${EB_PURSUIT_FIGHTER_ID}" "${PREV_NEWEST_STRUCT_ID}" 5
 echo "  Pursuit Fighter ID: ${EB_PURSUIT_FIGHTER_ID}"
 
 # ─── P6: Starfighter (type 3, space, slot 0) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating Starfighter (type=3, space, slot=0) for P6" \
     tx structs struct-build-initiate "${PLAYER_6_ID}" 3 space 0 --from player_6
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_STARFIGHTER_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Starfighter struct ID" "${EB_STARFIGHTER_ID}"
+assert_new_struct "Starfighter struct ID" "${EB_STARFIGHTER_ID}" "${PREV_NEWEST_STRUCT_ID}" 3
 echo "  Starfighter ID: ${EB_STARFIGHTER_ID}"
 
 # ─── P6: Frigate (type 4, space, slot 1) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating Frigate (type=4, space, slot=1) for P6" \
     tx structs struct-build-initiate "${PLAYER_6_ID}" 4 space 1 --from player_6
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_FRIGATE_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Frigate struct ID" "${EB_FRIGATE_ID}"
+assert_new_struct "Frigate struct ID" "${EB_FRIGATE_ID}" "${PREV_NEWEST_STRUCT_ID}" 4
 echo "  Frigate ID: ${EB_FRIGATE_ID}"
 
 # ─── P6: Mobile Artillery (type 8, land, slot 0) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating Mobile Artillery (type=8, land, slot=0) for P6" \
     tx structs struct-build-initiate "${PLAYER_6_ID}" 8 land 0 --from player_6
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_MOBILE_ART_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Mobile Artillery struct ID" "${EB_MOBILE_ART_ID}"
+assert_new_struct "Mobile Artillery struct ID" "${EB_MOBILE_ART_ID}" "${PREV_NEWEST_STRUCT_ID}" 8
 echo "  Mobile Artillery ID: ${EB_MOBILE_ART_ID}"
 
 # ─── P6: Destroyer-water (type 12, water, slot 0) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating Destroyer-water (type=12, water, slot=0) for P6" \
     tx structs struct-build-initiate "${PLAYER_6_ID}" 12 water 0 --from player_6
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_DESTROYER_W_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Destroyer-water struct ID" "${EB_DESTROYER_W_ID}"
+assert_new_struct "Destroyer-water struct ID" "${EB_DESTROYER_W_ID}" "${PREV_NEWEST_STRUCT_ID}" 12
 echo "  Destroyer-water ID: ${EB_DESTROYER_W_ID}"
 
 # ─── P6: Battleship (type 2, space, slot 2) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P6 Battleship (type=2, space, slot=2) for P6" \
     tx structs struct-build-initiate "${PLAYER_6_ID}" 2 space 2 --from player_6
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_P6_BATTLESHIP_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "P6 Battleship struct ID" "${EB_P6_BATTLESHIP_ID}"
+assert_new_struct "P6 Battleship struct ID" "${EB_P6_BATTLESHIP_ID}" "${PREV_NEWEST_STRUCT_ID}" 2
 echo "  P6 Battleship ID: ${EB_P6_BATTLESHIP_ID}"
 
 # ─── P6: Tank (type 9, land, slot 1) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P6 Tank (type=9, land, slot=1) for P6" \
     tx structs struct-build-initiate "${PLAYER_6_ID}" 9 land 1 --from player_6
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_P6_TANK_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "P6 Tank struct ID" "${EB_P6_TANK_ID}"
+assert_new_struct "P6 Tank struct ID" "${EB_P6_TANK_ID}" "${PREV_NEWEST_STRUCT_ID}" 9
 echo "  P6 Tank ID: ${EB_P6_TANK_ID}"
 
 # ─── P6: Cruiser (type 11, water, slot 1) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P6 Cruiser (type=11, water, slot=1) for P6" \
     tx structs struct-build-initiate "${PLAYER_6_ID}" 11 water 1 --from player_6
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_P6_CRUISER_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "P6 Cruiser struct ID" "${EB_P6_CRUISER_ID}"
+assert_new_struct "P6 Cruiser struct ID" "${EB_P6_CRUISER_ID}" "${PREV_NEWEST_STRUCT_ID}" 11
 echo "  P6 Cruiser ID: ${EB_P6_CRUISER_ID}"
 
 # ─── P6: High Altitude Interceptor (type 7, air, slot 0) — for evasion testing ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P6 HAI (type=7, air, slot=0) for evasion testing" \
     tx structs struct-build-initiate "${PLAYER_6_ID}" 7 air 0 --from player_6
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 EB_P6_HAI_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "P6 HAI struct ID" "${EB_P6_HAI_ID}"
+assert_new_struct "P6 HAI struct ID" "${EB_P6_HAI_ID}" "${PREV_NEWEST_STRUCT_ID}" 7
 echo "  P6 HAI ID: ${EB_P6_HAI_ID}"
 
 # ─── P3: Mobile Artillery (type 8, land, slot 3) — for PDC immunity test ───
@@ -6577,63 +6748,69 @@ run_tx "Moving P3 fleet home for Attack Run builds" \
 info "Batch-initiating all Attack Run Starfighter builds"
 
 # ─── P2: Starfighter #1 (space, slot 0) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P2 Starfighter #1 (type=3, space, slot=0)" \
     tx structs struct-build-initiate "${PLAYER_2_ID}" 3 space 0 --from player_2
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 AR_P2_SF1_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "AR P2 Starfighter #1 ID" "${AR_P2_SF1_ID}"
+assert_new_struct "AR P2 Starfighter #1 ID" "${AR_P2_SF1_ID}" "${PREV_NEWEST_STRUCT_ID}" 3
 echo "  AR P2 SF#1 ID: ${AR_P2_SF1_ID}"
 
 # ─── P2: Starfighter #2 (space, slot 2) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P2 Starfighter #2 (type=3, space, slot=2)" \
     tx structs struct-build-initiate "${PLAYER_2_ID}" 3 space 2 --from player_2
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 AR_P2_SF2_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "AR P2 Starfighter #2 ID" "${AR_P2_SF2_ID}"
+assert_new_struct "AR P2 Starfighter #2 ID" "${AR_P2_SF2_ID}" "${PREV_NEWEST_STRUCT_ID}" 3
 echo "  AR P2 SF#2 ID: ${AR_P2_SF2_ID}"
 
 # ─── P2: Starfighter #3 (space, slot 3) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P2 Starfighter #3 (type=3, space, slot=3)" \
     tx structs struct-build-initiate "${PLAYER_2_ID}" 3 space 3 --from player_2
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 AR_P2_SF3_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "AR P2 Starfighter #3 ID" "${AR_P2_SF3_ID}"
+assert_new_struct "AR P2 Starfighter #3 ID" "${AR_P2_SF3_ID}" "${PREV_NEWEST_STRUCT_ID}" 3
 echo "  AR P2 SF#3 ID: ${AR_P2_SF3_ID}"
 
 # ─── P3: Starfighter #1 (space, slot 1) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P3 Starfighter #1 (type=3, space, slot=1)" \
     tx structs struct-build-initiate "${PLAYER_3_ID}" 3 space 1 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 AR_P3_SF1_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "AR P3 Starfighter #1 ID" "${AR_P3_SF1_ID}"
+assert_new_struct "AR P3 Starfighter #1 ID" "${AR_P3_SF1_ID}" "${PREV_NEWEST_STRUCT_ID}" 3
 echo "  AR P3 SF#1 ID: ${AR_P3_SF1_ID}"
 
 # ─── P3: Starfighter #2 (space, slot 3) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P3 Starfighter #2 (type=3, space, slot=3)" \
     tx structs struct-build-initiate "${PLAYER_3_ID}" 3 space 3 --from player_3
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 AR_P3_SF2_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "AR P3 Starfighter #2 ID" "${AR_P3_SF2_ID}"
+assert_new_struct "AR P3 Starfighter #2 ID" "${AR_P3_SF2_ID}" "${PREV_NEWEST_STRUCT_ID}" 3
 echo "  AR P3 SF#2 ID: ${AR_P3_SF2_ID}"
 
 # ─── P6: Starfighter (space, slot 3) ───
+PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating P6 Starfighter (type=3, space, slot=3)" \
     tx structs struct-build-initiate "${PLAYER_6_ID}" 3 space 3 --from player_6
 
 STRUCT_ALL_JSON=$(query query structs struct-all)
 AR_P6_SF_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "AR P6 Starfighter ID" "${AR_P6_SF_ID}"
+assert_new_struct "AR P6 Starfighter ID" "${AR_P6_SF_ID}" "${PREV_NEWEST_STRUCT_ID}" 3
 echo "  AR P6 SF ID: ${AR_P6_SF_ID}"
 
 info "All 6 Attack Run builds initiated. Computing now (difficulty decays with age)."

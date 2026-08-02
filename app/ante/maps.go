@@ -29,6 +29,8 @@ var KnownStructsMessages = map[string]bool{
 	"/structs.structs.MsgAllocationUpdate":                               true,
 	"/structs.structs.MsgFleetMove":                                      true,
 	"/structs.structs.MsgGuildBankConfiscateAndBurn":                     true,
+	"/structs.structs.MsgGuildBankConvert":                               true,
+	"/structs.structs.MsgGuildBankConvertToken":                          true,
 	"/structs.structs.MsgGuildBankMint":                                  true,
 	"/structs.structs.MsgGuildBankRedeem":                                true,
 	"/structs.structs.MsgGuildCreate":                                    true,
@@ -43,6 +45,8 @@ var KnownStructsMessages = map[string]bool{
 	"/structs.structs.MsgGuildMembershipRequestApprove":                  true,
 	"/structs.structs.MsgGuildMembershipRequestDeny":                     true,
 	"/structs.structs.MsgGuildMembershipRequestRevoke":                   true,
+	"/structs.structs.MsgGuildUpdateBankConvertInFee":                    true,
+	"/structs.structs.MsgGuildUpdateBankConvertOutFee":                   true,
 	"/structs.structs.MsgGuildUpdateEndpoint":                            true,
 	"/structs.structs.MsgGuildUpdateEntryRank":                           true,
 	"/structs.structs.MsgGuildUpdateEntrySubstationId":                   true,
@@ -139,6 +143,8 @@ var PermissionMap = map[string]types.Permission{
 
 	// Token operations
 	"/structs.structs.MsgGuildBankRedeem":      types.PermTokenTransfer,
+	"/structs.structs.MsgGuildBankConvert":     types.PermTokenTransfer,
+	"/structs.structs.MsgGuildBankConvertToken": types.PermTokenTransfer,
 	"/structs.structs.MsgPlayerSend":           types.PermTokenTransfer,
 	"/structs.structs.MsgReactorInfuse":        types.PermTokenInfuse,
 	"/structs.structs.MsgReactorCancelDefusion": types.PermTokenInfuse,
@@ -167,6 +173,8 @@ var PermissionMap = map[string]types.Permission{
 	"/structs.structs.MsgAllocationTransfer":           types.PermAdmin,
 	"/structs.structs.MsgGuildUpdateOwnerId":           types.PermAdmin,
 	"/structs.structs.MsgGuildUpdatePrimaryReactor":    types.PermAdmin,
+	"/structs.structs.MsgGuildUpdateBankConvertInFee":  types.PermAdmin,
+	"/structs.structs.MsgGuildUpdateBankConvertOutFee": types.PermAdmin,
 	"/structs.structs.MsgGuildUpdateEntryRank":        types.PermUpdate,
 
 	// Primary address swap grants PermAll to the incoming address and moves
