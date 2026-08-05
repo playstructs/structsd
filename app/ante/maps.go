@@ -334,6 +334,12 @@ var CreatorExtractors = map[string]func(sdk.Msg) string{
 		}
 		return ""
 	},
+	"/structs.structs.MsgReactorRestart": func(msg sdk.Msg) string {
+		if m, ok := msg.(*types.MsgReactorRestart); ok {
+			return m.Creator
+		}
+		return ""
+	},
 	"/structs.structs.MsgPlayerSend": func(msg sdk.Msg) string {
 		if m, ok := msg.(*types.MsgPlayerSend); ok {
 			return m.Creator

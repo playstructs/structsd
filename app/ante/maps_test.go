@@ -1,6 +1,7 @@
 package ante
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -95,6 +96,54 @@ func TestEveryRegisteredMsgIsKnown(t *testing.T) {
 		}
 		require.True(t, KnownStructsMessages[typeURL],
 			"registered message %s is missing from KnownStructsMessages (update app/ante/maps.go)", typeURL)
+	}
+}
+
+// TestEveryMessageHasCreatorAccessor guards the other half of the ante wiring
+// that TestEveryRegisteredMsgIsKnown does not cover. A message declaring
+// goproto_getters = false has no GetCreator(), so StructsDecorator can only
+// find its signer through CreatorExtractors. Miss that entry and the message
+// is rejected with "has no creator accessor" the first time anyone submits it,
+// even though it is registered, routed, and present in every other ante map.
+//
+// The extractor is exercised rather than merely looked up: one that asserts to
+// the wrong concrete type returns "" and fails as "type assertion failed",
+// which points at the message instead of at the copy-pasted map entry.
+func TestEveryMessageHasCreatorAccessor(t *testing.T) {
+	registry := codectypes.NewInterfaceRegistry()
+	sdk.RegisterInterfaces(registry)
+	types.RegisterInterfaces(registry)
+
+	registered := registry.ListImplementations(sdk.MsgInterfaceProtoName)
+	require.NotEmpty(t, registered, "no structs messages registered; test would be vacuous")
+
+	const sentinel = "structs1testcreatoraddress"
+
+	for _, typeURL := range registered {
+		if !IsStructsMessage(typeURL) || typeURL == MsgUpdateParamsTypeURL {
+			continue
+		}
+
+		resolved, err := registry.Resolve(typeURL)
+		require.NoError(t, err, "could not resolve registered message %s", typeURL)
+
+		if _, ok := resolved.(creatorGetter); ok {
+			continue
+		}
+
+		extractor, hasExtractor := CreatorExtractors[typeURL]
+		require.True(t, hasExtractor,
+			"%s has no GetCreator() and no CreatorExtractors entry, so the ante handler cannot find its signer (update app/ante/maps.go)", typeURL)
+
+		creatorField := reflect.ValueOf(resolved).Elem().FieldByName("Creator")
+		require.True(t, creatorField.IsValid() && creatorField.Kind() == reflect.String,
+			"%s is in CreatorExtractors but has no string Creator field", typeURL)
+		creatorField.SetString(sentinel)
+
+		msg, ok := resolved.(sdk.Msg)
+		require.True(t, ok, "%s does not implement sdk.Msg", typeURL)
+		require.Equal(t, sentinel, extractor(msg),
+			"CreatorExtractors entry for %s does not return the message's Creator (wrong concrete type in the assertion?)", typeURL)
 	}
 }
 
