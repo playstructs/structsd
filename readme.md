@@ -110,7 +110,7 @@ make all       # build + lint + test
 - [PlayStructs.com](https://playstructs.com)
 - [Structs Codex](https://playstructs.com/codex)
 - [Structs Developers Portal](https://watt.wiki)
-- [Structs Agentic Documentation](https://struts.ai/llms.txt)
+- [Structs Agentic Documentation](https://structs.ai/llms.txt)
 - [@PlayStructs Twitter](https://twitter.com/playstructs)
 - [/structs Farcaster Channel](https://warpcast.com/~/channel/structs)
 
