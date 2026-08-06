@@ -3831,10 +3831,13 @@ section "PHASE 9: Fleet Movement & Attack"
 run_tx "Moving Player 3's fleet to Player 2's planet (${PLAYER_2_PLANET_ID})" \
     tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_2_PLANET_ID}" --from player_3
 
-# Verify fleet location
+# Verify fleet location and v0.21.0 queue occupancy (capacity 1 by default)
 FLEET_3_JSON=$(query query structs fleet "${PLAYER_3_FLEET_ID}")
 FLEET_3_LOC=$(jqr "${FLEET_3_JSON}" '.Fleet.locationId')
 info "Player 3 fleet location after move: ${FLEET_3_LOC}"
+assert_eq "P3 fleet at P2 planet" "${PLAYER_2_PLANET_ID}" "${FLEET_3_LOC}"
+P2_QUEUE_COUNT=$(query query structs planet "${PLAYER_2_PLANET_ID}" | jq -r '.Planet.locationListCount // "0"')
+assert_eq "P2 planet locationListCount after P3 arrive" "1" "${P2_QUEUE_COUNT}"
 
 # NOTE: The per-block fleet throttle (ThrottleDecorator) prevents the same
 # fleet from moving twice in one block. This can't be reliably tested with
@@ -4030,10 +4033,12 @@ else
     assert_gt "P3 ore increased by raid" "${P3_ORE_BEFORE}" "${P3_ORE_AFTER}"
 fi
 
-# A successful raid sends the attacking fleet home
+# A successful raid sends the attacking fleet home and clears the queue counter
 FLEET_3_JSON=$(query query structs fleet "${PLAYER_3_FLEET_ID}")
 FLEET_3_LOC=$(jqr "${FLEET_3_JSON}" '.Fleet.locationId')
 assert_eq "P3 fleet returned home after successful raid" "${PLAYER_3_PLANET_ID}" "${FLEET_3_LOC}"
+P2_QUEUE_COUNT=$(query query structs planet "${PLAYER_2_PLANET_ID}" | jq -r '.Planet.locationListCount // "0"')
+assert_eq "P2 planet locationListCount 0 after raid recall" "0" "${P2_QUEUE_COUNT}"
 
 # Raid over: the vulnerability clock must be cleared
 P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
@@ -5209,19 +5214,11 @@ if run_phase 2300; then
 # with a planet, fleet, and command ship. These are separate from the main
 # test players to avoid state interactions from earlier phases.
 #
-# Fleet linked list structure (after Phase 17b moves to FP_1's planet):
-#
-#   Planet (locationListStart → F2, locationListLast → F5)
-#      ↕
-#   F2 (forward="", backward=F3)     ← first to arrive = front of list
-#      ↕
-#   F3 (forward=F2, backward=F4)
-#      ↕
-#   F4 (forward=F3, backward=F5)
-#      ↕
-#   F5 (forward=F4, backward="")     ← last to arrive = back of list
-#
-#   F1 is "on station" at its home planet — not in the list
+# v0.21.0 caps the raid queue at capacity = 1 + locationListExtra (default
+# extra=0 => one visitor). Phase 17b exercises that limit and back-and-forth
+# occupancy; Phase 17c covers single-visitor combat (home vs one raider).
+# Mid-queue adjacency combat is deferred until something can raise
+# locationListExtra.
 
 section "PHASE 17: Fleet Movement Setup"
 
@@ -5334,118 +5331,102 @@ fi # phase 17
 if run_phase 2350; then
 
 # ═════════════════════════════════════════════════════════════════════════════
-#  PHASE 17b: Fleet Linked List — Move Fleets & Verify Structure
+#  PHASE 17b: Fleet Queue Limit — capacity 1 + back-and-forth (v0.21.0)
 # ═════════════════════════════════════════════════════════════════════════════
+# Default locationListExtra=0 => capacity 1 visitor. Home fleets do not occupy
+# a queue slot. A second visitor is rejected until the first leaves.
 
-section "PHASE 17b: Fleet Linked List"
+section "PHASE 17b: Fleet Queue Limit"
 
 FP_TARGET_PLANET="${FP_1_PLANET_ID}"
-info "Target planet: ${FP_TARGET_PLANET} (FP 1's home)"
-
-# Move fleets 2-5 to FP_1's planet (each appends to END of linked list)
-for FP_NUM in 2 3 4 5; do
-    eval "FP_PID=\${FP_${FP_NUM}_ID}"
-    eval "FLEET_ID=\${FP_${FP_NUM}_FLEET_ID}"
-    FPLAYER_KEY="fplayer_${FP_NUM}"
-
-    wait_for_charge "${FP_PID}" "${CHARGE_MOVE}"
-    run_tx "Moving FP Fleet ${FP_NUM} (${FLEET_ID}) to planet ${FP_TARGET_PLANET}" \
-        tx structs fleet-move "${FLEET_ID}" "${FP_TARGET_PLANET}" --from "${FPLAYER_KEY}"
-done
-
-info "Waiting for state to settle"
-sleep 3
-
-# Shorthand variables for linked list verification
 FP_F1="${FP_1_FLEET_ID}"
 FP_F2="${FP_2_FLEET_ID}"
 FP_F3="${FP_3_FLEET_ID}"
-FP_F4="${FP_4_FLEET_ID}"
-FP_F5="${FP_5_FLEET_ID}"
+info "Target planet: ${FP_TARGET_PLANET} (FP 1's home); visitors F2=${FP_F2} F3=${FP_F3}"
 
-info "Expected list on planet ${FP_TARGET_PLANET}:"
-echo "  Planet.start → ${FP_F2} ↔ ${FP_F3} ↔ ${FP_F4} ↔ ${FP_F5} ← Planet.last"
-echo "  ${FP_F1} is on station (home fleet, not in list)"
-echo ""
+# Helper: read locationListCount (protobuf omitempty => missing means 0)
+fp_queue_count() {
+    query_planet "$1" | jq -r '.Planet.locationListCount // "0"' 2>/dev/null || echo "0"
+}
+fp_queue_extra() {
+    query_planet "$1" | jq -r '.Planet.locationListExtra // "0"' 2>/dev/null || echo "0"
+}
 
-# ─── Planet pointers ───
-info "Checking planet linked list pointers"
-FP_PLANET_START=$(get_planet_field "${FP_TARGET_PLANET}" "locationListStart")
-FP_PLANET_LAST=$(get_planet_field "${FP_TARGET_PLANET}" "locationListLast")
-assert_eq "Planet locationListStart" "${FP_F2}" "${FP_PLANET_START}"
-assert_eq "Planet locationListLast"  "${FP_F5}" "${FP_PLANET_LAST}"
+assert_eq "Target planet starts with locationListExtra 0" "0" "$(fp_queue_extra "${FP_TARGET_PLANET}")"
+assert_eq "Target planet starts with locationListCount 0" "0" "$(fp_queue_count "${FP_TARGET_PLANET}")"
 
-# ─── Fleet 1 (home, on station — not in the list) ───
-info "Fleet 1 (home fleet)"
+# ─── First visitor succeeds ───
+wait_for_charge "${FP_2_ID}" "${CHARGE_MOVE}"
+run_tx "Moving FP Fleet 2 (${FP_F2}) to planet ${FP_TARGET_PLANET}" \
+    tx structs fleet-move "${FP_F2}" "${FP_TARGET_PLANET}" --from fplayer_2
+
+F2_JSON=$(query_fleet "${FP_F2}")
+assert_eq "FP Fleet 2 location after arrive" "${FP_TARGET_PLANET}" "$(jqr "${F2_JSON}" '.Fleet.locationId')"
+assert_eq "FP Fleet 2 status away" "away" "$(jqr "${F2_JSON}" '.Fleet.status' 'onStation')"
+assert_eq "Planet locationListStart is F2" "${FP_F2}" "$(get_planet_field "${FP_TARGET_PLANET}" "locationListStart")"
+assert_eq "Planet locationListLast is F2" "${FP_F2}" "$(get_planet_field "${FP_TARGET_PLANET}" "locationListLast")"
+assert_eq "Planet locationListCount is 1" "1" "$(fp_queue_count "${FP_TARGET_PLANET}")"
+
+# Home fleet is not in the queue
 F1_JSON=$(query_fleet "${FP_F1}")
-F1_LOC=$(jqr "${F1_JSON}" '.Fleet.locationId')
+assert_eq "FP Fleet 1 still on station at home" "${FP_1_PLANET_ID}" "$(jqr "${F1_JSON}" '.Fleet.locationId')"
 F1_STATUS=$(jqr "${F1_JSON}" '.Fleet.status')
 if [ -z "${F1_STATUS}" ]; then F1_STATUS="onStation"; fi
-assert_eq "FP Fleet 1 location" "${FP_1_PLANET_ID}" "${F1_LOC}"
-assert_eq "FP Fleet 1 status" "onStation" "${F1_STATUS}"
-echo "  F1: loc=${F1_LOC} status=${F1_STATUS}"
+assert_eq "FP Fleet 1 status onStation" "onStation" "${F1_STATUS}"
 
-# ─── Fleet 2 (front of list) ───
-info "Fleet 2 (front of list)"
-F2_JSON=$(query_fleet "${FP_F2}")
-F2_LOC=$(jqr "${F2_JSON}" '.Fleet.locationId')
-F2_STATUS=$(jqr "${F2_JSON}" '.Fleet.status')
-F2_FWD=$(jqr "${F2_JSON}" '.Fleet.locationListForward')
-F2_BWD=$(jqr "${F2_JSON}" '.Fleet.locationListBackward')
-assert_eq "FP Fleet 2 location" "${FP_TARGET_PLANET}" "${F2_LOC}"
-assert_eq "FP Fleet 2 status" "away" "${F2_STATUS}"
-assert_eq "FP Fleet 2 forward (toward planet)" "" "${F2_FWD}"
-assert_eq "FP Fleet 2 backward" "${FP_F3}" "${F2_BWD}"
-echo "  F2: loc=${F2_LOC} status=${F2_STATUS} fwd='${F2_FWD}' bwd='${F2_BWD}'"
+# ─── Second visitor rejected (queue_full) ───
+wait_for_charge "${FP_3_ID}" "${CHARGE_MOVE}"
+run_tx_expect_fail "FP Fleet 3 blocked while queue full (should fail)" \
+    tx structs fleet-move "${FP_F3}" "${FP_TARGET_PLANET}" --from fplayer_3
 
-# ─── Fleet 3 ───
-info "Fleet 3 (second in list)"
 F3_JSON=$(query_fleet "${FP_F3}")
-F3_LOC=$(jqr "${F3_JSON}" '.Fleet.locationId')
-F3_STATUS=$(jqr "${F3_JSON}" '.Fleet.status')
-F3_FWD=$(jqr "${F3_JSON}" '.Fleet.locationListForward')
-F3_BWD=$(jqr "${F3_JSON}" '.Fleet.locationListBackward')
-assert_eq "FP Fleet 3 location" "${FP_TARGET_PLANET}" "${F3_LOC}"
-assert_eq "FP Fleet 3 status" "away" "${F3_STATUS}"
-assert_eq "FP Fleet 3 forward" "${FP_F2}" "${F3_FWD}"
-assert_eq "FP Fleet 3 backward" "${FP_F4}" "${F3_BWD}"
-echo "  F3: loc=${F3_LOC} status=${F3_STATUS} fwd='${F3_FWD}' bwd='${F3_BWD}'"
+assert_eq "FP Fleet 3 still at home after reject" "${FP_3_PLANET_ID}" "$(jqr "${F3_JSON}" '.Fleet.locationId')"
+assert_eq "Planet locationListCount unchanged after reject" "1" "$(fp_queue_count "${FP_TARGET_PLANET}")"
 
-# ─── Fleet 4 ───
-info "Fleet 4 (third in list)"
-F4_JSON=$(query_fleet "${FP_F4}")
-F4_LOC=$(jqr "${F4_JSON}" '.Fleet.locationId')
-F4_STATUS=$(jqr "${F4_JSON}" '.Fleet.status')
-F4_FWD=$(jqr "${F4_JSON}" '.Fleet.locationListForward')
-F4_BWD=$(jqr "${F4_JSON}" '.Fleet.locationListBackward')
-assert_eq "FP Fleet 4 location" "${FP_TARGET_PLANET}" "${F4_LOC}"
-assert_eq "FP Fleet 4 status" "away" "${F4_STATUS}"
-assert_eq "FP Fleet 4 forward" "${FP_F3}" "${F4_FWD}"
-assert_eq "FP Fleet 4 backward" "${FP_F5}" "${F4_BWD}"
-echo "  F4: loc=${F4_LOC} status=${F4_STATUS} fwd='${F4_FWD}' bwd='${F4_BWD}'"
+# ─── Head returns home: count drops, slot frees ───
+wait_for_charge "${FP_2_ID}" "${CHARGE_MOVE}"
+run_tx "FP Fleet 2 returns home (${FP_2_PLANET_ID})" \
+    tx structs fleet-move "${FP_F2}" "${FP_2_PLANET_ID}" --from fplayer_2
 
-# ─── Fleet 5 (back of list) ───
-info "Fleet 5 (back of list)"
-F5_JSON=$(query_fleet "${FP_F5}")
-F5_LOC=$(jqr "${F5_JSON}" '.Fleet.locationId')
-F5_STATUS=$(jqr "${F5_JSON}" '.Fleet.status')
-F5_FWD=$(jqr "${F5_JSON}" '.Fleet.locationListForward')
-F5_BWD=$(jqr "${F5_JSON}" '.Fleet.locationListBackward')
-assert_eq "FP Fleet 5 location" "${FP_TARGET_PLANET}" "${F5_LOC}"
-assert_eq "FP Fleet 5 status" "away" "${F5_STATUS}"
-assert_eq "FP Fleet 5 forward" "${FP_F4}" "${F5_FWD}"
-assert_eq "FP Fleet 5 backward" "" "${F5_BWD}"
-echo "  F5: loc=${F5_LOC} status=${F5_STATUS} fwd='${F5_FWD}' bwd='${F5_BWD}'"
+F2_JSON=$(query_fleet "${FP_F2}")
+assert_eq "FP Fleet 2 back home" "${FP_2_PLANET_ID}" "$(jqr "${F2_JSON}" '.Fleet.locationId')"
+F2_STATUS=$(jqr "${F2_JSON}" '.Fleet.status')
+if [ -z "${F2_STATUS}" ]; then F2_STATUS="onStation"; fi
+assert_eq "FP Fleet 2 onStation after return" "onStation" "${F2_STATUS}"
+assert_eq "Planet locationListCount 0 after F2 left" "0" "$(fp_queue_count "${FP_TARGET_PLANET}")"
+assert_eq "Planet locationListStart cleared" "" "$(get_planet_field "${FP_TARGET_PLANET}" "locationListStart")"
+assert_eq "Planet locationListLast cleared" "" "$(get_planet_field "${FP_TARGET_PLANET}" "locationListLast")"
 
-echo ""
-info "Linked list verified:"
-echo "  Planet(${FP_TARGET_PLANET}).start=${FP_PLANET_START}"
-echo "    ${FP_F2} fwd='' bwd=${F2_BWD}"
-echo "    ${FP_F3} fwd=${F3_FWD} bwd=${F3_BWD}"
-echo "    ${FP_F4} fwd=${F4_FWD} bwd=${F4_BWD}"
-echo "    ${FP_F5} fwd=${F5_FWD} bwd=''"
-echo "  Planet(${FP_TARGET_PLANET}).last=${FP_PLANET_LAST}"
-echo "  (Home) ${FP_F1} status=${F1_STATUS}"
+# ─── Previously blocked visitor can now arrive ───
+wait_for_charge "${FP_3_ID}" "${CHARGE_MOVE}"
+run_tx "Moving FP Fleet 3 (${FP_F3}) to planet ${FP_TARGET_PLANET} after slot freed" \
+    tx structs fleet-move "${FP_F3}" "${FP_TARGET_PLANET}" --from fplayer_3
+
+F3_JSON=$(query_fleet "${FP_F3}")
+assert_eq "FP Fleet 3 location after arrive" "${FP_TARGET_PLANET}" "$(jqr "${F3_JSON}" '.Fleet.locationId')"
+assert_eq "Planet locationListCount is 1 with F3" "1" "$(fp_queue_count "${FP_TARGET_PLANET}")"
+assert_eq "Planet locationListStart is F3" "${FP_F3}" "$(get_planet_field "${FP_TARGET_PLANET}" "locationListStart")"
+
+# ─── Back-and-forth: F3 home, F2 visits again, F2 home ───
+wait_for_charge "${FP_3_ID}" "${CHARGE_MOVE}"
+run_tx "FP Fleet 3 returns home" \
+    tx structs fleet-move "${FP_F3}" "${FP_3_PLANET_ID}" --from fplayer_3
+assert_eq "Count 0 after F3 left" "0" "$(fp_queue_count "${FP_TARGET_PLANET}")"
+
+wait_for_charge "${FP_2_ID}" "${CHARGE_MOVE}"
+run_tx "FP Fleet 2 revisits target (back-and-forth)" \
+    tx structs fleet-move "${FP_F2}" "${FP_TARGET_PLANET}" --from fplayer_2
+assert_eq "Count 1 after F2 revisit" "1" "$(fp_queue_count "${FP_TARGET_PLANET}")"
+assert_eq "Start is F2 after revisit" "${FP_F2}" "$(get_planet_field "${FP_TARGET_PLANET}" "locationListStart")"
+
+wait_for_charge "${FP_3_ID}" "${CHARGE_MOVE}"
+run_tx_expect_fail "FP Fleet 3 still blocked during F2 revisit (should fail)" \
+    tx structs fleet-move "${FP_F3}" "${FP_TARGET_PLANET}" --from fplayer_3
+
+# Leave F2 on the target for Phase 17c single-visitor combat
+info "Queue limit verified; F2 remains on ${FP_TARGET_PLANET} for combat phase"
+echo "  locationListExtra=$(fp_queue_extra "${FP_TARGET_PLANET}") locationListCount=$(fp_queue_count "${FP_TARGET_PLANET}")"
+echo "  start=$(get_planet_field "${FP_TARGET_PLANET}" "locationListStart") last=$(get_planet_field "${FP_TARGET_PLANET}" "locationListLast")"
 
 fi # phase 17b
 
@@ -5453,207 +5434,105 @@ fi # phase 17b
 if run_phase 2400; then
 
 # ═════════════════════════════════════════════════════════════════════════════
-#  PHASE 17c: Fleet Range Combat — Adjacent, Planetary Reach, Destruction
+#  PHASE 17c: Single-Visitor Combat — home vs one raider (v0.21.0)
 # ═════════════════════════════════════════════════════════════════════════════
-#
-# Range rules:
-#   Away fleets (middle/back): can only attack adjacent (forward/backward) fleets
-#   Away fleet (front, fwd=""): can attack ANY target on the same planet
-#   Home fleet (on station):   can only attack the first fleet (locationListStart)
+# With capacity 1, only the head visitor is present. Range rules that still
+# apply: home can hit the front visitor; the front visitor can hit the home
+# fleet. Destroying the raider's Command Ship sends them home and clears the
+# queue (count → 0).
 
-section "PHASE 17c: Fleet Range Combat"
+section "PHASE 17c: Single-Visitor Combat"
 
 FP_TARGET_PLANET="${FP_1_PLANET_ID}"
-FP_F1="${FP_1_FLEET_ID}"; FP_F2="${FP_2_FLEET_ID}"; FP_F3="${FP_3_FLEET_ID}"
-FP_F4="${FP_4_FLEET_ID}"; FP_F5="${FP_5_FLEET_ID}"
+FP_F1="${FP_1_FLEET_ID}"
+FP_F2="${FP_2_FLEET_ID}"
 
-info "Recording initial health (all should be 6)"
-for FP_NUM in 1 2 3 4 5; do
-    eval "CS=\${FP_CS_${FP_NUM}}"
-    echo "  FP_CS_${FP_NUM} (${CS}): HP=$(get_hp "${CS}")"
-done
+fp_queue_count() {
+    query_planet "$1" | jq -r '.Planet.locationListCount // "0"' 2>/dev/null || echo "0"
+}
 
-# ─── Adjacent Attacks (Should Succeed) ───
+# Ensure F2 is the sole visitor (Phase 17b leaves them there; re-park if needed).
+F2_JSON=$(query_fleet "${FP_F2}")
+F2_LOC=$(jqr "${F2_JSON}" '.Fleet.locationId')
+if [ "${F2_LOC}" != "${FP_TARGET_PLANET}" ]; then
+    wait_for_charge "${FP_2_ID}" "${CHARGE_MOVE}"
+    run_tx "Parking FP Fleet 2 on target for combat phase" \
+        tx structs fleet-move "${FP_F2}" "${FP_TARGET_PLANET}" --from fplayer_2
+fi
+assert_eq "Combat setup: F2 on target" "${FP_TARGET_PLANET}" "$(get_fleet_field "${FP_F2}" "locationId")"
+assert_eq "Combat setup: queue count 1" "1" "$(fp_queue_count "${FP_TARGET_PLANET}")"
 
-# Test 1: Home fleet (F1) → front of list (F2)
-info "Test 1: F1 (home) → F2 (front of list)"
+info "Recording initial health"
+echo "  FP_CS_1 (${FP_CS_1}): HP=$(get_hp "${FP_CS_1}")"
+echo "  FP_CS_2 (${FP_CS_2}): HP=$(get_hp "${FP_CS_2}")"
+
+# Home fleet can attack the sole visitor (front of list)
+info "Test 1: F1 (home) → F2 (sole visitor / front of list)"
 wait_for_charge "${FP_1_ID}" "${CHARGE_ATTACK_DEFAULT}"
 FP_CS2_HP_BEFORE=$(get_hp "${FP_CS_2}")
-run_tx "F1 (home) attacks FP_CS_2 on F2 (front of list)" \
+run_tx "F1 (home) attacks FP_CS_2 on F2" \
     tx structs struct-attack "${FP_CS_1}" "${FP_CS_2}" primaryWeapon --from fplayer_1
 FP_CS2_HP=$(get_hp "${FP_CS_2}")
 echo "  FP_CS_2 HP: ${FP_CS2_HP} (was ${FP_CS2_HP_BEFORE})"
-assert_eq "Home fleet hit front of list" "true" "$([ "${FP_CS2_HP}" -lt "${FP_CS2_HP_BEFORE}" ] && echo true || echo false)"
+assert_eq "Home fleet hit sole visitor" "true" "$([ "${FP_CS2_HP}" -lt "${FP_CS2_HP_BEFORE}" ] && echo true || echo false)"
 
-# Test 2: F3 → forward neighbor F2
-info "Test 2: F3 → F2 (forward neighbor)"
-wait_for_charge "${FP_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
-FP_CS2_HP_BEFORE=$(get_hp "${FP_CS_2}")
-run_tx "F3 attacks FP_CS_2 on F2 (forward neighbor)" \
-    tx structs struct-attack "${FP_CS_3}" "${FP_CS_2}" primaryWeapon --from fplayer_3
-FP_CS2_HP=$(get_hp "${FP_CS_2}")
-echo "  FP_CS_2 HP: ${FP_CS2_HP} (was ${FP_CS2_HP_BEFORE})"
-assert_eq "F3 hit forward neighbor F2" "true" "$([ "${FP_CS2_HP}" -lt "${FP_CS2_HP_BEFORE}" ] && echo true || echo false)"
-
-# Test 3: F5 → forward neighbor F4
-info "Test 3: F5 → F4 (forward neighbor)"
-wait_for_charge "${FP_5_ID}" "${CHARGE_ATTACK_DEFAULT}"
-FP_CS4_HP_BEFORE=$(get_hp "${FP_CS_4}")
-run_tx "F5 attacks FP_CS_4 on F4 (forward neighbor)" \
-    tx structs struct-attack "${FP_CS_5}" "${FP_CS_4}" primaryWeapon --from fplayer_5
-FP_CS4_HP=$(get_hp "${FP_CS_4}")
-echo "  FP_CS_4 HP: ${FP_CS4_HP} (was ${FP_CS4_HP_BEFORE})"
-assert_eq "F5 hit forward neighbor F4" "true" "$([ "${FP_CS4_HP}" -lt "${FP_CS4_HP_BEFORE}" ] && echo true || echo false)"
-
-info "Health after adjacent attacks"
-for FP_NUM in 1 2 3 4 5; do eval "CS=\${FP_CS_${FP_NUM}}"; echo "  FP_CS_${FP_NUM}: HP=$(get_hp "${CS}")"; done
-
-# ─── Front-of-List Planetary Reach ───
-
-# F2 has locationListForward="" → front of raid queue → can reach ANY target on the planet
-info "Test R1: F2 (front, fwd='') → F5 (non-adjacent, same planet)"
+# Front visitor can attack the home fleet
+info "Test 2: F2 (front visitor) → F1 (home)"
 wait_for_charge "${FP_2_ID}" "${CHARGE_ATTACK_DEFAULT}"
-FP_CS5_HP_BEFORE=$(get_hp "${FP_CS_5}")
-run_tx "F2 attacks FP_CS_5 on F5 (front-of-list reaches whole planet)" \
-    tx structs struct-attack "${FP_CS_2}" "${FP_CS_5}" primaryWeapon --from fplayer_2
-FP_CS5_HP=$(get_hp "${FP_CS_5}")
-echo "  FP_CS_5 HP: ${FP_CS5_HP} (was ${FP_CS5_HP_BEFORE})"
-assert_eq "Front-of-list F2 hit non-adjacent F5" "true" "$([ "${FP_CS5_HP}" -lt "${FP_CS5_HP_BEFORE}" ] && echo true || echo false)"
+FP_CS1_HP_BEFORE=$(get_hp "${FP_CS_1}")
+run_tx "F2 attacks FP_CS_1 on F1 (front visitor reaches home fleet)" \
+    tx structs struct-attack "${FP_CS_2}" "${FP_CS_1}" primaryWeapon --from fplayer_2
+FP_CS1_HP=$(get_hp "${FP_CS_1}")
+echo "  FP_CS_1 HP: ${FP_CS1_HP} (was ${FP_CS1_HP_BEFORE})"
+assert_eq "Front visitor hit home fleet" "true" "$([ "${FP_CS1_HP}" -lt "${FP_CS1_HP_BEFORE}" ] && echo true || echo false)"
 
-# ─── Destruction & Linked List Collapse ───
-# Destroy CS_2 by attacking it until HP=0, then verify:
-#   - CS_2 wiped from chain
-#   - F2 returned to its home planet
-#   - List collapsed: Planet.start → F3, F3.forward = ""
-
-info "Current health before destruction test"
-for FP_NUM in 1 2 3 4 5; do eval "CS=\${FP_CS_${FP_NUM}}"; echo "  FP_CS_${FP_NUM}: HP=$(get_hp "${CS}")"; done
-
+# Destroy F2's Command Ship → fleet recalled home, queue cleared
+info "Destroying FP_CS_2 to clear the queue"
 FP_CS2_HP=$(get_hp "${FP_CS_2}")
 ATTACK_COUNT=0
-while [ "${FP_CS2_HP}" -gt 0 ] 2>/dev/null && [ "${ATTACK_COUNT}" -lt 5 ]; do
+while [ "${FP_CS2_HP}" -gt 0 ] 2>/dev/null && [ "${ATTACK_COUNT}" -lt 8 ]; do
     ATTACK_COUNT=$((ATTACK_COUNT + 1))
-    wait_for_charge "${FP_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
-    run_tx "F3 attacks FP_CS_2 (#${ATTACK_COUNT}, HP=${FP_CS2_HP})" \
-        tx structs struct-attack "${FP_CS_3}" "${FP_CS_2}" primaryWeapon --from fplayer_3
+    wait_for_charge "${FP_1_ID}" "${CHARGE_ATTACK_DEFAULT}"
+    run_tx "F1 attacks FP_CS_2 (#${ATTACK_COUNT}, HP=${FP_CS2_HP})" \
+        tx structs struct-attack "${FP_CS_1}" "${FP_CS_2}" primaryWeapon --from fplayer_1
     FP_CS2_HP=$(get_hp "${FP_CS_2}")
     echo "  FP_CS_2 HP after attack #${ATTACK_COUNT}: ${FP_CS2_HP}"
 done
 
-info "FP_CS_2 destruction result"
-echo "  Attacks required: ${ATTACK_COUNT}"
-
 sleep 6
-FP_CS2_QUERY=$(structsd ${PARAMS_QUERY} query structs struct "${FP_CS_2}" 2>&1 || true)
 FP_CS2_HP_CHECK=$(get_hp "${FP_CS_2}")
-if [ -z "${FP_CS2_QUERY}" ] || echo "${FP_CS2_QUERY}" | grep -qi "not found\|error\|object"; then
-    echo -e "  ${GREEN}PASS${NC}: FP_CS_2 (${FP_CS_2}) wiped from chain"
-    PASS_COUNT=$((PASS_COUNT + 1))
-elif [ "${FP_CS2_HP_CHECK}" = "0" ]; then
-    echo -e "  ${GREEN}PASS${NC}: FP_CS_2 (${FP_CS_2}) HP=0 (destroyed, pending cleanup)"
+if [ "${FP_CS2_HP_CHECK}" = "0" ]; then
+    echo -e "  ${GREEN}PASS${NC}: FP_CS_2 destroyed (HP=0)"
     PASS_COUNT=$((PASS_COUNT + 1))
 else
-    echo -e "  ${RED}FAIL${NC}: FP_CS_2 (${FP_CS_2}) still exists on chain (HP=${FP_CS2_HP_CHECK})"
+    echo -e "  ${RED}FAIL${NC}: FP_CS_2 still alive (HP=${FP_CS2_HP_CHECK})"
     FAIL_COUNT=$((FAIL_COUNT + 1))
 fi
 
-# Verify F2 returned home
-info "Checking F2 returned home after CS_2 destruction"
 F2_JSON=$(query_fleet "${FP_F2}")
 F2_LOC=$(jqr "${F2_JSON}" '.Fleet.locationId')
 F2_STATUS=$(jqr "${F2_JSON}" '.Fleet.status')
 if [ -z "${F2_STATUS}" ]; then F2_STATUS="onStation"; fi
-assert_eq "F2 returned to home planet" "${FP_2_PLANET_ID}" "${F2_LOC}"
-assert_eq "F2 status after recall" "onStation" "${F2_STATUS}"
-echo "  F2: loc=${F2_LOC} status=${F2_STATUS}"
+assert_eq "F2 returned home after CS destruction" "${FP_2_PLANET_ID}" "${F2_LOC}"
+assert_eq "F2 onStation after recall" "onStation" "${F2_STATUS}"
+assert_eq "Queue count 0 after visitor recalled" "0" "$(fp_queue_count "${FP_TARGET_PLANET}")"
+assert_eq "locationListStart cleared after recall" "" "$(get_planet_field "${FP_TARGET_PLANET}" "locationListStart")"
+assert_eq "locationListLast cleared after recall" "" "$(get_planet_field "${FP_TARGET_PLANET}" "locationListLast")"
 
-# Verify linked list collapsed: F3 is now front
-info "Verifying linked list collapsed (F2 removed)"
-echo "  Expected: Planet.start → F3 ↔ F4 ↔ F5 ← Planet.last"
+# Slot is free again for another visitor
+wait_for_charge "${FP_3_ID}" "${CHARGE_MOVE}"
+run_tx "FP Fleet 3 occupies freed queue slot after combat recall" \
+    tx structs fleet-move "${FP_3_FLEET_ID}" "${FP_TARGET_PLANET}" --from fplayer_3
+assert_eq "Count 1 after F3 occupies freed slot" "1" "$(fp_queue_count "${FP_TARGET_PLANET}")"
+assert_eq "Start is F3" "${FP_3_FLEET_ID}" "$(get_planet_field "${FP_TARGET_PLANET}" "locationListStart")"
 
-FP_PLANET_START=$(get_planet_field "${FP_TARGET_PLANET}" "locationListStart")
-FP_PLANET_LAST=$(get_planet_field "${FP_TARGET_PLANET}" "locationListLast")
-assert_eq "Planet.start after F2 removal" "${FP_F3}" "${FP_PLANET_START}"
-assert_eq "Planet.last unchanged" "${FP_F5}" "${FP_PLANET_LAST}"
+# Send F3 home so later phases are not left mid-raid
+wait_for_charge "${FP_3_ID}" "${CHARGE_MOVE}"
+run_tx "FP Fleet 3 returns home (cleanup)" \
+    tx structs fleet-move "${FP_3_FLEET_ID}" "${FP_3_PLANET_ID}" --from fplayer_3
+assert_eq "Queue empty after combat cleanup" "0" "$(fp_queue_count "${FP_TARGET_PLANET}")"
 
-F3_JSON=$(query_fleet "${FP_F3}")
-F3_FWD=$(jqr "${F3_JSON}" '.Fleet.locationListForward')
-F3_BWD=$(jqr "${F3_JSON}" '.Fleet.locationListBackward')
-assert_eq "F3 is now front (forward='')" "" "${F3_FWD}"
-assert_eq "F3 backward" "${FP_F4}" "${F3_BWD}"
-echo "  F3: fwd='${F3_FWD}' bwd='${F3_BWD}'"
-
-F4_JSON=$(query_fleet "${FP_F4}")
-F4_FWD=$(jqr "${F4_JSON}" '.Fleet.locationListForward')
-F4_BWD=$(jqr "${F4_JSON}" '.Fleet.locationListBackward')
-assert_eq "F4 forward" "${FP_F3}" "${F4_FWD}"
-assert_eq "F4 backward" "${FP_F5}" "${F4_BWD}"
-echo "  F4: fwd='${F4_FWD}' bwd='${F4_BWD}'"
-
-F5_JSON=$(query_fleet "${FP_F5}")
-F5_FWD=$(jqr "${F5_JSON}" '.Fleet.locationListForward')
-F5_BWD=$(jqr "${F5_JSON}" '.Fleet.locationListBackward')
-assert_eq "F5 forward" "${FP_F4}" "${F5_FWD}"
-assert_eq "F5 backward (still last)" "" "${F5_BWD}"
-echo "  F5: fwd='${F5_FWD}' bwd='${F5_BWD}'"
-
-info "Linked list after collapse:"
-echo "  Planet(${FP_TARGET_PLANET}).start=${FP_PLANET_START} .last=${FP_PLANET_LAST}"
-echo "  F3(fwd='', bwd=${F3_BWD}) ↔ F4(fwd=${F4_FWD}, bwd=${F4_BWD}) ↔ F5(fwd=${F5_FWD}, bwd='')"
-echo "  F2 → home (${F2_LOC}), F1 → home (on station)"
-
-# ─── Non-Adjacent Attacks (Should Fail) ───
-# Current list: F3 ↔ F4 ↔ F5 (F3 is front)
-# Should fail:
-#   F5 → F3 (F5 only sees F4, not F3)
-#   F1 (home) → F4 (home can only hit front = F3)
-#   F1 (home) → F5 (same)
-
-info "Health snapshot before negative tests"
-FP_CS3_HP=$(get_hp "${FP_CS_3}")
-FP_CS4_HP=$(get_hp "${FP_CS_4}")
-FP_CS5_HP=$(get_hp "${FP_CS_5}")
-echo "  FP_CS_3: HP=${FP_CS3_HP}, FP_CS_4: HP=${FP_CS4_HP}, FP_CS_5: HP=${FP_CS5_HP}"
-
-# Test N1: F5 → F3 (not adjacent, gap of 1)
-if [ "${FP_CS5_HP}" = "0" ]; then
-    info "SKIP N1: FP_CS_5 destroyed"
-else
-    info "Test N1: F5 → F3 (not adjacent — F5 only sees F4)"
-    wait_for_charge "${FP_5_ID}" "${CHARGE_ATTACK_DEFAULT}"
-    run_tx_expect_fail "F5 attacks FP_CS_3 on F3 (not adjacent)" \
-        tx structs struct-attack "${FP_CS_5}" "${FP_CS_3}" primaryWeapon --from fplayer_5
-    sleep "${SLEEP}"
-    FP_CS3_CHECK=$(get_hp "${FP_CS_3}")
-    assert_eq "FP_CS_3 HP unchanged after F5→F3" "${FP_CS3_HP}" "${FP_CS3_CHECK}"
-fi
-
-# Test N2: F1 (home) → F4 (not front of list)
-FP_CS1_HP=$(get_hp "${FP_CS_1}")
-if [ "${FP_CS1_HP}" = "0" ]; then
-    info "SKIP N2: FP_CS_1 destroyed"
-else
-    info "Test N2: F1 (home) → F4 (home can only hit front = F3)"
-    wait_for_charge "${FP_1_ID}" "${CHARGE_ATTACK_DEFAULT}"
-    run_tx_expect_fail "F1 (home) attacks FP_CS_4 on F4 (not front of list)" \
-        tx structs struct-attack "${FP_CS_1}" "${FP_CS_4}" primaryWeapon --from fplayer_1
-    sleep "${SLEEP}"
-    FP_CS4_CHECK=$(get_hp "${FP_CS_4}")
-    assert_eq "FP_CS_4 HP unchanged after F1→F4" "${FP_CS4_HP}" "${FP_CS4_CHECK}"
-fi
-
-# Test N3: F1 (home) → F5 (not front of list)
-if [ "${FP_CS1_HP}" = "0" ]; then
-    info "SKIP N3: FP_CS_1 destroyed"
-else
-    info "Test N3: F1 (home) → F5 (home can only hit front = F3)"
-    wait_for_charge "${FP_1_ID}" "${CHARGE_ATTACK_DEFAULT}"
-    run_tx_expect_fail "F1 (home) attacks FP_CS_5 on F5 (not front of list)" \
-        tx structs struct-attack "${FP_CS_1}" "${FP_CS_5}" primaryWeapon --from fplayer_1
-    sleep "${SLEEP}"
-    FP_CS5_CHECK=$(get_hp "${FP_CS_5}")
-    assert_eq "FP_CS_5 HP unchanged after F1→F5" "${FP_CS5_HP}" "${FP_CS5_CHECK}"
-fi
+info "Single-visitor combat complete"
 
 fi # phase 17c
 
@@ -6870,17 +6749,23 @@ run_tx "Moving P2 Command Ship to fleet (space ambit)" \
     tx structs struct-move "${PLAYER_2_CMD_SHIP_ID}" fleet space --from player_2
 
 # ─── Position fleets for battle at P6's planet ───
-# P2 moves FIRST to become HEAD of invasion queue (can attack anyone on planet).
-# P3 moves SECOND to become TAIL (forward neighbor = P2's fleet).
+# v0.21.0: raid-queue capacity is 1 + locationListExtra (default extra=0 =>
+# one visitor). Only P2 parks as the HEAD visitor. Dual-visitor TAIL→HEAD
+# Attack Run cases (former A2/B3/D3) are covered by swapping P3 in as HEAD
+# against P6 instead — see AR3 Group A2'/B3'/D3'.
 run_tx "Moving P2's fleet to P6's planet for Attack Run" \
     tx structs fleet-move "${PLAYER_2_FLEET_ID}" "${PLAYER_6_PLANET_ID}" --from player_2
 
-run_tx "Moving P3's fleet to P6's planet for Attack Run" \
+P6_QUEUE_COUNT=$(query query structs planet "${PLAYER_6_PLANET_ID}" | jq -r '.Planet.locationListCount // "0"')
+assert_eq "P6 planet queue count after P2 arrive" "1" "${P6_QUEUE_COUNT}"
+
+# Confirm a second visitor is rejected under the default capacity.
+run_tx_expect_fail "P3 blocked from P6 planet while P2 occupies the sole queue slot (should fail)" \
     tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_6_PLANET_ID}" --from player_3
 
-info "Attack Run fleets assembled and positioned at P6's planet"
+info "Attack Run fleets: P2 is sole visitor (HEAD) at P6; P3 stays home until swap slots"
 info "  P2 (HEAD): CS(space), SF#1(space/0), SF#2(space/2), SF#3(space/3)"
-info "  P3 (TAIL): SF#1(space/1), SF#2(space/3)"
+info "  P3 (HOME, pending swap): SF#1(space/1), SF#2(space/3)"
 info "  P6 (HOME): CS(space), SF(space/3), BB(space/2), MobArt(land/0), Destroyer(water)"
 
 fi # phase AR2
@@ -6947,16 +6832,49 @@ ar_attack() {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Reachability after AR2 fleet moves:
-#   P2 (HEAD, Forward=""): can attack anyone on P6's planet
-#   P3 (TAIL, Forward=P2):  can attack P2's fleet structs
-#   P6 (HOME):              can attack HEAD = P2's fleet structs
+# Reachability under v0.21.0 capacity-1 (only one visitor):
+#   Active visitor (HEAD, Forward=""): can attack anyone on P6's planet
+#   P6 (HOME):                         can attack HEAD = the active visitor
+# Dual-visitor TAIL→HEAD adjacency is impossible at default capacity; P3's
+# Attack Run slots swap P3 in as HEAD against P6 instead (A2'/B3'/D3').
 #
 # Post-EB5 alive defenders:
 #   P6: BB(space,HP=1) MobileArt(land,HP=3) Destroyer(water,HP=1)
 #   P6 destroyed: EB-SF, Frigate, Tank, Cruiser, PDC
 #   P2: DEFENDER_STRUCT/Tank(land) — BB and Interceptor destroyed in EB5
 # ─────────────────────────────────────────────────────────────────────────────
+
+# ar_park_as_head <fleet_id> <player_key> <player_id> <target_planet>
+# Sends whoever is currently visiting target_planet home first if needed, then
+# parks fleet_id as the sole HEAD visitor (capacity-1 raid queue).
+ar_park_as_head() {
+    local fleet_id="$1"
+    local player_key="$2"
+    local player_id="$3"
+    local target_planet="$4"
+
+    local start
+    start=$(query query structs planet "${target_planet}" | jq -r '.Planet.locationListStart // empty')
+    if [ -n "${start}" ] && [ "${start}" != "${fleet_id}" ]; then
+        if [ "${start}" = "${PLAYER_2_FLEET_ID}" ]; then
+            wait_for_charge "${PLAYER_2_ID}" "${CHARGE_MOVE}"
+            run_tx "AR swap: sending P2 home to free queue slot" \
+                tx structs fleet-move "${PLAYER_2_FLEET_ID}" "${PLAYER_2_PLANET_ID}" --from player_2
+        elif [ "${start}" = "${PLAYER_3_FLEET_ID}" ]; then
+            wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
+            run_tx "AR swap: sending P3 home to free queue slot" \
+                tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_3_PLANET_ID}" --from player_3
+        fi
+    fi
+
+    local loc
+    loc=$(query_fleet "${fleet_id}" | jq -r '.Fleet.locationId // empty')
+    if [ "${loc}" != "${target_planet}" ]; then
+        wait_for_charge "${player_id}" "${CHARGE_MOVE}"
+        run_tx "AR swap: parking ${player_key} fleet as sole HEAD visitor" \
+            tx structs fleet-move "${fleet_id}" "${target_planet}" --from "${player_key}"
+    fi
+}
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GROUP A: No Defenders (3 attacks)
@@ -6965,14 +6883,17 @@ ar_attack() {
 info "── Group A: No Defenders ──"
 
 # A1: P2 SF#1 → P6 CS (baseline Attack Run — HEAD attacks home fleet)
+ar_park_as_head "${PLAYER_2_FLEET_ID}" "player_2" "${PLAYER_2_ID}" "${PLAYER_6_PLANET_ID}"
 ar_attack "AR A1: P2 SF#1 → P6 CS (no defenders)" \
     "${AR_P2_SF1_ID}" "${P6_COMMAND_SHIP_ID}" 2
 
-# A2: P3 SF#1 → P2 CS (TAIL attacks HEAD via forward link)
-ar_attack "AR A2: P3 SF#1 → P2 CS (no defenders)" \
-    "${AR_P3_SF1_ID}" "${PLAYER_2_CMD_SHIP_ID}" 3
+# A2': P3 as HEAD → P6 CS (replaces former TAIL→HEAD P3→P2 under capacity 1)
+ar_park_as_head "${PLAYER_3_FLEET_ID}" "player_3" "${PLAYER_3_ID}" "${PLAYER_6_PLANET_ID}"
+ar_attack "AR A2: P3 SF#1 → P6 CS as HEAD (capacity-1 swap)" \
+    "${AR_P3_SF1_ID}" "${P6_COMMAND_SHIP_ID}" 3
 
-# A3: P6 SF → P2 CS (HOME attacks HEAD)
+# A3: P6 SF → P2 CS — restore P2 as HEAD so home can hit the visitor
+ar_park_as_head "${PLAYER_2_FLEET_ID}" "player_2" "${PLAYER_2_ID}" "${PLAYER_6_PLANET_ID}"
 ar_attack "AR A3: P6 SF → P2 CS (no defenders)" \
     "${AR_P6_SF_ID}" "${PLAYER_2_CMD_SHIP_ID}" 6
 
@@ -7006,17 +6927,20 @@ wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
 run_tx "Clearing P6 Mobile Art defense" \
     tx structs struct-defense-clear "${EB_MOBILE_ART_ID}" --from player_6
 
-# B3: P3 SF#2 → P2 CS, defended by P2 Tank (land — counter only, no block)
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_DEFEND}"
-run_tx "Setting P2 Tank to defend P2 CS" \
-    tx structs struct-defense-set "${DEFENDER_STRUCT_ID}" "${PLAYER_2_CMD_SHIP_ID}" --from player_2
+# B3': P3 as HEAD → P6 CS, defended by P6 Destroyer (land/water cross-ambit counter)
+# Replaces former P3→P2 with P2 Tank defense under capacity 1.
+ar_park_as_head "${PLAYER_3_FLEET_ID}" "player_3" "${PLAYER_3_ID}" "${PLAYER_6_PLANET_ID}"
+wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
+run_tx "Setting P6 Destroyer to defend P6 CS for B3" \
+    tx structs struct-defense-set "${EB_DESTROYER_W_ID}" "${P6_COMMAND_SHIP_ID}" --from player_6
 
-ar_attack "AR B3: P3 SF#2 → P2 CS (def: P2 Tank/land)" \
-    "${AR_P3_SF2_ID}" "${PLAYER_2_CMD_SHIP_ID}" 3
+ar_attack "AR B3: P3 SF#2 → P6 CS as HEAD (def: P6 Destroyer/water, capacity-1 swap)" \
+    "${AR_P3_SF2_ID}" "${P6_COMMAND_SHIP_ID}" 3
 
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_DEFEND}"
-run_tx "Clearing P2 Tank defense" \
-    tx structs struct-defense-clear "${DEFENDER_STRUCT_ID}" --from player_2
+wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
+run_tx "Clearing P6 Destroyer defense after B3" \
+    tx structs struct-defense-clear "${EB_DESTROYER_W_ID}" --from player_6
+ar_park_as_head "${PLAYER_2_FLEET_ID}" "player_2" "${PLAYER_2_ID}" "${PLAYER_6_PLANET_ID}"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GROUP C: Single Cross-Ambit Defender (2 attacks)
@@ -7092,23 +7016,25 @@ wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
 run_tx "Clearing P6 Destroyer defense" \
     tx structs struct-defense-clear "${EB_DESTROYER_W_ID}" --from player_6
 
-# D3: P3 SF#1 → P2 CS, 2 defenders: P2 Tank (land) + P2 SF#2 (space, if alive)
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_DEFEND}"
-run_tx "Setting P2 Tank to defend P2 CS" \
-    tx structs struct-defense-set "${DEFENDER_STRUCT_ID}" "${PLAYER_2_CMD_SHIP_ID}" --from player_2
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_DEFEND}"
-run_tx "Setting P2 SF#2 to defend P2 CS" \
-    tx structs struct-defense-set "${AR_P2_SF2_ID}" "${PLAYER_2_CMD_SHIP_ID}" --from player_2
+# D3': P3 as HEAD → P6 CS with two defenders (replaces former P3→P2 dual-defender)
+ar_park_as_head "${PLAYER_3_FLEET_ID}" "player_3" "${PLAYER_3_ID}" "${PLAYER_6_PLANET_ID}"
+wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
+run_tx "Setting P6 BB to defend P6 CS for D3" \
+    tx structs struct-defense-set "${EB_P6_BATTLESHIP_ID}" "${P6_COMMAND_SHIP_ID}" --from player_6
+wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
+run_tx "Setting P6 Mobile Art to defend P6 CS for D3" \
+    tx structs struct-defense-set "${EB_MOBILE_ART_ID}" "${P6_COMMAND_SHIP_ID}" --from player_6
 
-ar_attack "AR D3: P3 SF#1 → P2 CS (def: P2 Tank/land + P2 SF#2/space)" \
-    "${AR_P3_SF1_ID}" "${PLAYER_2_CMD_SHIP_ID}" 3
+ar_attack "AR D3: P3 SF#1 → P6 CS as HEAD (def: P6 BB/space + MobArt/land, capacity-1 swap)" \
+    "${AR_P3_SF1_ID}" "${P6_COMMAND_SHIP_ID}" 3
 
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_DEFEND}"
-run_tx "Clearing P2 Tank defense" \
-    tx structs struct-defense-clear "${DEFENDER_STRUCT_ID}" --from player_2
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_DEFEND}"
-run_tx "Clearing P2 SF#2 defense" \
-    tx structs struct-defense-clear "${AR_P2_SF2_ID}" --from player_2
+wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
+run_tx "Clearing P6 BB defense after D3" \
+    tx structs struct-defense-clear "${EB_P6_BATTLESHIP_ID}" --from player_6
+wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
+run_tx "Clearing P6 Mobile Art defense after D3" \
+    tx structs struct-defense-clear "${EB_MOBILE_ART_ID}" --from player_6
+ar_park_as_head "${PLAYER_2_FLEET_ID}" "player_2" "${PLAYER_2_ID}" "${PLAYER_6_PLANET_ID}"
 
 # D4: P2 SF#1 → P6 CS, 3 defenders: P6 BB (space) + P6 Mobile Art (land) + P6 Destroyer (water)
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"

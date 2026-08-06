@@ -59,6 +59,10 @@ func CreateUpgradeHandler(
 			return newVM, err
 		}
 
+		if err := MigrateFleetQueueLimit(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
 		return newVM, nil
 	}
 }
@@ -417,6 +421,83 @@ func MigratePrimaryAddressPermissions(ctx context.Context, keepers *upgrades.Kee
 
 	logger.Info("v0.21.0 primary address permission normalize complete",
 		"addressesUpgraded", addressesUpgraded)
+	return nil
+}
+
+// MigrateFleetQueueLimit enforces the new per-planet raid-queue capacity
+// (1 + locationListExtra, default extra=0 => capacity 1).
+//
+// For each planet it:
+//  1. Walks locationListStart -> Backward* to discover the live visitor order.
+//  2. Seeds locationListCount to that length so subsequent SetLocationToPlanet
+//     decrements stay consistent (the field did not exist before this release).
+//  3. Leaves locationListExtra at 0.
+//  4. Sends every fleet after the head home via SetLocationToPlanet.
+//
+// Idempotent under capacity 1: a re-run finds at most one visitor, seeds
+// count=1 (or 0), and has no overflow to evict.
+func MigrateFleetQueueLimit(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateFleetQueueLimit")
+
+	k := keepers.StructsKeeper
+
+	var planetsTouched int
+	var fleetsSentHome int
+
+	for _, planet := range k.GetAllPlanet(ctx) {
+		fleetIds := make([]string, 0)
+		for fleetId := planet.LocationListStart; fleetId != ""; {
+			fleet, found := k.GetFleet(ctx, fleetId)
+			if !found {
+				logger.Error("raid queue points at missing fleet; stopping walk",
+					"planetId", planet.Id, "fleetId", fleetId)
+				break
+			}
+			fleetIds = append(fleetIds, fleetId)
+			fleetId = fleet.LocationListBackward
+		}
+
+		// Seed the denormalized counter from the live list before any eviction
+		// so SetLocationToPlanet decrements from a correct baseline.
+		if planet.LocationListCount != uint64(len(fleetIds)) {
+			planet.LocationListCount = uint64(len(fleetIds))
+			k.SetPlanet(ctx, planet)
+		}
+
+		capacity := uint64(1) + planet.LocationListExtra
+		if uint64(len(fleetIds)) <= capacity {
+			if len(fleetIds) > 0 {
+				planetsTouched++
+			}
+			continue
+		}
+
+		cc := k.NewCurrentContext(ctx)
+		// Evict tail-first so middle-unlink is rare and head stays put.
+		for i := len(fleetIds) - 1; i >= int(capacity); i-- {
+			fleet, err := cc.GetFleetById(fleetIds[i])
+			if err != nil {
+				logger.Error("failed to load overflow fleet",
+					"planetId", planet.Id, "fleetId", fleetIds[i], "error", err)
+				continue
+			}
+			home := fleet.GetOwner().GetPlanet()
+			if home == nil || !home.LoadPlanet() {
+				logger.Error("overflow fleet has no home planet; skipping",
+					"planetId", planet.Id, "fleetId", fleetIds[i], "owner", fleet.GetOwnerId())
+				continue
+			}
+			fleet.SetLocationToPlanet(home)
+			fleetsSentHome++
+		}
+		cc.CommitAll()
+		planetsTouched++
+	}
+
+	logger.Info("v0.21.0 fleet queue limit migration complete",
+		"planetsTouched", planetsTouched,
+		"fleetsSentHome", fleetsSentHome)
 	return nil
 }
 

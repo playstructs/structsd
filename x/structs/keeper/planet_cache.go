@@ -246,6 +246,20 @@ func (cache *PlanetCache) GetLocationListLast() string {
     return cache.GetPlanet().LocationListLast
 }
 
+func (cache *PlanetCache) GetLocationListExtra() uint64 {
+    return cache.GetPlanet().LocationListExtra
+}
+
+func (cache *PlanetCache) GetLocationListCount() uint64 {
+    return cache.GetPlanet().LocationListCount
+}
+
+// GetLocationListCapacity is the max visiting fleets allowed in the raid
+// queue. The base spot is always implied; LocationListExtra adds more.
+func (cache *PlanetCache) GetLocationListCapacity() uint64 {
+    return uint64(1) + cache.GetLocationListExtra()
+}
+
 
 /* Setters - SET DOES NOT COMMIT()
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
@@ -304,6 +318,36 @@ func (cache *PlanetCache) SetLocationListLast(fleetId string) {
 
     cache.Planet.LocationListLast = fleetId
     cache.Changed = true
+}
+
+func (cache *PlanetCache) SetLocationListExtra(extra uint64) {
+    if (!cache.PlanetLoaded) { cache.LoadPlanet() }
+
+    cache.Planet.LocationListExtra = extra
+    cache.Changed = true
+}
+
+func (cache *PlanetCache) SetLocationListCount(count uint64) {
+    if (!cache.PlanetLoaded) { cache.LoadPlanet() }
+
+    cache.Planet.LocationListCount = count
+    cache.Changed = true
+}
+
+func (cache *PlanetCache) IncrementLocationListCount() {
+    if (!cache.PlanetLoaded) { cache.LoadPlanet() }
+
+    cache.Planet.LocationListCount++
+    cache.Changed = true
+}
+
+func (cache *PlanetCache) DecrementLocationListCount() {
+    if (!cache.PlanetLoaded) { cache.LoadPlanet() }
+
+    if cache.Planet.LocationListCount > 0 {
+        cache.Planet.LocationListCount--
+        cache.Changed = true
+    }
 }
 
 func (cache *PlanetCache) ResetBlockStartRaid() {

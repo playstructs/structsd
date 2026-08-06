@@ -43,6 +43,15 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
         return emptyResponse, readinessError
     }
 
+    // Foreign destinations only: capacity is 1 + locationListExtra.
+    if fleet.GetOwner().GetPlanetId() != destination.GetPlanetId() {
+        if destination.GetLocationListCount() >= destination.GetLocationListCapacity() {
+            return emptyResponse, types.NewFleetStateError(
+                fleet.GetFleetId(), "queue_full", "move",
+            ).WithPosition(destination.GetLocationListCount())
+        }
+    }
+
     if fleet.GetLocationId() != msg.DestinationLocationId {
         if fleet.GetPlanet().GetLocationListStart() == msg.FleetId {
             _ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: msg.FleetId, PlanetId: fleet.GetLocationId(), Status: types.RaidStatus_attackerRetreated}})

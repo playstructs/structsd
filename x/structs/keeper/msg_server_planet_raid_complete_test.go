@@ -296,6 +296,7 @@ func TestCommandShipRaidShieldHooks(t *testing.T) {
 		Owner:             defender.Id,
 		LocationListStart: raiderFleetId,
 		LocationListLast:  raiderFleetId,
+		LocationListCount: 1,
 	})
 	defender.PlanetId = planet.Id
 	k.SetPlayer(sdkCtx, defender)

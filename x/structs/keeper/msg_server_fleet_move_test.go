@@ -185,6 +185,7 @@ func TestFleetMoveRaidVulnerability(t *testing.T) {
 		Owner:             defender.Id,
 		LocationListStart: raiderFleetId,
 		LocationListLast:  raiderFleetId,
+		LocationListCount: 1,
 	})
 	defender.PlanetId = homePlanet.Id
 	k.SetPlayer(sdkCtx, defender)
@@ -272,6 +273,7 @@ func TestFleetMoveRaidVulnerabilityCommandShipOnlineWhileAway(t *testing.T) {
 		Owner:             defender.Id,
 		LocationListStart: raiderFleetId,
 		LocationListLast:  raiderFleetId,
+		LocationListCount: 1,
 	})
 	defender.PlanetId = homePlanet.Id
 	k.SetPlayer(sdkCtx, defender)
@@ -338,6 +340,7 @@ func TestFleetReturnHomeWithDestroyedCommandShipStaysVulnerable(t *testing.T) {
 		Owner:             defender.Id,
 		LocationListStart: raiderFleetId,
 		LocationListLast:  raiderFleetId,
+		LocationListCount: 1,
 	})
 	defender.PlanetId = homePlanet.Id
 	k.SetPlayer(sdkCtx, defender)

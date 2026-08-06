@@ -83,6 +83,12 @@ package v0_21_0
 //     balance and delegations with it, so a narrower PermAdmin gate was a
 //     privilege-escalation path. The ante PermissionMap entry matches.
 //
+//   - Planet gains locationListExtra and locationListCount. Raid-queue capacity
+//     is 1 + locationListExtra (protobuf default extra=0 => length 1).
+//     MsgFleetMove onto a foreign planet whose queue is already at capacity is
+//     rejected with FleetStateError queue_full. SetLocationToPlanet maintains
+//     locationListCount on enqueue/dequeue.
+//
 // State migrations:
 //
 //   - MigrateGuildBankFees: backfill bankConvertInFee / bankConvertOutFee to
@@ -109,4 +115,8 @@ package v0_21_0
 //   - MigratePrimaryAddressPermissions: grant PermAll to every player's current
 //     primary address so the tightened update gate cannot lock out accounts that
 //     reduced their own address permissions under the old rule.
+//
+//   - MigrateFleetQueueLimit: for every planet, seed locationListCount from the
+//     live raid queue, leave locationListExtra at 0 (capacity 1), and send every
+//     visiting fleet beyond the head home via SetLocationToPlanet.
 const UpgradeName = "v0.21.0"

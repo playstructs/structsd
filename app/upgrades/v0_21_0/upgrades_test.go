@@ -398,3 +398,124 @@ func TestMigratePrimaryAddressPermissions(t *testing.T) {
 	require.Equal(t, types.PermAll, k.GetPermissionsByBytes(ctx, reducedId))
 	require.Equal(t, types.PermPlay, k.GetPermissionsByBytes(ctx, nonPrimaryId))
 }
+
+// TestMigrateFleetQueueLimit plants a 3-deep pre-upgrade raid queue (count
+// unset / 0, extra unset / 0) and verifies the head stays while the other
+// two visitors are returned home with count seeded to 1.
+func TestMigrateFleetQueueLimit(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	appendPlayer := func(seed string) types.Player {
+		acc := sdk.AccAddress([]byte(fmt.Sprintf("%-40s", seed)[:40]))
+		player := types.Player{Creator: acc.String(), PrimaryAddress: acc.String()}
+		player.Index = k.GetPlayerCount(ctx)
+		player.Id = fmt.Sprintf("%d-%d", types.ObjectType_player, player.Index)
+		k.SetPlayer(ctx, player)
+		k.SetPlayerCount(ctx, player.Index+1)
+		return player
+	}
+	appendPlanet := func(owner types.Player) types.Planet {
+		planet := types.Planet{
+			Id:      fmt.Sprintf("%d-%d", types.ObjectType_planet, k.GetPlanetCount(ctx)),
+			Creator: owner.Creator,
+			Owner:   owner.Id,
+			Status:  types.PlanetStatus_active,
+		}
+		k.SetPlanet(ctx, planet)
+		k.SetPlanetCount(ctx, k.GetPlanetCount(ctx)+1)
+		return planet
+	}
+	appendFleet := func(owner types.Player, homeId string) types.Fleet {
+		fleet := types.Fleet{
+			Id:           fmt.Sprintf("%d-%s", types.ObjectType_fleet, strings.Split(owner.Id, "-")[1]),
+			Owner:        owner.Id,
+			LocationId:   homeId,
+			LocationType: types.ObjectType_planet,
+			Status:       types.FleetStatus_onStation,
+		}
+		k.SetFleet(ctx, fleet)
+		return fleet
+	}
+
+	defender := appendPlayer("fql-defender")
+	target := appendPlanet(defender)
+	defender.PlanetId = target.Id
+	k.SetPlayer(ctx, defender)
+
+	a1 := appendPlayer("fql-attacker1")
+	h1 := appendPlanet(a1)
+	a1.PlanetId = h1.Id
+	k.SetPlayer(ctx, a1)
+	f1 := appendFleet(a1, h1.Id)
+
+	a2 := appendPlayer("fql-attacker2")
+	h2 := appendPlanet(a2)
+	a2.PlanetId = h2.Id
+	k.SetPlayer(ctx, a2)
+	f2 := appendFleet(a2, h2.Id)
+
+	a3 := appendPlayer("fql-attacker3")
+	h3 := appendPlanet(a3)
+	a3.PlanetId = h3.Id
+	k.SetPlayer(ctx, a3)
+	f3 := appendFleet(a3, h3.Id)
+
+	// Pre-upgrade deep queue: head f1 -> f2 -> f3 (tail). Count/extra absent (0).
+	f1.LocationId = target.Id
+	f1.Status = types.FleetStatus_away
+	f1.LocationListForward = ""
+	f1.LocationListBackward = f2.Id
+	k.SetFleet(ctx, f1)
+
+	f2.LocationId = target.Id
+	f2.Status = types.FleetStatus_away
+	f2.LocationListForward = f1.Id
+	f2.LocationListBackward = f3.Id
+	k.SetFleet(ctx, f2)
+
+	f3.LocationId = target.Id
+	f3.Status = types.FleetStatus_away
+	f3.LocationListForward = f2.Id
+	f3.LocationListBackward = ""
+	k.SetFleet(ctx, f3)
+
+	target.LocationListStart = f1.Id
+	target.LocationListLast = f3.Id
+	target.LocationListCount = 0
+	target.LocationListExtra = 0
+	k.SetPlanet(ctx, target)
+
+	require.NoError(t, v0_21_0.MigrateFleetQueueLimit(ctx, keepers))
+
+	gotTarget, found := k.GetPlanet(ctx, target.Id)
+	require.True(t, found)
+	require.Equal(t, uint64(0), gotTarget.LocationListExtra)
+	require.Equal(t, uint64(1), gotTarget.LocationListCount)
+	require.Equal(t, f1.Id, gotTarget.LocationListStart)
+	require.Equal(t, f1.Id, gotTarget.LocationListLast)
+
+	got1, _ := k.GetFleet(ctx, f1.Id)
+	require.Equal(t, target.Id, got1.LocationId)
+	require.Equal(t, types.FleetStatus_away, got1.Status)
+	require.Equal(t, "", got1.LocationListBackward)
+
+	got2, _ := k.GetFleet(ctx, f2.Id)
+	require.Equal(t, h2.Id, got2.LocationId)
+	require.Equal(t, types.FleetStatus_onStation, got2.Status)
+	require.Equal(t, "", got2.LocationListForward)
+	require.Equal(t, "", got2.LocationListBackward)
+
+	got3, _ := k.GetFleet(ctx, f3.Id)
+	require.Equal(t, h3.Id, got3.LocationId)
+	require.Equal(t, types.FleetStatus_onStation, got3.Status)
+
+	// Idempotent: a second pass leaves the single visitor in place.
+	require.NoError(t, v0_21_0.MigrateFleetQueueLimit(ctx, keepers))
+	gotTarget, _ = k.GetPlanet(ctx, target.Id)
+	require.Equal(t, uint64(1), gotTarget.LocationListCount)
+	require.Equal(t, f1.Id, gotTarget.LocationListStart)
+
+	_ = sdkCtx
+}

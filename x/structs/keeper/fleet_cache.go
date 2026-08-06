@@ -183,6 +183,10 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
             previousPlanet.SetLocationListStart(previousBackwardFleetId)
             if (previousBackwardFleetId != "") {
                 previousBackwardFleet.SetLocationListForward("")
+            } else {
+                // Sole visitor leaving: Start was cleared above; clear Last too
+                // so the planet does not keep a dangling pointer at this fleet.
+                previousPlanet.SetLocationListLast("")
             }
         // The back of the list
         } else if (previousBackwardFleetId == "") {
@@ -197,6 +201,7 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
 
         cache.SetLocationListForward("")
         cache.SetLocationListBackward("")
+        previousPlanet.DecrementLocationListCount()
     }
 
     // New destination isn't home - add it to the end of the list
@@ -211,6 +216,7 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
         }
 
         cache.GetPlanet().SetLocationListLast(cache.GetFleetId())
+        cache.GetPlanet().IncrementLocationListCount()
 
         cache.Fleet.Status = types.FleetStatus_away
     } else {
