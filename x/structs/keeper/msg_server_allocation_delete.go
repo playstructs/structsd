@@ -15,7 +15,7 @@ func (k msgServer) AllocationDelete(goCtx context.Context, msg *types.MsgAllocat
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    activePlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
         return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "allocation_delete")
     }

@@ -157,7 +157,7 @@ func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) 
 
     if cache.GetAccessPolicy() == types.ProviderAccessPolicy_openMarket {
         if !activePlayer.HasPlayerAccount() {
-            return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "agreement_open")
+            return types.NewPlayerRequiredError(cache.CC.SignerAddress(), "agreement_open")
         }
     } else if cache.GetAccessPolicy() == types.ProviderAccessPolicy_guildMarket {
         return cache.CC.PermissionCheck(cache, activePlayer, types.PermProviderOpen)

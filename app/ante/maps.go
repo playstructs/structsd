@@ -431,6 +431,28 @@ func IsAnyFreeTransaction(msgs []sdk.Msg) bool {
 	return IsFreeTransaction(msgs) || IsFreeStakingTransaction(msgs)
 }
 
+// ContainsGatedStructsMessage returns true if any message in the tx is a Structs
+// gameplay message, and is what decides whether the Structs ante checks run.
+//
+// Gating must follow the message, not the fee. IsFreeTransaction requires EVERY
+// message to be a Structs message, so a tx pairing one gameplay message with any
+// non-Structs message (a bank send, say) is not "free", and keying the Structs
+// decorators off free-ness let such a tx buy its way past the player
+// registration, permission, charge and throttle checks for the price of a normal
+// fee. Paying a fee is not authorization.
+//
+// MsgUpdateParams is excluded: it is signed by the governance authority rather
+// than a player, so there is no address to resolve or permission to check.
+func ContainsGatedStructsMessage(msgs []sdk.Msg) bool {
+	for _, msg := range msgs {
+		typeURL := sdk.MsgTypeURL(msg)
+		if IsStructsMessage(typeURL) && typeURL != MsgUpdateParamsTypeURL {
+			return true
+		}
+	}
+	return false
+}
+
 // StakingSignerExtractors provides direct field access for the signer address
 // of each free staking message type (goproto_getters = false on all of them).
 var StakingSignerExtractors = map[string]func(sdk.Msg) string{

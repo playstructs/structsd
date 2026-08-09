@@ -14,7 +14,7 @@ func (k msgServer) SubstationUpdatePfp(goCtx context.Context, msg *types.MsgSubs
 
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, err := cc.GetPlayerByAddress(msg.Creator)
+	player, err := cc.GetSigningPlayer(msg.Creator)
 	if err != nil {
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "substation_update_pfp")
 	}

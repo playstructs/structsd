@@ -31,7 +31,7 @@ func emitUGCModerationEventIfActorIsNotOwner(
 		sdk.NewEvent(
 			types.EventTypeUGCModerated,
 			sdk.NewAttribute(types.AttributeKeyUGCActorPlayerId, actor.GetPlayerId()),
-			sdk.NewAttribute(types.AttributeKeyUGCActorAddress, actor.GetActiveAddress()),
+			sdk.NewAttribute(types.AttributeKeyUGCActorAddress, actor.CC.SignerAddress()),
 			sdk.NewAttribute(types.AttributeKeyUGCTargetObjectId, target.ID()),
 			sdk.NewAttribute(types.AttributeKeyUGCTargetOwnerId, target.GetOwnerId()),
 			sdk.NewAttribute(types.AttributeKeyUGCField, field),

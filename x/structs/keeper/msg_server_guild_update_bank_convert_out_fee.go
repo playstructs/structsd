@@ -16,7 +16,7 @@ func (k msgServer) GuildUpdateBankConvertOutFee(goCtx context.Context, msg *type
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, err := cc.GetPlayerByAddress(msg.Creator)
+	player, err := cc.GetSigningPlayer(msg.Creator)
 	if err != nil {
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_update_bank_convert_out_fee")
 	}

@@ -17,19 +17,25 @@ func (k msgServer) PermissionGrantOnAddress(goCtx context.Context, msg *types.Ms
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    var err error
-
     if msg.Permissions == 0 {
         return emptyResponse, types.NewParameterValidationError("permissions", 0, "below_minimum").WithRange(1, 0)
     }
 
-    callingPlayer, _ := cc.GetPlayerByAddress(msg.Creator)
+    callingPlayer, err := cc.GetSigningPlayer(msg.Creator)
+    if err != nil {
+        return emptyResponse, err
+    }
+
     err = callingPlayer.CheckPlayer()
     if err != nil {
         return emptyResponse, err
     }
 
-    targetPlayer, _ := cc.GetPlayerByAddress(msg.Address)
+    targetPlayer, err := cc.GetPlayerByAddress(msg.Address)
+    if err != nil {
+         return emptyResponse, err
+    }
+
     err = targetPlayer.CheckPlayer()
     if err != nil {
          return emptyResponse, err

@@ -19,7 +19,7 @@ func (k msgServer) PermissionSetOnObject(goCtx context.Context, msg *types.MsgPe
 
    var err error
 
-    player, err := cc.GetPlayerByAddress(msg.Creator)
+    player, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
         return emptyResponse, err
     }
@@ -29,12 +29,18 @@ func (k msgServer) PermissionSetOnObject(goCtx context.Context, msg *types.MsgPe
         return emptyResponse, types.NewPermissionError("player", player.GetPlayerId(), "object", msg.ObjectId, uint64(msg.Permissions), "permission_grant")
     }
 
-    permissionErr := cc.PermissionCheck(permissionedObject, player, types.Permission(msg.Permissions))
+    // This overwrites rather than adds, so the call destroys the target player's
+    // existing grant on the object as well as writing msg.Permissions. Require
+    // the caller to hold both, otherwise a narrowly granted player could strip
+    // a broader grant off someone else.
+    targetPlayerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, msg.PlayerId)
+    requiredPermissions := types.Permission(msg.Permissions) | cc.GetPermissions(targetPlayerPermissionId)
+
+    permissionErr := cc.PermissionCheck(permissionedObject, player, requiredPermissions)
     if permissionErr != nil {
         return emptyResponse, permissionErr
     }
 
-    targetPlayerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, msg.PlayerId)
     cc.SetPermissions(targetPlayerPermissionId, types.Permission(msg.Permissions))
 
 	cc.CommitAll()

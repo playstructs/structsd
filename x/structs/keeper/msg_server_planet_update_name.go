@@ -14,7 +14,7 @@ func (k msgServer) PlanetUpdateName(goCtx context.Context, msg *types.MsgPlanetU
 
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, err := cc.GetPlayerByAddress(msg.Creator)
+	player, err := cc.GetSigningPlayer(msg.Creator)
 	if err != nil {
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "planet_update_name")
 	}

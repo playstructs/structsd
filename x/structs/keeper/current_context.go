@@ -4,6 +4,8 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"structs/x/structs/types"
 )
 
 // =============================================================================
@@ -97,6 +99,15 @@ type CurrentContext struct {
 	// Transient combat state (nil outside attack handler, not committed)
 	Attack *AttackContext
 
+	// signerAddress is the authenticated address that signed the message being
+	// handled (msg.Creator). It is the acting identity for every Layer 1
+	// permission check and belongs to the operation, not to any entity: a
+	// player may hold many addresses with different permission bits, and
+	// PlayerCache instances are shared across every address of that player.
+	// Write-once via setSigner so a later lookup of a caller-supplied address
+	// can never redefine who is acting.
+	signerAddress string
+
 	// State flags
 	committed bool
 }
@@ -161,6 +172,27 @@ func (cc *CurrentContext) Context() sdk.Context {
 // Keeper returns the keeper reference
 func (cc *CurrentContext) Keeper() *Keeper {
 	return cc.k
+}
+
+// SignerAddress returns the authenticated address acting in this operation, or
+// the empty string in block hooks and genesis where nothing signed.
+func (cc *CurrentContext) SignerAddress() string {
+	return cc.signerAddress
+}
+
+// setSigner records the acting address. Calling it twice with the same address
+// is a no-op; a second, different address is a programming error, because it
+// would mean the operation has two acting identities and permission checks
+// could resolve against either.
+func (cc *CurrentContext) setSigner(address string) error {
+	if cc.signerAddress == address {
+		return nil
+	}
+	if cc.signerAddress != "" {
+		return types.NewAddressValidationError(address, "signer_already_set")
+	}
+	cc.signerAddress = address
+	return nil
 }
 
 // =============================================================================

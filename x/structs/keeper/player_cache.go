@@ -20,8 +20,6 @@ type PlayerCache struct {
 	PlayerLoaded bool
 	Player       types.Player
 
-	ActiveAddress string
-
 	StorageLoaded bool
 	Storage       sdk.Coins
 
@@ -103,10 +101,6 @@ func (cache *PlayerCache) GetPrimaryAddress() string {
 func (cache *PlayerCache) GetPrimaryAccount() sdk.AccAddress {
 	acc, _ := sdk.AccAddressFromBech32(cache.GetPrimaryAddress())
 	return acc
-}
-func (cache *PlayerCache) GetActiveAddress() string { return cache.ActiveAddress }
-func (cache *PlayerCache) GetActiveAddressPermissionID() []byte {
-	return GetAddressPermissionIDBytes(cache.ActiveAddress)
 }
 func (cache *PlayerCache) GetIndex() uint64 {
 	if !cache.PlayerLoaded {
@@ -247,10 +241,6 @@ func (cache *PlayerCache) StructsLoadIncrement(amount uint64) {
 func (cache *PlayerCache) Discharge() {
 	ctxSDK := sdk.UnwrapSDKContext(cache.CC.ctx)
 	cache.CC.SetGridAttribute(cache.LastActionAttributeId, uint64(ctxSDK.BlockHeight()))
-}
-
-func (cache *PlayerCache) SetActiveAddress(address string) {
-	cache.ActiveAddress = address
 }
 
 func (cache *PlayerCache) SetPlanetId(planetId string) {

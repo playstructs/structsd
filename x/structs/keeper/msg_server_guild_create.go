@@ -16,7 +16,7 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    player, playerErr := cc.GetPlayerByAddress(msg.Creator)
+    player, playerErr := cc.GetSigningPlayer(msg.Creator)
     if playerErr != nil {
         return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_create")
     }

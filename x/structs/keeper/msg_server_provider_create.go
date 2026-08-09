@@ -37,7 +37,10 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-    activePlayer, _ := cc.GetPlayerByAddress(msg.Creator)
+    activePlayer, lookupErr := cc.GetSigningPlayer(msg.Creator)
+    if lookupErr != nil {
+        return emptyResponse, lookupErr
+    }
 
     substation := cc.GetSubstation(msg.SubstationId)
 

@@ -42,7 +42,10 @@ func NewThrottleDecorator(keeper StructsAnteKeeper) ThrottleDecorator {
 }
 
 func (d ThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
-	if !IsFreeTx(ctx) || IsFreeStakingTx(ctx) {
+	// Throttling follows the message, not the fee: see
+	// ContainsGatedStructsMessage. Every branch below keys off a map holding only
+	// Structs type URLs, so messages from other modules fall through untouched.
+	if !ContainsGatedStructsMessage(tx.GetMsgs()) {
 		return next(ctx, tx, simulate)
 	}
 

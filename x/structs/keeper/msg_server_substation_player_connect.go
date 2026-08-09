@@ -15,7 +15,7 @@ func (k msgServer) SubstationPlayerConnect(goCtx context.Context, msg *types.Msg
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	callingPlayer, playerErr := cc.GetPlayerByAddress(msg.Creator)
+	callingPlayer, playerErr := cc.GetSigningPlayer(msg.Creator)
     if playerErr != nil {
         return emptyResponse, playerErr
     }

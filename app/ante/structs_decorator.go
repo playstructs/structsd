@@ -29,11 +29,11 @@ func NewStructsDecorator(keeper StructsAnteKeeper, playerMsgCap uint64) StructsD
 }
 
 func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
-	if !IsFreeTx(ctx) || IsFreeStakingTx(ctx) {
+	msgs := tx.GetMsgs()
+
+	if !ContainsGatedStructsMessage(msgs) {
 		return next(ctx, tx, simulate)
 	}
-
-	msgs := tx.GetMsgs()
 
 	// Cache address -> playerIndex to avoid repeat lookups in multi-msg txs
 	addressCache := make(map[string]uint64)
@@ -43,6 +43,13 @@ func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, 
 
 	for _, msg := range msgs {
 		typeURL := sdk.MsgTypeURL(msg)
+
+		// A tx may legitimately mix Structs gameplay with messages from other
+		// modules. Those are gated by their own modules; skip them rather than
+		// demanding a player-owned creator from them.
+		if !IsStructsMessage(typeURL) || typeURL == MsgUpdateParamsTypeURL {
+			continue
+		}
 
 		if !KnownStructsMessages[typeURL] {
 			return ctx, observeReject(ctx, "StructsDecorator",

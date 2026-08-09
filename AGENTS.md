@@ -26,6 +26,17 @@ and charge (usually via methods on the loaded objects), mutate, then `cc.CommitA
 neighbouring handler before writing a new one. Don't write to the KV store directly when a cache
 exists — caches deduplicate loads per operation and commit once.
 
+**Load the signer with `cc.GetSigningPlayer(msg.Creator)`, and nothing else with it.** A player
+owns many addresses, each with its own permission bitfield, but `cc.players` is keyed by player
+id, so every address of a player resolves to one shared `PlayerCache`. The acting identity
+therefore lives on the `CurrentContext`, written once by `GetSigningPlayer`, and is what every
+address-level permission check reads. Any other address a message names (`FromAddress`,
+`DelegatorAddress`, `Address`) is a subject, not an identity: load it with the pure
+`cc.GetPlayerByAddress(...)`. `x/structs/keeper/arch_signer_test.go` enforces this. The signing
+key's own bits are a hard ceiling — a key may never exercise a permission it does not itself
+hold, and when a handler overwrites a permission bitfield it must check the bits being destroyed
+as well as the bits being written.
+
 **Use the typed errors.** Keeper codes (1050–1800) live in
 `x/structs/types/errors_structured.go`, ante codes (2000–2050) in `app/ante/errors.go`. The
 numbers are a public contract that clients and tests assert on: never `fmt.Errorf` out of a

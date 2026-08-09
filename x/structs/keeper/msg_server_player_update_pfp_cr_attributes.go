@@ -14,7 +14,7 @@ func (k msgServer) PlayerUpdatePfpClientRenderAttributes(goCtx context.Context, 
 
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+	activePlayer, err := cc.GetSigningPlayer(msg.Creator)
 	if err != nil {
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "player_update_pfp_client_render_attributes")
 	}

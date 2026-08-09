@@ -19,7 +19,7 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	callingPlayer, playerErr := cc.GetPlayerByAddress(msg.Creator)
+	callingPlayer, playerErr := cc.GetSigningPlayer(msg.Creator)
 	if playerErr != nil {
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "struct_generator_infuse")
 	}

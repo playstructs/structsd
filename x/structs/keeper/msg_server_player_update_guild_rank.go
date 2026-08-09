@@ -14,7 +14,7 @@ func (k msgServer) PlayerUpdateGuildRank(goCtx context.Context, msg *types.MsgPl
 
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+	callingPlayer, err := cc.GetSigningPlayer(msg.Creator)
 	if err != nil {
 		return emptyResponse, err
 	}

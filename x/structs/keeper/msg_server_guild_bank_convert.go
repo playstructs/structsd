@@ -17,7 +17,7 @@ func (k msgServer) GuildBankConvert(goCtx context.Context, msg *types.MsgGuildBa
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	activePlayer, lookupErr := cc.GetPlayerByAddress(msg.Creator)
+	activePlayer, lookupErr := cc.GetSigningPlayer(msg.Creator)
 	if lookupErr != nil {
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_bank_convert")
 	}

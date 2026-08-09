@@ -15,7 +15,7 @@ func (k msgServer) AllocationTransfer(goCtx context.Context, msg *types.MsgAlloc
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    activePlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
         return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "allocation_transfer")
     }

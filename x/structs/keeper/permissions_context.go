@@ -231,12 +231,19 @@ func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlaye
 
 	// Check the Active Player exists
 	if !activePlayer.HasPlayerAccount() {
-		return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "administrate")
+		return types.NewPlayerRequiredError(cc.signerAddress, "administrate")
 	}
 
-	// Make sure the address calling this has request permissions
-	if !cc.PermissionHasAll(activePlayer.GetActiveAddressPermissionID(), permission) {
-		return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "administrate")
+	// Layer 1: the key that signed must itself hold the permission, whatever
+	// standing its player has on the object. An empty signer means no address
+	// was ever authenticated for this operation, so there is nothing to check
+	// against and the only safe answer is no.
+	if cc.signerAddress == "" {
+		return types.NewPermissionError("address", "", "object", object.ID(), uint64(permission), "administrate")
+	}
+
+	if !cc.PermissionHasAll(GetAddressPermissionIDBytes(cc.signerAddress), permission) {
+		return types.NewPermissionError("address", cc.signerAddress, "", "", uint64(permission), "administrate")
 	}
 
 	// If the player is the owner, it's an easy yes

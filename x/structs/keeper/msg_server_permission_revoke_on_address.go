@@ -19,7 +19,7 @@ func (k msgServer) PermissionRevokeOnAddress(goCtx context.Context, msg *types.M
 
     var err error
 
-    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    callingPlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
         return emptyResponse, err
     }

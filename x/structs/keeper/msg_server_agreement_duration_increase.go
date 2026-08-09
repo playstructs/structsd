@@ -15,7 +15,10 @@ func (k msgServer) AgreementDurationIncrease(goCtx context.Context, msg *types.M
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-    activePlayer, _ := cc.GetPlayerByAddress(msg.Creator)
+    activePlayer, lookupErr := cc.GetSigningPlayer(msg.Creator)
+    if lookupErr != nil {
+        return emptyResponse, lookupErr
+    }
 
     agreement := cc.GetAgreement(msg.AgreementId)
 
