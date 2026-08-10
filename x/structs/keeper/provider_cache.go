@@ -247,7 +247,9 @@ func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) 
             return types.NewPlayerRequiredError(cache.CC.SignerAddress(), "agreement_open")
         }
     } else if cache.GetAccessPolicy() == types.ProviderAccessPolicy_guildMarket {
-        return cache.CC.PermissionCheck(cache, activePlayer, types.PermProviderOpen)
+        if err := cache.CC.PermissionCheck(cache, activePlayer, types.PermProviderOpen); err != nil {
+            return err
+        }
 
     } else if cache.GetAccessPolicy() == types.ProviderAccessPolicy_closedMarket {
         return types.NewProviderAccessError(cache.GetProviderId(), "closed_market").WithPlayer(activePlayer.GetPlayerId())
@@ -256,7 +258,15 @@ func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) 
         return types.NewProviderAccessError(cache.GetProviderId(), "unknown").WithPlayer(activePlayer.GetPlayerId())
     }
 
-    return nil
+    // The access policy decides who may contract with this provider. It does not
+    // authorize moving the player's money, and PermProviderOpen is an access grant
+    // rather than a spend one: AgreementOpen debits the primary address for the
+    // collateral, so the signing key needs the same bit PlayerSend requires.
+    //
+    // Checked against the player rather than the provider, which is what keeps
+    // open-market open. The owner shortcut in PermissionCheck satisfies the object
+    // layer, leaving this a check of the signing key's own bits.
+    return activePlayer.CanTransferTokensBy(activePlayer)
 }
 
 /* Committing Setters */

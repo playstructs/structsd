@@ -146,6 +146,10 @@ var PermissionMap = map[string]types.Permission{
 	"/structs.structs.MsgGuildBankConvert":     types.PermTokenTransfer,
 	"/structs.structs.MsgGuildBankConvertToken": types.PermTokenTransfer,
 	"/structs.structs.MsgPlayerSend":           types.PermTokenTransfer,
+	// Opening an agreement debits the player's primary address for the collateral.
+	// The access policy is dynamic and stays in the handler, but the spend bit is
+	// required under every policy, so it belongs here as the hard ceiling.
+	"/structs.structs.MsgAgreementOpen":        types.PermTokenTransfer,
 	"/structs.structs.MsgReactorInfuse":        types.PermTokenInfuse,
 	"/structs.structs.MsgReactorCancelDefusion": types.PermTokenInfuse,
 	"/structs.structs.MsgStructGeneratorInfuse": types.PermTokenInfuse,
@@ -185,7 +189,9 @@ var PermissionMap = map[string]types.Permission{
 	"/structs.structs.MsgAgreementCapacityDecrease":   types.PermUpdate,
 	"/structs.structs.MsgAgreementCapacityIncrease":   types.PermUpdate,
 	"/structs.structs.MsgAgreementClose":              types.PermUpdate,
-	"/structs.structs.MsgAgreementDurationIncrease":   types.PermUpdate,
+	// Extending a duration buys the extra blocks out of the player's primary
+	// address, so update rights on the agreement are not enough on their own.
+	"/structs.structs.MsgAgreementDurationIncrease":   types.PermUpdate | types.PermTokenTransfer,
 	"/structs.structs.MsgProviderUpdateAccessPolicy":  types.PermUpdate,
 	"/structs.structs.MsgProviderUpdateCapacityMaximum": types.PermUpdate,
 	"/structs.structs.MsgProviderUpdateCapacityMinimum": types.PermUpdate,
@@ -234,7 +240,6 @@ var DynamicPermissionMessages = map[string]bool{
 	"/structs.structs.MsgPermissionSetOnAddress":                true,
 	"/structs.structs.MsgPermissionSetOnObject":                 true,
 	"/structs.structs.MsgPlayerUpdateGuildRank":                 true,
-	"/structs.structs.MsgAgreementOpen":                         true,
 	"/structs.structs.MsgGuildMembershipInvite":                 true,
 	"/structs.structs.MsgGuildMembershipInviteRevoke":           true,
 	"/structs.structs.MsgGuildMembershipKick":                   true,

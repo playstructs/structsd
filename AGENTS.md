@@ -45,6 +45,19 @@ audits keep proposing that the debited address be a required signer, which would
 token operations to a secondary key. The bit on the signing key is the control, so grant it as
 narrowly as that implies.
 
+Because that bit is the whole control, **every handler that moves a player's coins must demand
+one**, including the ones where the spend is a side effect rather than the point. `AgreementOpen`
+debits the primary address for collateral, so it requires `PermTokenTransfer` even though the
+message names no address at all. An access check is not a spend check: a provider's
+`PermProviderOpen` says who may contract with it, nothing about whose money may move, and an
+agreement's `PermUpdate` says who may change it, not who may fund the change. When a
+handler's gate depends on runtime policy, put the fixed part in `PermissionMap` and only the policy
+part in the handler — a `DynamicPermissionMessages` entry makes `StructsDecorator` skip
+`PermissionMap` entirely, so a message in both maps gets no ante check at all.
+`TestArch_PrimaryAddressDebitsRequireTokenBit` in `app/ante` enforces this by walking the handler
+sources: pair `GetPrimaryAddress` with a debiting bank call and the message must demand an asset
+bit. Sweeping another address *into* the primary is a credit, not a spend, and is allowlisted there.
+
 **Agreement teardown settles exactly once, and consumer collateral outranks provider revenue.**
 Agreement teardown destroys its allocation, and allocation teardown settles its agreement, so the
 two call each other. `cc.agreements` hands both legs the same `AgreementCache`, so the second leg

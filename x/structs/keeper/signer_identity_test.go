@@ -316,3 +316,186 @@ func TestSignerIdentity_SecondSignerRejected(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, mk.primary, cc.SignerAddress())
 }
+
+// Opening an agreement debits the player's primary address for the collateral, so
+// it is a token spend and needs the same bit PlayerSend does. The access policy
+// only decides who may contract with a provider: open-market used to check merely
+// that the signer mapped to some player, and PermProviderOpen gates guild-market
+// access without saying anything about spending.
+
+// registerConsumerAddress adds another address to the teardown fixture's consumer
+// with exactly the given address-level permissions.
+func registerConsumerAddress(t *testing.T, f *teardownFixture, seed string, permissions types.Permission) string {
+	t.Helper()
+
+	acc := sdk.AccAddress(seed + "_padding_address_12345678901234567890")
+	address := acc.String()
+	f.k.SetPlayerIndexForAddress(f.ctx, address, f.consumer.Index)
+	f.k.SetPermissionsByBytes(f.ctx, keeperlib.GetAddressPermissionIDBytes(address), permissions)
+
+	return address
+}
+
+// requireDeniedOnSignerBit asserts the rejection came from the signing key lacking
+// a specific bit, rather than from any other permission failure. The message text
+// is identical for every Layer 1 denial, so match on the structured bit instead.
+func requireDeniedOnSignerBit(t *testing.T, err error, signer string, permission types.Permission) {
+	t.Helper()
+
+	require.Error(t, err)
+
+	var permErr *types.PermissionError
+	require.ErrorAs(t, err, &permErr, "expected a structured PermissionError, got %v", err)
+	require.Equal(t, uint64(permission), permErr.Permission,
+		"rejected for the wrong permission bit")
+	require.Equal(t, "address", permErr.CallerType,
+		"the denial must be against the signing key, not the player's standing on an object")
+	require.Equal(t, signer, permErr.CallerId)
+}
+
+func TestSignerIdentity_AgreementOpenRejectsWeakKey(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0.5", "0.25")
+
+	weak := registerConsumerAddress(t, f, "agreeweak", types.PermPlay)
+
+	const capacity, duration = 100, 50
+	collateral := int64(capacity * duration * 10)
+	f.fund(t, f.consumerAcc, collateral)
+
+	_, err := f.ms.AgreementOpen(f.ctx, &types.MsgAgreementOpen{
+		Creator:    weak,
+		ProviderId: f.provider.Id,
+		Capacity:   capacity,
+		Duration:   duration,
+	})
+	requireDeniedOnSignerBit(t, err, weak, types.PermTokenTransfer)
+
+	require.Equal(t, math.NewInt(collateral), f.balance(f.consumerAcc),
+		"the rejected open must leave the primary balance alone")
+	require.True(t, f.balance(f.collateralAcc).IsZero(),
+		"no collateral should have reached the provider pool")
+	require.Empty(t, f.k.GetAllAgreementIdByProviderIndex(f.ctx, f.provider.Id))
+}
+
+// The capability the gate has to preserve: a scoped key that does hold the spend
+// bit may still open an agreement against its player's primary balance.
+func TestSignerIdentity_AgreementOpenWithScopedKeyStillWorks(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0.5", "0.25")
+
+	spender := registerConsumerAddress(t, f, "agreespend", types.PermPlay|types.PermAssetsAll)
+
+	const capacity, duration = 100, 50
+	collateral := int64(capacity * duration * 10)
+	f.fund(t, f.consumerAcc, collateral)
+
+	_, err := f.ms.AgreementOpen(f.ctx, &types.MsgAgreementOpen{
+		Creator:    spender,
+		ProviderId: f.provider.Id,
+		Capacity:   capacity,
+		Duration:   duration,
+	})
+	require.NoError(t, err, "a key holding PermTokenTransfer may open an agreement")
+
+	require.True(t, f.balance(f.consumerAcc).IsZero())
+	require.Equal(t, math.NewInt(collateral), f.balance(f.collateralAcc))
+	require.Len(t, f.k.GetAllAgreementIdByProviderIndex(f.ctx, f.provider.Id), 1)
+}
+
+// PermProviderOpen is an access grant, not a spend one. A key that satisfies the
+// guild-market gate still may not reach the primary address's balance without the
+// token bit.
+func TestSignerIdentity_AgreementOpenGuildMarketRequiresSpendBit(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0.5", "0.25")
+
+	provider, found := f.k.GetProvider(f.ctx, f.provider.Id)
+	require.True(t, found)
+	provider.AccessPolicy = types.ProviderAccessPolicy_guildMarket
+	_, err := f.k.SetProvider(f.ctx, provider)
+	require.NoError(t, err)
+
+	// Enough to pass the access gate at both layers: the bit on the signing key,
+	// and standing for the player on the provider object.
+	opener := registerConsumerAddress(t, f, "agreeguild", types.PermPlay|types.PermProviderOpen)
+	f.k.SetPermissionsByBytes(f.ctx,
+		keeperlib.GetObjectPermissionIDBytes(f.provider.Id, f.consumer.Id), types.PermProviderOpen)
+
+	const capacity, duration = 100, 50
+	collateral := int64(capacity * duration * 10)
+	f.fund(t, f.consumerAcc, collateral)
+
+	_, err = f.ms.AgreementOpen(f.ctx, &types.MsgAgreementOpen{
+		Creator:    opener,
+		ProviderId: f.provider.Id,
+		Capacity:   capacity,
+		Duration:   duration,
+	})
+	// PermTokenTransfer, not PermProviderOpen: the access gate was satisfied and
+	// the spend gate is what stopped it.
+	requireDeniedOnSignerBit(t, err, opener, types.PermTokenTransfer)
+
+	require.Equal(t, math.NewInt(collateral), f.balance(f.consumerAcc))
+	require.True(t, f.balance(f.collateralAcc).IsZero())
+}
+
+// Extending an agreement buys the extra blocks out of the primary address, so it
+// is the same spend as opening one. PermUpdate decides who may modify the
+// agreement and is not a substitute: the key below holds it, which is what makes
+// this test isolate the spend gate rather than the update gate.
+func TestSignerIdentity_AgreementDurationIncreaseRequiresSpendBit(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0.5", "0.25")
+
+	agreement, _ := f.openAgreement(t, 100, 50)
+
+	updater := registerConsumerAddress(t, f, "agreedur", types.PermPlay|types.PermUpdate)
+
+	const increase = 10
+	topUp := int64(100 * increase * 10)
+	f.fund(t, f.consumerAcc, topUp)
+
+	collateralBefore := f.balance(f.collateralAcc)
+
+	_, err := f.ms.AgreementDurationIncrease(f.ctx, &types.MsgAgreementDurationIncrease{
+		Creator:          updater,
+		AgreementId:      agreement.Id,
+		DurationIncrease: increase,
+	})
+	requireDeniedOnSignerBit(t, err, updater, types.PermTokenTransfer)
+
+	require.Equal(t, math.NewInt(topUp), f.balance(f.consumerAcc),
+		"the rejected top-up must leave the primary balance alone")
+	require.Equal(t, collateralBefore, f.balance(f.collateralAcc))
+
+	unchanged, found := f.k.GetAgreement(f.ctx, agreement.Id)
+	require.True(t, found)
+	require.Equal(t, agreement.EndBlock, unchanged.EndBlock,
+		"the agreement must not have been extended")
+}
+
+func TestSignerIdentity_AgreementDurationIncreaseWithSpendBitSucceeds(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0.5", "0.25")
+
+	agreement, _ := f.openAgreement(t, 100, 50)
+
+	updater := registerConsumerAddress(t, f, "agreedurok",
+		types.PermPlay|types.PermUpdate|types.PermTokenTransfer)
+
+	const increase = 10
+	topUp := int64(100 * increase * 10)
+	f.fund(t, f.consumerAcc, topUp)
+
+	collateralBefore := f.balance(f.collateralAcc)
+
+	_, err := f.ms.AgreementDurationIncrease(f.ctx, &types.MsgAgreementDurationIncrease{
+		Creator:          updater,
+		AgreementId:      agreement.Id,
+		DurationIncrease: increase,
+	})
+	require.NoError(t, err)
+
+	require.True(t, f.balance(f.consumerAcc).IsZero())
+	require.Equal(t, collateralBefore.AddRaw(topUp), f.balance(f.collateralAcc))
+
+	extended, found := f.k.GetAgreement(f.ctx, agreement.Id)
+	require.True(t, found)
+	require.Equal(t, agreement.EndBlock+increase, extended.EndBlock)
+}

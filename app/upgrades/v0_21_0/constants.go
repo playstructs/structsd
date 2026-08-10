@@ -83,6 +83,25 @@ package v0_21_0
 //     balance and delegations with it, so a narrower PermAdmin gate was a
 //     privilege-escalation path. The ante PermissionMap entry matches.
 //
+//   - MsgAgreementOpen now requires PermTokenTransfer on the signing key, under
+//     every provider access policy. The collateral is debited from the player's
+//     primary address, making it a token spend, but the open-market branch checked
+//     only that the signer mapped to a registered player and the guild-market
+//     branch checked PermProviderOpen, which grants access rather than spending
+//     authority. A registered secondary key with neither bit could therefore
+//     commit the primary balance. The message moves out of
+//     DynamicPermissionMessages into PermissionMap so the ante enforces the bit as
+//     well; the access-policy branch stays in the handler.
+//
+//   - MsgAgreementDurationIncrease likewise now requires PermTokenTransfer in
+//     addition to PermUpdate. Extending an agreement buys the extra blocks out of
+//     the primary address, and update rights on the agreement said nothing about
+//     whose money may move, so a secondary key with PermUpdate could top up
+//     duration from the primary balance. The two agreement handlers were the only
+//     signer-authorized debits of the primary missing a token bit;
+//     TestArch_PrimaryAddressDebitsRequireTokenBit in app/ante is now the standing
+//     guard for the rest of the family.
+//
 //   - An agreement now starts serving in the block it is opened rather than the
 //     block after. AgreementOpen raises the provider's load immediately and
 //     checkpoints the provider at the opening height, and Checkpoint bills

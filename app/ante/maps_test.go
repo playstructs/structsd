@@ -1,7 +1,14 @@
 package ante
 
 import (
+	"go/ast"
+	"go/parser"
+	"go/token"
+	"os"
+	"path/filepath"
 	"reflect"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -175,4 +182,179 @@ func TestPlayerUpdatePrimaryAddressRequiresPermAll(t *testing.T) {
 	require.True(t, ok, "MsgPlayerUpdatePrimaryAddress missing from PermissionMap")
 	require.Equal(t, types.PermAll, actualPerm,
 		"primary address swap grants PermAll and must require it from the caller")
+}
+
+// AgreementOpen debits the player's primary address for the collateral. The access
+// policy is dynamic and stays in the handler, but the spend bit applies under every
+// policy, so it has to be enforced here too. A dynamic entry would make the
+// decorator skip PermissionMap entirely and leave the ante with no check at all.
+func TestAgreementOpenRequiresTokenTransfer(t *testing.T) {
+	actualPerm, ok := PermissionMap["/structs.structs.MsgAgreementOpen"]
+	require.True(t, ok, "MsgAgreementOpen missing from PermissionMap")
+	require.Equal(t, types.PermTokenTransfer, actualPerm,
+		"opening an agreement spends from the primary address and must require the token transfer bit")
+
+	require.False(t, DynamicPermissionMessages["/structs.structs.MsgAgreementOpen"],
+		"a dynamic entry would bypass the PermissionMap check above")
+}
+
+func TestAgreementDurationIncreaseRequiresTokenTransfer(t *testing.T) {
+	actualPerm, ok := PermissionMap["/structs.structs.MsgAgreementDurationIncrease"]
+	require.True(t, ok, "MsgAgreementDurationIncrease missing from PermissionMap")
+	require.NotZero(t, actualPerm&types.PermTokenTransfer,
+		"extending a duration buys blocks out of the primary address, so update rights alone are not enough")
+	require.NotZero(t, actualPerm&types.PermUpdate,
+		"the spend bit is additional to update rights on the agreement, not a replacement")
+}
+
+// TestArch_PrimaryAddressDebitsRequireTokenBit is the standing guard for the whole
+// family of gaps the open-market bypass belonged to. A handler that debits the
+// player's primary address is spending the player's money on the signer's
+// authority, and the only control on that is a token bit on the signing key. An
+// access or update permission is not a substitute: PermProviderOpen decides who
+// may contract with a provider and PermUpdate who may modify an agreement, and
+// neither says anything about whose coins may move.
+//
+// Rather than trusting review to notice the next one, this walks the handler
+// sources and requires any that pairs GetPrimaryAddress with SendCoins to demand
+// one of the asset bits in PermissionMap.
+func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
+	// Handlers where the primary address is the destination rather than the
+	// source. Sweeping another address of the same player into the primary is a
+	// credit, so no spend authorization applies.
+	creditsPrimary := map[string]string{
+		"MsgAddressRegister": "sweeps the newly registered address into the primary",
+		"MsgAddressRevoke":   "sweeps the revoked address into the primary",
+	}
+
+	// Bank calls that move coins out of an account. SendCoinsFromModuleToAccount
+	// is the credit direction and is deliberately absent. Any other SendCoins*
+	// method appearing in a handler fails the coverage check below rather than
+	// quietly escaping this guard.
+	debitCalls := map[string]bool{
+		"SendCoins":                    true,
+		"SendCoinsFromAccountToModule": true,
+	}
+	creditCalls := map[string]bool{
+		"SendCoinsFromModuleToAccount": true,
+	}
+	seenSendCalls := map[string]bool{}
+
+	keeperDir := filepath.Join("..", "..", "x", "structs", "keeper")
+	entries, err := os.ReadDir(keeperDir)
+	require.NoError(t, err)
+
+	fset := token.NewFileSet()
+	var failures []string
+	checked := 0
+
+	for _, e := range entries {
+		name := e.Name()
+		if !strings.HasPrefix(name, "msg_server_") || !strings.HasSuffix(name, ".go") ||
+			strings.HasSuffix(name, "_test.go") {
+			continue
+		}
+
+		file, err := parser.ParseFile(fset, filepath.Join(keeperDir, name), nil, 0)
+		require.NoError(t, err)
+
+		for _, decl := range file.Decls {
+			fn, ok := decl.(*ast.FuncDecl)
+			if !ok || fn.Recv == nil || fn.Body == nil {
+				continue
+			}
+
+			msgName := handlerMessageType(fn)
+			if msgName == "" {
+				continue
+			}
+
+			var readsPrimary, debits bool
+			ast.Inspect(fn.Body, func(n ast.Node) bool {
+				sel, ok := n.(*ast.SelectorExpr)
+				if !ok {
+					return true
+				}
+				called := sel.Sel.Name
+				if called == "GetPrimaryAddress" {
+					readsPrimary = true
+				}
+				if strings.HasPrefix(called, "SendCoins") {
+					seenSendCalls[called] = true
+				}
+				if debitCalls[called] {
+					debits = true
+				}
+				return true
+			})
+
+			if !readsPrimary || !debits {
+				continue
+			}
+			if _, exempt := creditsPrimary[msgName]; exempt {
+				continue
+			}
+
+			checked++
+			typeURL := "/structs.structs." + msgName
+
+			if DynamicPermissionMessages[typeURL] {
+				failures = append(failures, name+": "+msgName+
+					" debits the primary address but is in DynamicPermissionMessages, which makes"+
+					" StructsDecorator skip PermissionMap entirely")
+				continue
+			}
+
+			perm, found := PermissionMap[typeURL]
+			if !found {
+				failures = append(failures, name+": "+msgName+
+					" debits the primary address but has no PermissionMap entry")
+				continue
+			}
+			if perm&types.PermAssetsAll == 0 {
+				failures = append(failures, name+": "+msgName+
+					" debits the primary address but requires no asset bit (has "+
+					strconv.FormatUint(uint64(perm), 10)+")")
+			}
+		}
+	}
+
+	// A new way to move coins out of an account must be classified, or a handler
+	// could debit the primary through it and never reach the check above.
+	for called := range seenSendCalls {
+		require.True(t, debitCalls[called] || creditCalls[called],
+			"handlers use bankKeeper.%s, which this guard does not classify as a debit or a credit", called)
+	}
+
+	// If the scan silently stops matching, the guard is worthless but still green.
+	require.GreaterOrEqual(t, checked, 4,
+		"expected to find the known primary-address debits; the source scan is probably broken")
+
+	require.Empty(t, failures,
+		"handlers spending the player's primary address must require a token bit:\n  - %s",
+		strings.Join(failures, "\n  - "))
+}
+
+// handlerMessageType returns the Msg type a msgServer method handles, taken from
+// its *types.MsgX parameter, or "" if this is not a message handler.
+func handlerMessageType(fn *ast.FuncDecl) string {
+	if fn.Type.Params == nil {
+		return ""
+	}
+	for _, param := range fn.Type.Params.List {
+		star, ok := param.Type.(*ast.StarExpr)
+		if !ok {
+			continue
+		}
+		sel, ok := star.X.(*ast.SelectorExpr)
+		if !ok {
+			continue
+		}
+		pkg, ok := sel.X.(*ast.Ident)
+		if !ok || pkg.Name != "types" || !strings.HasPrefix(sel.Sel.Name, "Msg") {
+			continue
+		}
+		return sel.Sel.Name
+	}
+	return ""
 }

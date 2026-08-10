@@ -27,6 +27,15 @@ func (k msgServer) AgreementDurationIncrease(goCtx context.Context, msg *types.M
         return emptyResponse, permissionError
     }
 
+    // Extending the duration is paid for out of the player's primary address
+    // below, so it is a token spend and needs the bit that authorizes one.
+    // CanUpdate decides who may modify this agreement, nothing about whose money
+    // may move.
+    permissionError = activePlayer.CanTransferTokensBy(activePlayer)
+    if (permissionError != nil) {
+        return emptyResponse, permissionError
+    }
+
     // increase duration by adding more collateral
     paramError := agreement.DurationIncrease(msg.DurationIncrease)
     if paramError != nil {
