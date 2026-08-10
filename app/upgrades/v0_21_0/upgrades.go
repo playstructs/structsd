@@ -3,6 +3,7 @@ package v0_21_0
 import (
 	"context"
 
+	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -60,6 +61,10 @@ func CreateUpgradeHandler(
 		}
 
 		if err := MigrateFleetQueueLimit(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
+		if err := MigrateAgreementCheckpointOverbill(ctx, keepers); err != nil {
 			return newVM, err
 		}
 
@@ -498,6 +503,102 @@ func MigrateFleetQueueLimit(ctx context.Context, keepers *upgrades.Keepers) erro
 	logger.Info("v0.21.0 fleet queue limit migration complete",
 		"planetsTouched", planetsTouched,
 		"fleetsSentHome", fleetsSentHome)
+	return nil
+}
+
+// MigrateAgreementCheckpointOverbill returns the one block of revenue every
+// existing agreement was over-billed for.
+//
+// Agreements opened before v0.21.0 start serving at openHeight+1, but
+// AgreementOpen raises the provider's load immediately and checkpoints the
+// provider at openHeight. Checkpoint bills aggregate load from the checkpoint
+// block, so the first checkpoint span covering an agreement charged one block of
+// service its consumer never received. v0.21.0 aligns the two by starting service
+// in the block the agreement opens, which fixes new agreements but leaves every
+// stored one with a collateral pool short by
+// capacity * rate * (1 - providerCancellationPenalty), which the
+// provider-collateral-solvency invariant reports as insolvency.
+//
+// The over-billed amount went to the provider's earnings pool, so that is where
+// it comes back from. Nothing is taken from the consumer: shifting the agreement
+// window instead would either widen the consumer's penalty claim (making the
+// deficit worse) or silently cut a block of service they paid for.
+//
+// The claw-back is clamped to what the earnings pool still holds, matching
+// ProviderCache.SweepRevenue. A provider who has already withdrawn cannot be
+// pursued, and any residual shortfall is logged and left to settle the way it
+// would anyway: consumer payouts are exact and take priority, so the provider
+// absorbs it through the clamp on their own revenue.
+//
+// Not idempotent. A stored agreement carries no marker distinguishing a realigned
+// window from an original one, so a second run would move another block's worth.
+// It is bounded (one block per agreement, clamped to the earnings pool) and only
+// ever moves value from provider to consumer, so a replay is safe if not exact.
+func MigrateAgreementCheckpointOverbill(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateAgreementCheckpointOverbill")
+
+	k := keepers.StructsKeeper
+
+	var providersReconciled int
+	var providersShort int
+	totalReturned := math.ZeroInt()
+
+	for _, provider := range k.GetAllProvider(ctx) {
+		// Same guard as the invariant: nothing is owed against a provider with no
+		// usable published rate, and the arithmetic would be meaningless.
+		if provider.Rate.Denom == "" || provider.Rate.Amount.IsNil() || provider.ProviderCancellationPenalty.IsNil() {
+			continue
+		}
+
+		// One block per agreement at that agreement's own capacity, which is what
+		// the aggregate-load checkpoint actually over-charged.
+		overbill := math.ZeroInt()
+		for _, agreement := range k.GetAllAgreementByProviderIndex(ctx, provider.Id) {
+			blockValue := math.LegacyNewDecFromInt(provider.Rate.Amount.Mul(math.NewIntFromUint64(agreement.Capacity)))
+			overbill = overbill.Add(blockValue.Sub(blockValue.Mul(provider.ProviderCancellationPenalty)).TruncateInt())
+		}
+
+		if !overbill.IsPositive() {
+			continue
+		}
+
+		earningsPool := structskeeper.GetProviderEarningsPoolLocation(provider.Id)
+		available := k.BankKeeper().SpendableCoin(ctx, earningsPool, provider.Rate.Denom).Amount
+
+		returned := overbill
+		if available.LT(returned) {
+			returned = available
+			providersShort++
+			logger.Error("provider earnings pool cannot cover the checkpoint overbill; leaving the remainder to the revenue clamp",
+				"providerId", provider.Id,
+				"overbill", overbill.String(),
+				"available", available.String())
+		}
+
+		if !returned.IsPositive() {
+			continue
+		}
+
+		collateralPool := structskeeper.GetProviderCollateralPoolLocation(provider.Id)
+		coins := sdk.NewCoins(sdk.NewCoin(provider.Rate.Denom, returned))
+		if err := k.BankKeeper().SendCoins(ctx, earningsPool, collateralPool, coins); err != nil {
+			// A transfer failure here is not worth halting the upgrade over: the
+			// pool stays short and the revenue clamp absorbs it, exactly as it
+			// would have without this migration.
+			logger.Error("failed to return checkpoint overbill to the collateral pool",
+				"providerId", provider.Id, "amount", returned.String(), "error", err)
+			continue
+		}
+
+		totalReturned = totalReturned.Add(returned)
+		providersReconciled++
+	}
+
+	logger.Info("v0.21.0 agreement checkpoint overbill reconciliation complete",
+		"providersReconciled", providersReconciled,
+		"providersShort", providersShort,
+		"totalReturned", totalReturned.String())
 	return nil
 }
 

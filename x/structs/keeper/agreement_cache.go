@@ -633,18 +633,57 @@ func (cache *AgreementCache) SetEndBlock(endBlock uint64) {
 	cache.Changed = true
 }
 
+// rescaledDuration re-prices the unearned span for a new capacity: the
+// collateral left over buys proportionally less time at a higher capacity and
+// more at a lower one.
+//
+// The multiply happens in math.Int because remaining * capacity overflows uint64
+// well inside the range a provider may publish — SetDurationRange puts no
+// ceiling on durationMaximum.
+func (cache *AgreementCache) rescaledDuration(newCapacity uint64) (uint64, error) {
+	scaled := math.NewIntFromUint64(cache.GetDurationRemaining()).
+		Mul(cache.GetCapacityInt()).
+		Quo(math.NewIntFromUint64(newCapacity))
+
+	if !scaled.IsUint64() {
+		return 0, types.NewParameterValidationError("capacity", newCapacity, "duration_overflow")
+	}
+
+	return scaled.Uint64(), nil
+}
+
 func (cache *AgreementCache) CapacityIncrease(amount uint64) error {
+	if amount == 0 {
+		return types.NewParameterValidationError("capacity", amount, "no_change")
+	}
+
 	if cache.GetProvider().GetSubstation().GetAvailableCapacity() < amount {
 		return types.NewParameterValidationError("capacity", amount, "exceeds_available").WithSubstation(cache.GetProvider().GetSubstationId()).WithRange(0, cache.GetProvider().GetSubstation().GetAvailableCapacity())
 	}
 
-	cache.PayoutVoidedProviderCancellationPenalty()
-
-	// new duration length
-	// remaining duration = end block - current block
-	// new duration = (remaining duration * old capacity) / new capacity .Truncate()
 	newCapacity := cache.GetCapacity() + amount
-	newDuration := (cache.GetDurationRemaining() * cache.GetCapacity()) / newCapacity
+	if newCapacity < cache.GetCapacity() {
+		return types.NewParameterValidationError("capacity", amount, "above_maximum").WithRange(cache.GetProvider().GetCapacityMinimum(), cache.GetProvider().GetCapacityMaximum())
+	}
+
+	// A capacity change must land inside the terms the provider published, the
+	// same range that gated the agreement being opened at all.
+	if err := cache.GetProvider().AgreementCapacityVerify(newCapacity); err != nil {
+		return err
+	}
+
+	newDuration, err := cache.rescaledDuration(newCapacity)
+	if err != nil {
+		return err
+	}
+	if err := cache.GetProvider().AgreementDurationVerify(newDuration); err != nil {
+		return err
+	}
+
+	// Everything that can fail is behind us. The penalty has to be priced before
+	// the mutations below, because SetStartBlock resets the elapsed span it is
+	// measured over and the capacity write changes the rate it is charged at.
+	cache.PayoutVoidedProviderCancellationPenalty()
 
 	cache.SetStartBlock(cache.GetCurrentBlock())
 	cache.SetEndBlock(cache.GetStartBlock() + newDuration)
@@ -652,7 +691,7 @@ func (cache *AgreementCache) CapacityIncrease(amount uint64) error {
 	// Provider Load Increase
 	cache.GetProvider().AgreementLoadIncrease(amount)
 
-	cache.Agreement.Capacity = cache.GetCapacity() + amount
+	cache.Agreement.Capacity = newCapacity
 
 	// Increase the Allocation
 	allocation, allocationFound := cache.GetAllocation()
@@ -667,11 +706,10 @@ func (cache *AgreementCache) CapacityIncrease(amount uint64) error {
 }
 
 func (cache *AgreementCache) CapacityDecrease(amount uint64) error {
-	cache.PayoutVoidedProviderCancellationPenalty()
+	if amount == 0 {
+		return types.NewParameterValidationError("capacity", amount, "no_change")
+	}
 
-	// new duration length
-	// remaining duration = end block - current block
-	// new duration = (remaining duration * old capacity) / new capacity .Truncate()
 	if cache.GetCapacity() < amount {
 		return types.NewParameterValidationError("capacity", amount, "below_minimum").WithRange(0, cache.GetCapacity())
 	}
@@ -681,15 +719,34 @@ func (cache *AgreementCache) CapacityDecrease(amount uint64) error {
 		return types.NewParameterValidationError("capacity", amount, "below_minimum").WithRange(0, cache.GetCapacity())
     }
 
-	newDuration := (cache.GetDurationRemaining() * cache.GetCapacity()) / newCapacity
+	// A capacity change must land inside the terms the provider published, the
+	// same range that gated the agreement being opened at all. Without this a
+	// decrease toward capacity 1 stretches the remaining span by the old
+	// capacity, far past the advertised duration maximum.
+	if err := cache.GetProvider().AgreementCapacityVerify(newCapacity); err != nil {
+		return err
+	}
+
+	newDuration, err := cache.rescaledDuration(newCapacity)
+	if err != nil {
+		return err
+	}
+	if err := cache.GetProvider().AgreementDurationVerify(newDuration); err != nil {
+		return err
+	}
+
+	// Everything that can fail is behind us. The penalty has to be priced before
+	// the mutations below, because SetStartBlock resets the elapsed span it is
+	// measured over and the capacity write changes the rate it is charged at.
+	cache.PayoutVoidedProviderCancellationPenalty()
 
 	cache.SetStartBlock(cache.GetCurrentBlock())
 	cache.SetEndBlock(cache.GetStartBlock() + newDuration)
 
-	// Provider Load Increase
+	// Provider Load Decrease
 	cache.GetProvider().AgreementLoadDecrease(amount)
 
-	cache.Agreement.Capacity = cache.GetCapacity() - amount
+	cache.Agreement.Capacity = newCapacity
 
 	// Decrease the Allocation
 	allocation, allocationFound := cache.GetAllocation()

@@ -62,6 +62,29 @@ money or changes load. The registered `provider-collateral-solvency` invariant
 (`x/structs/keeper/invariants.go`) is the standing check;
 `x/structs/keeper/agreement_teardown_test.go` is the regression suite.
 
+**An agreement's service window and the provider's checkpoint clock must start on the same
+block.** `Checkpoint()` bills *aggregate* provider load from `checkpointBlock`, while the solvency
+invariant measures what each consumer is owed from that agreement's `StartBlock`. `AgreementOpen`
+raises the load and checkpoints the provider in the opening block, so `StartBlock` is that same
+height — not the next one. Offsetting them by a single block bills the provider for a block of
+service no consumer received and leaves the collateral pool short by
+`capacity * rate * (1 - providerCancellationPenalty)` per agreement, which is real insolvency, not
+rounding. `MigrateAgreementCheckpointOverbill` in `app/upgrades/v0_21_0` is the one-time claw-back
+for agreements written before the two clocks agreed.
+
+**Changing an agreement's capacity is settlement too, and re-prices the rest of it.**
+`CapacityIncrease` and `CapacityDecrease` release the voided provider cancellation penalty and
+re-base the agreement's window, so they obey the teardown rules: validate everything first, then
+pay, then mutate. The penalty is priced from `GetDurationPast()` and the *old* capacity, so it
+must be swept after validation but before `SetStartBlock` and the capacity write, which reset the
+span and the rate it is charged at. Both also re-check the provider's published capacity and
+duration ranges through `AgreementCapacityVerify` / `AgreementDurationVerify` — a change re-prices
+the unearned span (`rescaledDuration`), so without the duration check a decrease toward capacity 1
+multiplies the remaining blocks by the old capacity and escapes the advertised maximum. A change of
+zero is rejected rather than treated as a free re-base.
+`x/structs/keeper/agreement_capacity_test.go` drives the cache methods directly, without the
+transaction rollback that would otherwise mask a payout moving back ahead of validation.
+
 **Use the typed errors.** Keeper codes (1050–1800) live in
 `x/structs/types/errors_structured.go`, ante codes (2000–2050) in `app/ante/errors.go`. The
 numbers are a public contract that clients and tests assert on: never `fmt.Errorf` out of a

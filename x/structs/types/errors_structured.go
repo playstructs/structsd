@@ -1324,6 +1324,10 @@ func (e *ParameterValidationError) Error() string {
 	case "exceeds_available":
 		return fmt.Sprintf("desired %s (%d) is beyond what substation (%s) can support (%d)",
 			e.Parameter, e.Value, e.SubstationId, e.Maximum)
+	case "no_change":
+		return fmt.Sprintf("%s change of %d would do nothing", e.Parameter, e.Value)
+	case "duration_overflow":
+		return fmt.Sprintf("%s (%d) would rescale the remaining duration past the representable range", e.Parameter, e.Value)
 	default:
 		return fmt.Sprintf("parameter %s validation failed: %s", e.Parameter, e.Reason)
 	}

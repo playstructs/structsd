@@ -180,12 +180,8 @@ func (cache *ProviderCache) SweepRevenue(destination sdk.AccAddress, amount math
 }
 
 func (cache *ProviderCache) AgreementVerify(capacity uint64, duration uint64) (error) {
-    // min < capacity < max
-    if cache.GetCapacityMinimum() > capacity {
-        return types.NewParameterValidationError("capacity", capacity, "below_minimum").WithRange(cache.GetCapacityMinimum(), cache.GetCapacityMaximum())
-    }
-    if capacity > cache.GetCapacityMaximum() {
-        return types.NewParameterValidationError("capacity", capacity, "above_maximum").WithRange(cache.GetCapacityMinimum(), cache.GetCapacityMaximum())
+    if err := cache.AgreementCapacityVerify(capacity); err != nil {
+        return err
     }
 
     if err := cache.AgreementDurationVerify(duration); err != nil {
@@ -200,6 +196,19 @@ func (cache *ProviderCache) AgreementVerify(capacity uint64, duration uint64) (e
 
     return nil
 
+}
+
+// AgreementCapacityVerify holds the published capacity range. Opening an
+// agreement and later changing its capacity share this so a modification cannot
+// land outside the terms the provider advertised.
+func (cache *ProviderCache) AgreementCapacityVerify(capacity uint64) error {
+    if cache.GetCapacityMinimum() > capacity {
+        return types.NewParameterValidationError("capacity", capacity, "below_minimum").WithRange(cache.GetCapacityMinimum(), cache.GetCapacityMaximum())
+    }
+    if capacity > cache.GetCapacityMaximum() {
+        return types.NewParameterValidationError("capacity", capacity, "above_maximum").WithRange(cache.GetCapacityMinimum(), cache.GetCapacityMaximum())
+    }
+    return nil
 }
 
 func (cache *ProviderCache) AgreementDurationVerify(duration uint64) error {

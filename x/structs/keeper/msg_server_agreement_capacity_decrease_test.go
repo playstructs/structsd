@@ -46,10 +46,13 @@ func TestMsgAgreementCapacityDecrease(t *testing.T) {
 		SubstationId:                substation.Id,
 		Rate:                        sdk.NewCoin("token", math.NewInt(100)),
 		AccessPolicy:                types.ProviderAccessPolicy_openMarket,
-		CapacityMinimum:             100,
+		// Wide enough to admit the change under test once it is rescaled. A
+		// capacity change re-prices the unearned span, so taking capacity 100
+		// down to 50 stretches the 99 remaining blocks to 198.
+		CapacityMinimum:             10,
 		CapacityMaximum:             1000,
 		DurationMinimum:             1,
-		DurationMaximum:             10,
+		DurationMaximum:             1000,
 		ProviderCancellationPenalty: math.LegacyNewDec(1),
 		ConsumerCancellationPenalty: math.LegacyNewDec(1),
 	}

@@ -519,3 +519,85 @@ func TestMigrateFleetQueueLimit(t *testing.T) {
 
 	_ = sdkCtx
 }
+
+// TestMigrateAgreementCheckpointOverbill verifies the one-block claw-back from
+// the provider's earnings pool back into its collateral pool: the amount is one
+// block per agreement at that agreement's capacity, it is clamped to what the
+// earnings pool actually holds, and providers with nothing owed are untouched.
+func TestMigrateAgreementCheckpointOverbill(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+
+	const denom = "ualpha"
+
+	// fund credits an address without debiting anyone, which is the mock's only
+	// way to seed a starting balance.
+	fund := func(addr sdk.AccAddress, amount int64) {
+		require.NoError(t, k.BankKeeper().SendCoinsFromModuleToAccount(ctx, types.ModuleName, addr,
+			sdk.NewCoins(sdk.NewCoin(denom, math.NewInt(amount)))))
+	}
+
+	// appendProvider stores a provider with a published rate and penalty, plus
+	// agreements of the given capacities indexed against it.
+	appendProvider := func(id string, rate int64, penalty string, capacities ...uint64) types.Provider {
+		provider := types.Provider{
+			Id:                          id,
+			Rate:                        sdk.NewCoin(denom, math.NewInt(rate)),
+			ProviderCancellationPenalty: math.LegacyMustNewDecFromStr(penalty),
+			ConsumerCancellationPenalty: math.LegacyMustNewDecFromStr("0"),
+		}
+		stored, err := k.SetProvider(ctx, provider)
+		require.NoError(t, err)
+
+		for i, capacity := range capacities {
+			agreement := types.Agreement{
+				Id:         fmt.Sprintf("%s-agreement-%d", id, i),
+				ProviderId: id,
+				Capacity:   capacity,
+				StartBlock: 100,
+				EndBlock:   200,
+			}
+			_, err := k.SetAgreement(ctx, agreement)
+			require.NoError(t, err)
+			require.NoError(t, k.SetAgreementProviderIndex(ctx, id, agreement.Id))
+		}
+
+		return stored
+	}
+
+	// Two agreements: one block each at capacity 100 and 250, rate 10, half the
+	// rate being the non-penalty share the checkpoint swept. 500 + 1250 = 1750.
+	funded := appendProvider("provider-funded", 10, "0.5", 100, 250)
+	fundedEarnings := structskeeper.GetProviderEarningsPoolLocation(funded.Id)
+	fundedCollateral := structskeeper.GetProviderCollateralPoolLocation(funded.Id)
+	fund(fundedEarnings, 10000)
+
+	// Already withdrawn all but 300 of a 500 claim, so the claw-back clamps.
+	drained := appendProvider("provider-drained", 10, "0.5", 100)
+	drainedEarnings := structskeeper.GetProviderEarningsPoolLocation(drained.Id)
+	drainedCollateral := structskeeper.GetProviderCollateralPoolLocation(drained.Id)
+	fund(drainedEarnings, 300)
+
+	// No agreements, so nothing is owed and nothing should move.
+	idle := appendProvider("provider-idle", 10, "0.5")
+	idleEarnings := structskeeper.GetProviderEarningsPoolLocation(idle.Id)
+	fund(idleEarnings, 7777)
+
+	require.NoError(t, v0_21_0.MigrateAgreementCheckpointOverbill(ctx, keepers))
+
+	balance := func(addr sdk.AccAddress) int64 {
+		return k.BankKeeper().SpendableCoin(ctx, addr, denom).Amount.Int64()
+	}
+
+	require.Equal(t, int64(1750), balance(fundedCollateral),
+		"one block per agreement at its own capacity should come back")
+	require.Equal(t, int64(10000-1750), balance(fundedEarnings))
+
+	require.Equal(t, int64(300), balance(drainedCollateral),
+		"the claw-back must clamp to what the earnings pool still holds")
+	require.Equal(t, int64(0), balance(drainedEarnings))
+
+	require.Equal(t, int64(7777), balance(idleEarnings),
+		"a provider with no agreements owes nothing")
+	require.Equal(t, int64(0), balance(structskeeper.GetProviderCollateralPoolLocation(idle.Id)))
+}

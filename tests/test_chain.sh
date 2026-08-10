@@ -2886,8 +2886,7 @@ if structsd tx structs provider-create --help 2>&1 | grep -q "Create a new Energ
     run_tx "Create provider for cleanup test" \
         tx structs provider-create "${SUBSTATION_ID}" \
         "1ualpha" "open" 0 0 100 1000 10 1000 --from alice
-    PROVIDER_ALL=$(query query structs provider-all 2>/dev/null || echo '{}')
-    PROVIDER_ID=$(echo "${PROVIDER_ALL}" | jq -r '.Provider[-1].id // empty' 2>/dev/null || echo "")
+    PROVIDER_ID=$(get_newest_provider_id)
     if [ -n "${PROVIDER_ID}" ]; then
         run_tx "Grant P4 permission on provider" \
             tx structs permission-grant-on-object "${PROVIDER_ID}" "${PLAYER_4_ID}" "${PERM_UPDATE}" --from alice
@@ -4908,8 +4907,7 @@ run_tx "Alice creating energy provider on substation" \
     --from alice
 
 # Find the provider
-PROVIDER_ALL=$(query query structs provider-all 2>/dev/null || echo '{}')
-PROVIDER_ID=$(echo "${PROVIDER_ALL}" | jq -r '.Provider[-1].id // empty' 2>/dev/null || echo "")
+PROVIDER_ID=$(get_newest_provider_id)
 info "Provider ID: ${PROVIDER_ID}"
 
 if [ -n "${PROVIDER_ID}" ]; then
@@ -4941,8 +4939,16 @@ if [ -n "${PROVIDER_ID}" ]; then
         tx structs provider-update-capacity-maximum "${PROVIDER_ID}" 10000000 --from alice
 
     # ─── provider-update-duration-minimum / maximum ───
-    run_tx "Updating provider duration minimum to 5" \
-        tx structs provider-update-duration-minimum "${PROVIDER_ID}" 5 --from alice
+    # Kept at 1 deliberately. A capacity change re-prices the unearned span and
+    # now re-checks this minimum, so the capacity increase below (which computes
+    # two thirds of the remaining duration) would need eight blocks still on the
+    # clock against a minimum of 5. Blocks tick on wall time here, so that turns
+    # the rest of the phase into a race whose failure reads as "duration below
+    # minimum" rather than as the timeout it is. Nothing asserts a rejection
+    # against this minimum, so lowering it costs no coverage; the alternative is
+    # tripling the agreement collateral, which Player 2 needs for later phases.
+    run_tx "Updating provider duration minimum to 1" \
+        tx structs provider-update-duration-minimum "${PROVIDER_ID}" 1 --from alice
 
     run_tx "Updating provider duration maximum to 50000" \
         tx structs provider-update-duration-maximum "${PROVIDER_ID}" 50000 --from alice
@@ -4966,8 +4972,7 @@ if [ -n "${PROVIDER_ID}" ]; then
         tx structs agreement-open "${PROVIDER_ID}" "${AGREE_DURATION}" "${AGREE_CAPACITY}" --from player_2
 
     # Find the agreement
-    AGREE_ALL=$(query query structs agreement-all 2>/dev/null || echo '{}')
-    AGREE_ID=$(echo "${AGREE_ALL}" | jq -r '.Agreement[-1].id // empty' 2>/dev/null || echo "")
+    AGREE_ID=$(get_newest_agreement_id "${PROVIDER_ID}")
     info "Agreement ID: ${AGREE_ID}"
 
     if [ -n "${AGREE_ID}" ]; then

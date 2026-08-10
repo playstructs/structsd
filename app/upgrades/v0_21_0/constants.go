@@ -83,6 +83,26 @@ package v0_21_0
 //     balance and delegations with it, so a narrower PermAdmin gate was a
 //     privilege-escalation path. The ante PermissionMap entry matches.
 //
+//   - An agreement now starts serving in the block it is opened rather than the
+//     block after. AgreementOpen raises the provider's load immediately and
+//     checkpoints the provider at the opening height, and Checkpoint bills
+//     aggregate load from the checkpoint block, so starting a block later charged
+//     the provider for one block of service the consumer never received and left
+//     the collateral pool short by that much. endBlock is therefore one block
+//     lower than the old binary would have written for the same duration; the
+//     duration itself, the collateral charged, and the unearned collateral at the
+//     opening block are all unchanged.
+//
+//   - Agreement capacity changes re-verify the provider's advertised capacity and
+//     duration ranges, which previously bound only at open. A change is rejected
+//     if the resulting capacity falls outside capacityMinimum/capacityMaximum, or
+//     if the rescaled remaining duration falls outside
+//     durationMinimum/durationMaximum. Since a capacity change re-prices the
+//     unearned span, this closes a decrease toward capacity 1 multiplying the
+//     remaining duration by the old capacity. A change of zero is now rejected
+//     instead of re-basing the accounting window for free, and both methods now
+//     validate fully before releasing the voided cancellation penalty.
+//
 //   - Planet gains locationListExtra and locationListCount. Raid-queue capacity
 //     is 1 + locationListExtra (protobuf default extra=0 => length 1).
 //     MsgFleetMove onto a foreign planet whose queue is already at capacity is
@@ -119,4 +139,11 @@ package v0_21_0
 //   - MigrateFleetQueueLimit: for every planet, seed locationListCount from the
 //     live raid queue, leave locationListExtra at 0 (capacity 1), and send every
 //     visiting fleet beyond the head home via SetLocationToPlanet.
+//
+//   - MigrateAgreementCheckpointOverbill: return one block of over-billed revenue
+//     per stored agreement from the provider's earnings pool to its collateral
+//     pool, clamped to what the earnings pool still holds. Without it every
+//     pre-upgrade agreement leaves its provider's pool short by
+//     capacity * rate * (1 - providerCancellationPenalty) and the
+//     provider-collateral-solvency invariant reports insolvency.
 const UpgradeName = "v0.21.0"

@@ -445,9 +445,10 @@ func TestTeardown_ProviderRevenueNeverOverdrawsConsumerCollateral(t *testing.T) 
 }
 
 // agreementEndBlock is the height an agreement opened in the current block ends.
+// Service starts in the opening block, so the window is the duration itself.
 func agreementEndBlock(f *teardownFixture, duration uint64) uint64 {
 	uctx := sdk.UnwrapSDKContext(f.ctx)
-	return uint64(uctx.BlockHeight()) + 1 + duration
+	return uint64(uctx.BlockHeight()) + duration
 }
 
 // TestTeardown_SolvencyInvariantHoldsAcrossLifecycle exercises the registered
