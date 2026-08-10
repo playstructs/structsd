@@ -48,6 +48,10 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
         return emptyResponse, types.NewObjectNotFoundError("struct", msg.DefenderStructId)
     }
 
+    if structure.IsDestroyed() {
+        return emptyResponse, types.NewStructStateError(msg.DefenderStructId, "destroyed", "active", "defense_set")
+    }
+
     if structure.IsOffline() {
         return emptyResponse, types.NewStructStateError(msg.DefenderStructId, "offline", "online", "defense_set")
     }

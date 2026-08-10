@@ -487,3 +487,121 @@ func TestTeardown_SolvencyInvariantHoldsAcrossLifecycle(t *testing.T) {
 	require.NoError(t, err)
 	requireSolvent("after closing the second")
 }
+
+// TestTeardown_RepeatedOpenCloseCannotErodePool composes the three defects that
+// were filed and fixed separately: an agreement valued one block above what was
+// escrowed, a settlement that ran twice through the reciprocal allocation
+// teardown, and payout errors discarded so that neither surfaced. Individually
+// each leaks a bounded amount per close. Together the leak was repeatable and
+// silent, and because a provider's collateral pool is shared by all of its
+// agreements, it was funded by other consumers' escrow.
+//
+// One cycle is already pinned exactly by TestTeardown_ConsumerCloseSettlesOnce.
+// What only repetition catches is erosion that compounds: a leak of one block per
+// cycle is small against a single deposit but empties the pool given enough
+// cycles. So this runs the cycle repeatedly with a victim agreement standing
+// alongside, and after every one requires that the pool holds precisely the
+// victim's deposit and that the provider is still solvent.
+func TestTeardown_RepeatedOpenCloseCannotErodePool(t *testing.T) {
+	// No penalties, so each cycle is owed its whole deposit back and any
+	// discrepancy is the leak rather than a fee.
+	f := setupTeardownFixture(t, 10, "0", "0")
+
+	invariant := keeperlib.ProviderCollateralSolvencyInvariant(f.k)
+
+	const capacity, duration = 100, 50
+	victim, victimCollateral := f.openAgreement(t, capacity, duration)
+	require.Equal(t, victimCollateral, f.balance(f.collateralAcc))
+
+	const cycles = 5
+	var collateral math.Int
+
+	for cycle := 1; cycle <= cycles; cycle++ {
+		var agreement types.Agreement
+		agreement, collateral = f.openAgreement(t, capacity, duration)
+
+		_, err := f.ms.AgreementClose(f.ctx, &types.MsgAgreementClose{
+			Creator:     f.consumer.Creator,
+			AgreementId: agreement.Id,
+		})
+		require.NoError(t, err, "cycle %d", cycle)
+
+		// openAgreement funds each deposit, so the refunds accumulate: after N
+		// round trips the consumer is up exactly N deposits and no more.
+		require.Equal(t, collateral.MulRaw(int64(cycle)), f.balance(f.consumerAcc),
+			"cycle %d: consumer must recover exactly the deposit, never more", cycle)
+		require.Equal(t, victimCollateral, f.balance(f.collateralAcc),
+			"cycle %d: the pool must come back to the victim's deposit exactly", cycle)
+		require.Equal(t, uint64(capacity), f.agreementLoad(),
+			"cycle %d: only the victim's load should remain", cycle)
+
+		msg, broken := invariant(sdk.UnwrapSDKContext(f.ctx))
+		require.False(t, broken, "cycle %d: %s", cycle, msg)
+	}
+
+	// The victim never participated, and is still owed and paid in full.
+	_, err := f.ms.AgreementClose(f.ctx, &types.MsgAgreementClose{
+		Creator:     f.consumer.Creator,
+		AgreementId: victim.Id,
+	})
+	require.NoError(t, err)
+
+	require.Equal(t, collateral.MulRaw(cycles).Add(victimCollateral), f.balance(f.consumerAcc))
+	require.Equal(t, math.ZeroInt(), f.balance(f.collateralAcc),
+		"the pool should end empty, having paid out exactly what it took in")
+}
+
+// Collateral is only ever collected for EndBlock - StartBlock, so the whole of
+// the accounting rests on past + remaining == duration holding at every height.
+// This walks a window that has not started yet, which is the one shape that used
+// to break the identity: settlement measured from a height before StartBlock
+// priced more remaining duration than the agreement was long and refunded blocks
+// nobody deposited, out of a pool shared with the provider's other agreements.
+//
+// Nothing reaches that state today — AgreementOpen starts service in the opening
+// block and the capacity changes re-base to the current one — so the clamp in
+// LoadDurationRemaining has no reachable trigger and, untested, would be
+// indistinguishable from dead code. This is what says it is load-bearing if a
+// future start block is ever reintroduced.
+func TestAgreementDuration_IdentityHoldsBeforeServiceStarts(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0", "0")
+
+	const capacity, duration, lead = 100, 50, 7
+	agreement, collateral := f.openAgreement(t, capacity, duration)
+
+	// Move the window into the future, the shape a scheduled agreement would have.
+	opened := uint64(sdk.UnwrapSDKContext(f.ctx).BlockHeight())
+	stored, found := f.k.GetAgreement(f.ctx, agreement.Id)
+	require.True(t, found)
+	stored.StartBlock = opened + lead
+	stored.EndBlock = stored.StartBlock + duration
+	_, err := f.k.SetAgreement(f.ctx, stored)
+	require.NoError(t, err)
+
+	for _, height := range []uint64{
+		opened,                 // well before the start block
+		stored.StartBlock - 1,  // the block before service begins
+		stored.StartBlock,      // the first funded block
+		stored.StartBlock + 1,  // one block served
+		stored.StartBlock + 25, // mid window
+		stored.EndBlock,        // fully served
+		stored.EndBlock + 5,    // settled late
+	} {
+		uctx := sdk.UnwrapSDKContext(f.ctx).WithBlockHeight(int64(height))
+		cache := f.k.NewCurrentContext(uctx).GetAgreement(agreement.Id)
+		require.True(t, cache.LoadAgreement())
+
+		past := cache.GetDurationPast()
+		remaining := cache.GetDurationRemaining()
+
+		require.Equal(t, uint64(duration), cache.GetDuration(),
+			"height %d: the funded duration is a property of the window, not the current height", height)
+		require.Equal(t, uint64(duration), past+remaining,
+			"height %d: past (%d) + remaining (%d) must equal the funded duration", height, past, remaining)
+
+		// The identity in money terms: a payout can never exceed the deposit.
+		require.True(t, cache.GetRemainingCollateral().LTE(collateral),
+			"height %d: priced %s remaining against a %s deposit",
+			height, cache.GetRemainingCollateral(), collateral)
+	}
+}

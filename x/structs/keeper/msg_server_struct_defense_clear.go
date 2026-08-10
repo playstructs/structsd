@@ -39,6 +39,10 @@ func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStruc
         return emptyResponse, types.NewObjectNotFoundError("struct", msg.DefenderStructId)
     }
 
+    if structure.IsDestroyed() {
+        return emptyResponse, types.NewStructStateError(msg.DefenderStructId, "destroyed", "active", "defense_clear")
+    }
+
     if structure.IsOffline() {
         return emptyResponse, types.NewStructStateError(msg.DefenderStructId, "offline", "online", "defense_clear")
     }

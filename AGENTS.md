@@ -98,6 +98,22 @@ zero is rejected rather than treated as a free re-base.
 `x/structs/keeper/agreement_capacity_test.go` drives the cache methods directly, without the
 transaction rollback that would otherwise mask a payout moving back ahead of validation.
 
+**A destroyed struct is still there, so every handler must reject it.** Destruction does not
+delete: `DestroyAndCommit` sets the Destroyed flag, leaves the Built flag alone and deliberately
+leaves the struct in its planet or fleet slot, and `StructSweepDestroyed` only clears the slot and
+removes the object `StructSweepDelay` blocks later. For those blocks the struct loads normally and
+reads as built and offline. That window produced two bugs: destruction replayed through the slot
+`AttemptComplete` still walks, releasing one `BuildDraw` reservation and one `typeCount` twice; and
+`StructActivate` brought rubble back online, so `GoOnline` re-added the owner's load and the
+planet's shield and defensive counters and the sweep then deleted the struct without reversing
+them. Both readiness checks now reject a destroyed struct and `DestroyAndCommit` is idempotent, but
+neither is a substitute for the handler asking — a handler that only requires the struct to be
+online is *incidentally* safe, and stops being safe the moment anything can bring rubble back.
+`x/structs/keeper/arch_struct_test.go` requires every handler calling `cc.GetStruct(` to establish
+the struct is not destroyed; `x/structs/keeper/struct_destroyed_guards_test.go` is the regression
+suite, and `MigrateStructPhantomAggregates` in `app/upgrades/v0_21_0` recomputes what the two bugs
+corrupted.
+
 **Use the typed errors.** Keeper codes (1050–1800) live in
 `x/structs/types/errors_structured.go`, ante codes (2000–2050) in `app/ante/errors.go`. The
 numbers are a public contract that clients and tests assert on: never `fmt.Errorf` out of a

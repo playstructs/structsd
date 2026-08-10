@@ -713,10 +713,16 @@ func (cache *PlanetCache) AttemptComplete() (error) {
         structsToDestroy  = append(structsToDestroy, cache.GetPlanet().Land...)
         structsToDestroy  = append(structsToDestroy, cache.GetPlanet().Water...)
 
-        // For Space
+        // A slot stays populated until the sweep clears it, so a struct destroyed
+        // earlier in this window is still listed here. DestroyAndCommit ignores an
+        // already-destroyed struct, but skip it explicitly: the surprising part is
+        // that these slots are not empty, and this is where that shows.
         for _, structId := range structsToDestroy {
             if structId != "" {
                 planetStruct := cache.CC.GetStruct(structId)
+                if planetStruct.IsDestroyed() {
+                    continue
+                }
                 planetStruct.DestroyAndCommit()
             }
         }

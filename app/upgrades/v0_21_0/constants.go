@@ -122,6 +122,22 @@ package v0_21_0
 //     instead of re-basing the accounting window for free, and both methods now
 //     validate fully before releasing the voided cancellation penalty.
 //
+//   - A destroyed struct is now rejected by every operation for the rest of its
+//     sweep window. Destruction flags the struct and leaves it built and
+//     slot-resident until StructSweepDestroyed removes it StructSweepDelay blocks
+//     later, and in that window StructActivate, StructBuildComplete,
+//     StructBuildCancel, StructMove, StructGeneratorInfuse, StructDefenseSet and
+//     StructDefenseClear all used to succeed. Activation was the damaging one:
+//     GoOnline re-added the owner's load and the planet's shield and defensive
+//     counters, and the sweep then deleted the struct without taking it offline,
+//     leaving those behind permanently. All of them now fail with StructStateError
+//     (1250) naming state "destroyed". DestroyAndCommit is idempotent, so a second
+//     destruction of the same struct no longer releases its BuildDraw reservation
+//     and type count a second time. StructSweepDestroyed takes a still-online
+//     struct offline before removing it and logs at error level; that path is
+//     unreachable through the guards above and the log is the signal that a new one
+//     exists.
+//
 //   - Planet gains locationListExtra and locationListCount. Raid-queue capacity
 //     is 1 + locationListExtra (protobuf default extra=0 => length 1).
 //     MsgFleetMove onto a foreign planet whose queue is already at capacity is
@@ -165,4 +181,14 @@ package v0_21_0
 //     pre-upgrade agreement leaves its provider's pool short by
 //     capacity * rate * (1 - providerCancellationPenalty) and the
 //     provider-collateral-solvency invariant reports insolvency.
+//
+//   - MigrateStructPhantomAggregates: rebuild every aggregate the destroyed-struct
+//     bugs could corrupt from the structs still standing — player structsLoad,
+//     per-owner-and-type typeCount, and each planet's planetaryShield,
+//     defensiveCannonQuantity, lowOrbitBallisticsInterceptorNetworkQuantity and ore
+//     mining/refining active quantities — and clear ready/load/capacity/fuel/power
+//     grid rows keyed to structs that no longer exist. Destroyed structs are
+//     excluded, since destruction already removed their contributions. Runs after
+//     MigrateOreClocksToPlanet, which seeds the same ore counters from the same
+//     online structs.
 const UpgradeName = "v0.21.0"

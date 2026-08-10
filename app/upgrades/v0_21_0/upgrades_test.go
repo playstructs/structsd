@@ -601,3 +601,315 @@ func TestMigrateAgreementCheckpointOverbill(t *testing.T) {
 		"a provider with no agreements owes nothing")
 	require.Equal(t, int64(0), balance(structskeeper.GetProviderCollateralPoolLocation(idle.Id)))
 }
+
+// phantomFixture builds a small world for MigrateStructPhantomAggregates: one
+// player, one planet, and struct types covering each aggregate the migration
+// rebuilds.
+type phantomFixture struct {
+	t   *testing.T
+	k   structskeeper.Keeper
+	ctx sdk.Context
+
+	player types.Player
+	planet types.Planet
+}
+
+const (
+	phantomBunkerType   = 1 // ore reserve defense + defensive cannon
+	phantomMinerType    = 2 // ore mining
+	phantomGeneratorTyp = 3 // power generation, the source of orphan grid rows
+	phantomShield       = 9
+	phantomBuildDraw    = 400
+	phantomPassiveDraw  = 250
+)
+
+func setupPhantomFixture(t *testing.T) *phantomFixture {
+	t.Helper()
+
+	k, goCtx := keepertest.StructsKeeper(t)
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	acc := sdk.AccAddress([]byte(fmt.Sprintf("%-40s", "phantom-owner")[:40]))
+	player := types.Player{
+		Creator:        acc.String(),
+		PrimaryAddress: acc.String(),
+		Index:          k.GetPlayerCount(ctx),
+	}
+	player.Id = fmt.Sprintf("%d-%d", types.ObjectType_player, player.Index)
+	k.SetPlayer(ctx, player)
+	k.SetPlayerCount(ctx, player.Index+1)
+
+	planet := types.Planet{
+		Id:      fmt.Sprintf("%d-%d", types.ObjectType_planet, k.GetPlanetCount(ctx)),
+		Creator: player.Creator,
+		Owner:   player.Id,
+		Status:  types.PlanetStatus_active,
+	}
+	k.SetPlanet(ctx, planet)
+	k.SetPlanetCount(ctx, k.GetPlanetCount(ctx)+1)
+
+	k.SetStructType(ctx, types.StructType{
+		Id:                          phantomBunkerType,
+		Category:                    types.ObjectType_planet,
+		BuildDraw:                   phantomBuildDraw,
+		PassiveDraw:                 phantomPassiveDraw,
+		OreReserveDefenses:          types.TechOreReserveDefenses_oreBunker,
+		PlanetaryShieldContribution: phantomShield,
+		PlanetaryDefenses:           types.TechPlanetaryDefenses_defensiveCannon,
+	})
+	k.SetStructType(ctx, types.StructType{
+		Id:              phantomMinerType,
+		Category:        types.ObjectType_planet,
+		BuildDraw:       phantomBuildDraw,
+		PassiveDraw:     phantomPassiveDraw,
+		PlanetaryMining: types.TechPlanetaryMining_oreMiningRig,
+	})
+	k.SetStructType(ctx, types.StructType{
+		Id:              phantomGeneratorTyp,
+		Category:        types.ObjectType_planet,
+		BuildDraw:       phantomBuildDraw,
+		PassiveDraw:     phantomPassiveDraw,
+		PowerGeneration: types.TechPowerGeneration_smallGenerator,
+	})
+
+	return &phantomFixture{t: t, k: k, ctx: ctx, player: player, planet: planet}
+}
+
+func (f *phantomFixture) appendStruct(typeId uint64, status types.StructState) types.Struct {
+	f.t.Helper()
+
+	index := f.k.GetStructCount(f.ctx)
+	structure := types.Struct{
+		Id:           fmt.Sprintf("%d-%d", types.ObjectType_struct, index),
+		Index:        index,
+		Creator:      f.player.Creator,
+		Owner:        f.player.Id,
+		Type:         typeId,
+		LocationId:   f.planet.Id,
+		LocationType: types.ObjectType_planet,
+	}
+	f.k.SetStruct(f.ctx, structure)
+	f.k.SetStructCount(f.ctx, index+1)
+	f.k.SetStructAttribute(f.ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id), uint64(status))
+	return structure
+}
+
+func (f *phantomFixture) planetAttr(attributeType types.PlanetAttributeType) uint64 {
+	return f.k.GetPlanetAttribute(f.ctx, structskeeper.GetPlanetAttributeIDByObjectId(attributeType, f.planet.Id))
+}
+
+func (f *phantomFixture) setPlanetAttr(attributeType types.PlanetAttributeType, value uint64) {
+	f.k.SetPlanetAttribute(f.ctx, structskeeper.GetPlanetAttributeIDByObjectId(attributeType, f.planet.Id), value)
+}
+
+func (f *phantomFixture) structsLoad() uint64 {
+	return f.k.GetGridAttribute(f.ctx, structskeeper.GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, f.player.Id))
+}
+
+func (f *phantomFixture) typeCount(typeId uint64) uint64 {
+	return f.k.GetStructAttribute(f.ctx, structskeeper.GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, f.player.Id, typeId))
+}
+
+// seedBaseAggregates writes the values NewPlayer and NewPlanet establish before
+// any struct exists.
+func (f *phantomFixture) seedBaseAggregates() {
+	f.k.SetGridAttribute(f.ctx, structskeeper.GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, f.player.Id), types.PlayerPassiveDraw)
+	f.setPlanetAttr(types.PlanetAttributeType_planetaryShield, types.PlanetaryShieldBase)
+}
+
+// buildThroughRuntime drives the same cache calls the handlers do, so the
+// aggregates come out of the production code rather than out of the test's idea
+// of it: InitiateStruct reserves BuildDraw and bumps the type count,
+// StructBuildComplete releases the reservation and goes online, StructDeactivate
+// goes back offline.
+func (f *phantomFixture) buildThroughRuntime(typeId uint64, complete bool, online bool) types.Struct {
+	f.t.Helper()
+
+	structure := f.appendStruct(typeId, types.StructState(types.StructStateMaterialized))
+
+	cc := f.k.NewCurrentContext(f.ctx)
+	cache := cc.GetStruct(structure.Id)
+	structType, found := cc.GetStructType(typeId)
+	require.True(f.t, found)
+
+	cache.GetOwner().StructsLoadIncrement(structType.GetStructType().BuildDraw)
+	cache.GetOwner().BuildQuantityIncrement(typeId)
+
+	if complete {
+		cache.GetOwner().StructsLoadDecrement(structType.GetStructType().BuildDraw)
+		cache.StatusAddBuilt()
+		cache.GoOnline()
+		if !online {
+			cache.GoOffline()
+		}
+	}
+
+	cc.CommitAll()
+	return structure
+}
+
+// TestMigrateStructPhantomAggregates_RepairsCorruption plants the exact damage
+// the two bugs produced — a load and type count released twice, and a planetary
+// shield, cannon and ore rig left behind by a struct that was reactivated after
+// destruction and then swept — and checks each one is rebuilt from the structs
+// still standing.
+func TestMigrateStructPhantomAggregates_RepairsCorruption(t *testing.T) {
+	f := setupPhantomFixture(t)
+	keepers := &upgrades.Keepers{StructsKeeper: f.k}
+
+	online := types.StructState(types.StructStateMaterialized | types.StructStateBuilt | types.StructStateOnline)
+	building := types.StructState(types.StructStateMaterialized)
+	destroyed := types.StructState(types.StructStateMaterialized | types.StructStateBuilt | types.StructStateDestroyed)
+
+	// What actually survives: an online bunker, an online miner, one struct still
+	// building, and a destroyed one awaiting the sweep that contributes nothing.
+	f.appendStruct(phantomBunkerType, online)
+	f.appendStruct(phantomMinerType, online)
+	f.appendStruct(phantomBunkerType, building)
+	f.appendStruct(phantomBunkerType, destroyed)
+
+	// The damage. Load and type count were each released one extra time by the
+	// replayed destruction; the planet carries a shield, a cannon and an ore rig
+	// from a struct that no longer exists.
+	f.k.SetGridAttribute(f.ctx, structskeeper.GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, f.player.Id),
+		types.PlayerPassiveDraw+phantomPassiveDraw*2+phantomBuildDraw-phantomBuildDraw)
+	f.k.SetStructAttribute(f.ctx, structskeeper.GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, f.player.Id, phantomBunkerType), 1)
+	f.k.SetStructAttribute(f.ctx, structskeeper.GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, f.player.Id, phantomMinerType), 1)
+	f.setPlanetAttr(types.PlanetAttributeType_planetaryShield, types.PlanetaryShieldBase+phantomShield*2)
+	f.setPlanetAttr(types.PlanetAttributeType_defensiveCannonQuantity, 2)
+	f.setPlanetAttr(types.PlanetAttributeType_oreMiningActiveQuantity, 2)
+
+	// Grid rows belonging to a generator the sweep already removed.
+	ghostId := fmt.Sprintf("%d-%d", types.ObjectType_struct, 999)
+	for _, attributeType := range []types.GridAttributeType{
+		types.GridAttributeType_ready,
+		types.GridAttributeType_load,
+		types.GridAttributeType_capacity,
+		types.GridAttributeType_fuel,
+		types.GridAttributeType_power,
+	} {
+		f.k.SetGridAttribute(f.ctx, structskeeper.GetGridAttributeIDByObjectId(attributeType, ghostId), 42)
+	}
+
+	require.NoError(t, v0_21_0.MigrateStructPhantomAggregates(f.ctx, keepers))
+
+	require.Equal(t, uint64(types.PlayerPassiveDraw+phantomPassiveDraw*2+phantomBuildDraw), f.structsLoad(),
+		"load must come back to the base draw plus what the surviving structs actually take")
+	require.Equal(t, uint64(2), f.typeCount(phantomBunkerType),
+		"the online and building bunkers both count; the destroyed one does not")
+	require.Equal(t, uint64(1), f.typeCount(phantomMinerType))
+
+	require.Equal(t, uint64(types.PlanetaryShieldBase+phantomShield), f.planetAttr(types.PlanetAttributeType_planetaryShield),
+		"only the one online bunker still contributes shield")
+	require.Equal(t, uint64(1), f.planetAttr(types.PlanetAttributeType_defensiveCannonQuantity))
+	require.Equal(t, uint64(1), f.planetAttr(types.PlanetAttributeType_oreMiningActiveQuantity))
+
+	for _, attributeType := range []types.GridAttributeType{
+		types.GridAttributeType_ready,
+		types.GridAttributeType_load,
+		types.GridAttributeType_capacity,
+		types.GridAttributeType_fuel,
+		types.GridAttributeType_power,
+	} {
+		require.Equal(t, uint64(0),
+			f.k.GetGridAttribute(f.ctx, structskeeper.GetGridAttributeIDByObjectId(attributeType, ghostId)),
+			"grid rows keyed to a struct that no longer exists must be cleared")
+	}
+
+	// Idempotent: every value is derived and assigned, so a re-run is a no-op.
+	require.NoError(t, v0_21_0.MigrateStructPhantomAggregates(f.ctx, keepers))
+	require.Equal(t, uint64(types.PlayerPassiveDraw+phantomPassiveDraw*2+phantomBuildDraw), f.structsLoad())
+	require.Equal(t, uint64(types.PlanetaryShieldBase+phantomShield), f.planetAttr(types.PlanetAttributeType_planetaryShield))
+	require.Equal(t, uint64(2), f.typeCount(phantomBunkerType))
+}
+
+// TestMigrateStructPhantomAggregates_LeavesHealthyStateAlone is the important
+// one. A recompute that disagrees with the runtime does more damage than the bug
+// it repairs, so this builds its world by driving the production cache calls and
+// then asserts the migration changes nothing at all.
+func TestMigrateStructPhantomAggregates_LeavesHealthyStateAlone(t *testing.T) {
+	f := setupPhantomFixture(t)
+	keepers := &upgrades.Keepers{StructsKeeper: f.k}
+
+	f.seedBaseAggregates()
+
+	f.buildThroughRuntime(phantomBunkerType, true, true)  // built and online
+	f.buildThroughRuntime(phantomBunkerType, true, false) // built, then deactivated
+	f.buildThroughRuntime(phantomMinerType, true, true)
+	f.buildThroughRuntime(phantomGeneratorTyp, false, false) // still building
+
+	gridBefore := f.k.GetAllGridExport(f.ctx)
+	planetBefore := f.k.GetAllPlanetAttributeExport(f.ctx)
+	structBefore := f.k.GetAllStructAttributeExport(f.ctx)
+
+	require.NoError(t, v0_21_0.MigrateStructPhantomAggregates(f.ctx, keepers))
+
+	require.Equal(t, gridBefore, f.k.GetAllGridExport(f.ctx),
+		"the recompute disagrees with the runtime somewhere in the grid store")
+	require.Equal(t, planetBefore, f.k.GetAllPlanetAttributeExport(f.ctx),
+		"the recompute disagrees with the runtime on a planet aggregate")
+	require.Equal(t, structBefore, f.k.GetAllStructAttributeExport(f.ctx),
+		"the recompute disagrees with the runtime on a type count")
+
+	// Spelled out, so a failure above says which number is wrong rather than only
+	// that something is.
+	require.Equal(t, uint64(types.PlayerPassiveDraw+phantomPassiveDraw*2+phantomBuildDraw), f.structsLoad())
+	require.Equal(t, uint64(types.PlanetaryShieldBase+phantomShield), f.planetAttr(types.PlanetAttributeType_planetaryShield))
+	require.Equal(t, uint64(1), f.planetAttr(types.PlanetAttributeType_defensiveCannonQuantity))
+	require.Equal(t, uint64(0), f.planetAttr(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkQuantity))
+	require.Equal(t, uint64(1), f.planetAttr(types.PlanetAttributeType_oreMiningActiveQuantity))
+	require.Equal(t, uint64(0), f.planetAttr(types.PlanetAttributeType_oreRefiningActiveQuantity))
+	require.Equal(t, uint64(2), f.typeCount(phantomBunkerType))
+	require.Equal(t, uint64(1), f.typeCount(phantomMinerType))
+	require.Equal(t, uint64(1), f.typeCount(phantomGeneratorTyp))
+}
+
+// TestMigrateStructPhantomAggregates_FleetStructsFollowTheirFleet pins the one
+// piece of location logic the recompute has to mirror: a struct in a fleet
+// contributes to whatever planet the fleet is visiting, not to a planet of its
+// own, which is how StructCache.GetPlanet resolves it.
+func TestMigrateStructPhantomAggregates_FleetStructsFollowTheirFleet(t *testing.T) {
+	f := setupPhantomFixture(t)
+	keepers := &upgrades.Keepers{StructsKeeper: f.k}
+
+	fleetType := uint64(4)
+	f.k.SetStructType(f.ctx, types.StructType{
+		Id:                          fleetType,
+		Category:                    types.ObjectType_fleet,
+		PassiveDraw:                 phantomPassiveDraw,
+		OreReserveDefenses:          types.TechOreReserveDefenses_oreBunker,
+		PlanetaryShieldContribution: phantomShield,
+	})
+
+	fleet := types.Fleet{
+		Id:           fmt.Sprintf("%d-%d", types.ObjectType_fleet, f.player.Index),
+		Owner:        f.player.Id,
+		LocationId:   f.planet.Id,
+		LocationType: types.ObjectType_planet,
+		Status:       types.FleetStatus_onStation,
+	}
+	f.k.SetFleet(f.ctx, fleet)
+
+	index := f.k.GetStructCount(f.ctx)
+	structure := types.Struct{
+		Id:           fmt.Sprintf("%d-%d", types.ObjectType_struct, index),
+		Index:        index,
+		Creator:      f.player.Creator,
+		Owner:        f.player.Id,
+		Type:         fleetType,
+		LocationId:   fleet.Id,
+		LocationType: types.ObjectType_fleet,
+	}
+	f.k.SetStruct(f.ctx, structure)
+	f.k.SetStructCount(f.ctx, index+1)
+	f.k.SetStructAttribute(f.ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id),
+		uint64(types.StructStateMaterialized|types.StructStateBuilt|types.StructStateOnline))
+
+	f.setPlanetAttr(types.PlanetAttributeType_planetaryShield, types.PlanetaryShieldBase)
+
+	require.NoError(t, v0_21_0.MigrateStructPhantomAggregates(f.ctx, keepers))
+
+	require.Equal(t, uint64(types.PlanetaryShieldBase+phantomShield), f.planetAttr(types.PlanetAttributeType_planetaryShield),
+		"a fleet struct's shield belongs to the planet its fleet is at")
+	require.Equal(t, uint64(types.PlayerPassiveDraw+phantomPassiveDraw), f.structsLoad())
+}

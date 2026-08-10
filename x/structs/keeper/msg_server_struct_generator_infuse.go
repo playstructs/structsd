@@ -37,6 +37,13 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 		return emptyResponse, types.NewObjectNotFoundError("struct", msg.StructId)
 	}
 
+	// A destroyed struct is offline, so the check below would reject it anyway.
+	// Say so explicitly, because this handler moves the player's coins and must
+	// never send them to a generator that is queued for deletion.
+	if structure.IsDestroyed() {
+		return emptyResponse, types.NewStructStateError(msg.StructId, "destroyed", "active", "generator_infuse")
+	}
+
 	// Is the Struct online?
 	if !structure.IsOnline() {
 		return emptyResponse, types.NewStructStateError(msg.StructId, "offline", "online", "generator_infuse")

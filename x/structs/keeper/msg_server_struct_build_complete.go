@@ -37,6 +37,14 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 		return emptyResponse, types.NewObjectNotFoundError("struct", msg.StructId)
 	}
 
+	// A cancelled build stays unbuilt and slot-resident until the sweep, so
+	// without this it would satisfy the check below and could be completed —
+	// setting Built and re-adding the owner's load against a struct already
+	// queued for deletion.
+	if structure.IsDestroyed() {
+		return emptyResponse, types.NewStructStateError(msg.StructId, "destroyed", "building", "build_complete")
+	}
+
 	if structure.IsBuilt() {
 		//structure.GetOwner().Discharge()
 		//structure.GetOwner().Commit()

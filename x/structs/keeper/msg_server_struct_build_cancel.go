@@ -34,6 +34,13 @@ func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStruct
         return emptyResponse, types.NewObjectNotFoundError("struct", msg.StructId)
     }
 
+    // DestroyAndCommit is idempotent, so a repeat cancel is already harmless.
+    // Reject it outright rather than reporting success for work that did not
+    // happen.
+    if structure.IsDestroyed() {
+        return emptyResponse, types.NewStructStateError(msg.StructId, "destroyed", "building", "build_cancel")
+    }
+
     if structure.IsBuilt() {
         return emptyResponse, types.NewStructStateError(msg.StructId, "built", "building", "build_cancel")
     }

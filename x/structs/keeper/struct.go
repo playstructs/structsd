@@ -144,11 +144,37 @@ func (k Keeper) StructSweepDestroyed(ctx context.Context) {
         k.logger.Info("Struct Sweep", "structId", key)
         structId := string(key)
 
+        statusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, structId)
+
+        // Backstop. Anything reaching the sweep was taken offline when it was
+        // destroyed, and nothing may bring a destroyed struct back online, so this
+        // branch is unreachable by design.
+        //
+        // It exists because the sweep is the point of no return: the struct is
+        // deleted here, and every contribution a still-online struct is making —
+        // the owner's load, the planet's shield, its defensive cannon or
+        // interceptor count — would outlive the object with nothing left to
+        // reverse it. Undo them first and log loudly, because reaching this branch
+        // means a path back to online was found and the log is the only way anyone
+        // will know.
+        if types.StructState(k.GetStructAttribute(ctx, statusAttributeId))&types.StructStateOnline != 0 {
+            k.logger.Error("Destroyed struct reached the sweep still online, reversing its contributions",
+                "structId", structId,
+                "blockHeight", unwrapCtx.BlockHeight(),
+            )
+
+            cc := k.NewCurrentContext(unwrapCtx)
+            if structure := cc.GetStruct(structId); structure.LoadStruct() {
+                structure.GoOffline()
+                cc.CommitAll()
+            }
+        }
+
         // Attributes
         // "health":               StructAttributeType_health,
         k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_health, structId ))
         // "status":               StructAttributeType_status,
-        k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_status, structId ))
+        k.ClearStructAttribute(ctx, statusAttributeId)
 
         structure, structFound := k.GetStruct(ctx, structId)
         if structFound {

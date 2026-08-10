@@ -102,11 +102,15 @@ func (cache *AgreementCache) LoadCurrentBlock() bool {
 // LoadDurationRemaining measures the unearned part of the agreement, which is
 // what the consumer's remaining collateral is priced from.
 //
-// It counts from the start block, not the current one. An agreement opens with
-// its start block one ahead of the current height, so measuring from the current
-// block would report one block more remaining than the agreement is even long,
-// and the consumer would be refunded collateral that was never deposited out of
-// another agreement's share of the pool.
+// It never measures from before the start block. No path opens an agreement in
+// the future today — AgreementOpen starts service in the opening block and the
+// capacity changes re-base to the current one — so the clamp is a guard rather
+// than a description of how agreements begin. It earns its place by bounding the
+// damage if that ever changes: collateral is only ever collected for
+// EndBlock - StartBlock, so pricing a settlement from an earlier height would
+// refund blocks nobody deposited, out of a pool shared with other agreements.
+// With LoadDurationPast it holds past + remaining == duration at every height,
+// which is the identity the collateral accounting rests on.
 func (cache *AgreementCache) LoadDurationRemaining() bool {
 	from := cache.GetCurrentBlock()
 	if from < cache.GetStartBlock() {

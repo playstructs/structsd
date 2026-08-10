@@ -2,6 +2,8 @@ package v0_21_0
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
@@ -65,6 +67,13 @@ func CreateUpgradeHandler(
 		}
 
 		if err := MigrateAgreementCheckpointOverbill(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
+		// After MigrateOreClocksToPlanet, which seeds the ore counters this then
+		// recomputes: both derive the same number from the same online structs, and
+		// running the repair last means it has the final say.
+		if err := MigrateStructPhantomAggregates(ctx, keepers); err != nil {
 			return newVM, err
 		}
 
@@ -599,6 +608,266 @@ func MigrateAgreementCheckpointOverbill(ctx context.Context, keepers *upgrades.K
 		"providersReconciled", providersReconciled,
 		"providersShort", providersShort,
 		"totalReturned", totalReturned.String())
+	return nil
+}
+
+// planetAggregate is the per-planet recompute built while scanning structs in
+// MigrateStructPhantomAggregates.
+type planetAggregate struct {
+	shield       uint64
+	cannons      uint64
+	interceptors uint64
+	mining       uint64
+	refining     uint64
+}
+
+// MigrateStructPhantomAggregates rebuilds every aggregate that struct
+// destruction and reactivation could corrupt, from the structs that are actually
+// still standing.
+//
+// Two bugs fed it. Destruction was not idempotent and left the struct in its
+// planet slot, so a cancelled build that was then caught by planet completion
+// released its BuildDraw reservation and its type count twice — understating the
+// owner's load and the count of structs they own. And a destroyed struct still
+// read as built and offline, so it could be activated during the sweep window;
+// GoOnline re-added its planetary shield, defensive cannon or interceptor count
+// and ore rig, and the sweep then deleted the struct without taking it offline
+// again, leaving those contributions behind with no object to reverse them.
+//
+// None of that is recoverable by inspecting the damage: the surviving structs are
+// the only record of what the totals should be, so this recomputes rather than
+// adjusts. Destroyed structs are excluded, since destruction already removed
+// their contributions and the sweep is about to remove the struct.
+//
+// Cost is O(S + P + G): one pass over structs, one over planets, one over the
+// grid attribute store to find rows keyed to structs that no longer exist.
+//
+// Idempotent: every value is derived and assigned, never adjusted, so a re-run
+// writes the same numbers. Values that already agree are skipped so no
+// redundant indexer event is emitted.
+func MigrateStructPhantomAggregates(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateStructPhantomAggregates")
+
+	k := keepers.StructsKeeper
+
+	structTypeCache := make(map[uint64]structstypes.StructType)
+	structType := func(structure structstypes.Struct) (structstypes.StructType, bool) {
+		if cached, ok := structTypeCache[structure.Type]; ok {
+			return cached, true
+		}
+		loaded, found := k.GetStructType(ctx, structure.Type)
+		if !found {
+			logger.Warn("struct references unknown type; excluding from the recompute",
+				"structId", structure.Id, "structType", structure.Type)
+			return structstypes.StructType{}, false
+		}
+		structTypeCache[structure.Type] = loaded
+		return loaded, true
+	}
+
+	// Every player carries PlayerPassiveDraw whether or not they own a struct, so
+	// seed from the player list rather than from the structs: a player whose only
+	// struct was destroyed still needs their load corrected.
+	playerLoad := make(map[string]uint64)
+	for _, player := range k.GetAllPlayer(ctx) {
+		playerLoad[player.Id] = structstypes.PlayerPassiveDraw
+	}
+
+	byPlanet := make(map[string]*planetAggregate)
+	planetAgg := func(planetId string) *planetAggregate {
+		agg, ok := byPlanet[planetId]
+		if !ok {
+			agg = &planetAggregate{}
+			byPlanet[planetId] = agg
+		}
+		return agg
+	}
+
+	// typeCount is keyed by owner and struct type together.
+	type ownerType struct {
+		owner  string
+		typeId uint64
+	}
+	typeCount := make(map[ownerType]uint64)
+
+	liveStructs := make(map[string]bool)
+
+	for _, structure := range k.GetAllStruct(ctx) {
+		liveStructs[structure.Id] = true
+
+		status := structstypes.StructState(k.GetStructAttribute(ctx,
+			structskeeper.GetStructAttributeIDByObjectId(structstypes.StructAttributeType_status, structure.Id)))
+		if status&structstypes.StructStateDestroyed != 0 {
+			continue
+		}
+
+		sType, found := structType(structure)
+		if !found {
+			continue
+		}
+
+		typeCount[ownerType{owner: structure.Owner, typeId: structure.Type}]++
+
+		// BuildDraw is reserved while building and swapped for PassiveDraw when the
+		// build completes and the struct comes online, which is why these are
+		// independent rather than exclusive.
+		if _, known := playerLoad[structure.Owner]; known {
+			if status&structstypes.StructStateBuilt == 0 {
+				playerLoad[structure.Owner] += sType.BuildDraw
+			}
+			if status&structstypes.StructStateOnline != 0 {
+				playerLoad[structure.Owner] += sType.PassiveDraw
+			}
+		} else {
+			logger.Warn("struct owned by an unknown player; excluding from the load recompute",
+				"structId", structure.Id, "owner", structure.Owner)
+		}
+
+		if status&structstypes.StructStateOnline == 0 {
+			continue
+		}
+
+		// Planet-keyed contributions follow the struct's location the way
+		// StructCache.GetPlanet does: a fleet struct contributes to whatever planet
+		// its fleet is currently at.
+		var planetId string
+		switch structure.LocationType {
+		case structstypes.ObjectType_planet:
+			planetId = structure.LocationId
+		case structstypes.ObjectType_fleet:
+			fleet, fleetFound := k.GetFleet(ctx, structure.LocationId)
+			if !fleetFound || fleet.LocationType != structstypes.ObjectType_planet {
+				continue
+			}
+			planetId = fleet.LocationId
+		default:
+			continue
+		}
+		if planetId == "" {
+			continue
+		}
+
+		agg := planetAgg(planetId)
+		if sType.HasOreReserveDefensesSystem() {
+			agg.shield += sType.PlanetaryShieldContribution
+		}
+		if sType.HasPlanetaryDefensesSystem() {
+			switch sType.PlanetaryDefenses {
+			case structstypes.TechPlanetaryDefenses_defensiveCannon:
+				agg.cannons++
+			case structstypes.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork:
+				agg.interceptors++
+			}
+		}
+		if sType.HasOreMiningSystem() {
+			agg.mining++
+		}
+		if sType.HasOreRefiningSystem() {
+			agg.refining++
+		}
+	}
+
+	var loadsRepaired int
+	for playerId, expected := range playerLoad {
+		attrId := structskeeper.GetGridAttributeIDByObjectId(structstypes.GridAttributeType_structsLoad, playerId)
+		if k.GetGridAttribute(ctx, attrId) == expected {
+			continue
+		}
+		k.SetGridAttribute(ctx, attrId, expected)
+		loadsRepaired++
+	}
+
+	var typeCountsRepaired int
+	for key, expected := range typeCount {
+		attrId := structskeeper.GetStructAttributeIDByObjectIdAndSubIndex(
+			structstypes.StructAttributeType_typeCount, key.owner, key.typeId)
+		if k.GetStructAttribute(ctx, attrId) == expected {
+			continue
+		}
+		k.SetStructAttribute(ctx, attrId, expected)
+		typeCountsRepaired++
+	}
+
+	var planetsRepaired int
+	for _, planet := range k.GetAllPlanet(ctx) {
+		agg, ok := byPlanet[planet.Id]
+		if !ok {
+			agg = &planetAggregate{}
+		}
+
+		shieldAttrId := structskeeper.GetPlanetAttributeIDByObjectId(structstypes.PlanetAttributeType_planetaryShield, planet.Id)
+		currentShield := k.GetPlanetAttribute(ctx, shieldAttrId)
+
+		// PlanetaryShieldBase is written when the planet is created and is never
+		// cleared afterwards, not even on completion. The one exception is a planet
+		// imported at genesis in a non-active status, which never receives it, so
+		// take the base from what the planet actually holds rather than assuming it
+		// and inventing a shield those planets never had.
+		base := uint64(structstypes.PlanetaryShieldBase)
+		if planet.Status != structstypes.PlanetStatus_active && currentShield < base {
+			base = 0
+		}
+
+		repaired := false
+		for _, field := range []struct {
+			attrId   string
+			expected uint64
+		}{
+			{shieldAttrId, base + agg.shield},
+			{structskeeper.GetPlanetAttributeIDByObjectId(structstypes.PlanetAttributeType_defensiveCannonQuantity, planet.Id), agg.cannons},
+			{structskeeper.GetPlanetAttributeIDByObjectId(structstypes.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkQuantity, planet.Id), agg.interceptors},
+			{structskeeper.GetPlanetAttributeIDByObjectId(structstypes.PlanetAttributeType_oreMiningActiveQuantity, planet.Id), agg.mining},
+			{structskeeper.GetPlanetAttributeIDByObjectId(structstypes.PlanetAttributeType_oreRefiningActiveQuantity, planet.Id), agg.refining},
+		} {
+			if k.GetPlanetAttribute(ctx, field.attrId) == field.expected {
+				continue
+			}
+			k.SetPlanetAttribute(ctx, field.attrId, field.expected)
+			repaired = true
+		}
+		if repaired {
+			planetsRepaired++
+		}
+	}
+
+	// Grid rows keyed to a struct that no longer exists. DestroyAndCommit clears
+	// these for power generators, but a struct reactivated after destruction wrote
+	// them again and the sweep deletes the object without a second pass.
+	structPrefix := fmt.Sprintf("%d-", structstypes.ObjectType_struct)
+	orphanTypes := map[string]bool{}
+	for _, attributeType := range []structstypes.GridAttributeType{
+		structstypes.GridAttributeType_ready,
+		structstypes.GridAttributeType_load,
+		structstypes.GridAttributeType_capacity,
+		structstypes.GridAttributeType_fuel,
+		structstypes.GridAttributeType_power,
+	} {
+		orphanTypes[fmt.Sprintf("%d-", attributeType)] = true
+	}
+
+	var orphansCleared int
+	for _, record := range k.GetAllGridExport(ctx) {
+		split := strings.SplitN(record.AttributeId, "-", 2)
+		if len(split) != 2 {
+			continue
+		}
+		if !orphanTypes[split[0]+"-"] {
+			continue
+		}
+		objectId := split[1]
+		if !strings.HasPrefix(objectId, structPrefix) || liveStructs[objectId] {
+			continue
+		}
+		k.ClearGridAttribute(ctx, record.AttributeId)
+		orphansCleared++
+	}
+
+	logger.Info("v0.21.0 struct phantom aggregate repair complete",
+		"loadsRepaired", loadsRepaired,
+		"typeCountsRepaired", typeCountsRepaired,
+		"planetsRepaired", planetsRepaired,
+		"orphanGridAttributesCleared", orphansCleared)
 	return nil
 }
 

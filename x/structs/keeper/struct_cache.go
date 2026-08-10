@@ -275,6 +275,18 @@ func (cache *StructCache) GridStatusRemoveReady() {
 }
 
 func (cache *StructCache) ActivationReadinessCheck() (err error) {
+	// Check the Struct still exists.
+	//
+	// Destruction leaves the Built flag set and only removes Online, so a
+	// destroyed struct satisfies every check below and would come back online
+	// for the rest of the sweep window. The sweep then deletes the object
+	// without going offline again, stranding whatever GoOnline re-added —
+	// planetary shield, defensive cannon or interceptor counts, owner load —
+	// against a struct that no longer exists.
+	if cache.IsDestroyed() {
+		return types.NewStructStateError(cache.StructId, "destroyed", "active", "activation")
+	}
+
 	// Check Struct is Built
 	if !cache.IsBuilt() {
 		return types.NewStructStateError(cache.StructId, "building", "built", "activation")
@@ -433,6 +445,15 @@ func (cache *StructCache) CommandStructRaidStatusHook() {
 }
 
 func (cache *StructCache) ReadinessCheck() error {
+	// A destroyed struct is offline, so the check below already rejects it today.
+	// That is incidental rather than deliberate: it only holds while nothing can
+	// bring a destroyed struct back online. State the rule directly so the
+	// handlers sharing this check (attack, mining, refining, stealth) do not
+	// depend on that coincidence, and so the rejection names the real reason.
+	if cache.IsDestroyed() {
+		return types.NewStructStateError(cache.StructId, "destroyed", "active", "readiness_check")
+	}
+
 	if cache.IsOffline() {
 		return types.NewStructStateError(cache.StructId, "offline", "online", "readiness_check")
 	} else {
@@ -705,7 +726,22 @@ func (attackingStruct *StructCache) applyPostDestructionDamageCore(destroyedStru
 }
 
 
+// DestroyAndCommit tears a struct down. It is idempotent: a destroyed struct
+// stays readable and slot-resident until the sweep runs StructSweepDelay blocks
+// later, so several paths can reach the same struct inside that window —
+// AttemptComplete walks every occupied planet slot, StructBuildCancel takes any
+// unbuilt struct, and the attack paths destroy on lethal damage.
+//
+// Without this guard the work above GoOffline replays: the BuildDraw release and
+// the type count decrement would both run again. Neither is a bank transfer, so
+// nothing fails loudly — StructsLoadDecrement clamps at zero — and the owner's
+// tracked load drifts below what their surviving structs actually draw, which
+// buys capacity the player's power never paid for. GoOffline is already
+// idempotent through its own IsOnline() check.
 func (cache *StructCache) DestroyAndCommit() {
+	if cache.IsDestroyed() {
+		return
+	}
 
 	if !cache.IsBuilt() {
 		// Struct was still building — release the BuildDraw energy that was
