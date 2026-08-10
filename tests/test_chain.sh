@@ -326,6 +326,22 @@ assert_gt() {
     fi
 }
 
+# assert_ge: check that actual >= threshold (numeric)
+# Used where truncation dust makes an exact figure the wrong assertion, most
+# notably provider collateral solvency.
+assert_ge() {
+    local label="$1"
+    local threshold="$2"
+    local actual="$3"
+    if [ -n "${actual}" ] && [ "${actual}" != "null" ] && [ "${actual}" -ge "${threshold}" ] 2>/dev/null; then
+        echo -e "  ${GREEN}PASS${NC}: ${label} = ${actual} >= ${threshold}"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo -e "  ${RED}FAIL${NC}: ${label} = '${actual}' not >= ${threshold}"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+}
+
 # assert_lt: check that actual < threshold (numeric)
 assert_lt() {
     local label="$1"
@@ -424,6 +440,23 @@ wait_for_free_slot() {
     echo ""
 }
 
+# get_newest_provider_id / get_newest_agreement_id: like get_newest_struct_id,
+# these sort on the numeric index rather than trusting the store's string order,
+# where 10-10 sorts before 10-9.
+# get_newest_agreement_id optionally scopes to a single provider.
+get_newest_provider_id() {
+    query query structs provider-all 2>/dev/null \
+        | jq -r '[.Provider[]?] | sort_by(.id | split("-") | .[1] | tonumber) | .[-1].id // empty' 2>/dev/null || echo ""
+}
+
+get_newest_agreement_id() {
+    local provider_id="${1:-}"
+    query query structs agreement-all 2>/dev/null \
+        | jq -r --arg p "${provider_id}" \
+            '[.Agreement[]? | select($p == "" or .providerId == $p)]
+             | sort_by(.id | split("-") | .[1] | tonumber) | .[-1].id // empty' 2>/dev/null || echo ""
+}
+
 # get_latest_allocation_for_source: find the most recent allocation for a given source
 get_latest_allocation_for_source() {
     local source_id="$1"
@@ -457,6 +490,30 @@ get_balance() {
 # get_block_height: query the current block height
 get_block_height() {
     query query structs block-height | jq -r '.blockHeight // "0"' 2>/dev/null || echo "0"
+}
+
+# wait_for_block: wait until the chain reaches a given height
+# Used for state that only settles in the EndBlocker, such as agreement expiry.
+# Usage: wait_for_block <target_height> [timeout_seconds]
+wait_for_block() {
+    local target="$1" timeout="${2:-90}"
+    local height elapsed=0
+    height=$(get_block_height)
+    if [ "${height}" -ge "${target}" ] 2>/dev/null; then
+        return 0
+    fi
+    echo -e "  ${YELLOW}Waiting for block${NC}: at ${height}, need ${target}"
+    while [ "${elapsed}" -lt "${timeout}" ]; do
+        sleep 2
+        elapsed=$((elapsed + 2))
+        height=$(get_block_height)
+        if [ -n "${height}" ] && [ "${height}" -ge "${target}" ] 2>/dev/null; then
+            echo -e "  ${GREEN}Reached block${NC}: ${height} >= ${target} (after ${elapsed}s)"
+            return 0
+        fi
+    done
+    echo -e "  ${RED}Timed out${NC} waiting for block ${target} (still at ${height})"
+    return 1
 }
 
 # get_player_charge: compute a player's current charge
@@ -5034,6 +5091,228 @@ if [ -n "${PROVIDER_ID}" ]; then
 else
     info "SKIP: Could not create provider"
 fi
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  Settlement accounting: an agreement settles exactly once, and one consumer's
+#  collateral never funds another's payout.
+#
+#  Regression cover for the reciprocal allocation/agreement teardown, where
+#  agreement teardown destroyed its allocation and allocation teardown settled
+#  the agreement back, paying the same agreement twice out of a pool shared by
+#  all of that provider's agreements.
+#
+#  The phase above cannot see any of that: it runs a single agreement with both
+#  penalties at zero, so the duplicate payout had no second agreement's
+#  collateral to take and simply failed for insufficient funds — an error that
+#  used to be discarded. Three things are needed to make it observable, and all
+#  three are set up below: two agreements sharing one pool, nonzero penalties,
+#  and an agreement left to expire through the EndBlocker.
+#
+#  Assertions are on the collateral and earnings pools rather than on player
+#  balances wherever an exact figure is claimed, because module accounts pay no
+#  transaction fees.
+# ═════════════════════════════════════════════════════════════════════════════
+
+section "PHASE 16b: Agreement Settlement Accounting"
+
+# The agreements below are small, but the shared substation has been through the
+# whole phase above, so check there is room rather than reporting capacity
+# exhaustion as a settlement failure.
+SETTLE_SUB_JSON=$(query query structs substation "${SUBSTATION_ID}" 2>/dev/null || echo '{}')
+SETTLE_SUB_CAP=$(jqr "${SETTLE_SUB_JSON}" '.gridAttributes.capacity' '0')
+SETTLE_SUB_LOAD=$(jqr "${SETTLE_SUB_JSON}" '.gridAttributes.load' '0')
+SETTLE_SUB_FREE=$((SETTLE_SUB_CAP - SETTLE_SUB_LOAD))
+info "Substation ${SUBSTATION_ID} free capacity: ${SETTLE_SUB_FREE} (cap=${SETTLE_SUB_CAP}, load=${SETTLE_SUB_LOAD})"
+
+# Agreement A + B run concurrently; C is opened after both have closed.
+SETTLE_CAP_A=2000
+SETTLE_CAP_B=3000
+SETTLE_CAP_C=2000
+SETTLE_DUR_A=120
+SETTLE_DUR_B=120
+SETTLE_DUR_C=5     # must be >= the provider duration minimum below
+
+# get_balance on an empty address returns 0, which would turn the exact balance
+# assertions below into vacuous passes. Skip rather than pretend to have tested
+# settlement. Phase 2 and recover_state both set these, so this only trips if the
+# keyring lookup failed.
+if [ -z "${PLAYER_2_ADDRESS}" ] || [ -z "${PLAYER_3_ADDRESS}" ]; then
+    info "SKIP: player 2/3 addresses unresolved"
+elif [ "${SETTLE_SUB_FREE}" -lt $((SETTLE_CAP_A + SETTLE_CAP_B)) ] 2>/dev/null; then
+    info "SKIP: substation has ${SETTLE_SUB_FREE} free capacity, need $((SETTLE_CAP_A + SETTLE_CAP_B))"
+else
+
+# ─── A provider with nonzero penalties, so the penalty payout paths execute ───
+SETTLE_RATE="1ualpha"
+SETTLE_PROVIDER_PENALTY="0.5"
+SETTLE_CONSUMER_PENALTY="0.25"
+
+run_tx "Creating provider for settlement accounting (penalties ${SETTLE_PROVIDER_PENALTY}/${SETTLE_CONSUMER_PENALTY})" \
+    tx structs provider-create "${SUBSTATION_ID}" \
+    "${SETTLE_RATE}" "open-market" \
+    "${SETTLE_PROVIDER_PENALTY}" "${SETTLE_CONSUMER_PENALTY}" \
+    1000 100000 \
+    5 100000 \
+    --from alice
+
+SETTLE_PROV_ID=$(get_newest_provider_id)
+assert_not_empty "Settlement provider created" "${SETTLE_PROV_ID}"
+
+if [ -z "${SETTLE_PROV_ID}" ]; then
+    info "SKIP: could not create settlement provider"
+else
+
+SETTLE_PROV_JSON=$(query query structs provider "${SETTLE_PROV_ID}" 2>/dev/null || echo '{}')
+info "Settlement provider penalties: provider=$(jqr "${SETTLE_PROV_JSON}" '.Provider.providerCancellationPenalty' '?'), consumer=$(jqr "${SETTLE_PROV_JSON}" '.Provider.consumerCancellationPenalty' '?')"
+
+SETTLE_COLL_ADDR=$(query query structs provider-collateral-address "${SETTLE_PROV_ID}" 2>/dev/null | jq -r '.internalAddressAssociation[0].address // empty' 2>/dev/null || echo "")
+SETTLE_EARN_ADDR=$(query query structs provider-earnings-address "${SETTLE_PROV_ID}" 2>/dev/null | jq -r '.internalAddressAssociation[0].address // empty' 2>/dev/null || echo "")
+assert_not_empty "Settlement collateral pool address" "${SETTLE_COLL_ADDR}"
+assert_not_empty "Settlement earnings pool address" "${SETTLE_EARN_ADDR}"
+
+if [ -z "${SETTLE_COLL_ADDR}" ] || [ -z "${SETTLE_EARN_ADDR}" ]; then
+    info "SKIP: could not resolve settlement provider pool addresses"
+else
+
+# A brand new provider, so both pools start empty and every later figure is a
+# delta from a known zero.
+assert_eq "Fresh collateral pool is empty" "0" "$(get_balance "${SETTLE_COLL_ADDR}" ualpha)"
+assert_eq "Fresh earnings pool is empty" "0" "$(get_balance "${SETTLE_EARN_ADDR}" ualpha)"
+
+# ─── Agreement A (player_2) ───
+# Collateral is duration * capacity * rate, taken from the message parameters
+# alone, so it does not drift with block height.
+SETTLE_COLL_A=$((SETTLE_DUR_A * SETTLE_CAP_A))
+run_tx "Player 2 opening settlement agreement A (dur=${SETTLE_DUR_A}, cap=${SETTLE_CAP_A})" \
+    tx structs agreement-open "${SETTLE_PROV_ID}" "${SETTLE_DUR_A}" "${SETTLE_CAP_A}" --from player_2
+
+SETTLE_AGREE_A=$(get_newest_agreement_id "${SETTLE_PROV_ID}")
+assert_not_empty "Settlement agreement A opened" "${SETTLE_AGREE_A}"
+assert_eq "Pool holds agreement A collateral" "${SETTLE_COLL_A}" "$(get_balance "${SETTLE_COLL_ADDR}" ualpha)"
+
+# ─── Agreement B (player_3), sharing the same pool ───
+SETTLE_COLL_B=$((SETTLE_DUR_B * SETTLE_CAP_B))
+run_tx "Player 3 opening settlement agreement B (dur=${SETTLE_DUR_B}, cap=${SETTLE_CAP_B})" \
+    tx structs agreement-open "${SETTLE_PROV_ID}" "${SETTLE_DUR_B}" "${SETTLE_CAP_B}" --from player_3
+
+SETTLE_AGREE_B=$(get_newest_agreement_id "${SETTLE_PROV_ID}")
+assert_not_empty "Settlement agreement B opened" "${SETTLE_AGREE_B}"
+assert_eq "Agreement B is distinct from A" "false" "$([ "${SETTLE_AGREE_A}" = "${SETTLE_AGREE_B}" ] && echo true || echo false)"
+
+SETTLE_POOL_BOTH=$(get_balance "${SETTLE_COLL_ADDR}" ualpha)
+info "Pool with both agreements open: ${SETTLE_POOL_BOTH} (A=${SETTLE_COLL_A}, B=${SETTLE_COLL_B})"
+assert_eq "Pool holds both agreements' collateral" "$((SETTLE_COLL_A + SETTLE_COLL_B))" "${SETTLE_POOL_BOTH}"
+
+SETTLE_LOAD_BOTH=$(jqr "$(query query structs provider "${SETTLE_PROV_ID}" 2>/dev/null || echo '{}')" '.gridAttributes.load' '0')
+assert_eq "Provider load is both capacities" "$((SETTLE_CAP_A + SETTLE_CAP_B))" "${SETTLE_LOAD_BOTH}"
+
+# ─── Close A, and check it did not eat into B ───
+# This is the assertion the whole section exists for. The double settlement paid
+# A out twice, and the second payout could only come from B's collateral.
+SETTLE_B_JSON=$(query query structs agreement "${SETTLE_AGREE_B}" 2>/dev/null || echo '{}')
+SETTLE_B_END=$(jqr "${SETTLE_B_JSON}" '.Agreement.endBlock' '0')
+
+P2_BEFORE_CLOSE=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
+
+run_tx "Closing settlement agreement A" \
+    tx structs agreement-close "${SETTLE_AGREE_A}" --from player_2
+
+assert_eq "Settlement agreement A removed" "" "$(jqr "$(query query structs agreement "${SETTLE_AGREE_A}" 2>/dev/null || echo '{}')" '.Agreement.id' '')"
+assert_not_empty "Settlement agreement B still open" "$(jqr "$(query query structs agreement "${SETTLE_AGREE_B}" 2>/dev/null || echo '{}')" '.Agreement.id' '')"
+
+# Player 2 pays fees out of the same balance, so only the direction is asserted
+# here; the exact figures below are all taken from the fee-free module accounts.
+assert_gt "Player 2 refunded on close" "${P2_BEFORE_CLOSE}" "$(get_balance "${PLAYER_2_ADDRESS}" ualpha)"
+
+# B is still owed the unearned part of its collateral plus the provider
+# cancellation penalty accrued so far, and the penalty fraction is still in the
+# pool because Checkpoint deliberately leaves it there. Unearned collateral
+# alone is the conservative floor.
+SETTLE_HEIGHT=$(get_block_height)
+SETTLE_B_UNEARNED=$(( (SETTLE_B_END - SETTLE_HEIGHT) * SETTLE_CAP_B ))
+[ "${SETTLE_B_UNEARNED}" -lt 0 ] 2>/dev/null && SETTLE_B_UNEARNED=0
+SETTLE_POOL_AFTER_A=$(get_balance "${SETTLE_COLL_ADDR}" ualpha)
+info "Pool after closing A: ${SETTLE_POOL_AFTER_A}; B unearned collateral at block ${SETTLE_HEIGHT}: ${SETTLE_B_UNEARNED}"
+assert_ge "Pool still covers agreement B after A settled" "${SETTLE_B_UNEARNED}" "${SETTLE_POOL_AFTER_A}"
+
+SETTLE_LOAD_AFTER_A=$(jqr "$(query query structs provider "${SETTLE_PROV_ID}" 2>/dev/null || echo '{}')" '.gridAttributes.load' '0')
+assert_eq "Only agreement A's load was released" "${SETTLE_CAP_B}" "${SETTLE_LOAD_AFTER_A}"
+
+# ─── Close B, and check its consumer was still paid ───
+P3_BEFORE_CLOSE=$(get_balance "${PLAYER_3_ADDRESS}" ualpha)
+
+run_tx "Closing settlement agreement B" \
+    tx structs agreement-close "${SETTLE_AGREE_B}" --from player_3
+
+assert_eq "Settlement agreement B removed" "" "$(jqr "$(query query structs agreement "${SETTLE_AGREE_B}" 2>/dev/null || echo '{}')" '.Agreement.id' '')"
+assert_gt "Player 3 refunded on close (not shorted by A's teardown)" "${P3_BEFORE_CLOSE}" "$(get_balance "${PLAYER_3_ADDRESS}" ualpha)"
+
+SETTLE_LOAD_EMPTY=$(jqr "$(query query structs provider "${SETTLE_PROV_ID}" 2>/dev/null || echo '{}')" '.gridAttributes.load' '0')
+assert_eq "Provider load back to zero after both settled" "0" "${SETTLE_LOAD_EMPTY}"
+
+# Conservation ceiling. Every ualpha that entered the pool has now either been
+# refunded, moved to earnings, or is dust still in the pool, so earnings plus the
+# remainder can never exceed the deposits. This is a sanity guard rather than a
+# regression test — the two assertions that actually catch a double settlement
+# are the pool-covers-B check and player 3's refund, both above.
+SETTLE_POOL_END=$(get_balance "${SETTLE_COLL_ADDR}" ualpha)
+SETTLE_EARN_END=$(get_balance "${SETTLE_EARN_ADDR}" ualpha)
+info "After both closes: pool=${SETTLE_POOL_END}, earnings=${SETTLE_EARN_END}, deposited=$((SETTLE_COLL_A + SETTLE_COLL_B))"
+assert_ge "Deposits cover earnings plus pool remainder" "$((SETTLE_EARN_END + SETTLE_POOL_END))" "$((SETTLE_COLL_A + SETTLE_COLL_B))"
+
+# ─── Expiry through the EndBlocker ───
+# The worst case of the original bug. Over an agreement's life the checkpoints
+# and the voided penalty payout together consume the whole deposit, and the
+# re-entrant settlement then paid the consumer a provider-cancellation penalty
+# out of a share that was already empty.
+SETTLE_COLL_C=$((SETTLE_DUR_C * SETTLE_CAP_C))
+SETTLE_POOL_PRE_C=$(get_balance "${SETTLE_COLL_ADDR}" ualpha)
+SETTLE_EARN_PRE_C=$(get_balance "${SETTLE_EARN_ADDR}" ualpha)
+
+run_tx "Player 2 opening settlement agreement C to expire (dur=${SETTLE_DUR_C}, cap=${SETTLE_CAP_C})" \
+    tx structs agreement-open "${SETTLE_PROV_ID}" "${SETTLE_DUR_C}" "${SETTLE_CAP_C}" --from player_2
+
+SETTLE_AGREE_C=$(get_newest_agreement_id "${SETTLE_PROV_ID}")
+assert_not_empty "Settlement agreement C opened" "${SETTLE_AGREE_C}"
+
+SETTLE_C_END=$(jqr "$(query query structs agreement "${SETTLE_AGREE_C}" 2>/dev/null || echo '{}')" '.Agreement.endBlock' '0')
+info "Agreement C endBlock: ${SETTLE_C_END}"
+
+P2_BEFORE_EXPIRY=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
+
+# Expiry fires in the EndBlocker of the end block itself; wait past it.
+if wait_for_block $((SETTLE_C_END + 2)) 120; then
+    assert_eq "Expired agreement removed by EndBlocker" "" "$(jqr "$(query query structs agreement "${SETTLE_AGREE_C}" 2>/dev/null || echo '{}')" '.Agreement.id' '')"
+
+    # An expired agreement owes the consumer nothing: they received the service
+    # they paid for, and the provider keeps the cancellation penalty because they
+    # did not cancel. Player 2 sends no transaction here, so this figure is exact.
+    assert_eq "Expiry pays the consumer nothing" "${P2_BEFORE_EXPIRY}" "$(get_balance "${PLAYER_2_ADDRESS}" ualpha)"
+
+    SETTLE_EARN_POST_C=$(get_balance "${SETTLE_EARN_ADDR}" ualpha)
+    SETTLE_POOL_POST_C=$(get_balance "${SETTLE_COLL_ADDR}" ualpha)
+    info "After expiry: pool=${SETTLE_POOL_POST_C} (was ${SETTLE_POOL_PRE_C}), earnings=${SETTLE_EARN_POST_C} (was ${SETTLE_EARN_PRE_C}), C collateral=${SETTLE_COLL_C}"
+
+    # The whole deposit becomes provider revenue, split between checkpointed
+    # earnings and the penalty they keep.
+    assert_eq "Expired collateral became provider earnings" "$((SETTLE_EARN_PRE_C + SETTLE_COLL_C))" "${SETTLE_EARN_POST_C}"
+    assert_eq "Pool back to its pre-agreement dust after expiry" "${SETTLE_POOL_PRE_C}" "${SETTLE_POOL_POST_C}"
+
+    SETTLE_LOAD_POST_C=$(jqr "$(query query structs provider "${SETTLE_PROV_ID}" 2>/dev/null || echo '{}')" '.gridAttributes.load' '0')
+    assert_eq "Provider load released exactly once on expiry" "0" "${SETTLE_LOAD_POST_C}"
+else
+    info "SKIP: chain did not reach agreement C end block in time"
+fi
+
+# ─── Clean up ───
+run_tx "Deleting settlement provider" \
+    tx structs provider-delete "${SETTLE_PROV_ID}" --from alice
+
+assert_eq "Settlement provider deleted" "" "$(jqr "$(query query structs provider "${SETTLE_PROV_ID}" 2>/dev/null || echo '{}')" '.Provider.id' '')"
+
+fi # settlement pool addresses
+fi # settlement provider
+fi # settlement substation capacity
 
 fi # phase 16
 

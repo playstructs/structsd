@@ -98,8 +98,86 @@ func (cache *ProviderCache) GetCheckpointBlock() uint64 {
     return cache.CC.GetGridAttribute(cache.CheckpointBlockAttributeId)
 }
 
-func (cache *ProviderCache) GetCollateralPoolLocation() sdk.AccAddress { return authtypes.NewModuleAddress(types.ProviderCollateralPool + cache.GetProviderId()) }
-func (cache *ProviderCache) GetEarningsPoolLocation() sdk.AccAddress { return authtypes.NewModuleAddress(types.ProviderEarningsPool + cache.GetProviderId()) }
+// GetProviderCollateralPoolLocation is where consumers' agreement collateral is
+// held. It is keyed only by provider, so every agreement of that provider shares
+// the one account.
+func GetProviderCollateralPoolLocation(providerId string) sdk.AccAddress { return authtypes.NewModuleAddress(types.ProviderCollateralPool + providerId) }
+
+// GetProviderEarningsPoolLocation is where a provider's earned revenue lands
+// once swept out of the collateral pool.
+func GetProviderEarningsPoolLocation(providerId string) sdk.AccAddress { return authtypes.NewModuleAddress(types.ProviderEarningsPool + providerId) }
+
+func (cache *ProviderCache) GetCollateralPoolLocation() sdk.AccAddress { return GetProviderCollateralPoolLocation(cache.GetProviderId()) }
+func (cache *ProviderCache) GetEarningsPoolLocation() sdk.AccAddress { return GetProviderEarningsPoolLocation(cache.GetProviderId()) }
+
+// SweepRevenue moves provider revenue out of the collateral pool, clamped to
+// what the pool actually holds.
+//
+// The pool is keyed only by provider, so every agreement's collateral is
+// commingled in it. Consumer collateral therefore has first claim: it is the
+// consumers' own money and is always paid in full. Provider revenue is
+// subordinate, and an unclamped sweep would let a provider be paid out of a
+// different consumer's collateral. Clamping cannot cost the provider anything
+// they are owed, because the shortfall stays in their own pool.
+//
+// A nonzero shortfall means the pool is holding less than the accounting says
+// it should, so it is logged loudly and emitted. It is never an error: refusing
+// would strand the agreement, and the payout runs in block hooks that cannot
+// abort. The registered provider-collateral-solvency invariant is what catches
+// the underlying cause.
+func (cache *ProviderCache) SweepRevenue(destination sdk.AccAddress, amount math.Int, agreementId string) {
+    if !amount.IsPositive() {
+        return
+    }
+
+    denom := cache.GetRate().Denom
+    available := cache.CC.k.bankKeeper.SpendableCoin(cache.CC.ctx, cache.GetCollateralPoolLocation(), denom).Amount
+
+    paid := amount
+    if available.LT(amount) {
+        paid = available
+    }
+
+    if paid.IsPositive() {
+        errSend := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetCollateralPoolLocation(), destination, sdk.NewCoins(sdk.NewCoin(denom, paid)))
+        if errSend != nil {
+            cache.CC.k.logger.Error("Provider revenue sweep failed",
+                "providerId", cache.GetProviderId(),
+                "agreementId", agreementId,
+                "amount", paid.String(),
+                "denom", denom,
+                "error", errSend,
+            )
+            paid = math.ZeroInt()
+        }
+    }
+
+    shortfall := amount.Sub(paid)
+    if shortfall.IsZero() {
+        return
+    }
+
+    cache.CC.k.logger.Error("Provider collateral pool could not cover provider revenue",
+        "providerId", cache.GetProviderId(),
+        "agreementId", agreementId,
+        "requested", amount.String(),
+        "paid", paid.String(),
+        "shortfall", shortfall.String(),
+        "denom", denom,
+    )
+
+    ctxSDK := sdk.UnwrapSDKContext(cache.CC.ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderRevenueShortfall{
+        &types.EventProviderRevenueShortfallDetail{
+            ProviderId:  cache.GetProviderId(),
+            AgreementId: agreementId,
+            Denom:       denom,
+            Requested:   amount.String(),
+            Paid:        paid.String(),
+            Shortfall:   shortfall.String(),
+        },
+    })
+}
 
 func (cache *ProviderCache) AgreementVerify(capacity uint64, duration uint64) (error) {
     // min < capacity < max
@@ -181,34 +259,18 @@ func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) 
         return errParam
     }
 
-    // First handle the balances available via checkpoint
-    uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
-    currentBlock := uint64(uctx.BlockHeight())
-    blockDifference := currentBlock - cache.GetCheckpointBlock()
-
-    blocks := math.LegacyNewDecFromInt(math.NewIntFromUint64(blockDifference))
-    rate := math.LegacyNewDecFromInt(cache.GetRate().Amount)
-    load := math.LegacyNewDecFromInt(math.NewIntFromUint64(cache.GetAgreementLoad()))
-
-    prePenaltyDeductionAmount := blocks.Mul(rate).Mul(load)
-    penaltyDeductionAmount := prePenaltyDeductionAmount.Mul(cache.GetProviderCancellationPenalty())
-
-    finalWithdrawBalance := prePenaltyDeductionAmount.Sub(penaltyDeductionAmount).TruncateInt()
-
-    withdrawAmountCoin := sdk.NewCoins(sdk.NewCoin(cache.GetRate().Denom, finalWithdrawBalance))
-
-    errSend := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetCollateralPoolLocation(), destinationAcc, withdrawAmountCoin)
-    if errSend != nil {
-        return errSend
+    // Sweep everything earned up to now out of the collateral pool and into the
+    // earnings pool. Going through Checkpoint keeps the accrual maths and the
+    // clamp against consumer collateral in one place.
+    if errCheckpoint := cache.Checkpoint(); errCheckpoint != nil {
+        return errCheckpoint
     }
-
-    cache.SetCheckpointBlock(currentBlock)
 
     // Now handle the value available in the Earnings pool
     // Get Balance
     earningsBalances := cache.CC.k.bankKeeper.SpendableCoins(cache.CC.ctx, cache.GetEarningsPoolLocation())
     // Transfer
-    errSend = cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetEarningsPoolLocation(), destinationAcc, earningsBalances)
+    errSend := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetEarningsPoolLocation(), destinationAcc, earningsBalances)
     if errSend != nil {
         return errSend
     }
@@ -224,10 +286,14 @@ func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) 
 func (cache *ProviderCache) Delete() (error) {
 
     // Get List of Agreements
+    // Each close checkpoints this provider before touching its own load, so the
+    // list is settled one agreement at a time rather than in bulk.
     agreements := cache.CC.k.GetAllAgreementIdByProviderIndex(cache.CC.ctx, cache.GetProviderId())
     for _, agreementId := range agreements {
         agreement := cache.CC.GetAgreement(agreementId)
-        agreement.PrematureCloseByProvider()
+        if err := agreement.PrematureCloseByProvider(); err != nil {
+            return err
+        }
     }
 
     cache.CC.ClearGridAttribute(cache.CheckpointBlockAttributeId)
@@ -300,12 +366,22 @@ func (cache *ProviderCache) SetDurationMinimum(minimum uint64) (error){
 }
 
 
+// Checkpoint sweeps the revenue the provider has earned since the last
+// checkpoint into their earnings pool. It bills the provider's *current*
+// agreement load across the whole span since that checkpoint, so it must run
+// before any load change or the new load is billed over the old span. Every
+// agreement teardown path checkpoints for exactly that reason.
 func (cache *ProviderCache) Checkpoint() (error) {
 
     // First handle the balances available via checkpoint
     uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
     currentBlock := uint64(uctx.BlockHeight())
-    blockDifference := currentBlock - cache.GetCheckpointBlock()
+
+    checkpointBlock := cache.GetCheckpointBlock()
+    if checkpointBlock >= currentBlock {
+        return nil
+    }
+    blockDifference := currentBlock - checkpointBlock
 
     blocks := math.LegacyNewDecFromInt(math.NewIntFromUint64(blockDifference))
     rate := math.LegacyNewDecFromInt(cache.GetRate().Amount)
@@ -316,12 +392,7 @@ func (cache *ProviderCache) Checkpoint() (error) {
 
     checkpointBalance := prePenaltyDeductionAmount.Sub(penaltyDeductionAmount).TruncateInt()
 
-    checkpointBalanceCoin := sdk.NewCoins(sdk.NewCoin(cache.GetRate().Denom, checkpointBalance))
-
-    errSend := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetCollateralPoolLocation(), cache.GetEarningsPoolLocation(), checkpointBalanceCoin)
-    if errSend != nil {
-        return errSend
-    }
+    cache.SweepRevenue(cache.GetEarningsPoolLocation(), checkpointBalance, "")
 
     cache.SetCheckpointBlock(currentBlock)
 

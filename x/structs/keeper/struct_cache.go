@@ -378,9 +378,13 @@ func (cache *StructCache) GoOffline() {
     		cache.GridStatusRemoveReady()
 
     		// Remove all allocations
+    		// The struct is going offline regardless, so a failed agreement
+    		// settlement is logged rather than stopping the teardown.
     		allocations := cache.CC.GetAllAllocationBySource(cache.StructId)
     		for _, allocation := range allocations {
-    		    allocation.Destroy()
+    		    if err := allocation.Destroy(); err != nil {
+    		        cache.CC.k.logger.Error("Allocation could not be destroyed on struct offline", "structId", cache.StructId, "allocationId", allocation.GetAllocationId(), "error", err)
+    		    }
     		}
     	}
 
@@ -739,7 +743,9 @@ func (cache *StructCache) DestroyAndCommit() {
 		// but some allocations, such as automated ones may still exist
 		allocations := cache.CC.GetAllAllocationBySource(cache.StructId)
         for _, allocation := range allocations {
-            allocation.Destroy()
+            if err := allocation.Destroy(); err != nil {
+                cache.CC.k.logger.Error("Allocation could not be destroyed on struct destruction", "structId", cache.StructId, "allocationId", allocation.GetAllocationId(), "error", err)
+            }
         }
 
 		// Clear Load

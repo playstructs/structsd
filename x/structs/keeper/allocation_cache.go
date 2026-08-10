@@ -323,6 +323,21 @@ func (cache *AllocationCache) Destroy() (error) {
         return types.NewAllocationError(cache.ID(), "unknown_allocation")
     }
 
+    // Settle any related Agreement before touching the grid, so a settlement that
+    // cannot pay out leaves the allocation whole instead of half torn down.
+    //
+    // An agreement only ever exists against a providerAgreement allocation, and it
+    // shares this allocation's index. An agreement already tearing down is the one
+    // that called us, so settling it here would pay it out a second time.
+    if cache.IsProviderAgreement() {
+        agreement := cache.CC.GetAgreement(GetObjectID(types.ObjectType_agreement, cache.GetAllocation().Index))
+        if !agreement.IsTearingDown() && agreement.LoadAgreement() {
+            if err := agreement.PrematureCloseByAllocation(); err != nil {
+                return err
+            }
+        }
+    }
+
     power := cache.GetPower()
 
     // Decrease the Load of the Source
@@ -353,13 +368,6 @@ func (cache *AllocationCache) Destroy() (error) {
     }
 
     cache.CC.k.RemoveAllocationSourceIndex(cache.CC.ctx, cache.GetAllocation().SourceObjectId, cache.ID())
-
-
-    // Check for a related Agreement and close it
-    agreement := cache.CC.GetAgreement(GetObjectID(types.ObjectType_agreement, cache.GetAllocation().Index))
-    if agreement.LoadAgreement() {
-        agreement.PrematureCloseByAllocation()
-    }
 
     cache.CC.ClearPermissionsForObject(cache.ID())
 

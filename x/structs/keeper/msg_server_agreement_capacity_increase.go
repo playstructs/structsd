@@ -27,13 +27,18 @@ func (k msgServer) AgreementCapacityIncrease(goCtx context.Context, msg *types.M
         return emptyResponse, permissionError
     }
 
-    // Checkpoint
-    agreement.GetProvider().Checkpoint()
+    // Checkpoint before the load changes, or the new load gets billed across the
+    // span the old one was serving.
+    if err := agreement.GetProvider().Checkpoint(); err != nil {
+        return emptyResponse, err
+    }
 
     // increase capacity
         // increase provider load
         // which decreases duration
-    agreement.CapacityIncrease(msg.CapacityIncrease)
+    if err := agreement.CapacityIncrease(msg.CapacityIncrease); err != nil {
+        return emptyResponse, err
+    }
 
 	cc.CommitAll()
 	return &types.MsgAgreementResponse{}, nil

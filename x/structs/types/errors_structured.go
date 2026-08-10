@@ -1347,6 +1347,77 @@ func (e *ParameterValidationError) LogFields() []interface{} {
 func (e *ParameterValidationError) Unwrap() error { return ErrParameterValidation }
 
 // =============================================================================
+// 23a. AgreementSettlementError
+// =============================================================================
+
+// AgreementSettlementError indicates an agreement could not be settled: either
+// the payout destination is unusable, or a transfer the consumer is owed out of
+// the provider's collateral pool did not succeed. Consumer collateral is never
+// written off, so these are hard failures rather than warnings.
+type AgreementSettlementError struct {
+	AgreementId string
+	ProviderId  string // Optional
+	PlayerId    string // Optional
+	Address     string // Optional, the payout destination
+	Amount      string // Optional, the amount that could not be paid
+	Reason      string // "invalid_payout_address", "payout_failed"
+}
+
+func NewAgreementSettlementError(agreementId, reason string) *AgreementSettlementError {
+	return &AgreementSettlementError{
+		AgreementId: agreementId,
+		Reason:      reason,
+	}
+}
+
+func (e *AgreementSettlementError) WithProvider(providerId string) *AgreementSettlementError {
+	e.ProviderId = providerId
+	return e
+}
+
+func (e *AgreementSettlementError) WithPlayer(playerId string) *AgreementSettlementError {
+	e.PlayerId = playerId
+	return e
+}
+
+func (e *AgreementSettlementError) WithAddress(address string) *AgreementSettlementError {
+	e.Address = address
+	return e
+}
+
+func (e *AgreementSettlementError) WithAmount(amount string) *AgreementSettlementError {
+	e.Amount = amount
+	return e
+}
+
+func (e *AgreementSettlementError) Error() string {
+	switch e.Reason {
+	case "invalid_payout_address":
+		return fmt.Sprintf("agreement (%s) cannot be settled: payout address (%s) is not usable", e.AgreementId, e.Address)
+	case "payout_failed":
+		return fmt.Sprintf("agreement (%s) cannot be settled: collateral payout of %s failed", e.AgreementId, e.Amount)
+	default:
+		return fmt.Sprintf("agreement (%s) settlement failed: %s", e.AgreementId, e.Reason)
+	}
+}
+
+func (e *AgreementSettlementError) Code() uint32 { return 1720 }
+
+func (e *AgreementSettlementError) LogFields() []interface{} {
+	return []interface{}{
+		"error_type", "agreement_settlement",
+		"agreement_id", e.AgreementId,
+		"provider_id", e.ProviderId,
+		"player_id", e.PlayerId,
+		"address", e.Address,
+		"amount", e.Amount,
+		"reason", e.Reason,
+	}
+}
+
+func (e *AgreementSettlementError) Unwrap() error { return ErrAgreementSettlement }
+
+// =============================================================================
 // 24. PlanetStateError
 // =============================================================================
 

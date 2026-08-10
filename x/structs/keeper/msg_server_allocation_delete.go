@@ -37,7 +37,11 @@ func (k msgServer) AllocationDelete(goCtx context.Context, msg *types.MsgAllocat
         return emptyResponse, types.NewAllocationError(allocation.GetAllocation().SourceObjectId, "immutable_type").WithFieldChange("type", allocation.GetAllocation().Type.String(), "dynamic")
     }
 
-    allocation.Destroy()
+    // Destroy settles any agreement backed by this allocation, so a failed
+    // payout must abort rather than tear the allocation down unpaid.
+    if err := allocation.Destroy(); err != nil {
+        return emptyResponse, err
+    }
 
 	cc.CommitAll()
 	return &types.MsgAllocationDeleteResponse{

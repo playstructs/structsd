@@ -39,6 +39,10 @@ func TestMsgAgreementCapacityIncrease(t *testing.T) {
 	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, player)
 	require.NoError(t, err)
 
+	// A capacity increase is checked against the substation's own available
+	// capacity, so the substation needs headroom for the increase to be valid.
+	k.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, substation.Id), uint64(1000))
+
 	// Create a provider
 	provider := types.Provider{
 		Owner:                       player.Id,

@@ -27,8 +27,7 @@ func (k msgServer) AgreementClose(goCtx context.Context, msg *types.MsgAgreement
         return emptyResponse, permissionError
     }
 
-    // Checkpoint
-    agreement.GetProvider().Checkpoint()
+    // PrematureCloseByConsumer checkpoints the provider itself
     errorParam := agreement.PrematureCloseByConsumer()
     if (errorParam != nil) {
         return emptyResponse, errorParam

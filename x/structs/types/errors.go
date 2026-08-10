@@ -257,6 +257,7 @@ var (
 	ErrParameterBelowMinimum = sdkerrors.Register(ModuleName, 1711, "parameter below minimum")
 	ErrParameterAboveMaximum = sdkerrors.Register(ModuleName, 1712, "parameter above maximum")
 	ErrParameterExceedsCapacity = sdkerrors.Register(ModuleName, 1713, "parameter exceeds available capacity")
+	ErrAgreementSettlement   = sdkerrors.Register(ModuleName, 1720, "agreement settlement failed")
 )
 
 // -----------------------------------------------------------------------------

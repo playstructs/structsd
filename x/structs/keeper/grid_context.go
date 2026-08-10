@@ -139,7 +139,12 @@ func (cc *CurrentContext) GridCascade() {
 
 				cc.k.logger.Info("Grid Queue (Brownout)", "objectId", objectId, "load", cc.GetGridAttribute(loadAttributeId), "capacity", cc.GetGridAttribute(capacityAttributeId))
 
-				allocationList[allocationPointer].Destroy()
+				// The brownout has to keep shedding load even if settling an
+				// agreement behind one of these allocations fails, or the loop
+				// spins on a source it can never bring back under capacity.
+				if err := allocationList[allocationPointer].Destroy(); err != nil {
+					cc.k.logger.Error("Grid Queue (Allocation Destroy failed)", "allocationId", allocationList[allocationPointer].GetAllocationId(), "error", err)
+				}
 				cc.k.logger.Info("Grid Queue (Allocation Destroyed)", "allocationId", allocationList[allocationPointer].GetAllocationId())
 
 				allocationPointer++

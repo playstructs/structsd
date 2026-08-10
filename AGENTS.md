@@ -37,6 +37,31 @@ key's own bits are a hard ceiling — a key may never exercise a permission it d
 hold, and when a handler overwrites a permission bitfield it must check the bits being destroyed
 as well as the bits being written.
 
+A subject address deliberately does **not** have to sign. `PlayerSend` debits `FromAddress`, and
+the reactor handlers stake against `DelegatorAddress`, on the authority of the signer's own
+`PermTokenTransfer` / `PermTokenInfuse` bit — every address of a player is one wallet, and that
+bit is what authorizes moving its coins. This reads like a missing signature check and is not one:
+audits keep proposing that the debited address be a required signer, which would break delegating
+token operations to a secondary key. The bit on the signing key is the control, so grant it as
+narrowly as that implies.
+
+**Agreement teardown settles exactly once, and consumer collateral outranks provider revenue.**
+Agreement teardown destroys its allocation, and allocation teardown settles its agreement, so the
+two call each other. `cc.agreements` hands both legs the same `AgreementCache`, so the second leg
+would pay out again: `beginTeardown()` claims the one settlement an agreement gets, and
+`AllocationCache.Destroy` skips an agreement that is already `IsTearingDown()`. Every teardown path
+also checkpoints the provider first, because `Checkpoint()` bills the *current* agreement load
+across the whole span since the last checkpoint — change the load before checkpointing and the new
+load gets billed over the old span. A provider's collateral pool is keyed only by provider, so all
+of its agreements share one account: consumer payouts go through `payConsumer` and are exact,
+provider revenue goes through `ProviderCache.SweepRevenue` and is clamped to what the pool can
+spare. Never reverse that order, or one consumer's collateral funds another's payout. Teardown is
+also not transactional — half of it runs in block hooks that can only log and continue — so each
+path does everything that can fail (destination validation, allocation teardown) before it moves
+money or changes load. The registered `provider-collateral-solvency` invariant
+(`x/structs/keeper/invariants.go`) is the standing check;
+`x/structs/keeper/agreement_teardown_test.go` is the regression suite.
+
 **Use the typed errors.** Keeper codes (1050–1800) live in
 `x/structs/types/errors_structured.go`, ante codes (2000–2050) in `app/ante/errors.go`. The
 numbers are a public contract that clients and tests assert on: never `fmt.Errorf` out of a

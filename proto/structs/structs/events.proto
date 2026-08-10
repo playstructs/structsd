@@ -75,6 +75,15 @@ option go_package = "structs/x/structs/types";
   message EventProviderRevokeGuild { EventProviderRevokeGuildDetail eventProviderRevokeGuildDetail = 1;}
   message EventProviderRevokeGuildDetail { string providerId = 1; string guildId = 2;}
 
+  // Emitted when a provider's collateral pool could not cover revenue owed to
+  // that provider. Consumer collateral has first claim on the pool, so provider
+  // revenue is clamped to what remains rather than overdrawing it. A nonzero
+  // shortfall means the pool is accounting for less than it should be and is
+  // worth investigating; the amount stays in the provider's own pool.
+  // agreementId is empty when the sweep was not tied to one agreement.
+  message EventProviderRevenueShortfall { EventProviderRevenueShortfallDetail eventProviderRevenueShortfallDetail = 1;}
+  message EventProviderRevenueShortfallDetail { string providerId = 1; string agreementId = 2; string denom = 3; string requested = 4; string paid = 5; string shortfall = 6;}
+
   message EventPlayerHalted { string playerId = 1; }
   message EventPlayerResumed { string playerId = 1; }
 
