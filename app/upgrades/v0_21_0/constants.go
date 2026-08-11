@@ -361,6 +361,64 @@ package v0_21_0
 //     Undeclared levels are refused rather than clamped at the handler, so a
 //     client sending one learns it was wrong instead of silently getting closed.
 //
+//   - Approving, denying or revoking a guild membership application now requires
+//     the application to exist. Membership is two-sided — a player files a
+//     request and the guild approves it, or the guild issues an invite and the
+//     player accepts it — and the stored application is the only evidence the
+//     first leg happened. GetGuildMembershipApplicationCache synthesized a
+//     proposed application on a store miss, which handed every approval path
+//     precisely the consent it was about to verify. On
+//     GuildMembershipRequestApprove that was a force-join: CanRequestMembership
+//     takes no player argument and only asks whether the guild has requests
+//     open, so any member of a recruiting guild named any victim and
+//     ApproveRequest overwrote their GuildId, reset their GuildRank to the entry
+//     rank and moved their substation connection, evicting them from the guild
+//     they were in. The victim never transacted. Deny and revoke were milder —
+//     the status they set becomes a delete at commit, so the write was a no-op —
+//     but each reported success for an application that did not exist.
+//
+//     The loader is now two. GetOrCreateGuildMembershipApplicationCache keeps the
+//     synthesis and belongs to the three handlers that open an application
+//     (request, invite, join); GetPendingGuildMembershipApplicationCache requires
+//     a stored row and belongs to the six that consume one, returning
+//     ErrGuildMembershipApplication (1502, registered and until now unused) on a
+//     miss. GuildMembershipApplicationCache.requirePending is the backstop on the
+//     six terminal mutators, additionally requiring status proposed; DirectJoin
+//     and Kick are deliberately outside it, each creating and consuming its own
+//     record and carrying its own authorization. All six handlers also now check
+//     the mutator's returned error, which they previously assigned and dropped —
+//     harmless while every mutator returned nil, and the reason requirePending
+//     needed the handlers repaired to take effect at all.
+//
+//     Same change closes the mirror on the creation side. GuildMembershipInvite
+//     has no Verify call of its own, so the loader's CanInviteMembers is its
+//     entire authorization, and that check ran only when synthesizing. An invite
+//     already on file was therefore unguarded: an outsider named it and carried
+//     on into SetSubstationIdOverride, which validates rights on the destination
+//     substation and says nothing about the guild, pointing the invite at a
+//     substation they own — and the invitee connected there on accept. The check
+//     now runs on both branches, so amending an invite needs the same authority
+//     as sending one.
+//
+//     GenesisState.Validate additionally rejects an undeclared guildJoinType or
+//     registrationStatus on a stored application, genesis being the one path that
+//     assigns the record without passing a setter. Both are authorization input:
+//     the join type selects which side's consent the application stands for, the
+//     status whether it is still live.
+//
+//     No migration, and the reason matters. A forced membership is byte-identical
+//     to a consented one — MigrateGuild writes the same GuildId and rank either
+//     way — so nothing on disk identifies a victim, and the exploit corrupts no
+//     aggregate: guild membership is a field on the player, the substation move
+//     goes through the ordinary connect path, and the synthesized application was
+//     deleted at commit. There is nothing to recompute and no safe guess at what
+//     to undo. Affected players rejoin their guild through the normal flow.
+//
+//     This is a player-facing rule change, not only a fix: an officer can no
+//     longer add a player by approving on their behalf. Every route into a guild
+//     now needs the joining player to transact — request then approve, invite
+//     then accept, or direct join.
+//
 // State migrations:
 //
 //   - MigrateGuildJoinBypassLevels: clamp either bypass field to closed on any

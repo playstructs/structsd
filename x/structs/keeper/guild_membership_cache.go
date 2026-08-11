@@ -1,7 +1,7 @@
 package keeper
 
 import (
-
+	errorsmod "cosmossdk.io/errors"
 
 	"structs/x/structs/types"
 	//sdk "github.com/cosmos/cosmos-sdk/types"
@@ -39,6 +39,17 @@ func (cache *GuildMembershipApplicationCache) Commit() {
                 cache.CC.k.ClearGuildMembershipApplication(cache.CC.ctx, cache.GetGuildId(), cache.GetPlayerId())
             case types.RegistrationStatus_revoked:
                 cache.CC.k.ClearGuildMembershipApplication(cache.CC.ctx, cache.GetGuildId(), cache.GetPlayerId())
+            default:
+                // registrationStatus is an open proto3 enum, so a value outside
+                // the declared four is storable. Log and write nothing, which is
+                // what this switch already did in silence. Clearing would be
+                // tidier for a phantom row, but it would mean a status added to
+                // the proto without a case here deletes live rows, and with
+                // GenesisState.Validate rejecting undeclared values on the one
+                // path that assigns a whole record, this branch is unreachable —
+                // an unreachable branch should not be the one that deletes data.
+                cache.CC.k.logger.Error("guild membership application holds an undeclared registration status; not persisting",
+                    "guildId", cache.GetGuildId(), "playerId", cache.GetPlayerId(), "registrationStatus", int32(cache.GetRegistrationStatus()))
 		}
 	}
 	cache.Changed = false
@@ -137,6 +148,31 @@ func (cache *GuildMembershipApplicationCache) SetSubstationIdOverride(substation
 	return nil
 }
 
+// requirePending refuses a terminal transition on anything but a live, stored
+// proposal. It is the last line behind GetPendingGuildMembershipApplicationCache,
+// so a handler that reaches for the wrong constructor still cannot approve an
+// application nobody filed.
+//
+// GuildMembershipApplicationLoaded is the load-bearing half: only a successful
+// store read sets it, so it means precisely "a player or a guild actually filed
+// this". The status test is defence in depth and no public path can reach it
+// today, because Commit clears every status except proposed and so only proposed
+// rows ever persist. Note also that proposed is the zero value, as invite is for
+// join type, which means an empty record reads as a proposed invite and the
+// status test alone would wave it through. Tests reach the branch by writing a
+// row with SetGuildMembershipApplication directly.
+func (cache *GuildMembershipApplicationCache) requirePending() error {
+	if !cache.GuildMembershipApplicationLoaded {
+		return errorsmod.Wrapf(types.ErrGuildMembershipApplication, "no application on file (%s)", cache.GuildMembershipApplicationId)
+	}
+
+	if cache.GetRegistrationStatus() != types.RegistrationStatus_proposed {
+		return errorsmod.Wrapf(types.ErrGuildMembershipApplication, "application (%s) is no longer pending (registrationStatus %d)", cache.GuildMembershipApplicationId, int32(cache.GetRegistrationStatus()))
+	}
+
+	return nil
+}
+
 func (cache *GuildMembershipApplicationCache) VerifyInviteAsGuild() error {
 	if cache.GetJoinType() != types.GuildJoinType_invite {
 		return types.NewGuildMembershipError(cache.GetGuildId(), cache.GetPlayerId(), "wrong_join_type").WithJoinType("invite")
@@ -154,6 +190,10 @@ func (cache *GuildMembershipApplicationCache) VerifyInviteAsPlayer() error {
 }
 
 func (cache *GuildMembershipApplicationCache) ApproveInvite() error {
+	if err := cache.requirePending(); err != nil {
+		return err
+	}
+
 	cache.GetPlayer().MigrateGuild(cache.GetGuild())
 	cache.GetPlayer().MigrateSubstation(cache.GetSubstationId())
 
@@ -164,6 +204,10 @@ func (cache *GuildMembershipApplicationCache) ApproveInvite() error {
 }
 
 func (cache *GuildMembershipApplicationCache) DenyInvite() error {
+	if err := cache.requirePending(); err != nil {
+		return err
+	}
+
 	cache.GuildMembershipApplication.RegistrationStatus = types.RegistrationStatus_denied
 	cache.Changed = true
 
@@ -171,6 +215,10 @@ func (cache *GuildMembershipApplicationCache) DenyInvite() error {
 }
 
 func (cache *GuildMembershipApplicationCache) RevokeInvite() error {
+	if err := cache.requirePending(); err != nil {
+		return err
+	}
+
 	cache.GuildMembershipApplication.RegistrationStatus = types.RegistrationStatus_revoked
 	cache.Changed = true
 	return nil
@@ -193,6 +241,10 @@ func (cache *GuildMembershipApplicationCache) VerifyRequestAsPlayer() error {
 }
 
 func (cache *GuildMembershipApplicationCache) ApproveRequest() error {
+	if err := cache.requirePending(); err != nil {
+		return err
+	}
+
 	cache.GetPlayer().MigrateGuild(cache.GetGuild())
 	cache.GetPlayer().MigrateSubstation(cache.GetSubstationId())
 
@@ -203,6 +255,10 @@ func (cache *GuildMembershipApplicationCache) ApproveRequest() error {
 }
 
 func (cache *GuildMembershipApplicationCache) DenyRequest() error {
+	if err := cache.requirePending(); err != nil {
+		return err
+	}
+
 	cache.GuildMembershipApplication.RegistrationStatus = types.RegistrationStatus_denied
 	cache.Changed = true
 
@@ -210,11 +266,19 @@ func (cache *GuildMembershipApplicationCache) DenyRequest() error {
 }
 
 func (cache *GuildMembershipApplicationCache) RevokeRequest() error {
+	if err := cache.requirePending(); err != nil {
+		return err
+	}
+
 	cache.GuildMembershipApplication.RegistrationStatus = types.RegistrationStatus_revoked
 	cache.Changed = true
 	return nil
 }
 
+// Kick deliberately does not call requirePending. GetGuildMembershipKickCache
+// builds its record from scratch every time — a kick is initiated by the guild
+// and there is nothing for a member to have filed — and does its own
+// authorization: CanKickMembers, plus a rank comparison, plus refusing the owner.
 func (cache *GuildMembershipApplicationCache) Kick() error {
 	cache.GetPlayer().LeaveGuild()
 
@@ -232,6 +296,10 @@ func (cache *GuildMembershipApplicationCache) VerifyDirectJoin() error {
     return cache.CC.PermissionCheck(cache.GetPlayer(), cache.CallingPlayer, types.PermGuildMembership)
 }
 
+// DirectJoin deliberately does not call requirePending. GuildMembershipJoin
+// creates the application and consumes it in the same handler, so there is never
+// a stored row to find, and consent is not in question: VerifyDirectJoin demands
+// PermGuildMembership on the joining player themselves.
 func (cache *GuildMembershipApplicationCache) DirectJoin() error {
 
 	cache.GetPlayer().MigrateGuild(cache.GetGuild())

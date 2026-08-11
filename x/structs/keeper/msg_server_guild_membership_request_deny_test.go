@@ -46,7 +46,25 @@ func TestMsgGuildMembershipRequestDeny(t *testing.T) {
 	})
 
 	t.Run("no pending request", func(t *testing.T) {
-		t.Skip("When no request exists, handler creates and denies; no 'not found' error path")
+		// This case was skipped with the bug written out as the reason — "handler
+		// creates and denies; no 'not found' error path". That was the loader
+		// synthesizing the request it was about to deny, which on the approve
+		// path was a force-join.
+		strangerAcc := sdk.AccAddress("deny_no_request_pad1")
+		stranger := types.Player{
+			Creator:        strangerAcc.String(),
+			PrimaryAddress: strangerAcc.String(),
+		}
+		stranger = testAppendPlayer(k, ctx, stranger)
+
+		_, err := ms.GuildMembershipRequestDeny(wctx, &types.MsgGuildMembershipRequestDeny{
+			Creator:  gs.GuildOwner.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: stranger.Id,
+		})
+		require.Error(t, err)
+		require.ErrorIs(t, err, types.ErrGuildMembershipApplication)
+		require.Contains(t, err.Error(), "no application on file")
 	})
 
 	t.Run("denier not in guild", func(t *testing.T) {

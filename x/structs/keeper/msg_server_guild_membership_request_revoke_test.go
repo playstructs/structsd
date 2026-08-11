@@ -52,7 +52,10 @@ func TestMsgGuildMembershipRequestRevoke(t *testing.T) {
 			PlayerId: "1-999",
 		})
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "permission")
+		// Previously a permission failure on a request the loader had just
+		// synthesized for a player who never filed one.
+		require.ErrorIs(t, err, types.ErrGuildMembershipApplication)
+		require.Contains(t, err.Error(), "no application on file")
 	})
 
 	t.Run("unregistered creator", func(t *testing.T) {

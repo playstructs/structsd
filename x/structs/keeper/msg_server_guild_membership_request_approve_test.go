@@ -76,7 +76,10 @@ func TestMsgGuildMembershipRequestApprove(t *testing.T) {
 		require.Equal(t, gsB.Guild.Id, p.GuildId)
 	})
 
-	t.Run("no pending request", func(t *testing.T) {
+	t.Run("nonexistent guild", func(t *testing.T) {
+		// This was named "no pending request" while naming guild 0-999, so it only
+		// ever proved the guild lookup fails. The case it appeared to cover is in
+		// TestGuildMembershipForceJoinIsRefused, against a guild that exists.
 		k, ms, ctx := setupMsgServer(t)
 		wctx := sdk.UnwrapSDKContext(ctx)
 		gs := testCreateGuild(k, ctx)

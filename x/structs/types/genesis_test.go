@@ -63,6 +63,47 @@ func TestGenesisState_Validate(t *testing.T) {
 			},
 			valid: false,
 		},
+		{
+			desc: "membership application with declared join type and status is valid",
+			genState: &types.GenesisState{
+				PortId: types.PortID,
+				GuildMembershipApplicationList: []types.GuildMembershipApplication{{
+					GuildId:            "5-0",
+					PlayerId:           "1-1",
+					JoinType:           types.GuildJoinType_request,
+					RegistrationStatus: types.RegistrationStatus_proposed,
+				}},
+			},
+			valid: true,
+		},
+		{
+			// The join type decides which side's consent an application stands
+			// for, so an undeclared one is a record matching neither the request
+			// nor the invite leg. GenesisImportGuildMembershipApplication assigns
+			// the record wholesale and passes no setter that could have checked.
+			desc: "membership application with an undeclared join type is invalid",
+			genState: &types.GenesisState{
+				PortId: types.PortID,
+				GuildMembershipApplicationList: []types.GuildMembershipApplication{{
+					GuildId:  "5-0",
+					PlayerId: "1-1",
+					JoinType: types.GuildJoinType(500),
+				}},
+			},
+			valid: false,
+		},
+		{
+			desc: "membership application with an undeclared registration status is invalid",
+			genState: &types.GenesisState{
+				PortId: types.PortID,
+				GuildMembershipApplicationList: []types.GuildMembershipApplication{{
+					GuildId:            "5-0",
+					PlayerId:           "1-1",
+					RegistrationStatus: types.RegistrationStatus(-1),
+				}},
+			},
+			valid: false,
+		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	}
 	for _, tc := range tests {

@@ -236,6 +236,33 @@ deliberate. `TestArch_GuildBypassSwitchesHaveDefault` enforces the defaults and
 the keeper (`Ambit`, `ObjectType`) mostly dispatch rather than authorize and carry their own
 defaultless-switch backlog — the rule is about the ones where falling through grants something.
 
+**A synthesize-on-miss loader belongs to creation paths only, and the authorization
+belongs outside the synthesis branch.** Guild membership is two-sided: a player files a request
+and the guild approves it, or the guild issues an invite and the player accepts it. The stored
+`GuildMembershipApplication` is the *only* evidence the first leg happened, so
+`GetGuildMembershipApplicationCache` inventing a `proposed` one on a store miss handed every
+approval path exactly the consent it was about to verify. `GuildMembershipRequestApprove` was a
+force-join: `CanRequestMembership` takes no player argument and only asks whether the guild has
+requests open, so any member of a recruiting guild named any victim and `ApproveRequest` overwrote
+their `GuildId`, reset their `GuildRank` and moved their substation connection, with the victim
+never transacting. Hence two loaders —
+`GetOrCreateGuildMembershipApplicationCache` for the three handlers that open an application,
+`GetPendingGuildMembershipApplicationCache` for the six that consume one — plus `requirePending()`
+as the backstop on the mutators. `DirectJoin` and `Kick` are deliberately outside it, each
+creating and consuming its own record and carrying its own authorization.
+`TestArch_MembershipTransitionsRequirePendingApplication` holds the pairing and
+`guild_membership_consent_test.go` is the regression suite.
+
+Note the second half, which is the part that generalizes past this bug. A **get-or-create is two
+code paths and a check written inside the create branch guards only new records.**
+`GuildMembershipInvite` has no `Verify` call of its own, so the loader's `CanInviteMembers` was its
+whole authorization, and it sat in the synthesis branch: an invite already on file was unguarded,
+and an outsider could name one and carry on into `SetSubstationIdOverride`, which validates rights
+on the destination substation and nothing about the guild, redirecting the invite to a substation
+they own. Amending a record needs the authority that creating it needed. Also note why the fix
+needed the handlers repaired to work at all: all six consumption handlers assigned the mutator's
+error and dropped it, which was invisible while every mutator returned `nil`.
+
 **Use the typed errors.** Keeper codes (1050–1800) live in
 `x/structs/types/errors_structured.go`, ante codes (2000–2050) in `app/ante/errors.go`. The
 numbers are a public contract that clients and tests assert on: never `fmt.Errorf` out of a

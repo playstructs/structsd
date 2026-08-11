@@ -30,7 +30,7 @@ func (k msgServer) GuildMembershipInviteApprove(goCtx context.Context, msg *type
 		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
+    guildMembershipApplication, guildMembershipApplicationError := cc.GetPendingGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
         return emptyResponse, guildMembershipApplicationError
     }
@@ -48,6 +48,9 @@ func (k msgServer) GuildMembershipInviteApprove(goCtx context.Context, msg *type
 	}
 
     guildMembershipApplicationError = guildMembershipApplication.ApproveInvite()
+    if guildMembershipApplicationError != nil {
+        return emptyResponse, guildMembershipApplicationError
+    }
 
 	cc.CommitAll()
 	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil

@@ -30,7 +30,7 @@ func (k msgServer) GuildMembershipRequest(goCtx context.Context, msg *types.MsgG
 		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_request, msg.GuildId, msg.PlayerId)
+    guildMembershipApplication, guildMembershipApplicationError := cc.GetOrCreateGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_request, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
         return emptyResponse, guildMembershipApplicationError
     }

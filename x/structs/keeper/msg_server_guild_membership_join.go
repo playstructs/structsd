@@ -31,7 +31,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_direct, msg.GuildId, msg.PlayerId)
+    guildMembershipApplication, guildMembershipApplicationError := cc.GetOrCreateGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_direct, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
         return emptyResponse, guildMembershipApplicationError
     }
@@ -170,7 +170,9 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
     }
 
-    guildMembershipApplication.DirectJoin()
+    if directJoinError := guildMembershipApplication.DirectJoin(); directJoinError != nil {
+        return emptyResponse, directJoinError
+    }
 
 	cc.CommitAll()
 	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil

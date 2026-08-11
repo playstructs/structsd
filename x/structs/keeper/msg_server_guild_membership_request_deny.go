@@ -31,7 +31,7 @@ func (k msgServer) GuildMembershipRequestDeny(goCtx context.Context, msg *types.
 		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_request, msg.GuildId, msg.PlayerId)
+    guildMembershipApplication, guildMembershipApplicationError := cc.GetPendingGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_request, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
         return emptyResponse, guildMembershipApplicationError
     }
@@ -42,6 +42,9 @@ func (k msgServer) GuildMembershipRequestDeny(goCtx context.Context, msg *types.
     }
 
     guildMembershipApplicationError = guildMembershipApplication.DenyRequest()
+    if guildMembershipApplicationError != nil {
+        return emptyResponse, guildMembershipApplicationError
+    }
 
 	cc.CommitAll()
 	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil

@@ -94,7 +94,11 @@ func TestMsgGuildMembershipInviteApprove(t *testing.T) {
 					PlayerId: target.Id,
 				})
 				require.Error(t, err)
-				require.Contains(t, err.Error(), "not a member")
+				// This case used to pass on a guild-side membership check applied
+				// to an invite the loader had just synthesized. Now the missing
+				// invite is itself the refusal, which is what the case is named for.
+				require.ErrorIs(t, err, types.ErrGuildMembershipApplication)
+				require.Contains(t, err.Error(), "no application on file")
 			},
 		},
 		{

@@ -53,6 +53,25 @@ func (level GuildJoinBypassLevel) IsValid() bool {
 	return declared
 }
 
+// IsValid reports whether joinType is one of the values declared in
+// proto/structs/structs/keys.proto. Same open-enum reasoning as
+// GuildJoinBypassLevel.IsValid, and the same stakes: the join type selects which
+// side's consent an application stands for, so an undeclared one reaches the
+// approve path as a record matching neither the request nor the invite leg.
+func (joinType GuildJoinType) IsValid() bool {
+	_, declared := GuildJoinType_name[int32(joinType)]
+	return declared
+}
+
+// IsValid reports whether status is one of the values declared in
+// proto/structs/structs/keys.proto. An undeclared status is what
+// GuildMembershipApplicationCache.requirePending refuses, so validating it on the
+// way in keeps a genesis file from writing a row that can never be acted on.
+func (status RegistrationStatus) IsValid() bool {
+	_, declared := RegistrationStatus_name[int32(status)]
+	return declared
+}
+
 // NormalizeJoinBypassLevels clamps either bypass field to closed when it holds
 // a value outside the declared enum, which records written before the update
 // handlers validated their input can. It reports whether the guild changed.

@@ -63,7 +63,10 @@ func TestMsgGuildMembershipInviteDeny(t *testing.T) {
 					PlayerId: target.Id,
 				})
 				require.Error(t, err)
-				require.Contains(t, err.Error(), "not a member")
+				// Previously satisfied by a guild-side check on a synthesized
+				// invite; the absent invite is now the reason.
+				require.ErrorIs(t, err, types.ErrGuildMembershipApplication)
+				require.Contains(t, err.Error(), "no application on file")
 			},
 		},
 		{

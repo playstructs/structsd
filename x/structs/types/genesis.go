@@ -56,6 +56,22 @@ func (gs GenesisState) Validate() error {
 		}
 	}
 
+	// Both of these fields are authorization input on the approve paths — the
+	// join type decides which side's consent the application stands for, the
+	// status decides whether it is still live — and a genesis file is the only
+	// way an undeclared value reaches either. GenesisImportGuildMembershipApplication
+	// assigns the whole record onto the cache, so it passes no setter that could
+	// have checked, and the keeper's own writes only ever store the four declared
+	// statuses.
+	for _, app := range gs.GuildMembershipApplicationList {
+		if !app.JoinType.IsValid() {
+			return errorsmod.Wrapf(ErrGuildJoinType, "join type (%d) on application for player (%s) in guild (%s)", int32(app.JoinType), app.PlayerId, app.GuildId)
+		}
+		if !app.RegistrationStatus.IsValid() {
+			return errorsmod.Wrapf(ErrGuildMembershipApplication, "registration status (%d) on application for player (%s) in guild (%s)", int32(app.RegistrationStatus), app.PlayerId, app.GuildId)
+		}
+	}
+
 	// this line is used by starport scaffolding # genesis/types/validate
 
 	return gs.Params.Validate()
