@@ -138,7 +138,17 @@ func (cc *CurrentContext) NewPlayer(address string) *PlayerCache {
            }
 
 	//Add Address records
-	cc.k.SetPlayerIndexForAddress(cc.ctx, player.Creator, player.Index)
+	//
+	// Every caller reaches here with an address that is already known-good: a
+	// handler's SDK-validated msg.Creator, an address checked against
+	// PubKeyToBech32 by a proof, or an AccAddress rendered back to a string by
+	// the staking hooks. So this cannot fire, and it is logged rather than
+	// propagated because NewPlayer has no error return and returning nil here
+	// would hand every caller a nil cache to dereference — a worse failure than
+	// the one being guarded.
+	if err := cc.k.SetPlayerIndexForAddress(cc.ctx, player.Creator, player.Index); err != nil {
+		cc.k.logger.Error("New player created with an address that could not be indexed", "playerId", playerId, "address", player.Creator, "error", err)
+	}
 
     //Add permissions
 	addressPermissionId := GetAddressPermissionIDBytes(player.Creator)

@@ -26,7 +26,14 @@ func (cache *AddressCache) Commit() {
         if cache.Deleted {
             cache.CC.k.RevokePlayerIndexForAddress(cache.CC.ctx, cache.Address, cache.PlayerIndex)
         } else {
-            cache.CC.k.SetPlayerIndexForAddress(cache.CC.ctx, cache.Address, cache.PlayerIndex)
+            // Commit cannot propagate, and CommitAll runs inside block hooks
+            // that can only log and continue. The entry points guard this
+            // instead: GenesisState.Validate rejects a malformed AddressList,
+            // and every transaction path derives its address from a verified
+            // pubkey or an already-parsed AccAddress. This is the backstop.
+            if err := cache.CC.k.SetPlayerIndexForAddress(cache.CC.ctx, cache.Address, cache.PlayerIndex); err != nil {
+                cache.CC.k.logger.Error("Address index not written", "address", cache.Address, "playerIndex", cache.PlayerIndex, "error", err)
+            }
         }
     }
 }

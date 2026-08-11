@@ -210,6 +210,43 @@ package v0_21_0
 //     1.23/1.24 build, proven exhaustively over the whole rune space by
 //     TestPinnedTablesMatchToolchain and TestNormalizeNameMatchesLegacyForm.
 //
+//   - CurrentContext.CommitAll now commits every cache map in sorted key order
+//     through commitCaches, instead of ranging the maps directly. Go randomizes
+//     map iteration order per process, and AddressCache.Commit allocates an auth
+//     account number from the account keeper's global monotonic sequence for any
+//     address that does not have one, so two addresses committed in map order
+//     were given different account numbers on different nodes. That is divergent
+//     auth state and a different app hash, reachable from a genesis AddressList
+//     with two unbacked addresses and from a single transaction carrying two
+//     AddressRegister messages. Account allocation was the only order-dependent
+//     write of the eighteen; every other Commit writes keys derived from its own
+//     map key. Note that this changes two observable things at the release, not
+//     just one: the account numbers assigned to addresses from this point on,
+//     and the order of events emitted within a block, which GRASS and structs-pg
+//     consume. No event field changes, and the previous order was random rather
+//     than meaningful, so nothing could have depended on it.
+//
+//     There is no migration and there must not be one. Account numbers already
+//     in auth state are correct for the order they were assigned in and must
+//     never be renumbered, and a chain that actually hit the divergence would
+//     already have halted rather than reached this upgrade. Like the rest of the
+//     consensus changes above, this one is NOT gated by the upgrade handler: it
+//     takes effect the moment the binary runs, so the release must be a
+//     coordinated swap rather than a rolling one.
+//
+//   - SetPlayerIndexForAddress no longer provisions an auth account for an
+//     address that fails bech32 parsing, and returns an error saying so. The old
+//     form discarded the parse error, which left the empty AccAddress, found no
+//     account for it, and so created and numbered an auth account for the empty
+//     address — burning a sequence number on a non-address. The index row itself
+//     is an ordinary KV write keyed by the address string, order-independent and
+//     meaningful for any key, so it is still written; only the provisioning is
+//     refused. GenesisState.Validate now rejects a malformed AddressList, which
+//     is the only way such an address can arrive: AddressRegister and
+//     GuildMembershipJoinProxy both require the address to equal PubKeyToBech32
+//     of a proof pubkey, the staking hooks pass an AccAddress that was already
+//     parsed, and everything else takes the SDK-validated msg.Creator.
+//
 // State migrations:
 //
 //   - MigrateGuildNameIndex: clear the Guild/name/ prefix and rebuild it from

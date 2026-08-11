@@ -34,12 +34,28 @@ import (
 // MockAccountKeeper is a mock implementation of the AccountKeeper interface
 type MockAccountKeeper struct {
 	accounts map[string]sdk.AccountI
+
+	// nextAccountNumber mirrors the real keeper's global monotonic sequence.
+	// Without it every account would be numbered 0 and the mock would hide the
+	// very ordering bug that map-order commits used to cause.
+	nextAccountNumber uint64
+
+	// creationOrder records the addresses passed to NewAccountWithAddress, in
+	// call order, so a test can assert the order state was written in and not
+	// just the numbers that came out of it.
+	creationOrder []string
 }
 
 func NewMockAccountKeeper() *MockAccountKeeper {
 	return &MockAccountKeeper{
 		accounts: make(map[string]sdk.AccountI),
 	}
+}
+
+// AccountCreationOrder returns the addresses given account numbers, in the
+// order they were assigned.
+func (m *MockAccountKeeper) AccountCreationOrder() []string {
+	return append([]string(nil), m.creationOrder...)
 }
 
 func (m *MockAccountKeeper) GetAccount(ctx context.Context, addr sdk.AccAddress) sdk.AccountI {
@@ -51,7 +67,11 @@ func (m *MockAccountKeeper) SetAccount(ctx context.Context, acc sdk.AccountI) {
 }
 
 func (m *MockAccountKeeper) NewAccountWithAddress(ctx context.Context, addr sdk.AccAddress) sdk.AccountI {
-	acc := authtypes.NewBaseAccount(addr, nil, 0, 0)
+	accountNumber := m.nextAccountNumber
+	m.nextAccountNumber++
+	m.creationOrder = append(m.creationOrder, addr.String())
+
+	acc := authtypes.NewBaseAccount(addr, nil, accountNumber, 0)
 	m.accounts[addr.String()] = acc
 	return acc
 }
@@ -547,6 +567,7 @@ func StructsKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 	// (e.g. WriteRawGridAttribute) can punch raw KV writes through the
 	// keeper's exported surface to simulate corrupted on-chain state.
 	ctx = ctx.WithValue(testStoreKeyCtx{}, storeKey)
+	ctx = ctx.WithValue(testAccountKeeperCtx{}, mockAccountKeeper)
 
 	return k, ctx
 }
@@ -555,6 +576,18 @@ func StructsKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 // key produced by StructsKeeper so test helpers can reach the underlying KV
 // store without changing the public StructsKeeper return signature.
 type testStoreKeyCtx struct{}
+
+// testAccountKeeperCtx stashes the MockAccountKeeper for the same reason.
+type testAccountKeeperCtx struct{}
+
+// AccountKeeperFrom returns the MockAccountKeeper behind a context produced by
+// StructsKeeper, so a test can inspect how auth accounts were numbered.
+func AccountKeeperFrom(t testing.TB, ctx sdk.Context) *MockAccountKeeper {
+	t.Helper()
+	accountKeeper, ok := ctx.Value(testAccountKeeperCtx{}).(*MockAccountKeeper)
+	require.True(t, ok, "AccountKeeperFrom: ctx not produced by keepertest.StructsKeeper")
+	return accountKeeper
+}
 
 // WriteRawGridAttribute plants a raw GridAttribute KV row, bypassing
 // Keeper.SetGridAttribute. This exists only so tests can simulate the

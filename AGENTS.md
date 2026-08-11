@@ -131,6 +131,27 @@ the struct is not destroyed; `x/structs/keeper/struct_destroyed_guards_test.go` 
 suite, and `MigrateStructPhantomAggregates` in `app/upgrades/v0_21_0` recomputes what the two bugs
 corrupted.
 
+**Commit cache maps in sorted key order, never in map order.** `CommitAll` goes through
+`commitCaches`, which sorts. That is not tidiness: Go randomizes map iteration order per process,
+and `AddressCache.Commit` reaches `SetPlayerIndexForAddress`, which allocates an auth account
+number from the account keeper's *global monotonic sequence* for any address that lacks one. Two
+addresses committed in map order therefore got different account numbers on different nodes —
+divergent auth state and a different app hash, reachable both from a genesis `AddressList` and
+from one transaction carrying two `AddressRegister` messages. Account allocation is the only
+order-dependent write among the eighteen caches; every other `Commit` writes keys derived from its
+own map key, and the `Append`-named ones are keyed by object id rather than a counter. Note the
+split inside that setter: writing the index row is an ordinary KV write keyed by the address string
+and happens for any key, while *provisioning the auth account* is the part that consumes a sequence
+and is refused for a string that is not a real address. Sorting is
+what makes the order a property of the data rather than of the runtime, so a new cache map must be
+committed through the helper and never ranged. `x/structs/keeper/arch_commit_test.go` enforces
+three things: no bare range over a cache map inside `CommitAll`, every cache map field on
+`CurrentContext` actually committed (a map nobody commits drops its writes silently), and
+`NewAccountWithAddress` confined to an allowlist, since it is the only call in the module that
+consumes a sequence and so the only one whose result depends on when it runs. **The rule is the
+general one, not the account-number one**: anything a `Commit` touches that is not keyed by that
+cache's own key needs this same scrutiny.
+
 **Consensus code may not ask the toolchain about Unicode.** Go resolves `\p{L}` in a regexp, and
 `unicode.Is` against `unicode.L` / `Mn` / `Me` / `Cf`, using the tables of whichever toolchain
 compiled the binary, and those tables grow with Go releases — U+088F is unassigned in Unicode

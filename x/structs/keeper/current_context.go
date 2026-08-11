@@ -1,7 +1,9 @@
 package keeper
 
 import (
+	"cmp"
 	"context"
+	"slices"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -207,77 +209,51 @@ func (cc *CurrentContext) CommitAll() {
 		return
 	}
 
-    for _, playerCache := range cc.players {
-        playerCache.Commit()
-    }
-
-	for _, addressCache := range cc.addresses {
-        addressCache.Commit()
-	}
-
-    for _, infusionCache := range cc.infusions {
-        infusionCache.Commit()
-    }
-
-	for _, allocationCache := range cc.allocations {
-        allocationCache.Commit()
-	}
-
-    for _, guildCache := range cc.guilds {
-        guildCache.Commit()
-    }
-
-    for _, guildMembershipApp := range cc.guildMembershipApps {
-        guildMembershipApp.Commit()
-    }
-
-    for _, fleetCache := range cc.fleets {
-        fleetCache.Commit()
-    }
-
-    for _, agreementCache := range cc.agreements {
-        agreementCache.Commit()
-    }
-
-    for _, planetCache := range cc.planets {
-        planetCache.Commit()
-    }
-
-    for _, providerCache := range cc.providers {
-        providerCache.Commit()
-    }
-
-    for _, structCache := range cc.structs {
-        structCache.Commit()
-    }
-
-    for _, substationCache := range cc.substations {
-        substationCache.Commit()
-    }
-
-    for _, reactorCache := range cc.reactors {
-        reactorCache.Commit()
-    }
-
-    for _, gridAttributeCache := range cc.gridAttributes {
-        gridAttributeCache.Commit()
-    }
-
-    for _, planetAttributeCache := range cc.planetAttributes {
-        planetAttributeCache.Commit()
-    }
-
-    for _, structAttributeCache := range cc.structAttributes {
-        structAttributeCache.Commit()
-    }
-
-	for _, permissionsCache := range cc.permissions {
-	    permissionsCache.Commit()
-	}
-
-	for _, regCache := range cc.guildRankRegisters {
-	    regCache.Commit()
-	}
+	commitCaches(cc.players)
+	commitCaches(cc.addresses)
+	commitCaches(cc.infusions)
+	commitCaches(cc.allocations)
+	commitCaches(cc.guilds)
+	commitCaches(cc.guildMembershipApps)
+	commitCaches(cc.fleets)
+	commitCaches(cc.agreements)
+	commitCaches(cc.planets)
+	commitCaches(cc.providers)
+	commitCaches(cc.structs)
+	commitCaches(cc.substations)
+	commitCaches(cc.reactors)
+	commitCaches(cc.gridAttributes)
+	commitCaches(cc.planetAttributes)
+	commitCaches(cc.structAttributes)
+	commitCaches(cc.permissions)
+	commitCaches(cc.guildRankRegisters)
 
 	cc.committed = true
+}
+
+// commitCaches commits every entry of a cache map in ascending key order.
+//
+// Go randomizes map iteration order per process, so ranging a cache map
+// directly is only safe while every Commit writes to keys derived from its own
+// map key. AddressCache.Commit does not: it allocates an auth account number
+// from the account keeper's global sequence for any address that has none, so
+// two addresses committed in map order get their numbers swapped from one node
+// to the next. That is divergent auth state and a different app hash, reachable
+// both from a genesis AddressList and from one transaction carrying two
+// AddressRegister messages.
+//
+// Sorting is what makes the order a property of the data rather than of the
+// runtime. Every caller must go through here; x/structs/keeper/arch_commit_test.go
+// fails on a bare range over a cache map inside CommitAll, and on a cache map
+// that CommitAll never commits at all.
+func commitCaches[K cmp.Ordered, V interface{ Commit() }](caches map[K]V) {
+	keys := make([]K, 0, len(caches))
+	for key := range caches {
+		keys = append(keys, key)
+	}
+	slices.Sort(keys)
+
+	for _, key := range keys {
+		caches[key].Commit()
+	}
 }
