@@ -241,6 +241,79 @@ func TestTeardown_AllocationDrivenSettlesOnce(t *testing.T) {
 	f.requireSettledOnce(t, agreement)
 }
 
+// TestTeardown_AllocationDrivenSweepsEarnedRevenue is the money-conservation
+// regression on the allocation-driven close.
+//
+// TestTeardown_AllocationDrivenSettlesOnce above drives the same entry point but
+// tears down in the block it opened, so nothing has been earned yet and the
+// checkpoint moves zero. That makes it blind to the failure this test exists
+// for: settling without checkpointing first. Checkpoint bills the provider's
+// current load across the span since the last checkpoint, so once
+// AgreementLoadDecrease has run and the agreement is out of the store, no later
+// checkpoint can account for the span this agreement was live. The revenue it
+// earned simply stays in the collateral pool, and neither Checkpoint nor
+// WithdrawBalanceAndCommit can reach it, because both are computed from load.
+//
+// The solvency invariant cannot catch it either: stranded revenue leaves the
+// pool holding more than it owes, and the invariant only looks for shortfalls.
+// So the guard has to be an exact accounting of where every coin went.
+//
+// This matters most on this path. Consumer close and expiry run in transactions
+// or against an index that can be inspected; this one is reached from grid
+// brownout and struct destruction inside block hooks, where nothing rolls back.
+func TestTeardown_AllocationDrivenSweepsEarnedRevenue(t *testing.T) {
+	// A non-zero provider cancellation penalty splits the elapsed span between
+	// the consumer and the provider, so the penalty payout and the checkpoint
+	// sweep are both non-zero and the test cannot pass by conflating them.
+	f := setupTeardownFixture(t, 10, "0.5", "0")
+
+	const capacity, duration, elapsed = 100, 50, 20
+	agreement, collateral := f.openAgreement(t, capacity, duration)
+
+	opened := uint64(sdk.UnwrapSDKContext(f.ctx).BlockHeight())
+	require.Equal(t, opened, agreement.StartBlock,
+		"service and the checkpoint clock must start in the same block for the arithmetic below to hold")
+	require.Equal(t, collateral, f.balance(f.collateralAcc))
+
+	// Let the provider genuinely earn part of the term before the allocation is
+	// torn out from under the agreement.
+	lateCtx := sdk.UnwrapSDKContext(f.ctx).WithBlockHeight(int64(opened + elapsed))
+	f.ctx = lateCtx
+
+	cc := f.k.NewCurrentContext(lateCtx)
+	cc.DestroyMultipleAllocations([]string{agreement.AllocationId})
+	cc.CommitAll()
+
+	// The elapsed span splits in two and the rest of the term comes back, so the
+	// three payouts must add up to the deposit exactly:
+	//
+	//	elapsed * rate * capacity * penalty        -> consumer, as compensation
+	//	elapsed * rate * capacity * (1 - penalty)  -> provider earnings
+	//	remaining * rate * capacity                -> consumer, unearned collateral
+	rate := f.provider.Rate.Amount
+	elapsedValue := math.NewInt(elapsed).MulRaw(capacity).Mul(rate)
+	providerEarned := elapsedValue.QuoRaw(2)            // the (1 - 0.5) share
+	consumerPenalty := elapsedValue.Sub(providerEarned) // the 0.5 share
+	unearned := math.NewInt(duration - elapsed).MulRaw(capacity).Mul(rate)
+
+	require.Equal(t, providerEarned, f.balance(f.earningsAcc),
+		"the revenue earned before the forced closure must be swept, not left behind in the collateral pool")
+	require.Equal(t, consumerPenalty.Add(unearned), f.balance(f.consumerAcc),
+		"the consumer is owed the cancellation penalty on the served span plus all of the unserved one")
+
+	// The whole point: the pool paid out everything it took in.
+	require.Equal(t, math.ZeroInt(), f.balance(f.collateralAcc),
+		"the collateral pool must end empty; anything left is stranded with no path to reclaim it")
+	require.Equal(t, collateral, providerEarned.Add(consumerPenalty).Add(unearned),
+		"the three payouts must account for the deposit exactly")
+
+	require.Equal(t, uint64(0), f.agreementLoad(), "provider load must be released exactly once")
+	f.requireSettledOnce(t, agreement)
+
+	solvency, broken := keeperlib.ProviderCollateralSolvencyInvariant(f.k)(lateCtx)
+	require.False(t, broken, solvency)
+}
+
 // TestTeardown_AllocationDeleteRejectsProviderAgreement pins that the agreement's
 // own allocation cannot be deleted out from under it by message, and that the
 // rejection settles nothing.

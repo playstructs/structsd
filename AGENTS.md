@@ -66,7 +66,14 @@ would pay out again: `beginTeardown()` claims the one settlement an agreement ge
 `AllocationCache.Destroy` skips an agreement that is already `IsTearingDown()`. Every teardown path
 also checkpoints the provider first, because `Checkpoint()` bills the *current* agreement load
 across the whole span since the last checkpoint — change the load before checkpointing and the new
-load gets billed over the old span. A provider's collateral pool is keyed only by provider, so all
+load gets billed over the old span. Skipping it strands money rather than misplacing it: once the
+load is decremented and the agreement removed, no later checkpoint can account for the span it was
+live, and the revenue it earned sits in the collateral pool where neither `Checkpoint()` nor a
+withdrawal can reach it, both being computed from load. The solvency invariant cannot see that —
+stranded revenue leaves the pool over-funded, not short — so `TestArch_TeardownPathsCheckpointBeforeMutating`
+is the enforcement: it finds every path that calls `beginTeardown()` and requires
+`checkpointProvider()` ahead of every payout, `AgreementLoadDecrease`, `SetStartBlock` and
+`removeAgreement`. A provider's collateral pool is keyed only by provider, so all
 of its agreements share one account: consumer payouts go through `payConsumer` and are exact,
 provider revenue goes through `ProviderCache.SweepRevenue` and is clamped to what the pool can
 spare. Never reverse that order, or one consumer's collateral funds another's payout. Teardown is

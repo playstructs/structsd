@@ -125,6 +125,21 @@ package v0_21_0
 //     same way. This is the last reachable failure inside Expire, so an expiry can
 //     no longer strand its own agreement.
 //
+//   - A forced close driven by the allocation going away — a grid brownout, a
+//     destroyed struct, a deleted allocation — now checkpoints the provider before
+//     it settles, matching the consumer, provider and expiry paths. Checkpoint
+//     bills the current agreement load across the span since the last checkpoint,
+//     so settling first meant the revenue earned over that agreement's own
+//     lifetime was never swept: it stayed in the collateral pool once the load was
+//     decremented and the agreement removed, unreachable by any later checkpoint
+//     or withdrawal, both of which are computed from load. The provider now
+//     receives that revenue and the pool empties to exactly what it owes.
+//     provider-collateral-solvency cannot see this case, since stranded revenue
+//     leaves the pool over-funded rather than short; the guards are
+//     TestTeardown_AllocationDrivenSweepsEarnedRevenue and
+//     TestArch_TeardownPathsCheckpointBeforeMutating, which holds every path that
+//     calls beginTeardown to the same ordering.
+//
 //   - Deleting a provider now empties its collateral and earnings pools into the
 //     owner's primary address, after every agreement has been closed and every
 //     consumer made whole. Both pool addresses are derived from the provider id

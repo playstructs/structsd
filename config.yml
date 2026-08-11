@@ -1,4 +1,10 @@
 version: 1
+build:
+  # Ignite discovers the chain binary by scanning for main packages, and there
+  # are two: this one and x/structs/types/internal/maketables, the generator for
+  # the pinned Unicode tables. Naming the real one keeps the generator from
+  # making the build ambiguous.
+  main: cmd/structsd
 accounts:
 - name: alice
   coins:
