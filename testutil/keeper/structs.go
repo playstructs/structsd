@@ -95,6 +95,56 @@ func NewMockBankKeeper() *MockBankKeeper {
 	}
 }
 
+// MockBankState is a deep copy of everything MockBankKeeper tracks.
+type MockBankState struct {
+	balances map[string]sdk.Coins
+	metadata map[string]banktypes.Metadata
+	supply   map[string]math.Int
+}
+
+// Snapshot copies the mock's current state so Restore can put it back.
+//
+// The mock keeps balances and supply in plain Go maps and ignores the ctx it is
+// handed, so sdk.Context.CacheContext() does not isolate bank state the way it
+// isolates KV state — a branch that mints or sends is writing to the same maps
+// the parent reads. A test that needs several independent bank scenarios must
+// snapshot before each and restore after, or the second scenario starts on top
+// of the first one's balances.
+func (m *MockBankKeeper) Snapshot() MockBankState {
+	snapshot := MockBankState{
+		balances: make(map[string]sdk.Coins, len(m.balances)),
+		metadata: make(map[string]banktypes.Metadata, len(m.metadata)),
+		supply:   make(map[string]math.Int, len(m.supply)),
+	}
+	for addr, coins := range m.balances {
+		// sdk.Coins is a slice; copy it so later Add/Sub cannot write through.
+		snapshot.balances[addr] = append(sdk.Coins{}, coins...)
+	}
+	for denom, meta := range m.metadata {
+		snapshot.metadata[denom] = meta
+	}
+	for denom, amount := range m.supply {
+		snapshot.supply[denom] = amount
+	}
+	return snapshot
+}
+
+// Restore returns the mock to a state captured by Snapshot.
+func (m *MockBankKeeper) Restore(snapshot MockBankState) {
+	m.balances = make(map[string]sdk.Coins, len(snapshot.balances))
+	m.metadata = make(map[string]banktypes.Metadata, len(snapshot.metadata))
+	m.supply = make(map[string]math.Int, len(snapshot.supply))
+	for addr, coins := range snapshot.balances {
+		m.balances[addr] = append(sdk.Coins{}, coins...)
+	}
+	for denom, meta := range snapshot.metadata {
+		m.metadata[denom] = meta
+	}
+	for denom, amount := range snapshot.supply {
+		m.supply[denom] = amount
+	}
+}
+
 func (m *MockBankKeeper) SetDenomMetaData(ctx context.Context, metadata banktypes.Metadata) {
 	m.metadata[metadata.Base] = metadata
 }
