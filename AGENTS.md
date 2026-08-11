@@ -99,6 +99,22 @@ agreement's own window and so reads an overdue agreement as a fully served one. 
 drains both of its pools for the same reason: their addresses are derived from the provider id, so
 whatever is left when the record goes is unreachable for good.
 
+**A brownout is a normal state, so never subtract load from capacity unguarded.** Grid load is
+allowed to exceed capacity: an allocation feeding a substation can shrink or disappear mid-block,
+and the only thing that pushes load back under capacity is `GridCascade`, which runs in the
+EndBlocker and gives up — logging `Grid Queue problem` — when there are not enough allocations to
+shed. Every message in between sees the over-subscribed state. In uint64 a bare `capacity - load`
+does not report "nothing available" there, it wraps to nearly 2^64, so a gate built on it reads as
+unlimited headroom at precisely the moment there is none. Compare first and return zero:
+`PlayerCache.GetAvailableCapacity`, `CanSupportLoadAddition`, `SetInitialPower` and
+`SetDynamicPower` all do, and `SubstationCache.GetAvailableCapacity` was the one that did not — the
+reachable cost being `AgreementCapacityIncrease`, whose only headroom check that was, since
+`AllocationCache.SetPower` trusts its caller to have gated. Note what saved the neighbouring path
+and what that hides: `AgreementOpen` read the same wrapped value but was never exploitable, because
+allocation creation re-checks correctly, so the outer gate being wrong was invisible for as long as
+an inner one happened to hold. `x/structs/keeper/substation_overload_test.go` is the regression
+suite.
+
 **An agreement's service window and the provider's checkpoint clock must start on the same
 block.** `Checkpoint()` bills *aggregate* provider load from `checkpointBlock`, while the solvency
 invariant measures what each consumer is owed from that agreement's `StartBlock`. `AgreementOpen`

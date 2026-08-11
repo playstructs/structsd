@@ -191,8 +191,18 @@ func (cache *PlayerCache) GetCharge() uint64 {
 	return uint64(ctxSDK.BlockHeight()) - cache.GetLastAction()
 }
 
+// GetAllocatableCapacity clamps for the same reason GetAvailableCapacity below
+// does: load may exceed capacity, and a bare subtraction would report an
+// over-subscribed player as having nearly 2^64 to give.
 func (cache *PlayerCache) GetAllocatableCapacity() uint64 {
-	return cache.GetCapacity() - cache.GetLoad()
+	capacity := cache.GetCapacity()
+	load := cache.GetLoad()
+
+	if load >= capacity {
+		return 0
+	}
+
+	return capacity - load
 }
 
 func (cache *PlayerCache) GetAvailableCapacity() uint64 {

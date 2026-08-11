@@ -140,6 +140,28 @@ package v0_21_0
 //     TestArch_TeardownPathsCheckpointBeforeMutating, which holds every path that
 //     calls beginTeardown to the same ordering.
 //
+//   - A substation carrying more load than capacity now reports zero available
+//     capacity instead of a wrapped one. Load above capacity is a normal,
+//     reachable state — an allocation feeding a substation can shrink or vanish
+//     mid-block and only GridCascade in the EndBlocker forces it back, later
+//     still if it cannot shed enough — but SubstationCache.GetAvailableCapacity
+//     computed capacity - load in uint64, so throughout that window it answered
+//     with nearly 2^64 rather than nothing. AgreementCapacityIncrease is the
+//     reachable consequence: its only headroom gate was that value, and
+//     AllocationCache.SetPower, unlike SetInitialPower and SetDynamicPower, does
+//     no check of its own, so the consumer who opened an agreement could enlarge
+//     it up to the provider's published capacity maximum on a substation with
+//     nothing left to give, deepening a brownout that GridCascade then had to
+//     resolve by destroying other players' allocations. Such an increase is now
+//     rejected with the existing exceeds_available error. AgreementOpen read the
+//     same wrapped value through ProviderCache.AgreementVerify but was never
+//     exploitable, because creating the allocation goes through SetInitialPower,
+//     which refuses on its own correct comparison; it now fails earlier and with
+//     that error instead. PlayerCache.GetAllocatableCapacity got the same clamp
+//     for consistency with its already-guarded siblings. No migration: an
+//     over-subscribed grid is self-correcting, since GridCascade sheds load by
+//     destroying allocations, so this leaves no corrupted stored aggregate.
+//
 //   - Deleting a provider now empties its collateral and earnings pools into the
 //     owner's primary address, after every agreement has been closed and every
 //     consumer made whole. Both pool addresses are derived from the provider id
