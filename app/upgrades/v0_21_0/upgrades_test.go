@@ -1219,3 +1219,151 @@ func TestMigrateExpireOverdueAgreements_EmptyStateIsSafe(t *testing.T) {
 	require.NoError(t, v0_21_0.MigrateExpireOverdueAgreements(f.ctx, f.keepers()))
 	require.Empty(t, f.k.GetAllAgreement(f.ctx))
 }
+
+// --- MigrateAutoResizeAllocationIndex ---------------------------------------
+//
+// The auto-resize index maps a source object id to the automated allocation
+// riding on it. AllocationCache.Destroy cleared it with the allocation's own id,
+// so the delete matched no key and every automated allocation ever torn down
+// left its hook behind, naming an allocation that no longer exists. A leaked
+// hook bricks its source: SetSource refuses a replacement on any source the
+// index mentions, and the infusion capacity path treats the hook as live and so
+// skips the grid cascade a capacity cut should trigger.
+//
+// The migration rebuilds the index from the allocations themselves, which fixes
+// every way it can be wrong at once.
+
+type autoResizeFixture struct {
+	k   structskeeper.Keeper
+	ctx sdk.Context
+}
+
+func newAutoResizeFixture(t *testing.T) *autoResizeFixture {
+	t.Helper()
+	k, ctx := keepertest.StructsKeeper(t)
+	return &autoResizeFixture{k: k, ctx: ctx}
+}
+
+func (f *autoResizeFixture) keepers() *upgrades.Keepers {
+	return &upgrades.Keepers{StructsKeeper: f.k}
+}
+
+// allocation writes an allocation record without touching any index, so each
+// test states the index contents explicitly rather than inheriting them.
+func (f *autoResizeFixture) allocation(id string, sourceId string, allocationType types.AllocationType) types.Allocation {
+	allocation := types.Allocation{
+		Id:             id,
+		SourceObjectId: sourceId,
+		Type:           allocationType,
+	}
+	f.k.ImportAllocation(f.ctx, allocation)
+	return allocation
+}
+
+func (f *autoResizeFixture) hook(sourceId string) (string, bool) {
+	return f.k.GetAutoResizeAllocationBySource(f.ctx, sourceId)
+}
+
+// index returns the whole index as a source-to-allocation map.
+func (f *autoResizeFixture) index() map[string]string {
+	out := make(map[string]string)
+	for _, hook := range f.k.GetAllAutoResizeAllocationSource(f.ctx) {
+		out[hook.SourceObjectId] = hook.AllocationId
+	}
+	return out
+}
+
+// TestMigrateAutoResizeAllocationIndex_DropsStaleHooks is the case the leak
+// actually produces: the allocation is gone, the hook is not.
+func TestMigrateAutoResizeAllocationIndex_DropsStaleHooks(t *testing.T) {
+	f := newAutoResizeFixture(t)
+
+	// A live automated allocation that must survive the rebuild.
+	live := f.allocation("6-0", "1-0", types.AllocationType_automated)
+	f.k.SetAutoResizeAllocationSource(f.ctx, live.Id, live.SourceObjectId)
+
+	// A hook whose allocation was destroyed. Nothing wrote allocation 6-99.
+	f.k.SetAutoResizeAllocationSource(f.ctx, "6-99", "1-1")
+
+	require.NoError(t, v0_21_0.MigrateAutoResizeAllocationIndex(f.ctx, f.keepers()))
+
+	require.Equal(t, map[string]string{"1-0": live.Id}, f.index(),
+		"only the hook naming a live automated allocation should remain")
+
+	_, found := f.hook("1-1")
+	require.False(t, found, "the source of a destroyed automated allocation must be usable again")
+}
+
+// TestMigrateAutoResizeAllocationIndex_DropsNonAutomatedAndRekeysWrongSource
+// covers the two inconsistencies a rebuild catches that a prune would not.
+func TestMigrateAutoResizeAllocationIndex_DropsNonAutomatedAndRekeysWrongSource(t *testing.T) {
+	f := newAutoResizeFixture(t)
+
+	// A hook naming an allocation that exists but is not automated.
+	dynamic := f.allocation("6-0", "1-0", types.AllocationType_dynamic)
+	f.k.SetAutoResizeAllocationSource(f.ctx, dynamic.Id, dynamic.SourceObjectId)
+
+	// A hook filed under a source its allocation does not claim.
+	automated := f.allocation("6-1", "1-1", types.AllocationType_automated)
+	f.k.SetAutoResizeAllocationSource(f.ctx, automated.Id, "1-2")
+
+	require.NoError(t, v0_21_0.MigrateAutoResizeAllocationIndex(f.ctx, f.keepers()))
+
+	require.Equal(t, map[string]string{"1-1": automated.Id}, f.index(),
+		"a non-automated allocation should not be hooked, and a hook belongs under the source its allocation names")
+}
+
+// TestMigrateAutoResizeAllocationIndex_HealthyStateIsUnchanged is the outcome on
+// a chain that never destroyed an automated allocation: the rebuild replaces the
+// index with itself.
+func TestMigrateAutoResizeAllocationIndex_HealthyStateIsUnchanged(t *testing.T) {
+	f := newAutoResizeFixture(t)
+
+	first := f.allocation("6-0", "1-0", types.AllocationType_automated)
+	second := f.allocation("6-1", "1-1", types.AllocationType_automated)
+	f.allocation("6-2", "1-2", types.AllocationType_dynamic)
+
+	f.k.SetAutoResizeAllocationSource(f.ctx, first.Id, first.SourceObjectId)
+	f.k.SetAutoResizeAllocationSource(f.ctx, second.Id, second.SourceObjectId)
+
+	before := f.index()
+	require.NoError(t, v0_21_0.MigrateAutoResizeAllocationIndex(f.ctx, f.keepers()))
+	require.Equal(t, before, f.index())
+}
+
+// TestMigrateAutoResizeAllocationIndex_CollisionKeepsTheFirst pins the tie-break
+// for corrupt state, which must not depend on Go map ordering.
+func TestMigrateAutoResizeAllocationIndex_CollisionKeepsTheFirst(t *testing.T) {
+	f := newAutoResizeFixture(t)
+
+	f.allocation("6-0", "1-0", types.AllocationType_automated)
+	f.allocation("6-1", "1-0", types.AllocationType_automated)
+
+	require.NoError(t, v0_21_0.MigrateAutoResizeAllocationIndex(f.ctx, f.keepers()))
+
+	require.Equal(t, map[string]string{"1-0": "6-0"}, f.index(),
+		"the first allocation in store key order must win, on every node")
+}
+
+// TestMigrateAutoResizeAllocationIndex_IsIdempotent guards a replay of the
+// upgrade block.
+func TestMigrateAutoResizeAllocationIndex_IsIdempotent(t *testing.T) {
+	f := newAutoResizeFixture(t)
+
+	live := f.allocation("6-0", "1-0", types.AllocationType_automated)
+	f.k.SetAutoResizeAllocationSource(f.ctx, live.Id, live.SourceObjectId)
+	f.k.SetAutoResizeAllocationSource(f.ctx, "6-99", "1-1")
+
+	require.NoError(t, v0_21_0.MigrateAutoResizeAllocationIndex(f.ctx, f.keepers()))
+	once := f.index()
+
+	require.NoError(t, v0_21_0.MigrateAutoResizeAllocationIndex(f.ctx, f.keepers()))
+	require.Equal(t, once, f.index())
+}
+
+// TestMigrateAutoResizeAllocationIndex_EmptyStateIsSafe guards the walk itself.
+func TestMigrateAutoResizeAllocationIndex_EmptyStateIsSafe(t *testing.T) {
+	f := newAutoResizeFixture(t)
+	require.NoError(t, v0_21_0.MigrateAutoResizeAllocationIndex(f.ctx, f.keepers()))
+	require.Empty(t, f.index())
+}

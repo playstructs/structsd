@@ -335,6 +335,236 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 		strings.Join(failures, "\n  - "))
 }
 
+// throttledMessages returns every message whose throttle key names an object the
+// transaction chose, which is the set that needs target authorization before the
+// ante may reserve for it.
+func throttledMessages() map[string]bool {
+	throttled := make(map[string]bool, len(ProofMessages)+len(ThrottleKeyExtractors))
+	for typeURL := range ProofMessages {
+		throttled[typeURL] = true
+	}
+	for typeURL := range ThrottleKeyExtractors {
+		throttled[typeURL] = true
+	}
+	return throttled
+}
+
+// TestThrottleTargetAuthCompleteness keeps ThrottleTargetAuth in step with the
+// two maps that create object-global throttle keys.
+//
+// A missing entry does not error, it disarms: mayReserve treats an unmapped
+// message as unauthorized, so that message stops reserving and its throttle
+// quietly stops working. An extra entry is dead weight that suggests a throttle
+// exists where none does.
+func TestThrottleTargetAuthCompleteness(t *testing.T) {
+	throttled := throttledMessages()
+	require.NotEmpty(t, throttled, "no throttled messages found; test would be vacuous")
+
+	for typeURL := range throttled {
+		require.Contains(t, ThrottleTargetAuth, typeURL,
+			"%s reserves an object-global throttle key but has no ThrottleTargetAuth entry, so it now reserves nothing at all", typeURL)
+	}
+
+	for typeURL := range ThrottleTargetAuth {
+		require.True(t, throttled[typeURL],
+			"%s has a ThrottleTargetAuth entry but is in neither ProofMessages nor ThrottleKeyExtractors", typeURL)
+		require.True(t, KnownStructsMessages[typeURL],
+			"ThrottleTargetAuth entry %s not in KnownStructsMessages", typeURL)
+	}
+}
+
+// TestArch_ThrottleTargetAuthMatchesHandlers ties the permission the ante uses
+// to reserve a throttle key to the one the handler actually demands.
+//
+// The two have to agree in one direction more than the other. Declaring a bit
+// stricter than the handler's under-throttles — the legitimate actor reserves
+// nothing and the object goes unthrottled for the block. Declaring one weaker
+// re-opens the hole this map was added to close, by letting a signer reserve for
+// an object it cannot act on. Neither shows up as an error at runtime, so the
+// handler sources are the enforcement.
+func TestArch_ThrottleTargetAuthMatchesHandlers(t *testing.T) {
+	// Every Can*By method a throttled handler is allowed to authorize with, and
+	// the permission it resolves to in x/structs/keeper/player_cache.go.
+	permByCanMethod := map[string]types.Permission{
+		"CanBePlayedBy":     types.PermPlay,
+		"CanBuildHashedBy":  types.PermHashBuild,
+		"CanMineHashedBy":   types.PermHashMine,
+		"CanRefineHashedBy": types.PermHashRefine,
+		"CanRaidHashedBy":   types.PermHashRaid,
+	}
+	// Methods taking the permission as an argument, so the bit is whatever the
+	// message asks for and no fixed value can be asserted.
+	dynamicCanMethods := map[string]bool{
+		"CanRegisterAddressBy": true,
+	}
+
+	registry := codectypes.NewInterfaceRegistry()
+	sdk.RegisterInterfaces(registry)
+	types.RegisterInterfaces(registry)
+
+	keeperDir := filepath.Join("..", "..", "x", "structs", "keeper")
+	entries, err := os.ReadDir(keeperDir)
+	require.NoError(t, err)
+
+	fset := token.NewFileSet()
+	var failures []string
+	checked := map[string]bool{}
+
+	for _, e := range entries {
+		name := e.Name()
+		if !strings.HasPrefix(name, "msg_server_") || !strings.HasSuffix(name, ".go") ||
+			strings.HasSuffix(name, "_test.go") {
+			continue
+		}
+
+		file, err := parser.ParseFile(fset, filepath.Join(keeperDir, name), nil, 0)
+		require.NoError(t, err)
+
+		for _, decl := range file.Decls {
+			fn, ok := decl.(*ast.FuncDecl)
+			if !ok || fn.Recv == nil || fn.Body == nil {
+				continue
+			}
+
+			msgName := handlerMessageType(fn)
+			if msgName == "" {
+				continue
+			}
+			typeURL := "/structs.structs." + msgName
+			extractor, throttled := ThrottleTargetAuth[typeURL]
+			if !throttled {
+				continue
+			}
+			checked[typeURL] = true
+
+			var authMethods []string
+			ast.Inspect(fn.Body, func(n ast.Node) bool {
+				sel, ok := n.(*ast.SelectorExpr)
+				if !ok {
+					return true
+				}
+				called := sel.Sel.Name
+				if strings.HasPrefix(called, "Can") && strings.HasSuffix(called, "By") {
+					authMethods = append(authMethods, called)
+				}
+				return true
+			})
+
+			if len(authMethods) != 1 {
+				failures = append(failures, name+": "+msgName+" authorizes with "+
+					strconv.Itoa(len(authMethods))+" Can*By calls ("+strings.Join(authMethods, ", ")+
+					"); ThrottleTargetAuth can only mirror exactly one")
+				continue
+			}
+			method := authMethods[0]
+
+			msg, err := registry.Resolve(typeURL)
+			require.NoError(t, err, "could not resolve %s", typeURL)
+
+			if dynamicCanMethods[method] {
+				// The handler passes the message's own field through, so the map
+				// has to read the same field rather than name a bit.
+				const probe = types.Permission(1 << 9)
+				field := reflect.ValueOf(msg).Elem().FieldByName("Permissions")
+				require.True(t, field.IsValid() && field.Kind() == reflect.Uint64,
+					"%s authorizes with %s but has no uint64 Permissions field", msgName, method)
+				field.SetUint(uint64(probe))
+
+				target, ok := extractor(msg)
+				if !ok || target.Permission != probe {
+					failures = append(failures, name+": "+msgName+" authorizes with "+method+
+						", whose bit comes from the message, but ThrottleTargetAuth does not pass Permissions through")
+				}
+				continue
+			}
+
+			want, known := permByCanMethod[method]
+			if !known {
+				failures = append(failures, name+": "+msgName+" authorizes with "+method+
+					", which this guard does not know; add it to permByCanMethod or dynamicCanMethods")
+				continue
+			}
+
+			target, ok := extractor(msg)
+			if !ok {
+				failures = append(failures, name+": ThrottleTargetAuth entry for "+msgName+
+					" does not accept its own message type")
+				continue
+			}
+			if target.Permission != want {
+				failures = append(failures, name+": "+msgName+" authorizes with "+method+
+					" ("+strconv.FormatUint(uint64(want), 10)+") but ThrottleTargetAuth declares "+
+					strconv.FormatUint(uint64(target.Permission), 10))
+			}
+		}
+	}
+
+	for typeURL := range ThrottleTargetAuth {
+		require.True(t, checked[typeURL],
+			"no handler source found for %s; the scan is probably broken", typeURL)
+	}
+
+	require.Empty(t, failures,
+		"ThrottleTargetAuth must demand the same permission its handler does:\n  - %s",
+		strings.Join(failures, "\n  - "))
+}
+
+// TestThrottleTargetAuthTargetsMatchThrottleKeys checks the other half of the
+// mirror: the object the map authorizes against has to be the object the
+// throttle key names, or the ante would be checking standing on one thing and
+// reserving another.
+func TestThrottleTargetAuthTargetsMatchThrottleKeys(t *testing.T) {
+	registry := codectypes.NewInterfaceRegistry()
+	sdk.RegisterInterfaces(registry)
+	types.RegisterInterfaces(registry)
+
+	// The id field each message puts in its throttle key, and the object kind
+	// that id names.
+	idFields := map[string]struct {
+		field string
+		kind  types.ObjectType
+	}{
+		"/structs.structs.MsgStructBuildComplete":       {"StructId", types.ObjectType_struct},
+		"/structs.structs.MsgStructOreMinerComplete":    {"StructId", types.ObjectType_struct},
+		"/structs.structs.MsgStructOreRefineryComplete": {"StructId", types.ObjectType_struct},
+		"/structs.structs.MsgPlanetRaidComplete":        {"FleetId", types.ObjectType_fleet},
+		"/structs.structs.MsgFleetMove":                 {"FleetId", types.ObjectType_fleet},
+		"/structs.structs.MsgPlanetExplore":             {"PlayerId", types.ObjectType_player},
+		"/structs.structs.MsgAddressRegister":           {"PlayerId", types.ObjectType_player},
+	}
+
+	for typeURL, extractor := range ThrottleTargetAuth {
+		spec, known := idFields[typeURL]
+		require.True(t, known, "%s has no id field declared in this test", typeURL)
+
+		msg, err := registry.Resolve(typeURL)
+		require.NoError(t, err)
+
+		const sentinel = "sentinel-object-id"
+		field := reflect.ValueOf(msg).Elem().FieldByName(spec.field)
+		require.True(t, field.IsValid() && field.Kind() == reflect.String,
+			"%s has no string %s field", typeURL, spec.field)
+		field.SetString(sentinel)
+
+		target, ok := extractor(msg)
+		require.True(t, ok, "ThrottleTargetAuth entry for %s rejected its own message type", typeURL)
+		require.Equal(t, sentinel, target.TargetId,
+			"ThrottleTargetAuth for %s authorizes against something other than the id in its throttle key", typeURL)
+		require.Equal(t, spec.kind, target.Kind,
+			"ThrottleTargetAuth for %s names the wrong object kind, so the keeper resolves the wrong owner", typeURL)
+
+		// The throttle key must be built from that same id.
+		if keyExtractor, hasKey := ThrottleKeyExtractors[typeURL]; hasKey {
+			require.Contains(t, keyExtractor(msg), sentinel,
+				"%s reserves a key that does not name the object it authorizes against", typeURL)
+		}
+		if proofExtractor, hasProof := ProofMessages[typeURL]; hasProof {
+			require.Equal(t, sentinel, proofExtractor(msg),
+				"%s reserves a proof key that does not name the object it authorizes against", typeURL)
+		}
+	}
+}
+
 // handlerMessageType returns the Msg type a msgServer method handles, taken from
 // its *types.MsgX parameter, or "" if this is not a message handler.
 func handlerMessageType(fn *ast.FuncDecl) string {

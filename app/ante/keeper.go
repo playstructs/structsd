@@ -15,6 +15,12 @@ type StructsAnteKeeper interface {
 	GetPermissionsByBytes(ctx context.Context, permissionId []byte) types.Permission
 	GetGridAttribute(ctx context.Context, gridAttributeId string) uint64
 
+	// Target-object authorization, mirroring the check the handler makes. Read
+	// only: it loads objects but never commits. The throttle uses it to decide
+	// whether a signer may reserve an object-global key, which the address-level
+	// PermissionMap check cannot answer.
+	ThrottleTargetAuthorized(ctx context.Context, creator string, kind types.ObjectType, targetId string, perm types.Permission) bool
+
 	// Transient store availability check
 	HasTransientStore() bool
 

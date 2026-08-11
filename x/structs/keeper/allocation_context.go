@@ -168,9 +168,24 @@ func (cc *CurrentContext) DestroyMultipleAllocations(allocationIds []string) {
 }
 
 
-func (cc *CurrentContext) AutoResizeAllocation(allocationId string, newPower uint64) {
+// AutoResizeAllocation resizes the automated allocation an auto-resize hook
+// names, and reports whether that allocation was there at all.
+//
+// The two failures are kept apart deliberately. A missing allocation means the
+// hook is stale and there is nothing tracking this source's capacity, so the
+// caller has to fall back to shedding load. A resize that fails is a different
+// thing entirely: the allocation exists and is still tracking, and treating that
+// as a stale hook would destroy allocations over a transient error. Only the
+// first returns found == false.
+func (cc *CurrentContext) AutoResizeAllocation(allocationId string, newPower uint64) (found bool) {
     allocation, found := cc.GetAllocation(allocationId)
-    if found {
-        allocation.SetPower(newPower)
+    if !found {
+        return false
     }
+
+    if _, err := allocation.SetPower(newPower); err != nil {
+        cc.k.logger.Error("Auto-resize could not set allocation power", "allocationId", allocationId, "newPower", newPower, "error", err)
+    }
+
+    return true
 }

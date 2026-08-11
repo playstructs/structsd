@@ -362,9 +362,13 @@ func (cache *AllocationCache) Destroy() (error) {
         cache.CC.k.RemoveAllocationDestinationIndex(cache.CC.ctx, cache.GetAllocation().DestinationId, cache.ID())
     }
 
-    // Clear the AutoResize hook on the source
+    // Clear the AutoResize hook on the source. The index is keyed by source
+    // object id, not by allocation id: clearing it with cache.ID() deletes a key
+    // that was never written, leaving the real entry naming a destroyed
+    // allocation. SetSource then refuses every replacement on that source as an
+    // automated_conflict, and the infusion capacity path treats the hook as live.
     if cache.IsAutomated() {
-        cache.CC.k.ClearAutoResizeAllocationBySource(cache.CC.ctx, cache.ID())
+        cache.CC.k.ClearAutoResizeAllocationBySource(cache.CC.ctx, cache.GetAllocation().SourceObjectId)
     }
 
     cache.CC.k.RemoveAllocationSourceIndex(cache.CC.ctx, cache.GetAllocation().SourceObjectId, cache.ID())

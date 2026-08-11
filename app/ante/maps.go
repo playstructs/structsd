@@ -376,6 +376,82 @@ var ThrottleKeyExtractors = map[string]func(sdk.Msg) string{
 	},
 }
 
+// ThrottleTarget names the object a throttled message acts on, together with
+// the permission its handler demands over that object.
+type ThrottleTarget struct {
+	Kind       types.ObjectType
+	TargetId   string
+	Permission types.Permission
+}
+
+// ThrottleTargetAuth mirrors, for every throttled message, the target-object
+// authorization its handler performs. The keys of ProofMessages and
+// ThrottleKeyExtractors both name objects the transaction chooses, and the
+// throttle those keys drive is object-global, so a signer with no standing on
+// the named object must not be allowed to reserve one. Layer 1 does not catch
+// this: a primary address holds PermAll and so passes PermissionMap while
+// naming somebody else's struct.
+//
+// The permission here must be the one the handler's Can*By call resolves to;
+// TestArch_ThrottleTargetAuthMatchesHandlers reads the handler sources and
+// fails if the two drift. An entry missing from this map means that message
+// reserves no throttle key at all, which under-throttles rather than erroring —
+// TestThrottleTargetAuthCompleteness is what catches it.
+var ThrottleTargetAuth = map[string]func(sdk.Msg) (ThrottleTarget, bool){
+	// structure.GetOwner().CanBuildHashedBy(callingPlayer)
+	"/structs.structs.MsgStructBuildComplete": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgStructBuildComplete); ok {
+			return ThrottleTarget{types.ObjectType_struct, m.StructId, types.PermHashBuild}, true
+		}
+		return ThrottleTarget{}, false
+	},
+	// structure.GetOwner().CanMineHashedBy(callingPlayer)
+	"/structs.structs.MsgStructOreMinerComplete": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgStructOreMinerComplete); ok {
+			return ThrottleTarget{types.ObjectType_struct, m.StructId, types.PermHashMine}, true
+		}
+		return ThrottleTarget{}, false
+	},
+	// structure.GetOwner().CanRefineHashedBy(callingPlayer)
+	"/structs.structs.MsgStructOreRefineryComplete": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgStructOreRefineryComplete); ok {
+			return ThrottleTarget{types.ObjectType_struct, m.StructId, types.PermHashRefine}, true
+		}
+		return ThrottleTarget{}, false
+	},
+	// fleet.GetOwner().CanRaidHashedBy(callingPlayer)
+	"/structs.structs.MsgPlanetRaidComplete": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgPlanetRaidComplete); ok {
+			return ThrottleTarget{types.ObjectType_fleet, m.FleetId, types.PermHashRaid}, true
+		}
+		return ThrottleTarget{}, false
+	},
+	// fleet.GetOwner().CanBePlayedBy(activePlayer)
+	"/structs.structs.MsgFleetMove": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgFleetMove); ok {
+			return ThrottleTarget{types.ObjectType_fleet, m.FleetId, types.PermPlay}, true
+		}
+		return ThrottleTarget{}, false
+	},
+	// player.CanBePlayedBy(callingPlayer)
+	"/structs.structs.MsgPlanetExplore": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgPlanetExplore); ok {
+			return ThrottleTarget{types.ObjectType_player, m.PlayerId, types.PermPlay}, true
+		}
+		return ThrottleTarget{}, false
+	},
+	// player.CanRegisterAddressBy(activePlayer, types.Permission(msg.Permissions)).
+	// The bit is whatever the message asks to grant, so a registration that
+	// grants nothing authorizes against Permissionless, which PermissionCheck
+	// always denies — and denial here only skips the reservation.
+	"/structs.structs.MsgAddressRegister": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgAddressRegister); ok {
+			return ThrottleTarget{types.ObjectType_player, m.PlayerId, types.Permission(m.Permissions)}, true
+		}
+		return ThrottleTarget{}, false
+	},
+}
+
 // FreeStakingMessages enumerates the x/staking message type URLs that receive
 // free gas treatment. These are the operations players must perform to
 // participate in the network — delegation is how they power gameplay.

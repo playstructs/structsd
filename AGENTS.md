@@ -115,6 +115,21 @@ allocation creation re-checks correctly, so the outer gate being wrong was invis
 an inner one happened to hold. `x/structs/keeper/substation_overload_test.go` is the regression
 suite.
 
+**Delete an index row with the same id you wrote it under.** `SetAutoResizeAllocationSource` keys
+the auto-resize hook by *source object id*, and `AllocationCache.Destroy` cleared it with the
+allocation id — a `store.Delete` on a key nobody had written, which compiles, runs, returns
+nothing and removes nothing. There is no error to notice: the only signal is the row that is still
+there. The consequences were both silent too. `SetSource` rejects a new automated allocation on any
+source the index mentions *without checking the allocation exists*, so a leaked hook brakes that
+source for good; and the infusion capacity path read the hook as proof something was tracking the
+source, so it resized a missing allocation and skipped the `AppendGridCascadeQueue` that a capacity
+cut owes. When you add an index, write its clear next to its set and key both off the same value —
+`Destroy` gets this right one line below, in `RemoveAllocationSourceIndex`. A lookup that decides
+policy should also confirm what it found is real: `AutoResizeAllocation` now separates "allocation
+missing", which drops the hook and falls through to the cascade, from "resize failed", which must
+not, or a transient error starts shedding load. `x/structs/keeper/allocation_autoresize_test.go`
+is the regression suite.
+
 **An agreement's service window and the provider's checkpoint clock must start on the same
 block.** `Checkpoint()` bills *aggregate* provider load from `checkpointBlock`, while the solvency
 invariant measures what each consumer is owed from that agreement's `StartBlock`. `AgreementOpen`
@@ -204,17 +219,40 @@ handler, and never renumber an existing code.
 
 1. `proto/` change, then `make proto-gen`.
 2. `x/structs/keeper/msg_server_<name>.go` plus a `_test.go` beside it.
-3. An entry in every applicable map in `app/ante/maps.go`. There are nine —
+3. An entry in every applicable map in `app/ante/maps.go`. There are ten —
    `KnownStructsMessages`, `PermissionMap`, `DynamicPermissionMessages`, `ChargeMessages`,
    `ProofMessages`, `SignatureMessages`, `CreatorExtractors`, `ThrottleKeyExtractors`,
-   `FreeStakingMessages` — plus the `IsFreeTransaction` helpers. Walk the whole file. A missing
-   entry fails silently: the message ends up unpriced, unpermissioned, or unthrottled rather
-   than erroring.
+   `ThrottleTargetAuth`, `FreeStakingMessages` — plus the `IsFreeTransaction` helpers. Walk the
+   whole file. A missing entry fails silently: the message ends up unpriced, unpermissioned, or
+   unthrottled rather than erroring.
 4. CLI exposure via `x/structs/module/autocli.go`.
 
 **`app/ante` is incident territory.** Any `ctx.IsCheckTx()` or `IsReCheckTx()` short-circuit needs an adjacent `// SKIP_RATIONALE:` comment
 or an allowlist entry, or `app/ante/arch_test.go` fails. Route new reject branches through
 `observeReject` (see `docs/observability.md`).
+
+**An ante write is the one write a failed message cannot undo, so never reserve on a
+transaction's say-so.** The SDK commits the ante cache before it runs messages and only discards
+the *message* cache when one fails, so anything the ante wrote outlives the handler's rejection.
+`ThrottleDecorator` reserves object-global throttle keys built from fields the transaction
+chooses — `proof/<structId>`, `fleet/<fleetId>`, `explore/<playerId>` — and nothing upstream
+authorizes the *object*: `StructsDecorator` is Layer 1 only, checking the signing address's own
+bits, and a primary address holds `PermAll`, so naming somebody else's struct sails through and
+parks that object's slot for the block. Reservation is therefore gated on
+`Keeper.ThrottleTargetAuthorized`, which resolves the named struct, fleet or player to its owner
+and runs the handlers' own `PermissionCheck` — never a reimplementation of the policy, and never
+owner equality, which would stop throttling every delegated action. `ThrottleTargetAuth` in
+`maps.go` is the mirror table and `TestArch_ThrottleTargetAuthMatchesHandlers` reads the handler
+sources to keep the permission honest.
+
+Note both halves of the shape, because each is load-bearing. **The write cannot move later**: a
+post-handler runs against the message cache and is discarded on failure, and a proof slot that a
+failed attempt does not consume lets a player grind nonces on-chain rather than mine off-chain.
+**The refusal must not reject**: the ante sees pre-transaction state while a handler sees what
+earlier messages in the same transaction left, so a transaction that grants a permission and then
+uses it is authorized there and not here — skipping the reservation costs one block of throttling,
+rejecting would break the transaction. Any future ante-time reservation keyed by a caller-supplied
+id inherits all of this.
 
 **State-breaking changes need an upgrade handler** in a new `app/upgrades/vX_Y_Z/`, added to `upgradesList` in `app/app.go`. Never change field numbers or the meaning of
 a stored proto field without a migration.

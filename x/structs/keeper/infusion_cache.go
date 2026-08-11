@@ -126,8 +126,18 @@ func (cache *InfusionCache) applyGridDeltas(oldFuel, oldDestCap, oldPlayerCap ui
         destAllocId, found := cache.CC.k.GetAutoResizeAllocationBySource(cache.CC.ctx, cache.DestinationId)
         if found {
             totalCap := cache.CC.GetGridAttribute(cache.DestinationCapacityAttributeId)
-            cache.CC.AutoResizeAllocation(destAllocId, totalCap)
-        } else if newDestCap < oldDestCap {
+            found = cache.CC.AutoResizeAllocation(destAllocId, totalCap)
+
+            // The hook named an allocation that is gone, so nothing is tracking
+            // this capacity. Drop the hook and treat it as absent, or a decrease
+            // silently skips the cascade below and leaves load unshed.
+            if !found {
+                cache.CC.k.logger.Error("Stale auto-resize hook on infusion destination", "destinationId", cache.DestinationId, "allocationId", destAllocId)
+                cache.CC.k.ClearAutoResizeAllocationBySource(cache.CC.ctx, cache.DestinationId)
+            }
+        }
+
+        if !found && newDestCap < oldDestCap {
             cache.CC.k.AppendGridCascadeQueue(cache.CC.ctx, cache.DestinationId)
         }
     }
@@ -141,8 +151,16 @@ func (cache *InfusionCache) applyGridDeltas(oldFuel, oldDestCap, oldPlayerCap ui
         playerAllocId, found := cache.CC.k.GetAutoResizeAllocationBySource(cache.CC.ctx, playerId)
         if found {
             totalCap := cache.CC.GetGridAttribute(playerCapAttrId)
-            cache.CC.AutoResizeAllocation(playerAllocId, totalCap)
-        } else if newPlayerCap < oldPlayerCap {
+            found = cache.CC.AutoResizeAllocation(playerAllocId, totalCap)
+
+            // See above: a hook pointing at a destroyed allocation is no hook.
+            if !found {
+                cache.CC.k.logger.Error("Stale auto-resize hook on player", "playerId", playerId, "allocationId", playerAllocId)
+                cache.CC.k.ClearAutoResizeAllocationBySource(cache.CC.ctx, playerId)
+            }
+        }
+
+        if !found && newPlayerCap < oldPlayerCap {
             cache.CC.k.AppendGridCascadeQueue(cache.CC.ctx, playerId)
         }
     }

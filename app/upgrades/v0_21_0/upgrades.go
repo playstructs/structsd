@@ -88,6 +88,13 @@ func CreateUpgradeHandler(
 			return newVM, err
 		}
 
+		// Last, so that the rebuilt index reflects the allocations that actually
+		// survive this upgrade. Anything above that settles an agreement or sheds
+		// load can destroy allocations, and the rebuild has to have the final say.
+		if err := MigrateAutoResizeAllocationIndex(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
 		return newVM, nil
 	}
 }
@@ -1042,6 +1049,101 @@ func MigrateStructPhantomAggregates(ctx context.Context, keepers *upgrades.Keepe
 		"typeCountsRepaired", typeCountsRepaired,
 		"planetsRepaired", planetsRepaired,
 		"orphanGridAttributesCleared", orphansCleared)
+	return nil
+}
+
+// MigrateAutoResizeAllocationIndex rebuilds the auto-resize index from the
+// allocations that actually exist.
+//
+// The index maps a source object id to the automated allocation riding on it,
+// but AllocationCache.Destroy cleared it with the allocation's own id, so the
+// delete matched nothing and every automated allocation ever torn down left its
+// hook behind. A leaked hook bricks its source: SetSource refuses any new
+// automated allocation on a source the index mentions, without checking that the
+// allocation still exists, and the infusion capacity path treats the hook as live
+// and so skips the grid cascade that a capacity cut should trigger.
+//
+// Rebuilding rather than pruning fixes every way the index can be wrong in one
+// pass — entries whose allocation is gone, entries naming a non-automated
+// allocation, entries filed under a source the allocation does not claim, and any
+// automated allocation missing a hook.
+//
+// Idempotent: a second run clears the index it just wrote and writes the same
+// rows again, since it derives everything from the allocations themselves.
+func MigrateAutoResizeAllocationIndex(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateAutoResizeAllocationIndex")
+
+	k := keepers.StructsKeeper
+
+	before := make(map[string]string)
+	for _, hook := range k.GetAllAutoResizeAllocationSource(ctx) {
+		before[hook.SourceObjectId] = hook.AllocationId
+	}
+
+	cleared := k.ClearAllAutoResizeAllocationSource(ctx)
+
+	var (
+		indexed  int
+		added    int
+		rekeyed  int
+		collided int
+	)
+
+	// GetAllAllocation walks the allocation prefix in key order, so which
+	// allocation wins a collision is the same on every node.
+	claimedBy := make(map[string]string)
+	for _, allocation := range k.GetAllAllocation(ctx) {
+		if allocation.Type != structstypes.AllocationType_automated {
+			continue
+		}
+
+		if allocation.SourceObjectId == "" {
+			logger.Error("automated allocation has no source object; cannot index it",
+				"allocationId", allocation.Id)
+			continue
+		}
+
+		// One source can carry only one automated allocation. That is enforced on
+		// creation and so should be unreachable, but corrupt state must resolve
+		// the same way on every node rather than by map order.
+		if owner, taken := claimedBy[allocation.SourceObjectId]; taken {
+			logger.Error("two automated allocations claim one source; keeping the first",
+				"allocationId", allocation.Id, "sourceObjectId", allocation.SourceObjectId, "keptBy", owner)
+			collided++
+			continue
+		}
+
+		claimedBy[allocation.SourceObjectId] = allocation.Id
+		k.SetAutoResizeAllocationSource(ctx, allocation.Id, allocation.SourceObjectId)
+		indexed++
+
+		previous, existed := before[allocation.SourceObjectId]
+		switch {
+		case !existed:
+			// Should not happen: every path that creates an automated allocation
+			// writes the hook, so a missing one means state this binary did not
+			// write.
+			added++
+		case previous != allocation.Id:
+			rekeyed++
+		}
+	}
+
+	dropped := cleared - (indexed - added)
+
+	// The leak makes a non-zero drop count the expected outcome on any chain that
+	// has torn down an automated allocation. Additions and re-keys are the ones
+	// that should not happen at all.
+	if added > 0 || rekeyed > 0 || collided > 0 {
+		logger.Error("v0.21.0 auto-resize index rebuild found more than stale rows",
+			"hooksAdded", added, "hooksRekeyed", rekeyed, "sourceCollisions", collided)
+	}
+
+	logger.Info("v0.21.0 auto-resize index rebuild complete",
+		"rowsBefore", cleared, "rowsAfter", indexed,
+		"staleHooksDropped", dropped, "hooksAdded", added,
+		"hooksRekeyed", rekeyed, "sourceCollisions", collided)
 	return nil
 }
 

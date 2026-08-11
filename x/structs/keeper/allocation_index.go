@@ -178,4 +178,51 @@ func (k Keeper) ClearAutoResizeAllocationBySource(ctx context.Context, sourceObj
     	store.Delete([]byte(sourceObjectId))
 }
 
+// AutoResizeHook is one row of the auto-resize index: the source object the hook
+// is keyed by, and the automated allocation it names.
+type AutoResizeHook struct {
+    SourceObjectId string
+    AllocationId   string
+}
+
+// GetAllAutoResizeAllocationSource walks the whole auto-resize index in store key
+// order, which is the same on every node.
+func (k Keeper) GetAllAutoResizeAllocationSource(ctx context.Context) (list []AutoResizeHook) {
+    	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationAutoResizeKey))
+    	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+
+    	defer func() { _ = iterator.Close() }()
+
+    	for ; iterator.Valid(); iterator.Next() {
+    		list = append(list, AutoResizeHook{
+    			SourceObjectId: string(iterator.Key()),
+    			AllocationId:   string(iterator.Value()),
+    		})
+    	}
+
+    	return
+}
+
+// ClearAllAutoResizeAllocationSource empties the index and reports how many rows
+// it removed. Keys are collected before deleting rather than deleted during the
+// walk, which is not safe to do through a live iterator.
+func (k Keeper) ClearAllAutoResizeAllocationSource(ctx context.Context) (cleared int) {
+    	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationAutoResizeKey))
+
+    	var keys [][]byte
+    	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+    	for ; iterator.Valid(); iterator.Next() {
+    		key := make([]byte, len(iterator.Key()))
+    		copy(key, iterator.Key())
+    		keys = append(keys, key)
+    	}
+    	_ = iterator.Close()
+
+    	for _, key := range keys {
+    		store.Delete(key)
+    	}
+
+    	return len(keys)
+}
+
 

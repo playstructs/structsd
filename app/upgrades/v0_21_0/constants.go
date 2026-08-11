@@ -162,6 +162,24 @@ package v0_21_0
 //     over-subscribed grid is self-correcting, since GridCascade sheds load by
 //     destroying allocations, so this leaves no corrupted stored aggregate.
 //
+//   - Destroying an automated allocation now actually clears its auto-resize
+//     hook. The index is keyed by source object id, but AllocationCache.Destroy
+//     cleared it with the allocation's own id, so the delete matched a key that
+//     was never written and every automated allocation ever torn down left a hook
+//     naming an allocation that no longer exists. Such a hook is not inert:
+//     SetSource refuses any new automated allocation on a source the index
+//     mentions, without checking that the allocation is still there, so the
+//     source was bricked permanently; and the infusion capacity path took the
+//     hook as proof that something was tracking the source, called AutoResize on
+//     a missing allocation, and skipped the grid cascade that a capacity cut
+//     should have triggered, leaving load unshed. Automated allocations reach
+//     this through GridCascade, substation deletion, and power-generating struct
+//     offline or destruction; MsgAllocationDelete only accepts dynamic ones.
+//     AutoResizeAllocation now also distinguishes a missing allocation from a
+//     failed resize, and the capacity path clears a hook of the first kind and
+//     falls through to the cascade — a resize failure is not treated as a stale
+//     hook, since that would shed load over a transient error.
+//
 //   - Deleting a provider now empties its collateral and earnings pools into the
 //     owner's primary address, after every agreement has been closed and every
 //     consumer made whole. Both pool addresses are derived from the provider id
@@ -284,6 +302,39 @@ package v0_21_0
 //     of a proof pubkey, the staking hooks pass an AccAddress that was already
 //     parsed, and everything else takes the SDK-validated msg.Creator.
 //
+//   - The ante no longer reserves an object-global throttle key for a signer
+//     with no standing on the object it names. ThrottleDecorator built the proof
+//     and operational keys straight from transaction fields —
+//     proof/<structId>, proof/<fleetId>, fleet/<fleetId>, explore/<playerId>,
+//     register/<playerId> — and wrote them before the handler ran. Nothing
+//     upstream could catch that: StructsDecorator checks only the signing
+//     address's own bits and a primary address holds PermAll, so naming somebody
+//     else's struct passed. The reservation then survived the handler's
+//     rejection, because the SDK commits the ante cache before executing
+//     messages and only discards the message cache on failure. One free
+//     transaction of MaxMsgCount messages could therefore park up to forty
+//     victim objects per block, denying their owners fleet movement, planet
+//     exploration, address registration and every proof-of-work completion,
+//     every block, for nothing. A key is now written only once
+//     Keeper.ThrottleTargetAuthorized agrees the signer could legitimately
+//     consume it, resolving the named struct, fleet or player to its owner and
+//     running the handlers' own PermissionCheck against it.
+//
+//     The reservation stays in the ante rather than moving to a post-handler,
+//     which would look like the tidier fix and is not one: post-handler writes
+//     go to the message cache and are discarded whenever a message fails, and a
+//     proof slot that a failed attempt does not consume lets a player grind
+//     nonces on-chain across many transactions in one block instead of mining
+//     off-chain. A refusal skips the reservation and lets the message through to
+//     its handler for the real error; it is deliberately not an ante reject,
+//     since the ante sees pre-transaction state while a handler sees the state
+//     earlier messages in the same transaction left, and a transaction that
+//     grants a permission and then uses it must not be refused at admission. No
+//     migration: throttle keys live only in the transient store, which is empty
+//     at the upgrade height. The per-player charge/<playerId> key is unchanged,
+//     being derived from the signer's own player index rather than anything the
+//     transaction names.
+//
 // State migrations:
 //
 //   - MigrateGuildNameIndex: clear the Guild/name/ prefix and rebuild it from
@@ -353,4 +404,16 @@ package v0_21_0
 //     excluded, since destruction already removed their contributions. Runs after
 //     MigrateOreClocksToPlanet, which seeds the same ore counters from the same
 //     online structs.
+//
+//   - MigrateAutoResizeAllocationIndex: clear the auto-resize index and rebuild it
+//     from the automated allocations that actually exist, keyed by the source each
+//     one names. Rebuilding rather than pruning repairs every way the index can be
+//     wrong in one pass: hooks whose allocation was destroyed (the leak this
+//     upgrade fixes, and the only one expected on a healthy chain), hooks naming a
+//     non-automated allocation, hooks filed under a source their allocation does
+//     not claim, and automated allocations missing a hook. Two allocations
+//     claiming one source is unreachable through the handlers; if corrupt state
+//     has it, the first in store key order wins so every node agrees. Runs last,
+//     because anything above it that settles an agreement or sheds load can
+//     destroy allocations and the rebuild has to have the final say. Idempotent.
 const UpgradeName = "v0.21.0"
