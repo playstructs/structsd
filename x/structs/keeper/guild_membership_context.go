@@ -57,6 +57,11 @@ func (cc *CurrentContext) GetGuildMembershipApplicationCache(callingPlayer *Play
 
 	} else {
 
+		// Every caller passes a compile-time constant, so no transaction can
+		// reach the default today. It is the callers that make it unreachable,
+		// not the switch: a joinType read from a message or a stored record
+		// would be an open proto3 enum, and falling through left
+		// guildPermissionError nil, skipping the guild-side check entirely.
 		var guildPermissionError error
 		switch joinType {
             case types.GuildJoinType_invite:
@@ -67,6 +72,8 @@ func (cc *CurrentContext) GetGuildMembershipApplicationCache(callingPlayer *Play
                 guildPermissionError = guild.CanAddMembersByProxy(callingPlayer)
             case types.GuildJoinType_direct:
                 // Check on Infusion
+            default:
+                guildPermissionError = types.NewGuildMembershipError(guildId, playerId, "invalid_join_type")
 		}
 		if guildPermissionError != nil {
 			return &GuildMembershipApplicationCache{}, guildPermissionError

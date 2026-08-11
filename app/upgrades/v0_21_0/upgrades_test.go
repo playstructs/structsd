@@ -62,6 +62,64 @@ func TestMigrateGuildBankFees(t *testing.T) {
 	require.Equal(t, got0.BankConvertInFee.String(), got0b.BankConvertInFee.String())
 }
 
+// TestMigrateGuildJoinBypassLevels verifies that guilds carrying a bypass level
+// outside the declared enum are clamped to closed and that guilds holding
+// declared levels are left exactly as they were.
+//
+// Records like these were writable before v0.21.0: the update handlers passed
+// msg.GuildJoinBypassLevel straight through and proto3 enums are open, so any
+// int32 persisted. SetGuild has no validation, which is what lets this test
+// stage the state at all.
+func TestMigrateGuildJoinBypassLevels(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+
+	poisoned := types.CreateEmptyGuild()
+	poisoned.Id = "4-0"
+	poisoned.Index = 0
+	poisoned.JoinInfusionMinimumBypassByRequest = types.GuildJoinBypassLevel(500)
+	poisoned.JoinInfusionMinimumBypassByInvite = types.GuildJoinBypassLevel(500)
+	k.SetGuild(ctx, poisoned)
+
+	// Only one field poisoned: the untouched field must survive the clamp.
+	halfPoisoned := types.CreateEmptyGuild()
+	halfPoisoned.Id = "4-1"
+	halfPoisoned.Index = 1
+	halfPoisoned.JoinInfusionMinimumBypassByRequest = types.GuildJoinBypassLevel(-1)
+	halfPoisoned.JoinInfusionMinimumBypassByInvite = types.GuildJoinBypassLevel_member
+	k.SetGuild(ctx, halfPoisoned)
+
+	healthy := types.CreateEmptyGuild()
+	healthy.Id = "4-2"
+	healthy.Index = 2
+	healthy.JoinInfusionMinimumBypassByRequest = types.GuildJoinBypassLevel_member
+	healthy.JoinInfusionMinimumBypassByInvite = types.GuildJoinBypassLevel_permissioned
+	k.SetGuild(ctx, healthy)
+
+	require.NoError(t, v0_21_0.MigrateGuildJoinBypassLevels(ctx, keepers))
+
+	got0, found := k.GetGuild(ctx, "4-0")
+	require.True(t, found)
+	require.Equal(t, types.GuildJoinBypassLevel_closed, got0.JoinInfusionMinimumBypassByRequest)
+	require.Equal(t, types.GuildJoinBypassLevel_closed, got0.JoinInfusionMinimumBypassByInvite)
+
+	got1, found := k.GetGuild(ctx, "4-1")
+	require.True(t, found)
+	require.Equal(t, types.GuildJoinBypassLevel_closed, got1.JoinInfusionMinimumBypassByRequest)
+	require.Equal(t, types.GuildJoinBypassLevel_member, got1.JoinInfusionMinimumBypassByInvite, "a declared level must not be clamped")
+
+	got2, found := k.GetGuild(ctx, "4-2")
+	require.True(t, found)
+	require.Equal(t, types.GuildJoinBypassLevel_member, got2.JoinInfusionMinimumBypassByRequest)
+	require.Equal(t, types.GuildJoinBypassLevel_permissioned, got2.JoinInfusionMinimumBypassByInvite)
+
+	// Idempotent: closed is a declared value, so a re-run finds nothing to do.
+	require.NoError(t, v0_21_0.MigrateGuildJoinBypassLevels(ctx, keepers))
+	got0b, _ := k.GetGuild(ctx, "4-0")
+	require.Equal(t, got0.JoinInfusionMinimumBypassByRequest, got0b.JoinInfusionMinimumBypassByRequest)
+	require.Equal(t, got0.JoinInfusionMinimumBypassByInvite, got0b.JoinInfusionMinimumBypassByInvite)
+}
+
 // TestMigrateStructTypes verifies the struct-type rewrite populates the new
 // canDefend flag: true for fleet types, false for planetary types.
 func TestMigrateStructTypes(t *testing.T) {

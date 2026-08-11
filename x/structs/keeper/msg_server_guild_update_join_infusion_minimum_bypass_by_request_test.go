@@ -50,20 +50,61 @@ func TestMsgGuildUpdateJoinInfusionMinimumBypassByRequest(t *testing.T) {
 		skip      bool
 	}{
 		{
-			name: "valid bypass level update",
+			name: "permissioned bypass level update",
+			input: &types.MsgGuildUpdateJoinInfusionMinimumBypassByRequest{
+				Creator:              player.Creator,
+				GuildId:              guild.Id,
+				GuildJoinBypassLevel: types.GuildJoinBypassLevel_permissioned,
+			},
+			expErr: false,
+		},
+		{
+			name: "member bypass level update",
+			input: &types.MsgGuildUpdateJoinInfusionMinimumBypassByRequest{
+				Creator:              player.Creator,
+				GuildId:              guild.Id,
+				GuildJoinBypassLevel: types.GuildJoinBypassLevel_member,
+			},
+			expErr: false,
+		},
+		{
+			name: "closed bypass level update",
+			input: &types.MsgGuildUpdateJoinInfusionMinimumBypassByRequest{
+				Creator:              player.Creator,
+				GuildId:              guild.Id,
+				GuildJoinBypassLevel: types.GuildJoinBypassLevel_closed,
+			},
+			expErr: false,
+		},
+		{
+			// proto3 enums are open, so 500 decodes fine. Before v0.21.0 this
+			// case asserted that it persisted, and a stored 500 made every
+			// membership switch in guild_cache.go fall through and return nil.
+			name: "undeclared bypass level is rejected",
 			input: &types.MsgGuildUpdateJoinInfusionMinimumBypassByRequest{
 				Creator:              player.Creator,
 				GuildId:              guild.Id,
 				GuildJoinBypassLevel: 500,
 			},
-			expErr: false,
+			expErr:    true,
+			expErrMsg: "invalid guild join bypass level",
+		},
+		{
+			name: "negative bypass level is rejected",
+			input: &types.MsgGuildUpdateJoinInfusionMinimumBypassByRequest{
+				Creator:              player.Creator,
+				GuildId:              guild.Id,
+				GuildJoinBypassLevel: -1,
+			},
+			expErr:    true,
+			expErrMsg: "invalid guild join bypass level",
 		},
 		{
 			name: "guild not found",
 			input: &types.MsgGuildUpdateJoinInfusionMinimumBypassByRequest{
 				Creator:              player.Creator,
 				GuildId:              "invalid-guild",
-				GuildJoinBypassLevel: 500,
+				GuildJoinBypassLevel: types.GuildJoinBypassLevel_member,
 			},
 			expErr:    true,
 			expErrMsg: "wasn't found",
@@ -74,7 +115,7 @@ func TestMsgGuildUpdateJoinInfusionMinimumBypassByRequest(t *testing.T) {
 			input: &types.MsgGuildUpdateJoinInfusionMinimumBypassByRequest{
 				Creator:              sdk.AccAddress("noperms123456789012345678901234567890").String(),
 				GuildId:              guild.Id,
-				GuildJoinBypassLevel: 500,
+				GuildJoinBypassLevel: types.GuildJoinBypassLevel_member,
 			},
 			expErr:    true,
 			expErrMsg: "has no permissions",
@@ -88,12 +129,20 @@ func TestMsgGuildUpdateJoinInfusionMinimumBypassByRequest(t *testing.T) {
 				t.Skip("Skipping test - error condition not easily testable with current cache system")
 			}
 
+			before, _ := k.GetGuild(ctx, guild.Id)
+
 			resp, err := ms.GuildUpdateJoinInfusionMinimumBypassByRequest(wctx, tc.input)
 
 			if tc.expErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
+
+				// A rejected level must not reach state. The handler validates
+				// ahead of GuildCache.SetJoinInfusionMinimumBypassByRequest, so
+				// there is nothing for the transaction rollback to undo.
+				after, found := k.GetGuild(ctx, guild.Id)
+				require.True(t, found)
+				require.Equal(t, before.JoinInfusionMinimumBypassByRequest, after.JoinInfusionMinimumBypassByRequest)
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, resp)

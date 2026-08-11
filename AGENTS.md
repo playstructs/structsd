@@ -210,6 +210,32 @@ provably cannot reach state. `norm.NFC` is the one allowed external dependency, 
 `golang.org/x/text` changes which names the chain accepts and needs an upgrade handler** — treat a
 Unicode-version review as part of writing one.
 
+**A proto3 enum is an open int32, so a switch on one that decides authorization must end in a
+default that denies.** The generated decoder shifts bytes into an int32 and never consults the
+enum, so a field typed `guildJoinBypassLevel` holds any number a transaction or a genesis file
+puts there. `CanRequestMembership`, `CanApproveMembershipRequest` and `CanInviteMembers` each
+switched on one with no default, and a Go switch that matches nothing simply falls through — which
+for a `(err error)` named return means `nil`, which means allowed. The undeclared value was
+therefore *more* permissive than every declared one: `permissioned` demands `PermGuildMembership`
+and `member` demands existing membership, while 500 demanded nothing. A player holding only
+`PermGuildJoinConstraintsUpdate` stored it, and any registered outsider then submitted and approved
+their own membership request. Note the shape, because it is what makes this class hard to see in
+review: the bug is in the branch nobody wrote, and the write that enabled it — the update handler
+assigning `msg.GuildJoinBypassLevel` — looks like an ordinary permissioned setter.
+
+Fix it at both ends and know which end does what. The default branches are what covers records
+already on disk, and they are the security fix. Validation on the way in —
+`GuildJoinBypassLevel.IsValid()`, checked in the cache setters so future callers inherit it, and
+again in `GenesisState.Validate` because `GenesisImportGuild` assigns a whole record and skips
+them — is what stops new ones. `IsValid` reads the generated `GuildJoinBypassLevel_name` map rather
+than listing the constants, so a value added to the proto is storable the moment it is generated
+while still being denied by the switches until someone writes policy for it; that pairing is
+deliberate. `TestArch_GuildBypassSwitchesHaveDefault` enforces the defaults and
+`x/structs/keeper/guild_bypass_level_test.go` is the regression suite;
+`MigrateGuildJoinBypassLevels` clamps existing corruption to `closed`. Other enums switched on in
+the keeper (`Ambit`, `ObjectType`) mostly dispatch rather than authorize and carry their own
+defaultless-switch backlog — the rule is about the ones where falling through grants something.
+
 **Use the typed errors.** Keeper codes (1050–1800) live in
 `x/structs/types/errors_structured.go`, ante codes (2000–2050) in `app/ante/errors.go`. The
 numbers are a public contract that clients and tests assert on: never `fmt.Errorf` out of a

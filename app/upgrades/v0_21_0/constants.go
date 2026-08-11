@@ -335,7 +335,43 @@ package v0_21_0
 //     being derived from the signer's own player index rather than anything the
 //     transaction names.
 //
+//   - Guild join bypass levels outside the declared enum are now rejected on the
+//     way in and denied on the way out. guildJoinBypassLevel declares closed,
+//     permissioned and member, but proto3 enums are open — the generated decoder
+//     shifts bytes into an int32 without consulting the enum — and the update
+//     handlers wrote msg.GuildJoinBypassLevel straight through, so a value like
+//     500 both stored and round-tripped. The three readers in guild_cache.go
+//     then switched on it with no default, leaving err nil: CanRequestMembership
+//     admitted the request, CanApproveMembershipRequest demanded nothing at all
+//     where permissioned demands PermGuildMembership and member demands existing
+//     membership, and CanInviteMembers did the same for invites. A player
+//     holding only PermGuildJoinConstraintsUpdate could therefore open a guild
+//     to any registered outsider, who submitted and approved their own request
+//     and was migrated in at the entry rank — PermGuildMembership authority
+//     obtained from a bit that is not PermGuildMembership.
+//
+//     Both halves changed. The readers end in a default that denies, which is
+//     what covers records already on disk. The writers refuse an undeclared
+//     level: GuildCache.SetJoinInfusionMinimumBypassByRequest / ByInvite now
+//     return ErrInvalidGuildJoinBypassLevel (1508, registered since v0.20 and
+//     until now unused) and both update handlers propagate it, checking ahead of
+//     their equal-to-current guard so a corrupted record cannot be rewritten to
+//     itself. GenesisState.Validate carries the same check, genesis being the
+//     one path that assigns a Guild record without passing the setters.
+//     Undeclared levels are refused rather than clamped at the handler, so a
+//     client sending one learns it was wrong instead of silently getting closed.
+//
 // State migrations:
+//
+//   - MigrateGuildJoinBypassLevels: clamp either bypass field to closed on any
+//     guild holding a value outside the declared enum. The new default branches
+//     already make such a record inert, so this is about the record rather than
+//     the exploit: left alone it is a guild permanently closed to joins with no
+//     signal as to why, and enough to fail GenesisState.Validate on the next
+//     export. Closed is the recoverable direction, since
+//     CanUpdateJoinConstraintsBy reads only PermGuildJoinConstraintsUpdate and
+//     never the level, so the owner reopens the guild in one transaction.
+//     Expected to touch nothing unless a guild was actually attacked.
 //
 //   - MigrateGuildNameIndex: clear the Guild/name/ prefix and rebuild it from
 //     every stored guild name under the pinned normalization. Expected to be a

@@ -7,6 +7,7 @@ import (
 
 	// Used in Randomness Orb
 
+	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -257,6 +258,15 @@ func (cache *GuildCache) CanAddMembersByProxy(activePlayer *PlayerCache) error {
 	return cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildMembership)
 }
 
+// CanInviteMembers, CanApproveMembershipRequest and CanRequestMembership all
+// switch on a stored proto3 enum, which is untrusted input: the generated
+// decoder accepts any int32, so a level outside the declared three can reach
+// these from a record written before the update handlers validated their input,
+// or from a genesis file. Each switch therefore ends in a default that denies.
+// Without it the unmatched value left err nil and every membership gate opened
+// — the sharpest case being CanApproveMembershipRequest, where an undeclared
+// level demanded nothing at all while permissioned demands PermGuildMembership
+// and member demands existing membership.
 func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error) {
 
 	switch cache.GetJoinInfusionMinimumBypassByInvite() {
@@ -273,6 +283,10 @@ func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error)
 		if activePlayer.GetGuildId() != cache.GetGuildId() {
 			err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_member")
 		}
+
+	// Undeclared, or declared but without policy written for it yet
+	default:
+		err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "invalid_bypass_level").WithJoinType("invite")
 	}
 	return
 }
@@ -292,6 +306,10 @@ func (cache *GuildCache) CanApproveMembershipRequest(activePlayer *PlayerCache) 
 		if activePlayer.GetGuildId() != cache.GetGuildId() {
 			err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_member")
 		}
+
+	// Undeclared, or declared but without policy written for it yet
+	default:
+		err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "invalid_bypass_level").WithJoinType("request")
 	}
 	return
 }
@@ -305,6 +323,15 @@ func (cache *GuildCache) CanRequestMembership() (err error) {
 	// Invites are currently closed
 	case types.GuildJoinBypassLevel_closed:
 		err = types.NewGuildMembershipError(cache.GetGuildId(), "", "not_allowed").WithJoinType("request")
+
+	// Anyone may ask under either open level. Submitting a request is not the
+	// gate — CanApproveMembershipRequest is — but these two are spelled out
+	// rather than left to fall through, so the default below means "undeclared"
+	// rather than "everything the cases above missed".
+	case types.GuildJoinBypassLevel_permissioned, types.GuildJoinBypassLevel_member:
+
+	default:
+		err = types.NewGuildMembershipError(cache.GetGuildId(), "", "invalid_bypass_level").WithJoinType("request")
 	}
 	return
 }
@@ -574,20 +601,37 @@ func (cache *GuildCache) SetOwner(owner string) {
 	cache.Changed = true
 }
 
-func (cache *GuildCache) SetJoinInfusionMinimumBypassByRequest(level types.GuildJoinBypassLevel) {
+// SetJoinInfusionMinimumBypassByRequest and SetJoinInfusionMinimumBypassByInvite
+// are the only paths that write a bypass level from a transaction, so they are
+// where an undeclared enum value is refused. Validating here rather than in the
+// handlers means a future caller inherits the check; validating before the
+// assignment means a rejected level never reaches the cache, so nothing depends
+// on the handler returning before CommitAll.
+//
+// Genesis does not come through here — GenesisImportGuild assigns the whole
+// record — which is why GenesisState.Validate carries the same check.
+func (cache *GuildCache) SetJoinInfusionMinimumBypassByRequest(level types.GuildJoinBypassLevel) error {
+	if !level.IsValid() {
+		return errorsmod.Wrapf(types.ErrInvalidGuildJoinBypassLevel, "level (%d) on guild (%s)", int32(level), cache.GuildId)
+	}
 	if !cache.GuildLoaded {
 		cache.LoadGuild()
 	}
 	cache.Guild.JoinInfusionMinimumBypassByRequest = level
 	cache.Changed = true
+	return nil
 }
 
-func (cache *GuildCache) SetJoinInfusionMinimumBypassByInvite(level types.GuildJoinBypassLevel) {
+func (cache *GuildCache) SetJoinInfusionMinimumBypassByInvite(level types.GuildJoinBypassLevel) error {
+	if !level.IsValid() {
+		return errorsmod.Wrapf(types.ErrInvalidGuildJoinBypassLevel, "level (%d) on guild (%s)", int32(level), cache.GuildId)
+	}
 	if !cache.GuildLoaded {
 		cache.LoadGuild()
 	}
 	cache.Guild.JoinInfusionMinimumBypassByInvite = level
 	cache.Changed = true
+	return nil
 }
 
 func (cache *GuildCache) SetJoinInfusionMinimum(minimum uint64) {

@@ -37,6 +37,42 @@ func (guild *Guild) NormalizeBankFees() bool {
 	return changed
 }
 
+// IsValid reports whether level is one of the values declared in
+// proto/structs/structs/keys.proto. proto3 enums are open — the generated
+// decoder shifts bytes into an int32 without consulting the enum — so a stored
+// or message-carried level is untrusted input until this says otherwise.
+//
+// The membership test reads the generated name map rather than listing the
+// three constants, so a value added to the proto is accepted here the moment it
+// is generated. Note what that does *not* buy: a new value still has no case in
+// the guild_cache.go switches, and their default branches deny it. That pairing
+// is deliberate — a level nobody has written policy for is storable but grants
+// nothing.
+func (level GuildJoinBypassLevel) IsValid() bool {
+	_, declared := GuildJoinBypassLevel_name[int32(level)]
+	return declared
+}
+
+// NormalizeJoinBypassLevels clamps either bypass field to closed when it holds
+// a value outside the declared enum, which records written before the update
+// handlers validated their input can. It reports whether the guild changed.
+//
+// Closed is the recoverable direction: CanUpdateJoinConstraintsBy reads only
+// the permission bit and never the bypass level, so an owner reopens the guild
+// with one transaction.
+func (guild *Guild) NormalizeJoinBypassLevels() bool {
+	changed := false
+	if !guild.JoinInfusionMinimumBypassByRequest.IsValid() {
+		guild.JoinInfusionMinimumBypassByRequest = GuildJoinBypassLevel_closed
+		changed = true
+	}
+	if !guild.JoinInfusionMinimumBypassByInvite.IsValid() {
+		guild.JoinInfusionMinimumBypassByInvite = GuildJoinBypassLevel_closed
+		changed = true
+	}
+	return changed
+}
+
 func (guild *Guild) SetCreator(creator string) error {
 
 	guild.Creator = creator

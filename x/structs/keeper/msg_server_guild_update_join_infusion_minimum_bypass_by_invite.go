@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 )
@@ -32,8 +33,17 @@ func (k msgServer) GuildUpdateJoinInfusionMinimumBypassByInvite(goCtx context.Co
         return emptyResponse, permissionErr
     }
 
+    // Validated ahead of the equality guard: a level that matches what is
+    // already stored is still refused, so a corrupted record cannot be
+    // rewritten to itself and read as an accepted value.
+    if !msg.GuildJoinBypassLevel.IsValid() {
+        return emptyResponse, errorsmod.Wrapf(types.ErrInvalidGuildJoinBypassLevel, "level (%d) on guild (%s)", int32(msg.GuildJoinBypassLevel), msg.GuildId)
+    }
+
     if (msg.GuildJoinBypassLevel != guild.GetGuild().JoinInfusionMinimumBypassByInvite) {
-        guild.SetJoinInfusionMinimumBypassByInvite(msg.GuildJoinBypassLevel)
+        if setErr := guild.SetJoinInfusionMinimumBypassByInvite(msg.GuildJoinBypassLevel); setErr != nil {
+            return emptyResponse, setErr
+        }
     }
 
 	cc.CommitAll()

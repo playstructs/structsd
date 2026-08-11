@@ -39,6 +39,10 @@ func CreateUpgradeHandler(
 			return newVM, err
 		}
 
+		if err := MigrateGuildJoinBypassLevels(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
 		// Order matters: rewrite struct types first so the new canDefend flag is
 		// populated in state, then prune defender relationships that the flag
 		// now invalidates.
@@ -123,6 +127,49 @@ func MigrateGuildBankFees(ctx context.Context, keepers *upgrades.Keepers) error 
 	}
 
 	logger.Info("v0.21.0 guild bank fee backfill complete", "guildsMigrated", guildsMigrated)
+	return nil
+}
+
+// MigrateGuildJoinBypassLevels clamps guild join bypass levels that hold a value
+// outside the three declared in the guildJoinBypassLevel enum.
+//
+// Before v0.21.0 the update handlers wrote msg.GuildJoinBypassLevel straight
+// through, and proto3 enums are open, so any int32 both decoded and persisted.
+// The readers in guild_cache.go now deny an undeclared level instead of falling
+// through their switches, which is what closes the membership bypass; this
+// migration is about the records themselves. Left alone they would be inert but
+// malformed: permanently closed to joins with no signal as to why, and enough to
+// fail GenesisState.Validate on the next export.
+//
+// Closed is the safe direction and a recoverable one. CanUpdateJoinConstraintsBy
+// reads only PermGuildJoinConstraintsUpdate, never the bypass level, so a guild
+// this touches is reopened by its owner in one transaction.
+//
+// Idempotent: it rewrites only guilds NormalizeJoinBypassLevels reports as
+// changed, and closed is a declared value, so a second run finds nothing.
+func MigrateGuildJoinBypassLevels(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateGuildJoinBypassLevels")
+
+	k := keepers.StructsKeeper
+
+	var guildsMigrated int
+	for _, guild := range k.GetAllGuild(ctx) {
+		byRequest := guild.JoinInfusionMinimumBypassByRequest
+		byInvite := guild.JoinInfusionMinimumBypassByInvite
+
+		if guild.NormalizeJoinBypassLevels() {
+			// Error level: no correct binary writes an undeclared level, so a
+			// hit here means the guild was exposed to the membership bypass and
+			// its owner needs to know their join policy was reset.
+			logger.Error("guild holds an undeclared join bypass level; clamping to closed",
+				"guildId", guild.Id, "byRequest", int32(byRequest), "byInvite", int32(byInvite))
+			k.SetGuild(ctx, guild)
+			guildsMigrated++
+		}
+	}
+
+	logger.Info("v0.21.0 guild join bypass level normalization complete", "guildsMigrated", guildsMigrated)
 	return nil
 }
 
