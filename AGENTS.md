@@ -18,7 +18,8 @@ the style of the file you're in and touch only the lines you're changing. If you
 feedback, scope it: `golangci-lint run ./x/structs/keeper/...`.
 
 **Never hand-edit generated code**: `*.pb.go`, `*.pb.gw.go`, `*.pulsar.go`, `api/`. Change
-`proto/` and run `make proto-gen`.
+`proto/` and run `make proto-gen`. Also generated, from a different source:
+`x/structs/types/unicode_tables.go`, via `go generate ./x/structs/types/...`.
 
 **Follow the handler pattern.** Every `msg_server_*.go` has the same shape: unwrap the SDK
 context, `cc := k.NewCurrentContext(ctx)`, load entities through `cc.GetX(...)`, check permission
@@ -75,6 +76,22 @@ money or changes load. The registered `provider-collateral-solvency` invariant
 (`x/structs/keeper/invariants.go`) is the standing check;
 `x/structs/keeper/agreement_teardown_test.go` is the regression suite.
 
+**An expiry gets one attempt, so it may never return early.** `AgreementExpirations` reads the
+expiration index at *exactly* the current height — no range scan, no retry queue — so an agreement
+that is not torn down on the one block it comes up is never revisited. Returning early does not
+defer the teardown, it cancels it: the agreement keeps its capacity in the provider's load and
+`Checkpoint()` goes on billing that capacity against the shared pool every block afterwards, out of
+other consumers' escrow. The load decrement and `removeAgreement()` are therefore the parts that
+must always happen, and nothing may abort in front of them for a condition that a later block could
+not fix. An allocation that is already gone is the case to know: it is nothing to tear down, not a
+failure, and `destroyAllocation` treats it that way on both the path where `cc.allocations` has
+never heard of it and the path where only `Destroy`'s re-read notices. `Expire()` keeps its error
+return for future paths, but no live one can strand today. `agreement-expiry-liveness` is the
+standing check — the solvency invariant cannot see this, because it clamps every span to the
+agreement's own window and so reads an overdue agreement as a fully served one. Deleting a provider
+drains both of its pools for the same reason: their addresses are derived from the provider id, so
+whatever is left when the record goes is unreachable for good.
+
 **An agreement's service window and the provider's checkpoint clock must start on the same
 block.** `Checkpoint()` bills *aggregate* provider load from `checkpointBlock`, while the solvency
 invariant measures what each consumer is owed from that agreement's `StartBlock`. `AgreementOpen`
@@ -113,6 +130,26 @@ online is *incidentally* safe, and stops being safe the moment anything can brin
 the struct is not destroyed; `x/structs/keeper/struct_destroyed_guards_test.go` is the regression
 suite, and `MigrateStructPhantomAggregates` in `app/upgrades/v0_21_0` recomputes what the two bugs
 corrupted.
+
+**Consensus code may not ask the toolchain about Unicode.** Go resolves `\p{L}` in a regexp, and
+`unicode.Is` against `unicode.L` / `Mn` / `Me` / `Cf`, using the tables of whichever toolchain
+compiled the binary, and those tables grow with Go releases — U+088F is unassigned in Unicode
+15.0.0 and a letter later. Nothing pins a toolchain hard enough to stop two validators disagreeing:
+`go.mod`'s `toolchain` directive is a floor, not a ceiling, and `GOTOOLCHAIN=local` opts out
+entirely. So a name made of one boundary code point validated differently on different nodes, only
+the accepting node wrote it, and that is an app hash split. Classify against the checked-in Unicode
+15.0.0 tables instead, through the helpers in `x/structs/types/unicode_pinned.go`
+(`isPinnedLetter`, `pinnedToLower`, `isPinnedSpace`, `asciiToLower`). Note the distinction:
+`unicode.Is(pinnedL, r)` is a binary search over data we control and is fine; it is naming the
+*standard library's* tables that is not. The same goes for case folding and whitespace —
+`strings.ToLower`, `strings.EqualFold` and `strings.TrimSpace` all read those tables — and
+`NormalizeName` is the sharpest case because its output is a KV key rather than a comparison value:
+`SetGuildNameIndex` writes `"Guild/name/" + NormalizeName(name)`. `x/structs/types/arch_determinism_test.go`
+enforces all of this and takes an adjacent `// DETERMINISM_OK: <reason>` comment for a value that
+provably cannot reach state. `norm.NFC` is the one allowed external dependency, pinned by `go.sum`;
+`TestNFCGoldenVectors` fails if a `go get -u` moves it. **Bumping `PinnedUnicodeVersion` or
+`golang.org/x/text` changes which names the chain accepts and needs an upgrade handler** — treat a
+Unicode-version review as part of writing one.
 
 **Use the typed errors.** Keeper codes (1050–1800) live in
 `x/structs/types/errors_structured.go`, ante codes (2000–2050) in `app/ante/errors.go`. The

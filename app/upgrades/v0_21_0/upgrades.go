@@ -35,6 +35,10 @@ func CreateUpgradeHandler(
 			return newVM, err
 		}
 
+		if err := MigrateGuildNameIndex(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
 		// Order matters: rewrite struct types first so the new canDefend flag is
 		// populated in state, then prune defender relationships that the flag
 		// now invalidates.
@@ -67,6 +71,13 @@ func CreateUpgradeHandler(
 		}
 
 		if err := MigrateAgreementCheckpointOverbill(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
+		// After MigrateAgreementCheckpointOverbill, so that each settlement is paid
+		// out of a collateral pool that has already had its over-billed revenue
+		// returned to it.
+		if err := MigrateExpireOverdueAgreements(ctx, keepers); err != nil {
 			return newVM, err
 		}
 
@@ -105,6 +116,105 @@ func MigrateGuildBankFees(ctx context.Context, keepers *upgrades.Keepers) error 
 	}
 
 	logger.Info("v0.21.0 guild bank fee backfill complete", "guildsMigrated", guildsMigrated)
+	return nil
+}
+
+// MigrateGuildNameIndex rebuilds the guild name index under the pinned Unicode
+// normalization, and is expected to write back exactly the rows it found.
+//
+// v0.21.0 stops reading the compiling toolchain's Unicode tables. NormalizeName
+// now case-folds and trims through checked-in Unicode 15.0.0 data, and its
+// output is a KV key: SetGuildNameIndex stores "Guild/name/" + NormalizeName.
+// Every Go release the chain has run so far ships Unicode 15.0.0, so the new
+// normalization produces the same bytes as the old one -- proven exhaustively
+// over the whole rune space by TestNormalizeNameMatchesLegacyForm and
+// TestPinnedTablesMatchToolchain -- which makes this a no-op on any state a
+// correct binary produced.
+//
+// It runs anyway because it is cheap and because it is the only thing that would
+// repair state a divergent binary could have written, and because the guild name
+// index cannot be reconstructed later: RemoveGuildNameIndex deletes by
+// re-normalizing a name, so a row whose key the current normalization no longer
+// produces is unreachable and would sit there forever holding a name hostage.
+//
+// A name it cannot carry forward is dropped rather than preserved. That costs
+// the guild one transaction to set the name again, and the alternative -- an
+// index row that does not match the guild's stored name -- lets a later rename
+// delete some other guild's row. Both drop paths log at error level because
+// neither is reachable from state a correct binary wrote.
+//
+// Idempotent: a second run clears the rows it just wrote and rebuilds the same
+// ones from the same guilds, and a name it already dropped is empty and skipped.
+func MigrateGuildNameIndex(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateGuildNameIndex")
+
+	k := keepers.StructsKeeper
+
+	before := k.GetAllGuildNameIndex(ctx)
+	cleared := k.ClearGuildNameIndex(ctx)
+
+	var (
+		indexed  int
+		skipped  int
+		dropped  int
+		rekeyed  int
+		collided int
+	)
+
+	// GetAllGuild walks the guild prefix in key order, so which guild wins a
+	// collision is the same on every node.
+	claimedBy := make(map[string]string)
+	for _, guild := range k.GetAllGuild(ctx) {
+		if guild.Name == "" {
+			skipped++
+			continue
+		}
+
+		// Re-validate rather than trust the stored value. A name that fails the
+		// pinned rules is one no correct binary could have written, and leaving
+		// it indexed would key state to a name the chain would now refuse.
+		if err := structstypes.ValidateEntityName(guild.Name); err != nil {
+			logger.Error("guild name is invalid under the pinned Unicode rules; clearing it",
+				"guildId", guild.Id, "name", guild.Name, "err", err)
+			guild.Name = ""
+			k.SetGuild(ctx, guild)
+			dropped++
+			continue
+		}
+
+		key := structstypes.NormalizeName(guild.Name)
+		if owner, taken := claimedBy[key]; taken {
+			logger.Error("two guilds normalize to the same name index key; clearing the later one",
+				"guildId", guild.Id, "name", guild.Name, "key", key, "keptBy", owner)
+			guild.Name = ""
+			k.SetGuild(ctx, guild)
+			collided++
+			dropped++
+			continue
+		}
+
+		claimedBy[key] = guild.Id
+		k.SetGuildNameIndex(ctx, guild.Name, guild.Id)
+		indexed++
+
+		if previous, existed := before[key]; !existed || previous != guild.Id {
+			rekeyed++
+		}
+	}
+
+	// Loud when it is not the no-op it should be. Any non-zero count here means
+	// a binary wrote guild state under different Unicode tables than these, and
+	// that is the condition the whole change exists to make impossible.
+	if rekeyed > 0 || dropped > 0 || cleared != indexed {
+		logger.Error("v0.21.0 guild name index rebuild was not a no-op",
+			"rowsBefore", cleared, "rowsAfter", indexed,
+			"rowsMovedOrAdded", rekeyed, "namesDropped", dropped, "collisions", collided)
+	}
+
+	logger.Info("v0.21.0 guild name index rebuild complete",
+		"rowsBefore", cleared, "rowsAfter", indexed,
+		"guildsWithoutName", skipped, "namesDropped", dropped, "collisions", collided)
 	return nil
 }
 
@@ -608,6 +718,70 @@ func MigrateAgreementCheckpointOverbill(ctx context.Context, keepers *upgrades.K
 		"providersReconciled", providersReconciled,
 		"providersShort", providersShort,
 		"totalReturned", totalReturned.String())
+	return nil
+}
+
+// MigrateExpireOverdueAgreements settles every agreement whose end block has
+// already passed.
+//
+// Expiry is driven from the EndBlocker by AgreementExpirations, which reads the
+// expiration index at exactly the current height. There is no range scan and no
+// retry, so an agreement not torn down on the one block it comes up is never
+// revisited: it keeps its capacity in the provider's load and Checkpoint goes on
+// billing that capacity against the shared collateral pool every block, funding
+// the overcharge out of other consumers' collateral.
+//
+// v0.21.0 makes that unreachable by stopping Expire from abandoning the teardown
+// when the allocation it meant to destroy has already gone. This clears anything
+// that reached the state before the fix, so the new agreement-expiry-liveness
+// invariant starts clean. On a healthy chain it settles nothing.
+func MigrateExpireOverdueAgreements(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateExpireOverdueAgreements")
+
+	k := keepers.StructsKeeper
+	currentBlock := uint64(sdkCtx.BlockHeight())
+
+	// Collect the ids up front. Settling an agreement removes rows and can reach
+	// other agreements through the shared provider, so the list must not be built
+	// lazily over a store that is being written underneath it.
+	var overdue []string
+	for _, agreement := range k.GetAllAgreement(ctx) {
+		if agreement.EndBlock < currentBlock {
+			overdue = append(overdue, agreement.Id)
+		}
+	}
+
+	if len(overdue) == 0 {
+		logger.Info("v0.21.0 overdue agreement sweep found nothing to settle")
+		return nil
+	}
+
+	cc := k.NewCurrentContext(ctx)
+
+	var settled, failed int
+	for _, agreementId := range overdue {
+		agreement := cc.GetAgreement(agreementId)
+		if !agreement.LoadAgreement() {
+			continue
+		}
+
+		if err := agreement.Expire(); err != nil {
+			// Same posture as the EndBlocker this stands in for: one that cannot be
+			// settled is logged and the rest still go, rather than failing the
+			// upgrade over state that is already broken.
+			logger.Error("overdue agreement could not be settled",
+				"agreementId", agreementId, "error", err)
+			failed++
+			continue
+		}
+		settled++
+	}
+
+	cc.CommitAll()
+
+	logger.Info("v0.21.0 overdue agreement sweep complete",
+		"settled", settled, "failed", failed)
 	return nil
 }
 

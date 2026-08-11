@@ -7,22 +7,51 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
-	"unicode"
 	"unicode/utf8"
 
 	"golang.org/x/text/unicode/norm"
 )
 
-// Name validation regexes operate AFTER NFC normalization. \p{L} matches
-// any Unicode letter (any script). Combining marks (\p{M}) are explicitly
-// excluded by these character classes -- they're rejected by the
-// containsCombiningMark check below to prevent Zalgo/stacking-mark abuse
-// even though some are technically letters in their script.
-var playerNameRegex = regexp.MustCompile(`^[\p{L}0-9\-_]{3,20}$`)
-var entityNameRegex = regexp.MustCompile(`^[\p{L}0-9\-_' ]{3,20}$`)
-var planetNameRegex = regexp.MustCompile(`^[\p{L}0-9\-_' ]{3,25}$`)
+// Extra characters each name kind allows alongside letters and ASCII digits.
+// Combining marks are never allowed: containsCombiningMark rejects them below
+// to prevent Zalgo/stacking-mark abuse even though some are technically
+// letters in their script.
+const (
+	playerNameExtra  = "-_"
+	relaxedNameExtra = "-_' "
+)
+
+// The remaining regexes are pure ASCII character classes with no case-folding
+// flag, so they carry no dependency on the toolchain's Unicode tables.
 var objectIdRegex = regexp.MustCompile(`^[0-9]+-[0-9]+$`)
 var doubleSpaceRegex = regexp.MustCompile(`  `)
+
+// nameCharsetOK reports whether s is between minRunes and maxRunes long and
+// every rune is a letter under the pinned tables, an ASCII digit, or one of
+// extra.
+//
+// This replaces three regexes of the form ^[\p{L}0-9\-_]{3,20}$. A regexp
+// cannot be pointed at a range table we control, and Go resolves \p{L} against
+// the tables of whichever toolchain compiled the binary, so the charset test
+// had to become an explicit loop to be deterministic. See unicode_pinned.go.
+//
+// The bounds are rune counts because that is what a repeat count on a
+// single-rune character class meant: the regexes it replaces counted runes,
+// not bytes. Callers run this after NFC normalization, as the regexes did.
+func nameCharsetOK(s string, minRunes int, maxRunes int, extra string) bool {
+	count := 0
+	for _, r := range s {
+		count++
+		if count > maxRunes {
+			return false
+		}
+		if isPinnedLetter(r) || ('0' <= r && r <= '9') || strings.ContainsRune(extra, r) {
+			continue
+		}
+		return false
+	}
+	return count >= minRunes
+}
 
 // opaquePfpRegex matches a non-URL PFP identifier (hash, CID, asset id, etc).
 // Used only when the value contains no ':' so we can be certain we're not
@@ -50,7 +79,7 @@ var allowedPfpSchemes = map[string]struct{}{
 // stable.
 func containsCombiningMark(s string) bool {
 	for _, r := range s {
-		if unicode.Is(unicode.Mn, r) || unicode.Is(unicode.Me, r) {
+		if isPinnedCombiningMark(r) {
 			return true
 		}
 	}
@@ -75,8 +104,16 @@ func containsBidiOrInvisible(s string) bool {
 			0xFEFF:
 			return true
 		}
-		// Reject format and surrogate categories outright.
-		if unicode.Is(unicode.Cf, r) || unicode.Is(unicode.Cs, r) {
+		// Reject the format category outright.
+		if isPinnedFormat(r) {
+			return true
+		}
+		// Surrogates, kept as a literal range rather than a table because the
+		// range is fixed by the encoding rather than by any Unicode version.
+		// Both callers check utf8.ValidString first and a surrogate cannot
+		// appear in a valid UTF-8 string, so this is unreachable; it stays as
+		// a belt in case a future caller skips that check.
+		if r >= 0xD800 && r <= 0xDFFF {
 			return true
 		}
 	}
@@ -128,7 +165,7 @@ func ValidatePlayerName(name string) error {
 	if err := validateNameCommon(normalized); err != nil {
 		return err
 	}
-	if !playerNameRegex.MatchString(normalized) {
+	if !nameCharsetOK(normalized, 3, 20, playerNameExtra) {
 		return fmt.Errorf("player name must be 3-20 characters of letters, digits, hyphens, or underscores")
 	}
 	return nil
@@ -142,7 +179,7 @@ func ValidateEntityName(name string) error {
 	if err := validateRelaxedName(normalized); err != nil {
 		return err
 	}
-	if !entityNameRegex.MatchString(normalized) {
+	if !nameCharsetOK(normalized, 3, 20, relaxedNameExtra) {
 		return fmt.Errorf("name must be 3-20 characters of letters, digits, hyphens, underscores, apostrophes, or spaces")
 	}
 	return nil
@@ -156,7 +193,7 @@ func ValidatePlanetName(name string) error {
 	if err := validateRelaxedName(normalized); err != nil {
 		return err
 	}
-	if !planetNameRegex.MatchString(normalized) {
+	if !nameCharsetOK(normalized, 3, 25, relaxedNameExtra) {
 		return fmt.Errorf("planet name must be 3-25 characters of letters, digits, hyphens, underscores, apostrophes, or spaces")
 	}
 	return nil
@@ -207,8 +244,13 @@ func ValidatePfp(pfp string) error {
 	// (don't depend on url.Parse for this since some malformed inputs accept
 	// arbitrary scheme content). url.Parse is then used for structural
 	// validation of the rest of the URL.
+	//
+	// Lowercased ASCII-only rather than with strings.ToLower, whose case
+	// tables come from the compiling toolchain. Every allowed scheme is ASCII,
+	// so a scheme carrying a non-ASCII rune stays non-ASCII and fails the
+	// allow-list below, which is what we want anyway.
 	colonIdx := strings.Index(pfp, ":")
-	scheme := strings.ToLower(pfp[:colonIdx])
+	scheme := asciiToLower(pfp[:colonIdx])
 	if scheme == "" {
 		return fmt.Errorf("pfp URL must have a scheme")
 	}
@@ -220,7 +262,11 @@ func ValidatePfp(pfp string) error {
 	if err != nil {
 		return fmt.Errorf("pfp URL is malformed: %w", err)
 	}
-	if !strings.EqualFold(u.Scheme, scheme) {
+	// Compared with ASCII folding rather than strings.EqualFold, which reads
+	// the toolchain's case tables and would treat, for instance, U+017F as
+	// equal to "s". url.Parse already lowercases the scheme by ASCII rules and
+	// scheme is ASCII-lowered above, so this is a plain comparison.
+	if asciiToLower(u.Scheme) != scheme {
 		return fmt.Errorf("pfp URL scheme inconsistent after parsing")
 	}
 
@@ -284,6 +330,15 @@ func ValidatePfpClientRenderAttributes(attributes string) (string, error) {
 // indexes (e.g. the guild name index) MUST key off this form so that
 // visually-identical names cannot be re-registered via case or normalization
 // tricks.
+//
+// The output is a KV key, not just a comparison value: SetGuildNameIndex and
+// RemoveGuildNameIndex write and delete "Guild/name/" + this string. That
+// makes it the one place in the package where a Unicode table disagreement
+// between two binaries would not merely accept different names but write
+// different keys, and RemoveGuildNameIndex is called with a name already in
+// state rather than one that just passed validation. So the case folding and
+// the space trimming both come from the pinned tables. norm.NFC stays, being
+// pinned by go.sum rather than by the toolchain.
 func NormalizeName(name string) string {
-	return strings.ToLower(strings.TrimSpace(norm.NFC.String(name)))
+	return pinnedToLowerString(pinnedTrimSpace(norm.NFC.String(name)))
 }

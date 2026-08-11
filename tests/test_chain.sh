@@ -5196,17 +5196,52 @@ assert_not_empty "Settlement agreement A opened" "${SETTLE_AGREE_A}"
 assert_eq "Pool holds agreement A collateral" "${SETTLE_COLL_A}" "$(get_balance "${SETTLE_COLL_ADDR}" ualpha)"
 
 # ─── Agreement B (player_3), sharing the same pool ───
+# Player 3's liquid balance is often near zero by this point (delegations and
+# earlier spends). Without a top-up the open fails on affordability, and
+# get_newest_agreement_id then returns A again — which used to let every
+# "both agreements" check fail as a false cascade rather than a clear skip.
 SETTLE_COLL_B=$((SETTLE_DUR_B * SETTLE_CAP_B))
+SETTLE_P3_BAL=$(get_balance "${PLAYER_3_ADDRESS}" ualpha)
+SETTLE_P3_NEED=$((SETTLE_COLL_B + 100000))
+if [ "${SETTLE_P3_BAL}" -lt "${SETTLE_P3_NEED}" ] 2>/dev/null; then
+    SETTLE_P3_TOPUP=$((SETTLE_P3_NEED - SETTLE_P3_BAL))
+    info "Player 3 has ${SETTLE_P3_BAL}ualpha, needs ${SETTLE_P3_NEED} for agreement B; topping up ${SETTLE_P3_TOPUP}"
+    run_tx "Funding player_3 for settlement agreement B" \
+        tx bank send "${BOB_ADDRESS}" "${PLAYER_3_ADDRESS}" "${SETTLE_P3_TOPUP}ualpha" --from bob
+fi
+
 run_tx "Player 3 opening settlement agreement B (dur=${SETTLE_DUR_B}, cap=${SETTLE_CAP_B})" \
     tx structs agreement-open "${SETTLE_PROV_ID}" "${SETTLE_DUR_B}" "${SETTLE_CAP_B}" --from player_3
 
 SETTLE_AGREE_B=$(get_newest_agreement_id "${SETTLE_PROV_ID}")
+# A failed open leaves A as the newest agreement for this provider. Treat that
+# as "B did not open" so we do not assert against A's id under B's name.
+if [ -n "${SETTLE_AGREE_A}" ] && [ "${SETTLE_AGREE_B}" = "${SETTLE_AGREE_A}" ]; then
+    SETTLE_AGREE_B=""
+fi
 assert_not_empty "Settlement agreement B opened" "${SETTLE_AGREE_B}"
+
+if [ -z "${SETTLE_AGREE_B}" ]; then
+    info "SKIP: settlement agreement B did not open; dual-agreement assertions skipped"
+    # Close A so the expiry path below starts from a clean provider load.
+    if [ -n "${SETTLE_AGREE_A}" ]; then
+        run_tx "Closing settlement agreement A after B open failed" \
+            tx structs agreement-close "${SETTLE_AGREE_A}" --from player_2
+    fi
+else
+
 assert_eq "Agreement B is distinct from A" "false" "$([ "${SETTLE_AGREE_A}" = "${SETTLE_AGREE_B}" ] && echo true || echo false)"
 
+# Opening B checkpoints the provider first, which sweeps A's accrued revenue
+# (minus the provider-cancellation fraction left in the pool) into earnings.
+# The deposits are still fully accounted for across the two pools; expecting
+# them to sit untouched in collateral alone fails as soon as a block elapses
+# between the two opens.
 SETTLE_POOL_BOTH=$(get_balance "${SETTLE_COLL_ADDR}" ualpha)
-info "Pool with both agreements open: ${SETTLE_POOL_BOTH} (A=${SETTLE_COLL_A}, B=${SETTLE_COLL_B})"
-assert_eq "Pool holds both agreements' collateral" "$((SETTLE_COLL_A + SETTLE_COLL_B))" "${SETTLE_POOL_BOTH}"
+SETTLE_EARN_BOTH=$(get_balance "${SETTLE_EARN_ADDR}" ualpha)
+info "Pool with both agreements open: ${SETTLE_POOL_BOTH} + earnings ${SETTLE_EARN_BOTH} (A=${SETTLE_COLL_A}, B=${SETTLE_COLL_B})"
+assert_eq "Deposits still fully accounted after both opens" "$((SETTLE_COLL_A + SETTLE_COLL_B))" "$((SETTLE_POOL_BOTH + SETTLE_EARN_BOTH))"
+assert_ge "Collateral pool still holds at least B's deposit" "${SETTLE_COLL_B}" "${SETTLE_POOL_BOTH}"
 
 SETTLE_LOAD_BOTH=$(jqr "$(query query structs provider "${SETTLE_PROV_ID}" 2>/dev/null || echo '{}')" '.gridAttributes.load' '0')
 assert_eq "Provider load is both capacities" "$((SETTLE_CAP_A + SETTLE_CAP_B))" "${SETTLE_LOAD_BOTH}"
@@ -5264,6 +5299,8 @@ SETTLE_POOL_END=$(get_balance "${SETTLE_COLL_ADDR}" ualpha)
 SETTLE_EARN_END=$(get_balance "${SETTLE_EARN_ADDR}" ualpha)
 info "After both closes: pool=${SETTLE_POOL_END}, earnings=${SETTLE_EARN_END}, deposited=$((SETTLE_COLL_A + SETTLE_COLL_B))"
 assert_ge "Deposits cover earnings plus pool remainder" "$((SETTLE_EARN_END + SETTLE_POOL_END))" "$((SETTLE_COLL_A + SETTLE_COLL_B))"
+
+fi # settlement agreement B opened
 
 # ─── Expiry through the EndBlocker ───
 # The worst case of the original bug. Over an agreement's life the checkpoints

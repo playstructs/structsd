@@ -404,9 +404,22 @@ func (cache *AgreementCache) IsTearingDown() bool {
 // destroyAllocation tears down the allocation backing this agreement. The
 // allocation's own Destroy would normally settle its agreement, but the
 // TearingDown flag set by beginTeardown stops it re-entering here.
+//
+// An allocation that is already gone is nothing to tear down, and both ways of
+// discovering that have to agree. GetAllocation answers from cc.allocations
+// without re-reading the store, so an allocation removed earlier in the
+// operation still reports found; Destroy's own re-read is what notices, and it
+// reports it as unknown_allocation. Letting that error out would abort Expire
+// before the load decrement and the removal, leaving the provider billing this
+// agreement's capacity against the shared collateral pool for good — an expiry
+// runs in a block hook and gets exactly one attempt, and the absence it tripped
+// over is permanent, so there is nothing a later block could do about it.
 func (cache *AgreementCache) destroyAllocation() error {
 	allocation, found := cache.GetAllocation()
 	if !found {
+		return nil
+	}
+	if !allocation.LoadAllocation() {
 		return nil
 	}
 	return allocation.Destroy()

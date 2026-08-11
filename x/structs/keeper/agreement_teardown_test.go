@@ -36,6 +36,7 @@ type teardownFixture struct {
 
 	consumer      types.Player
 	consumerAcc   sdk.AccAddress
+	ownerAcc      sdk.AccAddress
 	provider      types.Provider
 	substationId  string
 	collateralAcc sdk.AccAddress
@@ -99,6 +100,7 @@ func setupTeardownFixture(t *testing.T, rate int64, providerPenalty, consumerPen
 		ctx:           ctx,
 		consumer:      consumer,
 		consumerAcc:   consumerAcc,
+		ownerAcc:      ownerAcc,
 		provider:      provider,
 		substationId:  substation.Id,
 		collateralAcc: keeperlib.GetProviderCollateralPoolLocation(provider.Id),
@@ -549,6 +551,228 @@ func TestTeardown_RepeatedOpenCloseCannotErodePool(t *testing.T) {
 	require.Equal(t, collateral.MulRaw(cycles).Add(victimCollateral), f.balance(f.consumerAcc))
 	require.Equal(t, math.ZeroInt(), f.balance(f.collateralAcc),
 		"the pool should end empty, having paid out exactly what it took in")
+}
+
+// TestTeardown_ExpiryCannotStrandCollateral is the regression on the report that
+// an expiry drains a provider's whole pool into an unreachable account.
+//
+// The mechanism was an off-by-one between two clocks: an agreement opened at
+// height H checkpointed the provider at H but started service at H+1, so expiry
+// at H+1+D billed D+1 blocks against a pool that had only ever been paid for D.
+// A zero provider cancellation penalty is what made it bite, because then the
+// checkpoint is the only thing standing between the deposit and the pool.
+//
+// The exact-balance assertions after a solo expiry cannot catch this on their
+// own: the revenue clamp added alongside the fix caps an over-large sweep at
+// whatever the pool holds, so a solo agreement's pool still lands on zero either
+// way. What the extra block actually costs is somebody else's escrow, so this
+// keeps a second agreement open throughout and pins what is left against it. The
+// clamp turns the loss into a shortfall event rather than a failed transfer, so
+// that is asserted too, and both invariants have to hold at the end.
+func TestTeardown_ExpiryCannotStrandCollateral(t *testing.T) {
+	// The report's own parameters: no provider cancellation penalty, so every
+	// coin of the deposit has to move through the checkpoint and nowhere else.
+	f := setupTeardownFixture(t, 10, "0", "0")
+
+	const capacity, duration = 100, 10
+	const victimCapacity, victimDuration = 40, 500
+
+	victim, victimCollateral := f.openAgreement(t, victimCapacity, victimDuration)
+	agreement, collateral := f.openAgreement(t, capacity, duration)
+
+	// Both clocks start together. This is the property the whole settlement rests
+	// on, and reverting it is what the rest of the test detects.
+	opened := uint64(sdk.UnwrapSDKContext(f.ctx).BlockHeight())
+	require.Equal(t, opened, agreement.StartBlock,
+		"service must start in the opening block, the same block the provider was checkpointed in")
+	require.Equal(t, opened+duration, agreement.EndBlock)
+
+	require.Equal(t, victimCollateral.Add(collateral), f.balance(f.collateralAcc))
+
+	// Fresh event manager so only the expiry's own events are counted.
+	expiryCtx := sdk.UnwrapSDKContext(f.ctx).
+		WithBlockHeight(int64(agreement.EndBlock)).
+		WithEventManager(sdk.NewEventManager())
+
+	cc := f.k.NewCurrentContext(expiryCtx)
+	cc.AgreementExpirations()
+	cc.CommitAll()
+
+	f.ctx = expiryCtx
+
+	shortfallType := proto.MessageName(&types.EventProviderRevenueShortfall{})
+	for _, event := range expiryCtx.EventManager().Events() {
+		require.NotEqual(t, shortfallType, event.Type,
+			"expiry asked the pool for more than it held, which means it billed for service nobody bought")
+	}
+
+	f.requireSettledOnce(t, agreement)
+	require.Equal(t, math.ZeroInt(), f.balance(f.consumerAcc),
+		"a fully served agreement owes the consumer nothing")
+
+	// The provider earns the expiring agreement's whole deposit, plus the service
+	// the still-open agreement genuinely received over the same span.
+	victimEarned := math.NewInt(duration).
+		MulRaw(victimCapacity).
+		Mul(f.provider.Rate.Amount)
+	require.Equal(t, collateral.Add(victimEarned), f.balance(f.earningsAcc))
+
+	// And what is left is precisely the surviving agreement's unearned collateral.
+	// Under the off-by-one this is short by one block of both agreements' load.
+	require.Equal(t, victimCollateral.Sub(victimEarned), f.balance(f.collateralAcc),
+		"the expiry must not have touched the surviving agreement's escrow")
+	require.Equal(t, uint64(victimCapacity), f.agreementLoad(),
+		"only the expired agreement's load should have been released")
+
+	solvency, broken := keeperlib.ProviderCollateralSolvencyInvariant(f.k)(expiryCtx)
+	require.False(t, broken, solvency)
+
+	liveness, broken := keeperlib.AgreementExpiryLivenessInvariant(f.k)(expiryCtx)
+	require.False(t, broken, liveness)
+
+	// The survivor is still whole and can be paid out in full.
+	_, err := f.ms.AgreementClose(f.ctx, &types.MsgAgreementClose{
+		Creator:     f.consumer.Creator,
+		AgreementId: victim.Id,
+	})
+	require.NoError(t, err)
+
+	require.Equal(t, victimCollateral.Sub(victimEarned), f.balance(f.consumerAcc),
+		"the survivor must recover every block of service it did not receive")
+	require.Equal(t, math.ZeroInt(), f.balance(f.collateralAcc),
+		"the pool should end empty, having paid out exactly what it took in")
+}
+
+// TestTeardown_ExpiryCompletesWhenTheAllocationIsAlreadyGone pins that an expiry
+// finishes even when the allocation it meant to tear down has already left the
+// store.
+//
+// Expiry runs from the EndBlocker, which reads the expiration index at exactly
+// the current height: there is no range scan and no retry, so an agreement that
+// is not torn down on the one block it comes up is never revisited. Returning
+// early therefore does not defer the teardown, it cancels it — the agreement
+// keeps its capacity in the provider's load and Checkpoint goes on billing that
+// capacity against the shared pool every block afterwards, out of other
+// consumers' collateral.
+//
+// A missing allocation is nothing to tear down, and destroyAllocation already
+// said so on the path where CurrentContext has never heard of it. This is the
+// other path to the same state, where the allocation is cached from earlier in
+// the operation and only Destroy's re-read notices it has gone.
+func TestTeardown_ExpiryCompletesWhenTheAllocationIsAlreadyGone(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0", "0")
+
+	const capacity, duration = 100, 10
+	agreement, _ := f.openAgreement(t, capacity, duration)
+
+	expiryCtx := sdk.UnwrapSDKContext(f.ctx).WithBlockHeight(int64(agreement.EndBlock))
+	cc := f.k.NewCurrentContext(expiryCtx)
+
+	// Cache the allocation, then delete the row behind it. GetAllocation answers
+	// from the cache without re-reading, so the absence surfaces only inside
+	// Destroy — which is the case that used to abort the whole expiry.
+	_, found := cc.GetAllocation(agreement.AllocationId)
+	require.True(t, found)
+	f.k.RemoveAllocation(expiryCtx, agreement.AllocationId)
+
+	require.NoError(t, cc.GetAgreement(agreement.Id).Expire(),
+		"an allocation that is already gone is nothing to tear down, not a reason to abandon the expiry")
+	cc.CommitAll()
+
+	f.ctx = expiryCtx
+
+	f.requireSettledOnce(t, agreement)
+	require.Equal(t, uint64(0), f.agreementLoad(),
+		"the provider must stop billing for an agreement that has ended")
+
+	liveness, broken := keeperlib.AgreementExpiryLivenessInvariant(f.k)(expiryCtx)
+	require.False(t, broken, liveness)
+}
+
+// TestTeardown_ProviderDeleteDrainsBothPools pins that deleting a provider takes
+// its pools with it.
+//
+// Both pool addresses are derived from the provider id, and nothing but the
+// provider record can reach them: once it is gone, WithdrawBalanceAndCommit can
+// no longer load the provider, and Checkpoint bills against a load that is now
+// zero. Anything left behind at that moment is unreachable for good. There is
+// normally something, because every checkpoint and every penalty payout truncates
+// its share down and leaves the remainder in the collateral pool.
+func TestTeardown_ProviderDeleteDrainsBothPools(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0", "0")
+
+	const capacity, duration = 100, 50
+	agreement, collateral := f.openAgreement(t, capacity, duration)
+
+	// Stand in for the accumulated truncation remainder directly, so the amount
+	// is exact rather than a by-product of the rate and penalties chosen here.
+	const collateralDust, earningsDust = 7, 3
+	f.fund(t, f.collateralAcc, collateralDust)
+	f.fund(t, f.earningsAcc, earningsDust)
+
+	ownerBefore := f.balance(f.ownerAcc)
+
+	_, err := f.ms.ProviderDelete(f.ctx, &types.MsgProviderDelete{
+		Creator:    f.provider.Creator,
+		ProviderId: f.provider.Id,
+	})
+	require.NoError(t, err)
+
+	// The consumer is made whole out of the pool before any of it is swept, which
+	// is the order that makes the sweep safe at all.
+	require.Equal(t, collateral, f.balance(f.consumerAcc), "consumer must be refunded in full first")
+
+	require.Equal(t, math.ZeroInt(), f.balance(f.collateralAcc), "the collateral pool must not outlive the provider")
+	require.Equal(t, math.ZeroInt(), f.balance(f.earningsAcc), "the earnings pool must not outlive the provider")
+	require.Equal(t, ownerBefore.AddRaw(collateralDust+earningsDust), f.balance(f.ownerAcc),
+		"what neither the consumers nor the pools are owed belongs to the provider's owner")
+
+	f.requireSettledOnce(t, agreement)
+}
+
+// TestExpiryLivenessInvariant_DetectsAnAgreementPastItsEnd covers the standing
+// check on the one thing the solvency invariant structurally cannot see.
+//
+// Solvency clamps every span to the agreement's own window, so an agreement left
+// behind past its end block reads as one that has simply been fully served, and
+// it only breaks once the pool is already visibly short — by which point the
+// draining has happened. Liveness catches the state itself, before the money
+// moves.
+func TestExpiryLivenessInvariant_DetectsAnAgreementPastItsEnd(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0", "0")
+
+	invariant := keeperlib.AgreementExpiryLivenessInvariant(f.k)
+	agreement, _ := f.openAgreement(t, 100, 50)
+
+	atHeight := func(height uint64) (string, bool) {
+		return invariant(sdk.UnwrapSDKContext(f.ctx).WithBlockHeight(int64(height)))
+	}
+
+	msg, broken := atHeight(agreement.StartBlock)
+	require.False(t, broken, "an agreement that has just opened is not overdue: %s", msg)
+
+	msg, broken = atHeight(agreement.EndBlock - 1)
+	require.False(t, broken, "an agreement still inside its window is not overdue: %s", msg)
+
+	// The EndBlocker expires an agreement during its end block, and the crisis
+	// module may run invariants either side of that, so the end block itself has
+	// to be slack rather than a break.
+	msg, broken = atHeight(agreement.EndBlock)
+	require.False(t, broken, "an agreement has its whole end block to be expired in: %s", msg)
+
+	msg, broken = atHeight(agreement.EndBlock + 1)
+	require.True(t, broken, "an agreement still in state after its end block is stranded")
+	require.Contains(t, msg, agreement.Id)
+
+	// Expiring it clears the break, which is what says the invariant is measuring
+	// the stranding rather than the passage of time.
+	expiryCtx := sdk.UnwrapSDKContext(f.ctx).WithBlockHeight(int64(agreement.EndBlock))
+	cc := f.k.NewCurrentContext(expiryCtx)
+	cc.AgreementExpirations()
+	cc.CommitAll()
+
+	msg, broken = atHeight(agreement.EndBlock + 1)
+	require.False(t, broken, "a settled agreement leaves nothing to flag: %s", msg)
 }
 
 // Collateral is only ever collected for EndBlock - StartBlock, so the whole of

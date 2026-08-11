@@ -13,6 +13,7 @@ import (
 // RegisterInvariants registers the module's invariants with the crisis module.
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 	ir.RegisterRoute(types.ModuleName, "provider-collateral-solvency", ProviderCollateralSolvencyInvariant(k))
+	ir.RegisterRoute(types.ModuleName, "agreement-expiry-liveness", AgreementExpiryLivenessInvariant(k))
 }
 
 // ProviderCollateralSolvencyInvariant asserts that every provider's collateral
@@ -85,6 +86,48 @@ func ProviderCollateralSolvencyInvariant(k Keeper) sdk.Invariant {
 
 		return sdk.FormatInvariant(types.ModuleName, "provider-collateral-solvency",
 			fmt.Sprintf("insolvent provider collateral pools found\n%s", msg.String())), broken
+	}
+}
+
+// AgreementExpiryLivenessInvariant asserts that no agreement outlives its own
+// end block.
+//
+// An agreement is expired by AgreementExpirations from the EndBlocker, which
+// reads the expiration index at exactly the current height. There is no range
+// scan and no retry, so an agreement that is not torn down on the one block it
+// comes up is never revisited: it keeps its capacity in the provider's load, and
+// Checkpoint goes on billing that capacity against the shared collateral pool
+// every block, funding the overcharge out of other consumers' collateral.
+//
+// The solvency invariant cannot stand in for this. It clamps every span to the
+// agreement's own window, so an overdue agreement reads as one that has simply
+// been fully served, and it only breaks on a shortfall — by the time the pool is
+// visibly short, the draining has already happened.
+//
+// The comparison is strictly less-than so that an agreement ending on the
+// current height has the whole block to be expired in, whatever order the crisis
+// module and this module's EndBlocker run in.
+func AgreementExpiryLivenessInvariant(k Keeper) sdk.Invariant {
+	return func(ctx sdk.Context) (string, bool) {
+		var broken bool
+		var msg strings.Builder
+
+		currentBlock := uint64(ctx.BlockHeight())
+
+		for _, agreement := range k.GetAllAgreement(ctx) {
+			if agreement.EndBlock >= currentBlock {
+				continue
+			}
+
+			broken = true
+			msg.WriteString(fmt.Sprintf(
+				"\tagreement %s (provider %s) ended at block %d but still exists at block %d, holding %d capacity in the provider's load\n",
+				agreement.Id, agreement.ProviderId, agreement.EndBlock, currentBlock, agreement.Capacity,
+			))
+		}
+
+		return sdk.FormatInvariant(types.ModuleName, "agreement-expiry-liveness",
+			fmt.Sprintf("agreements found past their end block\n%s", msg.String())), broken
 	}
 }
 

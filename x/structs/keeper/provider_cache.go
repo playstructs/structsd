@@ -315,6 +315,10 @@ func (cache *ProviderCache) Delete() (error) {
         }
     }
 
+    if err := cache.drainPoolsToOwner(); err != nil {
+        return err
+    }
+
     cache.CC.ClearGridAttribute(cache.CheckpointBlockAttributeId)
     cache.CC.ClearGridAttribute(cache.AgreementLoadAttributeId)
 
@@ -323,6 +327,48 @@ func (cache *ProviderCache) Delete() (error) {
     cache.Deleted = true
     cache.Changed = true
     return nil
+}
+
+// drainPoolsToOwner empties the provider's collateral and earnings pools into
+// the owner's primary address.
+//
+// It runs only from Delete, after the loop above has settled every agreement, so
+// every consumer has already been made whole and what is left belongs to the
+// provider. It has to run there and nowhere else: both pool addresses are
+// derived from the provider id, and once the provider record is gone
+// WithdrawBalanceAndCommit can no longer load it to reach them, so anything left
+// behind is unreachable for good. There is normally something left — every
+// Checkpoint and every penalty payout truncates, and the remainder stays in the
+// collateral pool.
+//
+// The destination is resolved before any coins move, because a drain that failed
+// half way through would leave the rest stranded with no second attempt. It is
+// only demanded when there is something to send, so that an owner record that
+// cannot be paid does not make an already empty provider undeletable.
+func (cache *ProviderCache) drainPoolsToOwner() error {
+    collateralPool := cache.GetCollateralPoolLocation()
+    earningsPool := cache.GetEarningsPoolLocation()
+
+    collateral := cache.CC.k.bankKeeper.SpendableCoins(cache.CC.ctx, collateralPool)
+    earnings := cache.CC.k.bankKeeper.SpendableCoins(cache.CC.ctx, earningsPool)
+
+    if collateral.IsZero() && earnings.IsZero() {
+        return nil
+    }
+
+    destination, errParam := sdk.AccAddressFromBech32(cache.GetOwner().GetPrimaryAddress())
+    if errParam != nil {
+        return errParam
+    }
+
+    // Collateral first, so that whatever it still holds leaves with the earnings.
+    if !collateral.IsZero() {
+        if errSend := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, collateralPool, earningsPool, collateral); errSend != nil {
+            return errSend
+        }
+    }
+
+    return cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, earningsPool, destination, collateral.Add(earnings...))
 }
 
 

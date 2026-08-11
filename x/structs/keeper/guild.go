@@ -158,6 +158,52 @@ func (k Keeper) GetGuildIdByName(ctx context.Context, name string) (string, bool
 	return string(bz), true
 }
 
+// GetAllGuildNameIndex returns the guild name index as normalized key to guild
+// id.
+//
+// Every other accessor here reaches a row by re-normalizing a name, which only
+// finds rows whose key the current normalization still produces. This walks the
+// prefix instead, so it also sees rows that no name maps to any more. Only the
+// v0.21.0 index rebuild needs that view.
+func (k Keeper) GetAllGuildNameIndex(ctx context.Context) map[string]string {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildNameKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	index := make(map[string]string)
+	for ; iterator.Valid(); iterator.Next() {
+		index[string(iterator.Key())] = string(iterator.Value())
+	}
+
+	return index
+}
+
+// ClearGuildNameIndex removes every row in the guild name index and returns how
+// many it removed.
+//
+// Reserved for the v0.21.0 rebuild, which has to drop rows it cannot address by
+// name. Ordinary maintenance goes through RemoveGuildNameIndex so that the
+// index stays in step with the guild being changed.
+func (k Keeper) ClearGuildNameIndex(ctx context.Context) int {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildNameKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+
+	// Collect before deleting: mutating the store under a live iterator is
+	// undefined.
+	keys := make([][]byte, 0)
+	for ; iterator.Valid(); iterator.Next() {
+		keys = append(keys, iterator.Key())
+	}
+	iterator.Close()
+
+	for _, key := range keys {
+		store.Delete(key)
+	}
+
+	return len(keys)
+}
+
 // GetAllGuild returns all guild
 func (k Keeper) GetAllGuild(ctx context.Context) (list []types.Guild) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildKey))

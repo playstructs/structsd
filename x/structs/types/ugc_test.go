@@ -139,7 +139,7 @@ func TestValidatePfp(t *testing.T) {
 		{"valid arweave", "ar://Q1234abcDEF_Some-arweave-id", false},
 		{"max length ascii url", "https://example.com/" + strings.Repeat("a", MaxPfpLength-len("https://example.com/")), false},
 		{"exceeds max length", strings.Repeat("a", MaxPfpLength+1), true},
-		{"max length multibyte runes", strings.Repeat("日", MaxPfpLength), true}, // not URL, not opaque charset
+		{"max length multibyte runes", strings.Repeat("日", MaxPfpLength), true},  // not URL, not opaque charset
 		{"under rune limit but over byte limit", strings.Repeat("日", 100), true}, // not URL, not opaque charset
 
 		// Control character rejection
@@ -207,8 +207,8 @@ func TestNormalizeName(t *testing.T) {
 	// NFC normalization: precomposed and decomposed forms must collapse to
 	// the same canonical key so a name can't be re-registered just by
 	// switching unicode encoding.
-	precomposed := "café"                                // é = U+00E9
-	decomposed := "cafe\u0301"                           // e + combining acute
+	precomposed := "café"      // é = U+00E9
+	decomposed := "cafe\u0301" // e + combining acute
 	require.Equal(t, NormalizeName(precomposed), NormalizeName(decomposed))
 }
 
@@ -242,5 +242,76 @@ func TestValidatePfpClientRenderAttributes(t *testing.T) {
 			require.NoError(t, err)
 			require.Equal(t, tt.want, got)
 		})
+	}
+}
+
+// unicode16Letters are code points that Unicode 15.0.0 leaves unassigned and a
+// later version classifies as letters. They are the concrete shape of the
+// consensus split the pinned tables exist to prevent: under the old \p{L}
+// regex a validator built with newer Unicode tables accepted a name made of
+// these while every other validator rejected it, and only the accepting side
+// wrote the name, so the two disagreed on the application hash.
+//
+// U+088F is the cheapest demonstration because it sits immediately after
+// U+088E, which is a letter in 15.0.0, so the two together show exactly where
+// the pinned boundary falls.
+var unicode16Letters = map[string]rune{
+	"U+088F arabic":        '\u088F',
+	"U+105C0 todhri":       '\U000105C0',
+	"U+116D0 myanmar extC": '\U000116D0',
+	"U+1E5D0 ol onal":      '\U0001E5D0',
+}
+
+func TestNameValidation_RejectsPostPinnedUnicodeLetters(t *testing.T) {
+	for label, r := range unicode16Letters {
+		t.Run(label, func(t *testing.T) {
+			name := strings.Repeat(string(r), 3)
+
+			require.False(t, isPinnedLetter(r),
+				"%s must not be a letter under the pinned tables; if it is, the tables "+
+					"were regenerated against a newer Unicode version", label)
+
+			require.Error(t, ValidatePlayerName(name), "%s must be rejected in a player name", label)
+			require.Error(t, ValidateEntityName(name), "%s must be rejected in an entity name", label)
+			require.Error(t, ValidatePlanetName(name), "%s must be rejected in a planet name", label)
+		})
+	}
+}
+
+// TestNameValidation_AcceptsPinnedBoundaryLetter is the other half: the pin
+// must not be a silent tightening of the character set that was already in use.
+func TestNameValidation_AcceptsPinnedBoundaryLetter(t *testing.T) {
+	const lastArabicLetter = '\u088E' // assigned and category Lo in Unicode 15.0.0
+
+	require.True(t, isPinnedLetter(lastArabicLetter),
+		"U+088E is a letter in Unicode %s and must stay accepted", PinnedUnicodeVersion)
+
+	name := strings.Repeat(string(rune(lastArabicLetter)), 3)
+	require.NoError(t, ValidatePlayerName(name))
+	require.NoError(t, ValidateEntityName(name))
+	require.NoError(t, ValidatePlanetName(name))
+}
+
+// TestValidatePfp_FormatCharacterCheckIsPinned covers the second divergent
+// site, which differs from the name validators in an important way: a URL path
+// has no character allow-list, so whether a pfp is accepted depends directly on
+// the format-category answer for arbitrary runes. Under the toolchain's tables
+// a code point newly assigned to Cf would be accepted by old binaries and
+// rejected by new ones -- the opposite direction from the name path, and just
+// as much of a split.
+func TestValidatePfp_FormatCharacterCheckIsPinned(t *testing.T) {
+	// A format character assigned in Unicode 15.0.0 is rejected, so the check
+	// is doing its job rather than passing everything.
+	require.True(t, isPinnedFormat('\u2060'), "word joiner is a format character")
+	require.Error(t, ValidatePfp("https://example.com/a\u2060b.png"),
+		"a format character in the path must be rejected")
+
+	// A code point unassigned in Unicode 15.0.0 is not a format character and
+	// the pfp is accepted. The pinned tables are what make that answer the same
+	// on every binary, whatever a later Unicode version decides to call it.
+	for label, r := range unicode16Letters {
+		require.False(t, isPinnedFormat(r), "%s must not be a format character under the pinned tables", label)
+		require.NoError(t, ValidatePfp("https://example.com/a"+string(r)+"b.png"),
+			"%s in a pfp path must be accepted deterministically", label)
 	}
 }

@@ -44,6 +44,18 @@ make build-windows-amd64
 
 Pass `LEDGER_ENABLED=false` to skip the Ledger build tag if you don't have `gcc` available, and `LINK_STATICALLY=true` for a fully static binary (Linux).
 
+#### Unicode and consensus
+
+Any Go `1.23+` toolchain produces a consensus-compatible binary. The character set the chain accepts for player, guild and planet names comes from Unicode 15.0.0 tables checked into `x/structs/types/unicode_tables.go`, not from the Unicode tables of the toolchain that compiled the binary, so two validators on different Go versions agree.
+
+This matters because Go resolves `\p{L}` in a regexp, and `unicode.Is` against `unicode.L`, from the compiling toolchain's standard library, and those tables grow with Go releases. `U+088F` is unassigned in Unicode 15.0.0 and a letter in later versions, so before v0.21.0 a name built from it was accepted by validators on a newer Go and rejected by the rest — with only the accepting side writing the name, which is an application state split. The tables are now state.
+
+```
+make check_unicode      # does this toolchain still ship the pinned Unicode version?
+```
+
+The answer does not change whether your binary is consensus-compatible; it only tells you whether `go test` can still verify the checked-in tables against the standard library. On a toolchain past Unicode 15.0.0 that comparison skips and the tables are covered by a checksum and by fixed cross-script vectors instead. **Do not run `make unicode-tables` to resolve a mismatch** — regenerating the tables changes which names the chain accepts and requires an upgrade handler.
+
 ### Local development
 
 These wrap the Ignite CLI and assume `ignite` is installed:

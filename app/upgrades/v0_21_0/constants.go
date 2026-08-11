@@ -112,6 +112,33 @@ package v0_21_0
 //     duration itself, the collateral charged, and the unearned collateral at the
 //     opening block are all unchanged.
 //
+//   - An agreement expiry no longer abandons its teardown when the allocation it
+//     meant to destroy has already left the store. Expiry runs from the EndBlocker,
+//     which reads the expiration index at exactly the current height, so there is
+//     no range scan and no retry: an agreement not torn down on the one block it
+//     comes up was never revisited, kept its capacity in the provider's load, and
+//     had Checkpoint bill that capacity against the shared collateral pool every
+//     block afterwards, out of other consumers' escrow. A missing allocation is
+//     nothing to tear down, which destroyAllocation already assumed on the path
+//     where CurrentContext has never heard of it; the case where it is cached from
+//     earlier in the operation and only Destroy's re-read notices now behaves the
+//     same way. This is the last reachable failure inside Expire, so an expiry can
+//     no longer strand its own agreement.
+//
+//   - Deleting a provider now empties its collateral and earnings pools into the
+//     owner's primary address, after every agreement has been closed and every
+//     consumer made whole. Both pool addresses are derived from the provider id
+//     and nothing but the provider record can reach them, so anything left at that
+//     moment was unreachable for good — and there is normally something, since
+//     every checkpoint and penalty payout truncates its share down and leaves the
+//     remainder behind.
+//
+//   - A second invariant, agreement-expiry-liveness, breaks on any agreement still
+//     in state after its end block. provider-collateral-solvency cannot see that
+//     state: it clamps every span to the agreement's own window, so an overdue
+//     agreement reads as one that has simply been fully served, and it only breaks
+//     once the pool is already short.
+//
 //   - Agreement capacity changes re-verify the provider's advertised capacity and
 //     duration ranges, which previously bound only at open. A change is rejected
 //     if the resulting capacity falls outside capacityMinimum/capacityMaximum, or
@@ -144,7 +171,62 @@ package v0_21_0
 //     rejected with FleetStateError queue_full. SetLocationToPlanet maintains
 //     locationListCount on enqueue/dequeue.
 //
+//   - Name and pfp validation no longer reads the compiling toolchain's Unicode
+//     tables. Go resolves \p{L} in a regexp, and unicode.Is against unicode.L,
+//     Mn, Me or Cf, from the standard library of whichever toolchain built the
+//     binary, and those tables grow with Go releases: U+088F is unassigned in
+//     Unicode 15.0.0 (shipped by Go 1.23 and 1.24) and a letter in later
+//     versions. Since nothing pinned a toolchain — go.mod's directive is a floor,
+//     not a ceiling, and GOTOOLCHAIN=local opts out entirely — a name built from
+//     such a code point was accepted by some validators and rejected by others,
+//     and only the accepting side wrote it. Classification now runs against
+//     checked-in Unicode 15.0.0 tables (x/structs/types/unicode_tables.go), so
+//     the accepted character set is fixed by state rather than by build
+//     environment. ValidatePlayerName, ValidateEntityName and ValidatePlanetName
+//     keep their exact current character sets and error messages; code points
+//     assigned after Unicode 15.0.0 stay rejected on every binary. Moving the
+//     pinned version is itself consensus-breaking and needs its own upgrade.
+//
+//   - The same applies to ValidatePfp, in the opposite direction and not covered
+//     by the report that prompted this: a URL path has no character allow-list,
+//     so the format-category test decided acceptance for arbitrary runes. A code
+//     point newly assigned to Cf was accepted by old binaries and rejected by
+//     new ones. It is now pinned too. The pfp URI scheme is additionally compared
+//     with ASCII-only folding instead of strings.ToLower and strings.EqualFold,
+//     which read the toolchain's case tables and would, for instance, have
+//     folded U+017F to "s". Every allowed scheme is ASCII, so the only names
+//     this newly rejects are schemes containing a non-ASCII rune that case-folds
+//     into ASCII.
+//
+//   - NormalizeName is pinned for a stronger reason than the validators: its
+//     output is a KV key, not just a comparison value. SetGuildNameIndex stores
+//     "Guild/name/" + NormalizeName(name), and RemoveGuildNameIndex deletes by
+//     re-normalizing a name already in state, so a case-folding difference
+//     between two binaries would write and delete different keys. Case folding
+//     and space trimming now come from the pinned tables. norm.NFC stays, being
+//     pinned by go.sum rather than by the toolchain; bumping golang.org/x/text
+//     is therefore also consensus-breaking, and TestNFCGoldenVectors is the
+//     guard. Output is byte-identical to v0.20.x for every input on any Go
+//     1.23/1.24 build, proven exhaustively over the whole rune space by
+//     TestPinnedTablesMatchToolchain and TestNormalizeNameMatchesLegacyForm.
+//
 // State migrations:
+//
+//   - MigrateGuildNameIndex: clear the Guild/name/ prefix and rebuild it from
+//     every stored guild name under the pinned normalization. Expected to be a
+//     no-op, since the new NormalizeName produces the same bytes as the old one
+//     on any Go 1.23/1.24 build; it runs because the index cannot be repaired
+//     later (RemoveGuildNameIndex can only reach a row by re-normalizing a name,
+//     so a row whose key no longer matches any name is unreachable and would
+//     hold that name hostage forever) and because it is the only thing that
+//     would clean up state a divergent binary wrote. A guild whose stored name
+//     fails the pinned rules, or whose key collides with a guild already placed,
+//     has its name cleared rather than carried forward — recoverable with one
+//     transaction, where a row that disagrees with the guild's name lets a later
+//     rename delete a different guild's row. Both drops log at error level, as
+//     does any run that is not a no-op, since neither is reachable from state a
+//     correct binary produced. Collisions resolve to the lower guild id, which
+//     is deterministic because GetAllGuild walks the prefix in key order.
 //
 //   - MigrateGuildBankFees: backfill bankConvertInFee / bankConvertOutFee to
 //     zero on every stored Guild (nil LegacyDec panic defense).
@@ -181,6 +263,12 @@ package v0_21_0
 //     pre-upgrade agreement leaves its provider's pool short by
 //     capacity * rate * (1 - providerCancellationPenalty) and the
 //     provider-collateral-solvency invariant reports insolvency.
+//
+//   - MigrateExpireOverdueAgreements: settle every agreement whose end block has
+//     already passed at the upgrade height, so the new agreement-expiry-liveness
+//     invariant starts clean. Runs after MigrateAgreementCheckpointOverbill so each
+//     settlement is paid out of a pool that has had its over-billed revenue
+//     returned. Expected to settle nothing on a healthy chain.
 //
 //   - MigrateStructPhantomAggregates: rebuild every aggregate the destroyed-struct
 //     bugs could corrupt from the structs still standing — player structsLoad,

@@ -913,3 +913,309 @@ func TestMigrateStructPhantomAggregates_FleetStructsFollowTheirFleet(t *testing.
 		"a fleet struct's shield belongs to the planet its fleet is at")
 	require.Equal(t, uint64(types.PlayerPassiveDraw+phantomPassiveDraw), f.structsLoad())
 }
+
+// guildNameFixture stores guilds the way GuildUpdateName does: the name on the
+// guild record and a matching index row. Anything that deviates from that shape
+// is written by the individual tests.
+type guildNameFixture struct {
+	t   *testing.T
+	k   structskeeper.Keeper
+	ctx sdk.Context
+}
+
+func newGuildNameFixture(t *testing.T) *guildNameFixture {
+	t.Helper()
+	k, ctx := keepertest.StructsKeeper(t)
+	return &guildNameFixture{t: t, k: k, ctx: sdk.UnwrapSDKContext(ctx)}
+}
+
+func (f *guildNameFixture) keepers() *upgrades.Keepers {
+	return &upgrades.Keepers{StructsKeeper: f.k}
+}
+
+// named stores a guild carrying name with its index row, as a rename would.
+func (f *guildNameFixture) named(index uint64, name string) types.Guild {
+	f.t.Helper()
+	guild := types.CreateEmptyGuild()
+	guild.Index = index
+	guild.Id = fmt.Sprintf("%d-%d", types.ObjectType_guild, index)
+	guild.Name = name
+	f.k.SetGuild(f.ctx, guild)
+	if name != "" {
+		f.k.SetGuildNameIndex(f.ctx, name, guild.Id)
+	}
+	return guild
+}
+
+func (f *guildNameFixture) name(guildId string) string {
+	f.t.Helper()
+	guild, found := f.k.GetGuild(f.ctx, guildId)
+	require.True(f.t, found, "guild %s vanished", guildId)
+	return guild.Name
+}
+
+// TestMigrateGuildNameIndex_HealthyStateIsUnchanged is the assertion that
+// matters most, because a no-op is what the rebuild is supposed to be.
+//
+// The new NormalizeName folds case and trims space through checked-in Unicode
+// 15.0.0 tables instead of the compiling toolchain's, and every Go release the
+// chain has run ships exactly that version, so the key bytes are identical.
+// This shows it end to end at the store level; TestNormalizeNameMatchesLegacyForm
+// in x/structs/types proves the same thing exhaustively over every code point.
+func TestMigrateGuildNameIndex_HealthyStateIsUnchanged(t *testing.T) {
+	f := newGuildNameFixture(t)
+
+	ascii := f.named(0, "Alpha Guild")
+	unicodeName := f.named(1, "Ñoño Collective")
+	f.named(2, "beta-guild_7")
+	nameless := f.named(3, "") // created but never renamed, which is most guilds
+
+	before := f.k.GetAllGuildNameIndex(f.ctx)
+	require.Len(t, before, 3, "only the named guilds should hold a row")
+
+	require.NoError(t, v0_21_0.MigrateGuildNameIndex(f.ctx, f.keepers()))
+
+	require.Equal(t, before, f.k.GetAllGuildNameIndex(f.ctx),
+		"the rebuild re-keyed the guild name index; NormalizeName changed its output")
+	require.Equal(t, "Alpha Guild", f.name(ascii.Id), "a valid name must survive untouched")
+	require.Equal(t, "Ñoño Collective", f.name(unicodeName.Id),
+		"a non-ASCII name is exactly what a case-folding change would have moved")
+	require.Equal(t, "", f.name(nameless.Id))
+
+	// Idempotent: the second run clears what the first wrote and rebuilds it.
+	require.NoError(t, v0_21_0.MigrateGuildNameIndex(f.ctx, f.keepers()))
+	require.Equal(t, before, f.k.GetAllGuildNameIndex(f.ctx))
+}
+
+// TestMigrateGuildNameIndex_ClearsOrphanedRows covers the reason the rebuild
+// clears the prefix rather than overwriting row by row. RemoveGuildNameIndex
+// deletes by re-normalizing a name, so a row no name maps to is unreachable
+// through the ordinary accessors and would sit in state forever, refusing that
+// name to every guild.
+func TestMigrateGuildNameIndex_ClearsOrphanedRows(t *testing.T) {
+	f := newGuildNameFixture(t)
+
+	kept := f.named(0, "Alpha Guild")
+
+	// A row for a guild that no longer carries that name.
+	f.k.SetGuildNameIndex(f.ctx, "Stale Name", kept.Id)
+	// A row pointing at a guild that does not exist at all.
+	f.k.SetGuildNameIndex(f.ctx, "Ghost Guild", "4-999")
+	require.Len(t, f.k.GetAllGuildNameIndex(f.ctx), 3)
+
+	require.NoError(t, v0_21_0.MigrateGuildNameIndex(f.ctx, f.keepers()))
+
+	index := f.k.GetAllGuildNameIndex(f.ctx)
+	require.Equal(t, map[string]string{"alpha guild": kept.Id}, index,
+		"only rows derived from a stored guild name may survive")
+
+	_, taken := f.k.GetGuildIdByName(f.ctx, "Stale Name")
+	require.False(t, taken, "a stale name must be free to claim again")
+	_, taken = f.k.GetGuildIdByName(f.ctx, "Ghost Guild")
+	require.False(t, taken)
+}
+
+// TestMigrateGuildNameIndex_DropsNameInvalidUnderPinnedRules exercises the
+// state a divergent binary could have written: U+088F is unassigned in Unicode
+// 15.0.0 and a letter in later versions, so a validator built with newer tables
+// would have accepted a name made of it while every other validator rejected the
+// same transaction. The name is dropped rather than carried forward, because an
+// index row keyed to a name the chain would now refuse is worse than making the
+// guild spend one transaction setting it again.
+func TestMigrateGuildNameIndex_DropsNameInvalidUnderPinnedRules(t *testing.T) {
+	f := newGuildNameFixture(t)
+
+	postPinnedName := strings.Repeat("\u088F", 3)
+	require.Error(t, types.ValidateEntityName(postPinnedName),
+		"fixture assumption: this name must be invalid under the pinned tables")
+
+	valid := f.named(0, "Alpha Guild")
+	divergent := f.named(1, postPinnedName)
+	tooShort := f.named(2, "ab")
+
+	require.NoError(t, v0_21_0.MigrateGuildNameIndex(f.ctx, f.keepers()))
+
+	require.Equal(t, map[string]string{"alpha guild": valid.Id}, f.k.GetAllGuildNameIndex(f.ctx),
+		"only the valid name may keep a row")
+	require.Equal(t, "", f.name(divergent.Id), "an unrepresentable name must be cleared, not kept")
+	require.Equal(t, "", f.name(tooShort.Id))
+	require.Equal(t, "Alpha Guild", f.name(valid.Id))
+
+	// A cleared name is simply empty on a re-run, so the migration settles.
+	require.NoError(t, v0_21_0.MigrateGuildNameIndex(f.ctx, f.keepers()))
+	require.Equal(t, map[string]string{"alpha guild": valid.Id}, f.k.GetAllGuildNameIndex(f.ctx))
+}
+
+// TestMigrateGuildNameIndex_CollisionKeepsTheFirstGuild covers the case where
+// two guilds want the same key. GuildUpdateName's uniqueness check makes this
+// unreachable from state a correct binary wrote, so reaching it means the tables
+// disagreed somewhere -- but the rebuild still has to resolve it identically on
+// every node rather than halt the upgrade.
+//
+// GetAllGuild walks the guild prefix in key order, so the lower guild id wins
+// everywhere.
+func TestMigrateGuildNameIndex_CollisionKeepsTheFirstGuild(t *testing.T) {
+	f := newGuildNameFixture(t)
+
+	first := f.named(0, "Alpha Guild")
+	second := f.named(1, "ALPHA GUILD")
+
+	// Both are valid names that fold to one key, which is exactly what the
+	// uniqueness check exists to prevent.
+	require.NoError(t, types.ValidateEntityName(second.Name))
+	require.Equal(t, types.NormalizeName(first.Name), types.NormalizeName(second.Name))
+
+	require.NoError(t, v0_21_0.MigrateGuildNameIndex(f.ctx, f.keepers()))
+
+	require.Equal(t, map[string]string{"alpha guild": first.Id}, f.k.GetAllGuildNameIndex(f.ctx),
+		"the first guild in key order keeps the contested key")
+	require.Equal(t, "Alpha Guild", f.name(first.Id))
+	require.Equal(t, "", f.name(second.Id), "the losing guild's name must be dropped, not left unindexed")
+
+	// With the loser's name cleared, a re-run has nothing left to contest.
+	require.NoError(t, v0_21_0.MigrateGuildNameIndex(f.ctx, f.keepers()))
+	require.Equal(t, map[string]string{"alpha guild": first.Id}, f.k.GetAllGuildNameIndex(f.ctx))
+}
+
+// TestMigrateGuildNameIndex_EmptyStateIsSafe guards the ordinary case for a
+// chain with no guilds, since the migration runs unconditionally.
+func TestMigrateGuildNameIndex_EmptyStateIsSafe(t *testing.T) {
+	f := newGuildNameFixture(t)
+	require.NoError(t, v0_21_0.MigrateGuildNameIndex(f.ctx, f.keepers()))
+	require.Empty(t, f.k.GetAllGuildNameIndex(f.ctx))
+}
+
+// overdueFixture builds providers and agreements directly in the store, which is
+// the shape the migration has to cope with: state left behind by an older binary,
+// not state a healthy chain would produce.
+type overdueFixture struct {
+	k         structskeeper.Keeper
+	ctx       sdk.Context
+	denom     string
+	providers map[string]types.Provider
+}
+
+func newOverdueFixture(t *testing.T, height int64) *overdueFixture {
+	t.Helper()
+
+	k, ctx := keepertest.StructsKeeper(t)
+
+	return &overdueFixture{
+		k:         k,
+		ctx:       sdk.UnwrapSDKContext(ctx).WithBlockHeight(height),
+		denom:     "ualpha",
+		providers: map[string]types.Provider{},
+	}
+}
+
+func (f *overdueFixture) keepers() *upgrades.Keepers {
+	return &upgrades.Keepers{StructsKeeper: f.k}
+}
+
+// provider stores a provider with a published rate and seeds its agreement load
+// grid attribute, so that a released agreement is visible as a decrement.
+func (f *overdueFixture) provider(t *testing.T, id string, rate int64, load uint64) types.Provider {
+	t.Helper()
+
+	stored, err := f.k.SetProvider(f.ctx, types.Provider{
+		Id:                          id,
+		Rate:                        sdk.NewCoin(f.denom, math.NewInt(rate)),
+		ProviderCancellationPenalty: math.LegacyMustNewDecFromStr("0"),
+		ConsumerCancellationPenalty: math.LegacyMustNewDecFromStr("0"),
+	})
+	require.NoError(t, err)
+
+	f.k.SetGridAttribute(f.ctx, structskeeper.GetGridAttributeIDByObjectId(types.GridAttributeType_load, id), load)
+	f.providers[id] = stored
+
+	return stored
+}
+
+func (f *overdueFixture) agreement(t *testing.T, id string, providerId string, capacity uint64, startBlock uint64, endBlock uint64) types.Agreement {
+	t.Helper()
+
+	agreement := types.Agreement{
+		Id:         id,
+		ProviderId: providerId,
+		Capacity:   capacity,
+		StartBlock: startBlock,
+		EndBlock:   endBlock,
+	}
+	_, err := f.k.SetAgreement(f.ctx, agreement)
+	require.NoError(t, err)
+	require.NoError(t, f.k.SetAgreementProviderIndex(f.ctx, providerId, id))
+	require.NoError(t, f.k.SetAgreementExpirationIndex(f.ctx, endBlock, id))
+
+	return agreement
+}
+
+func (f *overdueFixture) load(providerId string) uint64 {
+	return f.k.GetGridAttribute(f.ctx, structskeeper.GetGridAttributeIDByObjectId(types.GridAttributeType_load, providerId))
+}
+
+// TestMigrateExpireOverdueAgreements_SettlesTheStranded covers the state the
+// migration exists for: an agreement whose end block has passed but which is
+// still in the store, still holding its capacity in the provider's load.
+//
+// Expiry is driven from the EndBlocker at exactly the end block, with no range
+// scan and no retry, so one that is missed is never revisited and the provider
+// bills for it forever.
+func TestMigrateExpireOverdueAgreements_SettlesTheStranded(t *testing.T) {
+	const height = 5000
+	f := newOverdueFixture(t, height)
+
+	// 300 of load: 100 stranded past its end block, 200 still under way.
+	provider := f.provider(t, "provider-stranded", 10, 300)
+	stranded := f.agreement(t, "agreement-stranded", provider.Id, 100, 100, height-1)
+	current := f.agreement(t, "agreement-current", provider.Id, 200, 100, height+500)
+
+	require.NoError(t, v0_21_0.MigrateExpireOverdueAgreements(f.ctx, f.keepers()))
+
+	_, found := f.k.GetAgreement(f.ctx, stranded.Id)
+	require.False(t, found, "an agreement past its end block should have been settled")
+	require.NotContains(t, f.k.GetAllAgreementIdByProviderIndex(f.ctx, provider.Id), stranded.Id)
+	require.NotContains(t, f.k.GetAllAgreementIdByExpirationIndex(f.ctx, stranded.EndBlock), stranded.Id,
+		"the expiration index row must go with it, or it is left pointing at nothing")
+
+	_, found = f.k.GetAgreement(f.ctx, current.Id)
+	require.True(t, found, "an agreement still inside its window must be left alone")
+
+	require.Equal(t, uint64(200), f.load(provider.Id),
+		"only the stranded agreement's capacity should have been released")
+
+	// Which is the whole point: the invariant that would have flagged this is now
+	// clean.
+	msg, broken := structskeeper.AgreementExpiryLivenessInvariant(f.k)(f.ctx)
+	require.False(t, broken, msg)
+}
+
+// TestMigrateExpireOverdueAgreements_HealthyStateIsUntouched is the expected case
+// on a real chain: nothing is overdue, so nothing moves.
+func TestMigrateExpireOverdueAgreements_HealthyStateIsUntouched(t *testing.T) {
+	const height = 5000
+	f := newOverdueFixture(t, height)
+
+	provider := f.provider(t, "provider-healthy", 10, 150)
+
+	// One mid-window, and one ending on this very block: the EndBlocker settles
+	// that one itself, and the migration must not race it.
+	open := f.agreement(t, "agreement-open", provider.Id, 100, 100, height+500)
+	ending := f.agreement(t, "agreement-ending", provider.Id, 50, 100, height)
+
+	require.NoError(t, v0_21_0.MigrateExpireOverdueAgreements(f.ctx, f.keepers()))
+
+	for _, agreement := range []types.Agreement{open, ending} {
+		stored, found := f.k.GetAgreement(f.ctx, agreement.Id)
+		require.True(t, found, "agreement %s should be untouched", agreement.Id)
+		require.Equal(t, agreement, stored)
+	}
+
+	require.Equal(t, uint64(150), f.load(provider.Id), "no load should have been released")
+}
+
+// TestMigrateExpireOverdueAgreements_EmptyStateIsSafe guards the walk itself.
+func TestMigrateExpireOverdueAgreements_EmptyStateIsSafe(t *testing.T) {
+	f := newOverdueFixture(t, 5000)
+	require.NoError(t, v0_21_0.MigrateExpireOverdueAgreements(f.ctx, f.keepers()))
+	require.Empty(t, f.k.GetAllAgreement(f.ctx))
+}
