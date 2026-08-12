@@ -399,6 +399,7 @@ func (app *App) RegisterUpgradeHandlers() {
 		AccountKeeper: app.AccountKeeper,
 		BankKeeper:    app.BankKeeper,
 		StakingKeeper: app.StakingKeeper,
+		DistrKeeper:   app.DistrKeeper,
 	}
 
 	upgradesList := []upgrades.Upgrade{

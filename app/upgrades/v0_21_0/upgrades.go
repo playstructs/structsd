@@ -2,6 +2,7 @@ package v0_21_0
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -10,6 +11,8 @@ import (
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"structs/app/upgrades"
 	structskeeper "structs/x/structs/keeper"
@@ -69,6 +72,17 @@ func CreateUpgradeHandler(
 		// Before the reconcile below, which recomputes each infusion's capacity
 		// contribution and so needs the owner it is crediting to be correct.
 		if err := MigrateInfusionOwnership(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
+		// Both read staking rather than structs state, so they are independent
+		// of the infusion work around them. The repair runs before the audit so
+		// that the audit's log describes the state the chain is left in.
+		if err := MigrateDelegationDistributionState(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
+		if err := MigrateAuditDelegatorShares(ctx, keepers); err != nil {
 			return newVM, err
 		}
 
@@ -1495,6 +1509,278 @@ func MigrateInfusionOwnership(ctx context.Context, keepers *upgrades.Keepers) er
 		"capacityMoved", capacityMoved, "unregisteredAddresses", unregistered)
 
 	return nil
+}
+
+/* MigrateDelegationDistributionState repairs delegations that the pre-v0.21.0
+ * address sweep left unable to touch their own rewards.
+ *
+ * The old sweep was a RemoveDelegation followed by a SetDelegation, and neither
+ * call maintained distribution. SetDelegation is a bare store write, so the
+ * destination never received the DelegatorStartingInfo that prices its
+ * rewards. And distribution's BeforeDelegationRemoved is a no-op -- the
+ * withdrawal lives on BeforeDelegationSharesModified, which a removal does not
+ * fire -- so the source's record was not settled either; it was simply
+ * abandoned, still holding its reference on the validator's historical rewards
+ * for that period. The result is a matched pair of broken rows: a delegation
+ * that can never withdraw, undelegate or redelegate (every attempt fails on
+ * ErrEmptyDelegationDistInfo, permanently, which is why its shares have been
+ * frozen ever since), and a starting info that nothing can ever claim.
+ *
+ * Where the pair can be identified, re-homing the abandoned record onto the
+ * delegation that inherited its stake repairs both at once, and is exact rather
+ * than approximate: the period it records is the period that stake really was
+ * delegated at, so the rewards it accrued across the move are paid to whoever
+ * holds the stake now. It also needs no reference-count adjustment, one record
+ * continuing to hold the one reference.
+ *
+ * Identification is the limit. Nothing on disk links an abandoned record to the
+ * address its stake went to, so the pairing is only made where a validator has
+ * exactly one of each, which is the shape a single address move leaves. Where
+ * it does not, the delegation is initialized fresh at the current period and the
+ * abandoned record is left in place. Both halves of that fallback are the
+ * conservative choice. A fresh period forfeits the span since the move, but
+ * inventing an earlier one would pay this delegator out of rewards belonging to
+ * everyone else delegating to that validator, and under-crediting one player is
+ * recoverable where draining a reward pool is not. Leaving the record beats
+ * deleting it, because decrementReferenceCount is not exported: a delete would
+ * pin the same historical rewards forever *and* destroy the evidence needed to
+ * re-home it later.
+ *
+ * Idempotent. A second pass finds no delegation missing starting info, so it
+ * re-homes nothing and initializes nothing; it only re-logs any record it could
+ * not pair.
+ */
+func MigrateDelegationDistributionState(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateDelegationDistributionState")
+
+	distrHooks := keepers.DistrKeeper.Hooks()
+
+	abandoned, err := abandonedStartingInfosByValidator(ctx, keepers)
+	if err != nil {
+		return err
+	}
+
+	validators, err := keepers.StakingKeeper.GetAllValidators(ctx)
+	if err != nil {
+		return err
+	}
+
+	var (
+		visited     int
+		rehomed     int
+		initialized int
+		unpaired    int
+	)
+
+	// GetAllValidators walks the validator prefix in key order and
+	// GetValidatorDelegations does the same within each, so every node repairs
+	// the same pairs in the same sequence -- which matters, because
+	// initializing a delegation increments the validator's period.
+	for _, validator := range validators {
+		valAddr, valAddrErr := sdk.ValAddressFromBech32(validator.OperatorAddress)
+		if valAddrErr != nil {
+			logger.Error("unparsable validator operator address; skipping",
+				"operatorAddress", validator.OperatorAddress, "error", valAddrErr)
+			continue
+		}
+
+		delegations, delegationsErr := keepers.StakingKeeper.GetValidatorDelegations(ctx, valAddr)
+		if delegationsErr != nil {
+			return delegationsErr
+		}
+
+		var needy []sdk.AccAddress
+		for _, delegation := range delegations {
+			visited++
+
+			delAddr, delAddrErr := sdk.AccAddressFromBech32(delegation.DelegatorAddress)
+			if delAddrErr != nil {
+				logger.Error("unparsable delegator address; skipping",
+					"delegatorAddress", delegation.DelegatorAddress, "error", delAddrErr)
+				continue
+			}
+
+			hasStartingInfo, hasErr := keepers.DistrKeeper.HasDelegatorStartingInfo(ctx, valAddr, delAddr)
+			if hasErr != nil {
+				return hasErr
+			}
+			if !hasStartingInfo {
+				needy = append(needy, delAddr)
+			}
+		}
+
+		orphans := abandoned[validator.OperatorAddress]
+
+		if len(needy) == 1 && len(orphans) == 1 {
+			source := orphans[0]
+
+			info, infoErr := keepers.DistrKeeper.GetDelegatorStartingInfo(ctx, valAddr, source)
+			if infoErr != nil {
+				return infoErr
+			}
+			if err := keepers.DistrKeeper.SetDelegatorStartingInfo(ctx, valAddr, needy[0], info); err != nil {
+				return err
+			}
+			if err := keepers.DistrKeeper.DeleteDelegatorStartingInfo(ctx, valAddr, source); err != nil {
+				return err
+			}
+
+			rehomed++
+
+			logger.Error("re-homed an abandoned delegator starting info onto the delegation that inherited its stake",
+				"validator", validator.OperatorAddress, "from", source.String(), "to", needy[0].String(),
+				"previousPeriod", info.PreviousPeriod, "stake", info.Stake.String())
+
+			continue
+		}
+
+		for _, delAddr := range needy {
+			// The same pair of calls the transfer makes, for the same reason:
+			// initializeDelegation prices from Period-1, so the period has to
+			// have moved first.
+			if err := distrHooks.BeforeDelegationCreated(ctx, delAddr, valAddr); err != nil {
+				return err
+			}
+			if err := distrHooks.AfterDelegationModified(ctx, delAddr, valAddr); err != nil {
+				return err
+			}
+
+			initialized++
+
+			logger.Error("delegation had no distribution starting info and no unambiguous predecessor; initialized at the current period",
+				"validator", validator.OperatorAddress, "delegator", delAddr.String(),
+				"abandonedRecordsOnValidator", len(orphans))
+		}
+
+		for _, source := range orphans {
+			unpaired++
+			logger.Error("delegator starting info has no delegation behind it and could not be paired; left in place",
+				"validator", validator.OperatorAddress, "delegator", source.String())
+		}
+	}
+
+	logger.Info("v0.21.0 delegation distribution state repair complete",
+		"delegationsVisited", visited, "startingInfosRehomed", rehomed,
+		"delegationsInitialized", initialized, "abandonedRecordsLeftInPlace", unpaired)
+
+	return nil
+}
+
+// abandonedStartingInfosByValidator collects every DelegatorStartingInfo with
+// no delegation behind it, grouped by validator. IterateDelegatorStartingInfos
+// walks in key order, so the slices are ordered identically on every node.
+func abandonedStartingInfosByValidator(ctx context.Context, keepers *upgrades.Keepers) (map[string][]sdk.AccAddress, error) {
+	abandoned := make(map[string][]sdk.AccAddress)
+
+	var iterationErr error
+	keepers.DistrKeeper.IterateDelegatorStartingInfos(ctx,
+		func(val sdk.ValAddress, del sdk.AccAddress, _ distrtypes.DelegatorStartingInfo) bool {
+			if _, err := keepers.StakingKeeper.GetDelegation(ctx, del, val); err == nil {
+				return false
+			} else if !errors.Is(err, stakingtypes.ErrNoDelegation) {
+				iterationErr = err
+				return true
+			}
+
+			abandoned[val.String()] = append(abandoned[val.String()], del)
+			return false
+		})
+
+	return abandoned, iterationErr
+}
+
+/* MigrateAuditDelegatorShares reports, and deliberately does not repair, stake
+ * that the pre-v0.21.0 address sweep may have knocked out of agreement with the
+ * validator it belongs to.
+ *
+ * Two ways it could happen, both from the same bare SetDelegation. If the
+ * destination address already delegated to that validator, the write replaced
+ * its record instead of merging, so shares went missing while
+ * Validator.DelegatorShares kept counting them. And if a delegation was swept
+ * twice, the second RemoveDelegation failed inside distribution's hook -- the
+ * first sweep having left no starting info to withdraw against -- and the old
+ * code discarded that error and wrote the destination anyway, duplicating the
+ * shares.
+ *
+ * Neither is repairable here, and the reason is worth stating rather than
+ * assuming. The discrepancy is known per validator but not per delegator:
+ * nothing on disk records which address lost shares or which gained them.
+ * Adjusting DelegatorShares to match would silently reprice every other
+ * delegation to that validator, and adjusting a delegation would mint or burn
+ * one player's stake on a guess. Both are worse than an accurate log, so this
+ * reports at error level with the exact numbers and leaves state alone for a
+ * human to settle.
+ *
+ * Read-only, therefore trivially idempotent, and silent on a chain where no
+ * address ever swept a delegation.
+ */
+func MigrateAuditDelegatorShares(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateAuditDelegatorShares")
+
+	validators, err := keepers.StakingKeeper.GetAllValidators(ctx)
+	if err != nil {
+		return err
+	}
+
+	var (
+		visited    int
+		discrepant int
+	)
+
+	for _, validator := range validators {
+		visited++
+
+		valAddr, valAddrErr := sdk.ValAddressFromBech32(validator.OperatorAddress)
+		if valAddrErr != nil {
+			logger.Error("unparsable validator operator address; skipping",
+				"operatorAddress", validator.OperatorAddress, "error", valAddrErr)
+			continue
+		}
+
+		delegations, delegationsErr := keepers.StakingKeeper.GetValidatorDelegations(ctx, valAddr)
+		if delegationsErr != nil {
+			return delegationsErr
+		}
+
+		total := math.LegacyZeroDec()
+		for _, delegation := range delegations {
+			total = total.Add(delegation.Shares)
+		}
+
+		if total.Equal(validator.DelegatorShares) {
+			continue
+		}
+
+		discrepant++
+
+		logger.Error("validator delegator shares disagree with the delegations behind them; NOT repaired",
+			"validator", validator.OperatorAddress,
+			"delegatorShares", validator.DelegatorShares.String(),
+			"delegationsTotal", total.String(),
+			"difference", validator.DelegatorShares.Sub(total).String(),
+			"delegationCount", len(delegations),
+			"direction", sharesDiscrepancyDirection(validator.DelegatorShares, total))
+	}
+
+	if discrepant == 0 {
+		logger.Info("v0.21.0 delegator share audit found no discrepancies", "validatorsVisited", visited)
+	} else {
+		logger.Error("v0.21.0 delegator share audit found discrepancies requiring manual settlement",
+			"validatorsVisited", visited, "validatorsDiscrepant", discrepant)
+	}
+
+	return nil
+}
+
+// sharesDiscrepancyDirection names which of the two pre-v0.21.0 sweep bugs a
+// discrepancy looks like, since they point opposite ways.
+func sharesDiscrepancyDirection(delegatorShares, delegationsTotal math.LegacyDec) string {
+	if delegatorShares.GT(delegationsTotal) {
+		return "orphaned_shares"
+	}
+	return "duplicated_shares"
 }
 
 func NewUpgrade() upgrades.Upgrade {

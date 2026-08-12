@@ -29,10 +29,22 @@ func (k Keeper) Address(goCtx context.Context, req *types.QueryGetAddressRequest
 
 	var permission types.QueryAddressResponse
     permission.Address  = req.Address
-    permission.PlayerId = GetObjectID(types.ObjectType_player, k.GetPlayerIndexFromAddress(ctx, permission.Address))
+    permission.PlayerId = playerIdFromAddressIndex(k.GetPlayerIndexFromAddress(ctx, permission.Address))
     permission.Permissions = permissionValue
 
 	return &permission, nil
+}
+
+// playerIdFromAddressIndex formats a player id from the address index, or "" when
+// the address is unassociated. Index 0 means "not in the store" (see
+// GetPlayerIndexFromAddress), and formatting it as GetObjectID(player, 0) would
+// invent "1-0" — a player that does not exist and that AddressRevoke's callers
+// correctly treat as still bound.
+func playerIdFromAddressIndex(playerIndex uint64) string {
+	if playerIndex == 0 {
+		return ""
+	}
+	return GetObjectID(types.ObjectType_player, playerIndex)
 }
 
 
@@ -52,7 +64,7 @@ func (k Keeper) AddressAll(goCtx context.Context, req *types.QueryAllAddressRequ
 		var permission types.QueryAddressResponse
 
         permission.Address = string(key)
-        permission.PlayerId = GetObjectID(types.ObjectType_player, k.GetPlayerIndexFromAddress(ctx, permission.Address))
+        permission.PlayerId = playerIdFromAddressIndex(k.GetPlayerIndexFromAddress(ctx, permission.Address))
 
         addressPermissionId := GetAddressPermissionIDBytes(permission.Address)
         permission.Permissions = uint64(k.GetPermissionsByBytes(ctx, addressPermissionId))

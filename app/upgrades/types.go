@@ -8,6 +8,7 @@ import (
 	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
 	structsmodulekeeper "structs/x/structs/keeper"
@@ -20,6 +21,7 @@ type Keepers struct {
 	AccountKeeper  authkeeper.AccountKeeper
 	BankKeeper     bankkeeper.Keeper
 	StakingKeeper  *stakingkeeper.Keeper
+	DistrKeeper    distrkeeper.Keeper
 }
 
 // Upgrade defines an on-chain upgrade with its name, handler factory,

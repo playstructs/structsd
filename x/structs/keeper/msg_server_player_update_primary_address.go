@@ -39,6 +39,16 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
     oldAcc, _   := sdk.AccAddressFromBech32(player.GetPrimaryAddress())
     newAcc, _   := sdk.AccAddressFromBech32(msg.PrimaryAddress)
 
+    // Move Reactor Infusions over.
+    //
+    // Ahead of the coin sweep so that the staking rewards the transfer settles
+    // are swept along with everything else. Strict: the old primary stays a
+    // registered address of this player, so a refusal costs nothing but a wait.
+    err = k.MoveDelegationsToAddress(ctx, cc, oldAcc, msg.PrimaryAddress, DelegationTransferStrict)
+    if err != nil {
+        return emptyResponse, err
+    }
+
     // Get Balance
     balances := k.bankKeeper.SpendableCoins(ctx, oldAcc)
 
@@ -47,9 +57,6 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
     if err != nil {
         return emptyResponse, err
     }
-
-    // Move Reactor Infusions over
-    k.MoveDelegationsToAddress(ctx, cc, oldAcc, msg.PrimaryAddress)
 
     // Help the indexer along regarding Ore balances
     _ = ctx.EventManager().EmitTypedEvent(&types.EventOreMigrate{&types.EventOreMigrateDetail{PlayerId: player.GetPlayerId(), PrimaryAddress: msg.PrimaryAddress, OldPrimaryAddress: player.GetPrimaryAddress(), Amount: player.GetStoredOre()}})

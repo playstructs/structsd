@@ -92,6 +92,21 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     primaryAcc, _   := sdk.AccAddressFromBech32(player.GetPrimaryAddress())
     newAcc, _   := sdk.AccAddressFromBech32(msg.Address)
 
+    // Move Reactor Infusions over.
+    //
+    // The address index was written above, so the newly registered address
+    // resolves to this player and its infusion is re-homed rather than left
+    // with whoever held the address before. Ahead of the coin sweep so that the
+    // staking rewards the transfer settles are swept along with everything else.
+    //
+    // Strict: the incoming address belongs to the player either way, so a
+    // refusal costs them nothing but a wait, and nobody else can create the
+    // condition that triggers it.
+    err = k.MoveDelegationsToAddress(ctx, cc, newAcc, player.GetPrimaryAddress(), DelegationTransferStrict)
+    if err != nil {
+        return emptyResponse, err
+    }
+
     // Get Balance
     balances := k.bankKeeper.SpendableCoins(ctx, newAcc)
 
@@ -100,12 +115,6 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     if err != nil {
         return emptyResponse, err
     }
-
-    // Move Reactor Infusions over.
-    // The address index was written above, so the newly registered address
-    // resolves to this player and its infusion is re-homed rather than left
-    // with whoever held the address before.
-    k.MoveDelegationsToAddress(ctx, cc, newAcc, player.GetPrimaryAddress())
 
 	cc.CommitAll()
 	return &types.MsgAddressRegisterResponse{}, nil

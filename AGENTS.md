@@ -150,12 +150,46 @@ is invisible to an outer context that has already read the same attribute.** And
 source is not redundant with the hook: it is what makes the repair independent of whether the hook
 ran at all.
 
+**There is no such thing as rekeying a delegation, so that sweep is an assembled transfer.** Cosmos
+has no operation for handing a delegation to another account, and the pair of calls above was not
+one. `SetDelegation` is keyed by `(delegator, validator)`, so a destination that already delegated
+to the same validator had its record *replaced* while `Validator.DelegatorShares` went on counting
+both — orphaned tokens and a skewed redemption ratio, unrecoverable once written, since nothing on
+disk says which address lost the shares. Shares therefore merge, and `DelegatorShares` is
+deliberately left alone: the sum is conserved and `LegacyDec` addition is exact. Firing no hooks was
+the other half, and the one with no symptom at the time: the destination pair never received the
+`DelegatorStartingInfo` that prices its rewards, and without it every later withdraw, undelegate and
+redelegate fails on `ErrEmptyDelegationDistInfo` forever. `MoveDelegationsToAddress` drives that
+lifecycle by hand through `x/distribution`'s hooks, in an order fixed by `initializeDelegation`,
+which reads the delegation back out of staking (so `AfterDelegationModified` comes last) and prices
+from `Period-1` (so something must have incremented the period first). **A store write that a
+neighbouring call fires hooks for is not the same operation minus the hooks** — it is a different
+operation that happens to leave similar-looking bytes.
+
+Two states a delegation cannot be moved out of at all, and the limit is reachability, not caution:
+an in-flight redelegation and an in-flight unbonding delegation each carry queue rows
+(`RedelegationQueue` DVVTriplets, `UBDQueue` DVPairs) and id indices that no public keeper API can
+rewrite, so the delegator address cannot follow the delegation. Leaving a redelegation behind is the
+dangerous one — `SlashRedelegation` resolves the delegation it slashes through the redelegation
+record's *own* delegator address and continues on a miss, so moving out from under one makes that
+stake unslashable. What to do about a blocked delegation is a policy the caller passes, and the
+difference is a security property rather than a preference: `AddressRegister` and
+`PlayerUpdatePrimaryAddress` refuse the message, both addresses still belonging to the player, while
+`AddressRevoke` never refuses. **A revoke is the response to a compromised key, so anything that key
+can sustain must not be able to block it** — rolling redelegations otherwise let an attacker prevent
+their own eviction, and refusing gains the player nothing, since that key could always have
+undelegated the stake outright. The blocked delegation stays bonded and its infusion is destroyed
+instead. `x/structs/keeper/delegation_transfer_test.go` covers the assembly against the mock,
+`app/delegation_transfer_test.go` against real staking and distribution — including the SDK
+accounting checks that `AllInvariants` used to provide before v0.53 retired the crisis module.
+
 The reason all of this survived so long is worth its own line: **`testutil/keeper`'s
 `MockStakingKeeper` fires no hooks at all.** Every keeper test that "exercises" a staking path is
 really calling our own handler directly, which proves the handler and says nothing about whether
 staking ever reaches it. Anything whose correctness depends on *when* the SDK calls us needs a
-real-app test with real staking wired up — `app/reactor_redelegation_test.go`,
-`app/address_revoke_infusion_test.go` and `app/reactor_jail_gate_test.go` are the three, all built
+real-app test with real staking wired up — `app/delegation_transfer_test.go`,
+`app/delegation_migration_test.go`, `app/reactor_redelegation_test.go`,
+`app/address_revoke_infusion_test.go` and `app/reactor_jail_gate_test.go` are the five, all built
 on `setupJailGateApp`. `x/structs/keeper/reactor_delegation_removed_test.go` covers the keeper
 method, including a case that pins why reconciling in that window does not work.
 

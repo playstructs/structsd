@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"fmt"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,15 +15,20 @@ func TestMsgAddressRevoke(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
 	wctx := sdk.UnwrapSDKContext(ctx)
 
+	// Real bech32 on both sides: the revoke sweeps the secondary address's
+	// delegations onto the primary, and a primary it cannot parse is a state
+	// it refuses rather than skips past.
+	creatorAddress := sdk.AccAddress(fmt.Sprintf("%-36s", "addressrevokecreator")[:36]).String()
+	secondaryAddress := sdk.AccAddress(fmt.Sprintf("%-36s", "addressrevokesecondary")[:36]).String()
+
 	// Create a player first
 	player := types.Player{
-		Creator:        "cosmos1creator",
-		PrimaryAddress: "cosmos1creator",
+		Creator:        creatorAddress,
+		PrimaryAddress: creatorAddress,
 	}
 	player = testAppendPlayer(k, ctx, player)
 
 	// Register another address for the player
-	secondaryAddress := "cosmos1secondary"
 	k.SetPlayerIndexForAddress(ctx, secondaryAddress, player.Index)
 
 	// Grant permissions to the secondary address

@@ -32,6 +32,7 @@ type addressMoveFixture struct {
 	ctx     context.Context
 	sdkCtx  sdk.Context
 	mock    *keepertest.MockStakingKeeper
+	distr   *keepertest.MockDistributionKeeper
 	player  types.Player
 	valAddr sdk.ValAddress
 	reactor types.Reactor
@@ -80,12 +81,19 @@ func setupAddressMove(t *testing.T, seed string, primaryAcc sdk.AccAddress, hold
 		Shares:           math.LegacyNewDecFromInt(math.NewInt(tokens)),
 	}))
 
+	// A delegation written by staking's own Delegate always carries the
+	// distribution starting info that prices its rewards, and the transfer
+	// refuses to move one that does not, so the fixture has to supply it.
+	distr := k.DistributionKeeper().(*keepertest.MockDistributionKeeper)
+	distr.SeedStartingInfo(valAddr, holderAcc)
+
 	return addressMoveFixture{
 		k:       k,
 		ms:      ms,
 		ctx:     ctx,
 		sdkCtx:  sdkCtx,
 		mock:    mock,
+		distr:   distr,
 		player:  player,
 		valAddr: valAddr,
 		reactor: reactor,
@@ -209,7 +217,7 @@ func TestAddressRegisterSweepPreservesInfusionCapacity(t *testing.T) {
 	require.NoError(t, f.k.SetPlayerIndexForAddress(f.ctx, incomingAcc.String(), f.player.Index))
 
 	cc := f.k.NewCurrentContext(f.sdkCtx)
-	f.k.MoveDelegationsToAddress(f.sdkCtx, cc, incomingAcc, primaryAcc.String())
+	require.NoError(t, f.k.MoveDelegationsToAddress(f.sdkCtx, cc, incomingAcc, primaryAcc.String(), keeperlib.DelegationTransferStrict))
 	cc.CommitAll()
 
 	assertDelegationMoved(t, f, incomingAcc, primaryAcc)

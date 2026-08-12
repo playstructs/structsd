@@ -266,65 +266,278 @@ func (k Keeper) reconcileInfusionForDelegation(ctx context.Context, cc *CurrentC
 	}
 }
 
+/* DelegationTransferPolicy decides what a handler does about a delegation that
+ * cannot be moved safely. See MoveDelegationsToAddress.
+ */
+type DelegationTransferPolicy int
+
+const (
+	// DelegationTransferStrict fails the whole message. Used where both
+	// addresses still belong to the player afterwards, so nothing is lost by
+	// making them wait, and where nobody but the player can create the
+	// blocking condition in the first place.
+	DelegationTransferStrict DelegationTransferPolicy = iota
+
+	// DelegationTransferDisown leaves the delegation where it is and destroys
+	// the infusion representing it. Used by AddressRevoke, which is the
+	// response to a compromised key: a refusal there is a state the holder of
+	// that key could sustain indefinitely with rolling redelegations, while
+	// gaining the player nothing, since that same key could always have
+	// undelegated the stake directly.
+	DelegationTransferDisown
+)
+
 /* MoveDelegationsToAddress hands every delegation held by one address to
  * another and rebuilds the reactor infusions on both sides.
  *
  * The three address-move handlers (AddressRevoke, AddressRegister,
  * PlayerUpdatePrimaryAddress) all sweep a player's stake onto their primary
- * address, and staking gives them no help keeping structs in step. The two
- * store calls are asymmetric: RemoveDelegation fires BeforeDelegationRemoved,
- * which zeroes the source infusion, while SetDelegation is a bare write that
- * fires nothing at all. Left to the hooks the source loses its capacity and the
- * destination is credited by nobody, so the move destroys the player's energy
- * rather than relocating it.
+ * address, and Cosmos has no operation for that. There is no "transfer
+ * delegation": the move has to be assembled out of primitives, and each of the
+ * three records keyed by delegator address has to be carried across by hand.
  *
- * Both sides are therefore reconciled explicitly. Doing the source as well as
- * the destination makes the repair independent of whether the hook ran, which
- * is also what lets the mock staking keeper — which fires no hooks — exercise
- * it.
+ * Staking gives no help keeping structs in step. The two store calls are
+ * asymmetric: RemoveDelegation fires BeforeDelegationRemoved, which zeroes the
+ * source infusion, while SetDelegation is a bare write that fires nothing at
+ * all. Left to the hooks the source loses its capacity and the destination is
+ * credited by nobody, so the move destroys the player's energy rather than
+ * relocating it. Both sides are therefore reconciled explicitly, which also
+ * makes the repair independent of whether the hook ran and is what lets the
+ * mock staking keeper — which fires no hooks — exercise it.
+ *
+ * Distribution gets the same treatment for the same reason. SetDelegation
+ * firing nothing means the destination pair never gets the DelegatorStartingInfo
+ * that prices its rewards, and without it withdrawing, undelegating and
+ * redelegating all fail on ErrEmptyDelegationDistInfo forever after. The three
+ * distribution hooks below are the only public route to that lifecycle, and the
+ * order is fixed by initializeDelegation: it reads the delegation out of
+ * staking, so AfterDelegationModified has to come after the write, and it
+ * prices from Period-1, so something has to have incremented the period first.
+ *
+ * Shares merge rather than overwrite. SetDelegation is keyed by
+ * (delegator, validator), so writing the source's record at the destination
+ * would silently replace a delegation the destination already had, while
+ * Validator.DelegatorShares went on counting both — orphaned tokens and a
+ * skewed redemption ratio. DelegatorShares is deliberately left alone: the sum
+ * is conserved, and LegacyDec addition is exact.
+ *
+ * Everything that can refuse runs before anything mutates. Error propagation
+ * would be enough for atomicity on its own, since BaseApp discards the message
+ * cache, but partitioning first is what lets the disown policy tell "cannot
+ * move this one" apart from "this whole operation failed".
  *
  * The reconciles run after the loop rather than inside it. The hook commits a
  * CurrentContext of its own, so a reconcile interleaved with it would leave cc
  * holding a grid capacity read from before the hook's write and clobber that
  * write at CommitAll.
  */
-func (k Keeper) MoveDelegationsToAddress(ctx context.Context, cc *CurrentContext, from sdk.AccAddress, to string) {
+func (k Keeper) MoveDelegationsToAddress(ctx context.Context, cc *CurrentContext, from sdk.AccAddress, to string, policy DelegationTransferPolicy) error {
 	toAcc, toErr := sdk.AccAddressFromBech32(to)
 	if toErr != nil {
-		k.logger.Error("MoveDelegationsToAddress: unparsable destination address", "from", from.String(), "to", to, "error", toErr)
-		return
+		return types.NewAddressValidationError(to, "invalid_format")
 	}
 
 	if from.Equals(toAcc) {
-		return
+		return nil
 	}
 
 	delegations, err := k.stakingKeeper.GetDelegatorDelegations(ctx, from, stdmath.MaxUint16)
 	if err != nil {
-		k.logger.Error("MoveDelegationsToAddress: could not read delegations", "from", from.String(), "error", err)
-		return
+		return err
 	}
 
-	validatorAddresses := make([]sdk.ValAddress, 0, len(delegations))
-	for _, delegation := range delegations {
-		validatorAddress, validatorAddressErr := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
-		if validatorAddressErr != nil {
-			k.logger.Error("MoveDelegationsToAddress: unparsable validator address", "validator", delegation.ValidatorAddress, "error", validatorAddressErr)
-			continue
+	// GetDelegatorDelegations truncates at maxRetrieve rather than reporting
+	// that it did, and a silently partial move is the one outcome worse than
+	// no move at all.
+	if len(delegations) >= stdmath.MaxUint16 {
+		return types.NewDelegationTransferError(from.String(), to, "too_many_delegations").WithCount(len(delegations))
+	}
+
+	movable, blocked, err := k.partitionTransferableDelegations(ctx, from, to, delegations, policy)
+	if err != nil {
+		return err
+	}
+
+	touched := make([]sdk.ValAddress, 0, len(movable))
+	for _, movement := range movable {
+		if err := k.transferDelegation(ctx, movement, from, toAcc); err != nil {
+			return err
 		}
-
-		_ = k.stakingKeeper.RemoveDelegation(ctx, delegation)
-
-		delegation.DelegatorAddress = to
-		_ = k.stakingKeeper.SetDelegation(ctx, delegation)
-
-		validatorAddresses = append(validatorAddresses, validatorAddress)
+		touched = append(touched, movement.validator)
 	}
 
-	for _, validatorAddress := range validatorAddresses {
+	for _, validatorAddress := range touched {
 		k.reconcileInfusionForDelegation(ctx, cc, from, validatorAddress)
 		k.reconcileInfusionForDelegation(ctx, cc, toAcc, validatorAddress)
 	}
+
+	for _, validatorAddress := range blocked {
+		k.disownInfusion(ctx, cc, from, validatorAddress)
+	}
+
+	return nil
+}
+
+// delegationMovement is one source delegation that passed pre-flight.
+type delegationMovement struct {
+	delegation stakingtypes.Delegation
+	validator  sdk.ValAddress
+}
+
+/* partitionTransferableDelegations splits the source's delegations into those
+ * that can be handed over and those that cannot, refusing outright under the
+ * strict policy.
+ *
+ * The two in-flight cases are not conservatism, they are the limit of what is
+ * reachable. An unbonding delegation and a redelegation each carry queue rows
+ * (UBDQueue DVPairs, RedelegationQueue DVVTriplets) and unbonding-id indices
+ * that no public keeper API can rewrite, so their delegator address cannot
+ * follow the delegation.
+ *
+ * Leaving a redelegation behind is the dangerous one, and it is worth being
+ * precise about why. SlashRedelegation resolves the delegation it slashes
+ * through the redelegation record's own delegator address, and on a miss it
+ * continues rather than failing — so moving the delegation out from under an
+ * in-flight redelegation makes that stake unslashable for the source
+ * validator's infraction. The same record is what HasReceivingRedelegation
+ * consults to stop redelegation hopping, which the move would likewise escape.
+ */
+func (k Keeper) partitionTransferableDelegations(
+	ctx context.Context,
+	from sdk.AccAddress,
+	to string,
+	delegations []stakingtypes.Delegation,
+	policy DelegationTransferPolicy,
+) (movable []delegationMovement, blocked []sdk.ValAddress, err error) {
+	for _, delegation := range delegations {
+		validatorAddress, validatorAddressErr := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
+		if validatorAddressErr != nil {
+			return nil, nil, types.NewAddressValidationError(delegation.ValidatorAddress, "invalid_format")
+		}
+
+		reason, checkErr := k.delegationTransferBlocker(ctx, from, validatorAddress)
+		if checkErr != nil {
+			return nil, nil, checkErr
+		}
+
+		if reason == "" {
+			movable = append(movable, delegationMovement{delegation: delegation, validator: validatorAddress})
+			continue
+		}
+
+		if policy == DelegationTransferStrict {
+			return nil, nil, types.NewDelegationTransferError(from.String(), to, reason).WithValidator(validatorAddress.String())
+		}
+
+		k.logger.Info("Delegation left behind by an address move",
+			"from", from.String(), "to", to, "validator", validatorAddress.String(), "reason", reason)
+		blocked = append(blocked, validatorAddress)
+	}
+
+	return movable, blocked, nil
+}
+
+// delegationTransferBlocker returns the reason a (from, validator) delegation
+// cannot be handed to another address, or "" when it can be.
+func (k Keeper) delegationTransferBlocker(ctx context.Context, from sdk.AccAddress, validatorAddress sdk.ValAddress) (string, error) {
+	receiving, receivingErr := k.stakingKeeper.HasReceivingRedelegation(ctx, from, validatorAddress)
+	if receivingErr != nil {
+		return "", receivingErr
+	}
+	if receiving {
+		return "redelegation_in_flight", nil
+	}
+
+	if _, unbondingErr := k.stakingKeeper.GetUnbondingDelegation(ctx, from, validatorAddress); unbondingErr == nil {
+		return "defusing_in_flight", nil
+	}
+
+	// Absent starting info means BeforeDelegationSharesModified below would
+	// fail on ErrEmptyDelegationDistInfo. Only rows written by the pre-v0.21.0
+	// rekey are in that state, and MigrateDelegationDistributionState repairs
+	// them, but a delegation that cannot be priced must not be moved.
+	hasStartingInfo, startingInfoErr := k.distributionKeeper.HasDelegatorStartingInfo(ctx, validatorAddress, from)
+	if startingInfoErr != nil {
+		return "", startingInfoErr
+	}
+	if !hasStartingInfo {
+		return "missing_distribution_state", nil
+	}
+
+	return "", nil
+}
+
+/* transferDelegation moves one delegation, settling both sides' rewards first
+ * and merging into whatever the destination already held.
+ *
+ * This is the sequence the SDK itself runs around a share change, applied to
+ * two delegators at once: settle what each is owed at its current share count,
+ * change the shares, then re-open the reward period against the new count.
+ * Withdrawing first is what stops the destination being retroactively paid for
+ * periods in which it did not hold the incoming shares.
+ */
+func (k Keeper) transferDelegation(ctx context.Context, movement delegationMovement, from sdk.AccAddress, toAcc sdk.AccAddress) error {
+	validatorAddress := movement.validator
+
+	if err := k.distributionHooks.BeforeDelegationSharesModified(ctx, from, validatorAddress); err != nil {
+		return err
+	}
+
+	shares := movement.delegation.Shares
+	destination, destinationErr := k.stakingKeeper.GetDelegation(ctx, toAcc, validatorAddress)
+	if destinationErr == nil {
+		if err := k.distributionHooks.BeforeDelegationSharesModified(ctx, toAcc, validatorAddress); err != nil {
+			return err
+		}
+		shares = shares.Add(destination.Shares)
+	} else {
+		// Increments the validator period, which initializeDelegation reads
+		// back as Period-1 once AfterDelegationModified runs below.
+		if err := k.distributionHooks.BeforeDelegationCreated(ctx, toAcc, validatorAddress); err != nil {
+			return err
+		}
+	}
+
+	if err := k.stakingKeeper.RemoveDelegation(ctx, movement.delegation); err != nil {
+		return err
+	}
+
+	merged := movement.delegation
+	merged.DelegatorAddress = toAcc.String()
+	merged.Shares = shares
+	if err := k.stakingKeeper.SetDelegation(ctx, merged); err != nil {
+		return err
+	}
+
+	return k.distributionHooks.AfterDelegationModified(ctx, toAcc, validatorAddress)
+}
+
+/* disownInfusion drops the game's representation of stake that stayed behind on
+ * an address the player no longer owns.
+ *
+ * The delegation itself is untouched and still bonded, so nothing is destroyed
+ * at the SDK layer and the key holder can still undelegate it directly. What
+ * goes is the capacity the player was being credited for stake they no longer
+ * control.
+ *
+ * The record left behind resolves itself: the next time staking touches that
+ * delegation, reconcileInfusionForDelegation runs UpsertPlayer against an
+ * address that no longer indexes to anyone, and the address becomes its own
+ * player holding its own infusion. A pending maturity-sweep row does the same.
+ */
+func (k Keeper) disownInfusion(ctx context.Context, cc *CurrentContext, from sdk.AccAddress, validatorAddress sdk.ValAddress) {
+	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
+	if !reactorBytesFound {
+		return
+	}
+	reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
+
+	infusion := cc.GetInfusion(reactor.Id, from.String())
+	if infusion.CheckInfusion() != nil {
+		return
+	}
+
+	infusion.Destroy()
 }
 
 /* ReactorGateEnergy zeroes the energy ratio on every infusion in a reactor.

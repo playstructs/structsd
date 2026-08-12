@@ -17,6 +17,7 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	porttypes "github.com/cosmos/ibc-go/v10/modules/core/05-port/types"
@@ -213,6 +214,7 @@ type ModuleInputs struct {
 	AccountKeeper authkeeper.AccountKeeper
 	BankKeeper    bankkeeper.Keeper
 	StakingKeeper *stakingkeeper.Keeper
+	DistrKeeper   distrkeeper.Keeper
 
 	IBCKeeperFn func() *ibckeeper.Keeper `optional:"true"`
 }
@@ -242,6 +244,8 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 		in.BankKeeper,
 		in.StakingKeeper,
 		in.AccountKeeper,
+		in.DistrKeeper,
+		in.DistrKeeper.Hooks(),
 	)
 	m := NewAppModule(
 		in.Cdc,

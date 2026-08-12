@@ -850,6 +850,77 @@ func (e *AddressValidationError) LogFields() []interface{} {
 func (e *AddressValidationError) Unwrap() error { return ErrAddressValidation }
 
 // =============================================================================
+// 16b. DelegationTransferError
+// =============================================================================
+
+// DelegationTransferError indicates that a delegation could not be moved from
+// one of a player's addresses to another.
+//
+// Cosmos has no operation for handing a delegation to a different account, so
+// the move is assembled by hand and there are states it cannot be assembled
+// through: an in-flight redelegation or unbonding delegation carries queue rows
+// that no public keeper API can rekey, and a delegation with no distribution
+// starting info cannot be re-initialized at its destination.
+type DelegationTransferError struct {
+	FromAddress string
+	ToAddress   string
+	Validator   string
+	Count       int    // For "too_many_delegations"
+	Reason      string // "redelegation_in_flight", "defusing_in_flight", "missing_distribution_state", "too_many_delegations"
+}
+
+func NewDelegationTransferError(from, to, reason string) *DelegationTransferError {
+	return &DelegationTransferError{
+		FromAddress: from,
+		ToAddress:   to,
+		Reason:      reason,
+	}
+}
+
+func (e *DelegationTransferError) WithValidator(validator string) *DelegationTransferError {
+	e.Validator = validator
+	return e
+}
+
+func (e *DelegationTransferError) WithCount(count int) *DelegationTransferError {
+	e.Count = count
+	return e
+}
+
+func (e *DelegationTransferError) Error() string {
+	switch e.Reason {
+	case "redelegation_in_flight":
+		return fmt.Sprintf("address (%s) has a redelegation in flight to validator %s; its stake cannot move until that completes",
+			e.FromAddress, e.Validator)
+	case "defusing_in_flight":
+		return fmt.Sprintf("address (%s) is defusing from validator %s; its stake cannot move until that completes",
+			e.FromAddress, e.Validator)
+	case "missing_distribution_state":
+		return fmt.Sprintf("address (%s) has a delegation to validator %s with no reward accounting behind it",
+			e.FromAddress, e.Validator)
+	case "too_many_delegations":
+		return fmt.Sprintf("address (%s) holds %d delegations, too many to move in one operation", e.FromAddress, e.Count)
+	default:
+		return fmt.Sprintf("could not move delegations from %s to %s: %s", e.FromAddress, e.ToAddress, e.Reason)
+	}
+}
+
+func (e *DelegationTransferError) Code() uint32 { return 1760 }
+
+func (e *DelegationTransferError) LogFields() []interface{} {
+	return []interface{}{
+		"error_type", "delegation_transfer",
+		"from_address", e.FromAddress,
+		"to_address", e.ToAddress,
+		"validator", e.Validator,
+		"count", e.Count,
+		"reason", e.Reason,
+	}
+}
+
+func (e *DelegationTransferError) Unwrap() error { return ErrDelegationTransfer }
+
+// =============================================================================
 // 17. GuildMembershipError
 // =============================================================================
 

@@ -271,6 +271,7 @@ var (
 	ErrAddressProofMismatch = sdkerrors.Register(ModuleName, 1754, "address proof mismatch")
 	ErrAddressSignatureInvalid = sdkerrors.Register(ModuleName, 1755, "address signature invalid")
 	ErrAddressAlreadyRegistered = sdkerrors.Register(ModuleName, 1756, "address already registered")
+	ErrDelegationTransfer   = sdkerrors.Register(ModuleName, 1760, "delegation transfer failed")
 )
 
 // -----------------------------------------------------------------------------

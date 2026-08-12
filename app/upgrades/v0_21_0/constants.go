@@ -121,6 +121,47 @@ package v0_21_0
 //     store write that fires nothing. Left to the hooks the move destroyed the
 //     player's capacity instead of relocating it.
 //
+//   - That same sweep is now a real delegation transfer rather than a rekey.
+//     Cosmos has no operation for handing a delegation to another account, and
+//     the old two-call form was not one: SetDelegation is keyed by
+//     (delegator, validator), so a player whose primary address already
+//     delegated to the same validator had that record replaced instead of
+//     merged, losing its shares while Validator.DelegatorShares went on
+//     counting them; and firing no hooks meant the destination pair never
+//     received the DelegatorStartingInfo that prices its rewards, so every
+//     later withdraw, undelegate and redelegate failed on
+//     ErrEmptyDelegationDistInfo, permanently. Shares now merge, and the
+//     transfer drives distribution's lifecycle by hand — settle the source,
+//     settle the destination or increment the validator period, write the
+//     merged delegation, then initialize the destination. x/distribution is
+//     wired into the structs keeper for that, as DistributionKeeper and
+//     DistributionHooks in expected_keepers.go.
+//
+//     Two states a delegation cannot be moved out of, both because the records
+//     involved cannot be rekeyed through any public keeper API: an in-flight
+//     redelegation (RedelegationQueue DVVTriplets and the redelegation record
+//     itself, which SlashRedelegation resolves the delegation to slash through,
+//     skipping silently when it finds nothing — so moving out from under one
+//     would make that stake unslashable) and an in-flight unbonding delegation
+//     (UBDQueue DVPairs and the unbonding-id index). A delegation with no
+//     starting info is the third, being unable to settle.
+//
+//     The two policies differ, and the difference is the security property.
+//     AddressRegister and PlayerUpdatePrimaryAddress refuse the message with
+//     the new DelegationTransferError (1760): both addresses still belong to
+//     the player either way, so a refusal costs nothing but a wait, and only
+//     the player can create the blocking condition. AddressRevoke never
+//     refuses. It is the response to a compromised key, and whoever holds that
+//     key could keep a redelegation in flight indefinitely, so a refusal there
+//     would let an attacker block their own eviction — while gaining the player
+//     nothing, since that key could always have undelegated the stake outright.
+//     A blocked delegation is instead left bonded exactly where it is and its
+//     infusion is destroyed, so the player stops being credited energy for
+//     stake on an address they no longer control. All three handlers now
+//     propagate the transfer's error, and all three perform the transfer before
+//     the coin sweep so that the staking rewards it settles are swept with
+//     everything else rather than stranded on the outgoing address.
+//
 //   - PlayerUpdatePrimaryAddress now requires the caller to hold PermAll. The
 //     handler grants PermAll to the incoming address and moves the player's
 //     balance and delegations with it, so a narrower PermAdmin gate was a
@@ -575,6 +616,45 @@ package v0_21_0
 //     nobody is logged at error and left alone: there is no player to re-home to
 //     and stripping the capacity would punish whoever still holds the stake.
 //     Idempotent, and a no-op on a chain where no address ever changed hands.
+//
+//   - MigrateDelegationDistributionState: repair the distribution state the
+//     pre-v0.21.0 rekey broke at both ends. Neither of its two staking calls
+//     maintained distribution — SetDelegation is a bare store write, and
+//     distribution's BeforeDelegationRemoved is a no-op, the withdrawal living
+//     on BeforeDelegationSharesModified, which a removal does not fire — so each
+//     move left a matched pair of broken rows: a destination delegation with no
+//     DelegatorStartingInfo, frozen ever since (every withdraw, undelegate and
+//     redelegate failing on ErrEmptyDelegationDistInfo, which also means its
+//     shares cannot have changed), and a source record abandoned unsettled,
+//     still holding its reference on that period's historical rewards.
+//
+//     Where a validator has exactly one of each — the shape a single address
+//     move leaves — the abandoned record is re-homed onto the stranded
+//     delegation. That is exact rather than approximate: the period it carries
+//     is the period that stake really was delegated at, so the rewards accrued
+//     across the move are paid to whoever holds the stake now, and no reference
+//     count changes, one record continuing to hold the one reference. Where the
+//     pairing is ambiguous, nothing on disk links the two rows, so the
+//     delegation is initialized fresh at the current period and the abandoned
+//     record is left in place. Both fallbacks are the conservative direction: a
+//     fresh period forfeits the span since the move, but inventing an earlier
+//     one would pay this delegator out of rewards belonging to everyone else
+//     delegating to that validator; and leaving the record beats deleting it,
+//     since decrementReferenceCount is not exported, so a delete would pin the
+//     same historical rewards forever and destroy the evidence needed to
+//     re-home it later. Idempotent.
+//
+//   - MigrateAuditDelegatorShares: report, and deliberately not repair, any
+//     validator whose DelegatorShares disagrees with the delegations behind it.
+//     The old rekey orphaned shares whenever the destination address already
+//     delegated to the same validator: the write replaced that record instead of
+//     merging, while Validator.DelegatorShares went on counting both. The
+//     discrepancy is known per validator but not per delegator: nothing on disk
+//     says which address lost or gained. Adjusting DelegatorShares would
+//     silently reprice every other delegation to that validator, and adjusting a
+//     delegation would mint or burn one player's stake on a guess, so this logs
+//     the exact numbers at error level and leaves state for a human to settle.
+//     Read-only, and silent on a chain where no address ever swept a delegation.
 //
 //   - MigrateReconcileReactorInfusions: rebuild every reactor infusion from live
 //     staking state, clearing the phantom fuel that full redelegations left at

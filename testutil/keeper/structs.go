@@ -21,6 +21,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 	"github.com/stretchr/testify/require"
@@ -267,6 +268,7 @@ type MockStakingKeeper struct {
 	validators   map[string]stakingtypes.Validator
 	delegations  map[delegationKey]stakingtypes.Delegation
 	unbondings   map[delegationKey]stakingtypes.UnbondingDelegation
+	receiving    map[delegationKey]bool
 	nextUnbondID uint64
 }
 
@@ -275,8 +277,20 @@ func NewMockStakingKeeper() *MockStakingKeeper {
 		validators:   make(map[string]stakingtypes.Validator),
 		delegations:  make(map[delegationKey]stakingtypes.Delegation),
 		unbondings:   make(map[delegationKey]stakingtypes.UnbondingDelegation),
+		receiving:    make(map[delegationKey]bool),
 		nextUnbondID: 1,
 	}
+}
+
+// AddReceivingRedelegation marks (delegator, validator) as the destination of
+// an in-flight redelegation. The mock keeps no redelegation records of its own;
+// this is only the flag the delegation transfer pre-flight reads.
+func (m *MockStakingKeeper) AddReceivingRedelegation(delAddr sdk.AccAddress, valDstAddr sdk.ValAddress) {
+	m.receiving[delegationKey{Delegator: delAddr.String(), Validator: valDstAddr.String()}] = true
+}
+
+func (m *MockStakingKeeper) HasReceivingRedelegation(ctx context.Context, delAddr sdk.AccAddress, valDstAddr sdk.ValAddress) (bool, error) {
+	return m.receiving[delegationKey{Delegator: delAddr.String(), Validator: valDstAddr.String()}], nil
 }
 
 // AddValidator registers a bonded validator with 1:1 token-to-share ratio.
@@ -572,6 +586,71 @@ func (m *MockStakingKeeper) SetUnbondingDelegation(ctx context.Context, ubd stak
 	return nil
 }
 
+// MockDistributionKeeper stands in for both x/distribution's Keeper and its
+// staking Hooks, which is all the delegation transfer touches.
+//
+// It models the one piece of distribution state that a transfer has to keep
+// straight -- the per-(validator, delegator) starting info -- and mirrors the
+// real lifecycle: BeforeDelegationSharesModified withdraws and so deletes the
+// record, AfterDelegationModified re-initializes it. It reads the staking mock
+// for the same reason initializeDelegation reads staking, so a test that calls
+// AfterDelegationModified before writing the delegation fails here rather than
+// passing on a technicality.
+type MockDistributionKeeper struct {
+	staking      *MockStakingKeeper
+	startingInfo map[delegationKey]bool
+	Calls        []string
+}
+
+func NewMockDistributionKeeper(staking *MockStakingKeeper) *MockDistributionKeeper {
+	return &MockDistributionKeeper{
+		staking:      staking,
+		startingInfo: make(map[delegationKey]bool),
+	}
+}
+
+func distributionKey(val sdk.ValAddress, del sdk.AccAddress) delegationKey {
+	return delegationKey{Delegator: del.String(), Validator: val.String()}
+}
+
+// SeedStartingInfo gives a pair the starting info that a real Delegate would
+// have created, so a test can start from a healthy delegation.
+func (m *MockDistributionKeeper) SeedStartingInfo(val sdk.ValAddress, del sdk.AccAddress) {
+	m.startingInfo[distributionKey(val, del)] = true
+}
+
+func (m *MockDistributionKeeper) ClearStartingInfo(val sdk.ValAddress, del sdk.AccAddress) {
+	delete(m.startingInfo, distributionKey(val, del))
+}
+
+func (m *MockDistributionKeeper) HasDelegatorStartingInfo(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress) (bool, error) {
+	return m.startingInfo[distributionKey(val, del)], nil
+}
+
+func (m *MockDistributionKeeper) BeforeDelegationCreated(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	m.Calls = append(m.Calls, "BeforeDelegationCreated:"+delAddr.String()+":"+valAddr.String())
+	return nil
+}
+
+func (m *MockDistributionKeeper) BeforeDelegationSharesModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	m.Calls = append(m.Calls, "BeforeDelegationSharesModified:"+delAddr.String()+":"+valAddr.String())
+	key := distributionKey(valAddr, delAddr)
+	if !m.startingInfo[key] {
+		return distrtypes.ErrEmptyDelegationDistInfo
+	}
+	delete(m.startingInfo, key)
+	return nil
+}
+
+func (m *MockDistributionKeeper) AfterDelegationModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	m.Calls = append(m.Calls, "AfterDelegationModified:"+delAddr.String()+":"+valAddr.String())
+	if _, err := m.staking.GetDelegation(ctx, delAddr, valAddr); err != nil {
+		return err
+	}
+	m.startingInfo[distributionKey(valAddr, delAddr)] = true
+	return nil
+}
+
 func StructsKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
@@ -592,6 +671,7 @@ func StructsKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 	mockAccountKeeper := NewMockAccountKeeper()
 	mockBankKeeper := NewMockBankKeeper()
 	mockStakingKeeper := NewMockStakingKeeper()
+	mockDistributionKeeper := NewMockDistributionKeeper(mockStakingKeeper)
 
 	// IBC v10 - no capability keeper needed
 	k := keeper.NewKeeper(
@@ -606,6 +686,8 @@ func StructsKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 		mockBankKeeper,
 		mockStakingKeeper,
 		mockAccountKeeper,
+		mockDistributionKeeper,
+		mockDistributionKeeper,
 	)
 
 	ctx := sdk.NewContext(stateStore, cmtproto.Header{}, false, log.NewNopLogger())

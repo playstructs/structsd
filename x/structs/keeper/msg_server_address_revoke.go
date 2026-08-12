@@ -41,6 +41,22 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
     primaryAcc, _   := sdk.AccAddressFromBech32(player.GetPrimaryAddress())
     oldAcc, _       := sdk.AccAddressFromBech32(msg.Address)
 
+    // Move Reactor Infusions over.
+    //
+    // Ahead of the index revocation below, so the source address still resolves
+    // to this player while its infusion is being wound down. Ahead of the coin
+    // sweep too: the transfer settles the source's staking rewards, which land
+    // in the source's own account, and revoking is the one path where anything
+    // left there is gone for good.
+    //
+    // Disown rather than refuse. Revoking is what a player does about a key
+    // they no longer trust, and a refusal is a state whoever holds that key
+    // could sustain indefinitely.
+    err = k.MoveDelegationsToAddress(ctx, cc, oldAcc, player.GetPrimaryAddress(), DelegationTransferDisown)
+    if err != nil {
+        return emptyResponse, err
+    }
+
     // Get Balance
     balances := k.bankKeeper.SpendableCoins(ctx, oldAcc)
 
@@ -49,11 +65,6 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
     if err != nil {
         return emptyResponse, err
     }
-
-    // Move Reactor Infusions over.
-    // Ahead of the index revocation below, so the source address still resolves
-    // to this player while its infusion is being wound down.
-    k.MoveDelegationsToAddress(ctx, cc, oldAcc, player.GetPrimaryAddress())
 
     // Clear Permissions
     addressClearPermissionId := GetAddressPermissionIDBytes(msg.Address)
