@@ -124,12 +124,12 @@ func (k Keeper) ThrottleTargetAuthorized(ctx context.Context, creator string, ki
 
 	switch kind {
 	case types.ObjectType_player:
-		// Never errors, and a PlayerCache is its own owner, so a self-targeted
-		// explore takes the owner shortcut inside PermissionCheck.
-		owner, err = cc.GetPlayer(targetId)
-		if err != nil {
-			return false
-		}
+		// A PlayerCache is its own owner, so a self-targeted explore takes the
+		// owner shortcut inside PermissionCheck. A target that does not exist
+		// needs no existence check of its own: it owns nothing and holds no
+		// permission row, so the check below refuses it, which declines the
+		// reservation without rejecting the transaction.
+		owner = cc.GetPlayer(targetId)
 
 	case types.ObjectType_struct:
 		structure := cc.GetStruct(targetId)

@@ -183,11 +183,7 @@ func (cc *CurrentContext) GetPermissionedObject(objectId string) PermissionedObj
 	case types.ObjectType_guild:
 		return cc.GetGuild(objectId)
 	case types.ObjectType_player:
-		player, err := cc.GetPlayer(objectId)
-		if err != nil {
-			return nil
-		}
-		return player
+		return cc.GetPlayer(objectId)
 	case types.ObjectType_planet:
 		return cc.GetPlanet(objectId)
 	case types.ObjectType_reactor:

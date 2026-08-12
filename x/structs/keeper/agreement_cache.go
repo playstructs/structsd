@@ -194,8 +194,7 @@ func (cache *AgreementCache) GetOwnerId() string {
 	return cache.Agreement.Owner
 }
 func (cache *AgreementCache) GetOwner() *PlayerCache {
-    owner, _ := cache.CC.GetPlayer(cache.GetOwnerId())
-    return owner
+    return cache.CC.GetPlayer(cache.GetOwnerId())
 }
 
 // Get the Provider data

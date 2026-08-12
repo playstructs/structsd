@@ -354,16 +354,14 @@ func TestGatedPlayerComputesOfflineWithStructsStillFlaggedOnline(t *testing.T) {
 	f.k.SetGridAttribute(f.ctx, structsLoadId, uint64(400))
 
 	cc := f.k.NewCurrentContext(f.ctx)
-	player, err := cc.GetPlayer(f.player.Id)
-	require.NoError(t, err)
+	player := cc.GetPlayer(f.player.Id)
 	require.True(t, player.IsOnline(), "1000 capacity covers 400 of draw")
 
 	f.mock.JailValidator(f.valAddr)
 	f.k.ReactorGateEnergy(f.ctx, f.valAddr)
 
 	cc2 := f.k.NewCurrentContext(f.ctx)
-	gatedPlayer, err := cc2.GetPlayer(f.player.Id)
-	require.NoError(t, err)
+	gatedPlayer := cc2.GetPlayer(f.player.Id)
 	require.True(t, gatedPlayer.IsOffline(), "capacity no longer covers the struct draw")
 	require.Equal(t, uint64(400), f.k.GetGridAttribute(f.ctx, structsLoadId), "struct draw is left in place")
 }

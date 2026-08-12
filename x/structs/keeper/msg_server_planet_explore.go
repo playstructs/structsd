@@ -22,7 +22,7 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
 	}
 
 	// Load the Player record
-	player, playerLookupErr := cc.GetPlayer(msg.PlayerId)
+	player, playerLookupErr := cc.GetExistingPlayer(msg.PlayerId)
 	if playerLookupErr != nil {
 		return emptyResponse, playerLookupErr
 	}

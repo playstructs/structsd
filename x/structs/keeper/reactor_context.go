@@ -58,10 +58,7 @@ func (cc *CurrentContext) GenesisImportReactorInfusions(reactor types.Reactor) {
 			continue
 		}
 
-		player, err := cc.GetPlayerByIndex(playerIndex)
-		if err != nil {
-			continue
-		}
+		player := cc.GetPlayerByIndex(playerIndex)
 
 		infusion := cc.UpsertInfusion(
 			types.ObjectType_reactor, reactor.Id,

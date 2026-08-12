@@ -106,8 +106,7 @@ func (cache *GuildMembershipApplicationCache) GetPlayerId() string {
 }
 
 func (cache *GuildMembershipApplicationCache) GetPlayer() (player *PlayerCache) {
-    player, _ = cache.CC.GetPlayer(cache.GetPlayerId())
-    return
+    return cache.CC.GetPlayer(cache.GetPlayerId())
 }
 
 // Get the Proposer data
@@ -115,8 +114,7 @@ func (cache *GuildMembershipApplicationCache) GetProposerId() string {
 	return cache.GetGuildMembershipApplication().Proposer
 }
 func (cache *GuildMembershipApplicationCache) GetProposer() (player *PlayerCache) {
-    player, _ = cache.CC.GetPlayer(cache.GetProposerId())
-	return
+	return cache.CC.GetPlayer(cache.GetProposerId())
 }
 
 func (cache *GuildMembershipApplicationCache) GetSubstationId() (substationId string) {

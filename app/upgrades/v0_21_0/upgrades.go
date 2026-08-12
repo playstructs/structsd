@@ -92,6 +92,12 @@ func CreateUpgradeHandler(
 			return newVM, err
 		}
 
+		// After everything that can destroy an allocation, so this does not hand a
+		// new controller an allocation that is about to be torn down anyway.
+		if err := MigrateOrphanedAllocationControllers(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
 		// Last, so that the rebuilt index reflects the allocations that actually
 		// survive this upgrade. Anything above that settles an agreement or sheds
 		// load can destroy allocations, and the rebuild has to have the final say.
@@ -1191,6 +1197,96 @@ func MigrateAutoResizeAllocationIndex(ctx context.Context, keepers *upgrades.Kee
 		"rowsBefore", cleared, "rowsAfter", indexed,
 		"staleHooksDropped", dropped, "hooksAdded", added,
 		"hooksRekeyed", rekeyed, "sourceCollisions", collided)
+	return nil
+}
+
+// MigrateOrphanedAllocationControllers re-homes allocations whose controller is
+// not a player.
+//
+// AllocationTransfer validated msg.Controller with a guard on
+// CurrentContext.GetPlayer, which never returns an error, so the branch could not
+// run. Nothing else checked: CanBeTransferBy asks only whether the caller may
+// transfer. A transfer to any string therefore committed, because the write is
+// keyed by allocation id rather than player id, leaving an allocation controlled
+// by somebody who can never sign for it and a permission row keyed to them.
+//
+// The allocation is not stranded — the source owner keeps PermSourceAllocation on
+// the source, which is what AllocationUpdate and AllocationDelete check, and the
+// creator keeps the PermAdmin needed to transfer it back — but nobody can connect
+// it while it points at a phantom. This hands it to the source owner and clears
+// the dead row.
+//
+// It grants only PermAllocationConnection, so the result is exactly what a
+// legitimate transfer to that owner would have produced. It deliberately does not
+// mint PermAdmin, and it touches no row but the phantom's: the creator's row on
+// the same allocation carries the PermDelete that AllocationDelete falls back to.
+//
+// Idempotent, and expected to be a no-op: after the handler fix a controller can
+// only be a real player, so a re-run finds nothing.
+func MigrateOrphanedAllocationControllers(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateOrphanedAllocationControllers")
+
+	k := keepers.StructsKeeper
+	cc := k.NewCurrentContext(ctx)
+
+	var (
+		rehomed       int
+		unrecoverable int
+	)
+
+	// GetAllAllocation walks the allocation prefix in key order, so every node
+	// repairs the same allocations in the same sequence.
+	for _, allocation := range k.GetAllAllocation(ctx) {
+		if _, found := k.GetPlayer(ctx, allocation.Controller); found {
+			continue
+		}
+
+		// GetPermissionedObject returns a cache for any well-formed id, so the
+		// owner id it reports has to be confirmed against state in turn.
+		var newController string
+		if source := cc.GetPermissionedObject(allocation.SourceObjectId); source != nil {
+			if candidate := source.GetOwnerId(); candidate != "" {
+				if _, found := k.GetPlayer(ctx, candidate); found {
+					newController = candidate
+				}
+			}
+		}
+
+		if newController == "" {
+			// Leave it rather than guess. The source owner can still update or
+			// delete it through PermSourceAllocation on the source.
+			logger.Error("allocation controller is not a player and its source has no usable owner; leaving it alone",
+				"allocationId", allocation.Id, "controller", allocation.Controller,
+				"sourceObjectId", allocation.SourceObjectId)
+			unrecoverable++
+			continue
+		}
+
+		oldController := allocation.Controller
+		k.PermissionClearAll(ctx, structskeeper.GetObjectPermissionIDBytes(allocation.Id, oldController))
+
+		newControllerPermissionId := structskeeper.GetObjectPermissionIDBytes(allocation.Id, newController)
+		k.SetPermissionsByBytes(ctx, newControllerPermissionId,
+			k.GetPermissionsByBytes(ctx, newControllerPermissionId)|structstypes.PermAllocationConnection)
+
+		allocation.Controller = newController
+		if _, err := k.SetAllocationOnly(ctx, allocation); err != nil {
+			return fmt.Errorf("re-homing allocation %s from %s to %s: %w", allocation.Id, oldController, newController, err)
+		}
+
+		logger.Error("allocation was controlled by a player that does not exist; re-homed to its source owner",
+			"allocationId", allocation.Id, "previousController", oldController, "newController", newController)
+		rehomed++
+	}
+
+	if rehomed > 0 || unrecoverable > 0 {
+		logger.Error("v0.21.0 orphaned allocation controller repair found damage",
+			"rehomed", rehomed, "leftAlone", unrecoverable)
+	}
+
+	logger.Info("v0.21.0 orphaned allocation controller repair complete",
+		"rehomed", rehomed, "leftAlone", unrecoverable)
 	return nil
 }
 

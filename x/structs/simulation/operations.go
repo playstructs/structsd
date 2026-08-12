@@ -43,10 +43,7 @@ func SimulateMsgStructBuildInitiate(
 		}
 
 		// Ensure player has explored a planet (which creates the fleet) before building structs
-		playerCache, err := cc.GetPlayer(player.Id)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildInitiate{}), "failed to get player cache"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.Id)
 
 		// If player doesn't have a planet, they need to explore one first (which creates the fleet)
 		if !playerCache.HasPlanet() {
@@ -84,7 +81,7 @@ func SimulateMsgStructBuildInitiate(
 
 		// Execute the message using the message server
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err = msgServer.StructBuildInitiate(sdk.WrapSDKContext(ctx), msg)
+		_, err := msgServer.StructBuildInitiate(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -580,10 +577,7 @@ func SimulateMsgPlayerSend(
 
 		// Get or create player for the sender
 		player := cc.UpsertPlayer(simAccount.Address.String())
-		playerCache, err := cc.GetPlayer(player.GetPlayerId())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerSend{}), "failed to get player cache"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.GetPlayerId())
 
 		// Check if sender has assets permission
 		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
@@ -652,10 +646,7 @@ func SimulateMsgGuildMembershipRequest(
 
 		// Get or create player
 		player := cc.UpsertPlayer(simAccount.Address.String())
-		playerCache, err := cc.GetPlayer(player.GetPlayerId())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequest{}), "failed to get player cache"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.GetPlayerId())
 
 		// Get guilds, excluding the player's current guild (same-guild request would fail)
 		allGuilds := k.GetAllGuild(ctx)
@@ -680,7 +671,7 @@ func SimulateMsgGuildMembershipRequest(
 
 		// Execute the message using the message server
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err = msgServer.GuildMembershipRequest(sdk.WrapSDKContext(ctx), msg)
+		_, err := msgServer.GuildMembershipRequest(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -707,10 +698,7 @@ func SimulateMsgGuildMembershipJoin(
 
 		// Get or create player
 		player := cc.UpsertPlayer(simAccount.Address.String())
-		playerCache, err := cc.GetPlayer(player.GetPlayerId())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipJoin{}), "failed to get player cache"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.GetPlayerId())
 
 		// Get guilds, excluding the player's current guild (same-guild join would fail)
 		allGuilds := k.GetAllGuild(ctx)
@@ -735,7 +723,7 @@ func SimulateMsgGuildMembershipJoin(
 
 		// Execute the message using the message server
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err = msgServer.GuildMembershipJoin(sdk.WrapSDKContext(ctx), msg)
+		_, err := msgServer.GuildMembershipJoin(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -797,10 +785,7 @@ func SimulateMsgReactorInfuse(
 
 		// Get or create player
 		player := cc.UpsertPlayer(simAccount.Address.String())
-		playerCache, err := cc.GetPlayer(player.GetPlayerId())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorInfuse{}), "failed to get player cache"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.GetPlayerId())
 
 		// Check if player is in a guild
 		if playerCache.GetGuildId() == "" {
@@ -888,10 +873,7 @@ func SimulateCommandShipBuildInitiate(
 
 		// Get or create player
 		player := cc.UpsertPlayer(simAccount.Address.String())
-		playerCache, err := cc.GetPlayer(player.GetPlayerId())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildInitiate{}), "failed to get player cache"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.GetPlayerId())
 
 		// Ensure player has explored a planet
 		if !playerCache.HasPlanet() {
@@ -932,7 +914,7 @@ func SimulateCommandShipBuildInitiate(
 
 		// Execute the message using the message server
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err = msgServer.StructBuildInitiate(sdk.WrapSDKContext(ctx), msg)
+		_, err := msgServer.StructBuildInitiate(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -1844,10 +1826,7 @@ func SimulateMsgFleetMove(
 		}
 
 		player := cc.UpsertPlayer(simAccount.Address.String())
-		playerCache, err := cc.GetPlayer(player.GetPlayerId())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgFleetMove{}), "player not found"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.GetPlayerId())
 
 		if !playerCache.HasPlanet() {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgFleetMove{}), "player has no planet"), nil, nil
@@ -1874,7 +1853,7 @@ func SimulateMsgFleetMove(
 		}
 
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err = msgServer.FleetMove(sdk.WrapSDKContext(ctx), msg)
+		_, err := msgServer.FleetMove(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -3028,10 +3007,7 @@ func SimulateMsgPlanetRaidComplete(
 		}
 
 		player := cc.UpsertPlayer(simAccount.Address.String())
-		playerCache, err := cc.GetPlayer(player.GetPlayerId())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlanetRaidComplete{}), "player not found"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.GetPlayerId())
 
 		if !playerCache.HasPlanet() {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlanetRaidComplete{}), "player has no planet"), nil, nil
@@ -3054,7 +3030,7 @@ func SimulateMsgPlanetRaidComplete(
 		}
 
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err = msgServer.PlanetRaidComplete(sdk.WrapSDKContext(ctx), msg)
+		_, err := msgServer.PlanetRaidComplete(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}

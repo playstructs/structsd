@@ -19,9 +19,9 @@ func (k msgServer) PlayerUpdateName(goCtx context.Context, msg *types.MsgPlayerU
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "player_update_name")
 	}
 
-	player, err := cc.GetPlayer(msg.PlayerId)
+	player, err := cc.GetExistingPlayer(msg.PlayerId)
 	if err != nil {
-		return emptyResponse, types.NewObjectNotFoundError("player", msg.PlayerId)
+		return emptyResponse, err
 	}
 
 	permissionErr := player.CanUpdateUGCBy(activePlayer)

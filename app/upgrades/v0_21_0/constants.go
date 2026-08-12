@@ -400,6 +400,25 @@ package v0_21_0
 //     now runs on both branches, so amending an invite needs the same authority
 //     as sending one.
 //
+//     Two residuals are accepted rather than fixed, recorded here so they are not
+//     re-reported as the bypass above. First, that authority is equal to the
+//     authority to create and not stricter, so at bypass level member — where
+//     every member may invite — every member may also retarget a colleague's
+//     pending invite. A guild wanting fewer amenders sets
+//     JoinInfusionMinimumBypassByInvite to permissioned, which demands
+//     PermGuildMembership on the guild object;
+//     TestGuildMembershipInviteAmendmentFollowsInviteAuthority pins both halves.
+//     Second, an invitee cannot bind their approval to the destination they were
+//     shown, so an authorized amender can still change it under someone about to
+//     accept. MsgGuildMembershipInviteApprove already carries a substationId, but
+//     it is a setter routed through SetSubstationIdOverride and gated by
+//     CanManageConnectionsBy, so naming the guild's own entry substation needs
+//     connection rights there that a prospective member will not hold. Closing it
+//     needs a separate read-only expectation field, which is a proto change and
+//     the full ante-map walk. Bounded meanwhile by GetSubstationId falling back to
+//     the guild's entry substation whenever the stored field is empty, so the
+//     default path is always the guild's own.
+//
 //     GenesisState.Validate additionally rejects an undeclared guildJoinType or
 //     registrationStatus on a stored application, genesis being the one path that
 //     assigns the record without passing a setter. Both are authorization input:
@@ -418,6 +437,41 @@ package v0_21_0
 //     longer add a player by approving on their behalf. Every route into a guild
 //     now needs the joining player to transact — request then approve, invite
 //     then accept, or direct join.
+//
+//   - A player id supplied by a message must now name a player that exists.
+//     CurrentContext.GetPlayer is a cache allocator, like every other context
+//     getter: it never reads the store. It nevertheless returned an error, always
+//     nil, and twenty-eight callers guarded on it — guards that read exactly like
+//     existence checks and were dead code the compiler could prove unreachable.
+//     The error return is gone, which turned every one of those guards into a
+//     compile error, and the ids a transaction chooses now go through the new
+//     GetExistingPlayer, which loads and returns ErrObjectNotFound (1050).
+//
+//     MsgAllocationTransfer is where that was live. Its guard on msg.Controller
+//     was the only check, CanBeTransferBy asking only whether the caller may
+//     transfer, so a transfer to any string committed — the allocation write is
+//     keyed by allocation id, so unlike the guild paths there was no empty-key
+//     panic to abort it. The result is an allocation controlled by somebody who can
+//     never sign for it and a permission row keyed to them: unconnectable, though
+//     not stranded, since the source owner keeps PermSourceAllocation on the source
+//     and the creator keeps the PermAdmin to transfer it back.
+//
+//     The other repointed handlers were already safe by accident and change only
+//     which error they return, from a permission failure or a not-a-member
+//     complaint to ErrObjectNotFound: AddressRegister, GuildUpdateOwnerId,
+//     PlanetExplore, PlayerUpdateName / Pfp / PfpCrAttributes / GuildRank,
+//     StructBuildInitiate, SubstationPlayerConnect / Disconnect / Migrate, and the
+//     guild membership loaders — where the refusal now precedes the write that
+//     previously panicked on the empty key and failed the transaction. Two ids the
+//     ante and permission resolver read are deliberately not checked: neither
+//     mutates, and a phantom owns nothing and holds no permission row, so the
+//     permission check that follows refuses it anyway. In the ante that declines a
+//     throttle reservation rather than rejecting the transaction, which is the
+//     required behaviour there.
+//
+//     Guarded by TestArch_HandlersResolveMessagePlayerIdsThroughGetExistingPlayer,
+//     which reads the handler sources and follows a message field through a local
+//     variable, since a loop over a repeated field is one.
 //
 // State migrations:
 //
@@ -510,4 +564,16 @@ package v0_21_0
 //     has it, the first in store key order wins so every node agrees. Runs last,
 //     because anything above it that settles an agreement or sheds load can
 //     destroy allocations and the rebuild has to have the final say. Idempotent.
+//
+//   - MigrateOrphanedAllocationControllers: re-home any allocation whose controller
+//     is not a player to the owner of its source object, granting that owner
+//     PermAllocationConnection and clearing the phantom's permission row. That is
+//     exactly what a legitimate transfer to them would have produced: it does not
+//     mint PermAdmin, and it touches no other row, the creator's row on the same
+//     allocation carrying the PermDelete that AllocationDelete falls back to. An
+//     allocation whose source has no owner in state is logged and left alone rather
+//     than guessed at — the source owner can still reach it through
+//     PermSourceAllocation on the source. Runs after everything that can destroy an
+//     allocation, so it does not hand over one about to be torn down. Idempotent,
+//     and a no-op on a chain where no transfer ever named a nonexistent player.
 const UpgradeName = "v0.21.0"

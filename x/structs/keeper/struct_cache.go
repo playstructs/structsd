@@ -124,8 +124,7 @@ func (cache *StructCache) GetTypeId() uint64 {
 }
 
 func (cache *StructCache) GetOwner() *PlayerCache {
-	player, _ := cache.CC.GetPlayer(cache.GetOwnerId())
-	return player
+	return cache.CC.GetPlayer(cache.GetOwnerId())
 }
 
 func (cache *StructCache) GetOwnerId() string {

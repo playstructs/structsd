@@ -50,8 +50,7 @@ func (cache *FleetCache) LoadFleet() (found bool) {
         fleet.Id = cache.FleetId
         fleet.Owner = cache.PlayerId
 
-        player, _ := cache.CC.GetPlayer(cache.PlayerId)
-        player.SetFleetId(cache.FleetId)
+        cache.CC.GetPlayer(cache.PlayerId).SetFleetId(cache.FleetId)
 
         cache.Fleet = fleet
         cache.Changed = true
@@ -83,8 +82,7 @@ func (cache *FleetCache) GetLocationListForward()   (string)        { return cac
 func (cache *FleetCache) GetLocationListBackward()  (string)        { return cache.GetFleet().LocationListBackward }
 
 func (cache *FleetCache) GetOwner()  (*PlayerCache)  {
-    player, _ := cache.CC.GetPlayer( cache.PlayerId )
-    return player
+    return cache.CC.GetPlayer( cache.PlayerId )
 }
 
 func (cache *FleetCache) GetCommandStruct() (*StructCache)  {

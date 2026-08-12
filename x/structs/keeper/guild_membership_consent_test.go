@@ -30,6 +30,33 @@ func testRegisterGuildlessPlayer(k keeperlib.Keeper, ctx context.Context, seed s
 	})
 }
 
+// testGuildMemberWithSubstation registers an ordinary member of gs's guild who
+// owns a substation of their own. The substation is what SetSubstationIdOverride
+// needs to accept them as a destination, since it checks rights there and not on
+// the guild; the membership is what CanInviteMembers checks at bypass level
+// member. Deliberately given no permission on the guild object, so bypass level
+// permissioned refuses them.
+func testGuildMemberWithSubstation(k keeperlib.Keeper, ctx context.Context, gs testGuildSetup, seed string) (types.Player, types.Substation) {
+	acc := sdk.AccAddress(seed)
+	member := testAppendPlayer(k, ctx, types.Player{
+		Creator:        acc.String(),
+		PrimaryAddress: acc.String(),
+		GuildId:        gs.Guild.Id,
+		GuildRank:      5,
+	})
+
+	alloc, _ := testAppendAllocation(k, ctx, types.Allocation{
+		SourceObjectId: member.Id,
+		Controller:     member.Id,
+		Type:           types.AllocationType_static,
+	}, 100)
+
+	substation, _, _ := testAppendSubstation(k, ctx, alloc, member)
+	testPermissionAdd(k, ctx, keeperlib.GetObjectPermissionIDBytes(substation.Id, member.Id), types.PermAll)
+
+	return member, substation
+}
+
 func TestGuildMembershipForceJoinIsRefused(t *testing.T) {
 	// The headline exploit. The guild owner has every guild-side permission
 	// there is and the guild is recruiting, so VerifyRequestAsGuild passes; the
@@ -87,6 +114,65 @@ func TestGuildMembershipForceJoinDoesNotEvictFromExistingGuild(t *testing.T) {
 	after, _ := k.GetPlayer(ctx, victim.Id)
 	require.Equal(t, home.Guild.Id, after.GuildId)
 	require.Equal(t, uint64(4), after.GuildRank)
+}
+
+// TestGuildMembershipRefusesPlayerIdsThatNameNobody covers the id that is not a
+// victim at all, which the loader used to accept as readily as a real one.
+//
+// resolveGuildMembershipApplication guarded its lookup on CurrentContext.GetPlayer,
+// which never returns an error, so the check was dead and a phantom id read as a
+// guildless player: GetGuildId on a cache that failed to load returns "", which is
+// not the guild, so the already-a-member check waved it through as well. What
+// followed was a write against a zero-valued player, and since PlayerCache.Commit
+// keys the write by Player.Id rather than by the id asked for, the store was handed
+// an empty key and panicked — a recovered panic and a failed transaction rather
+// than the corruption first reported, but only by luck of where the write landed.
+//
+// The refusal now happens up front, on both the loader that opens an application
+// and the kick loader.
+func TestGuildMembershipRefusesPlayerIdsThatNameNobody(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	wctx := sdk.UnwrapSDKContext(ctx)
+	gs := testCreateGuild(k, ctx)
+
+	phantom := "1-999"
+	_, found := k.GetPlayer(ctx, phantom)
+	require.False(t, found, "the fixture depends on this id naming nobody")
+
+	t.Run("invite", func(t *testing.T) {
+		_, err := ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:  gs.GuildOwner.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: phantom,
+		})
+		require.Error(t, err)
+		require.ErrorIs(t, err, types.ErrObjectNotFound)
+		require.Contains(t, err.Error(), phantom)
+	})
+
+	t.Run("request approve", func(t *testing.T) {
+		_, err := ms.GuildMembershipRequestApprove(wctx, &types.MsgGuildMembershipRequestApprove{
+			Creator:  gs.GuildOwner.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: phantom,
+		})
+		require.Error(t, err)
+		require.ErrorIs(t, err, types.ErrObjectNotFound)
+	})
+
+	t.Run("kick", func(t *testing.T) {
+		_, err := ms.GuildMembershipKick(wctx, &types.MsgGuildMembershipKick{
+			Creator:  gs.GuildOwner.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: phantom,
+		})
+		require.Error(t, err)
+		require.ErrorIs(t, err, types.ErrObjectNotFound)
+	})
+
+	// Nothing was filed under the phantom id on the way to any of those refusals.
+	_, found = k.GetGuildMembershipApplication(ctx, gs.Guild.Id, phantom)
+	require.False(t, found, "a refused membership path must not leave an application behind")
 }
 
 func TestGuildMembershipTerminalTransitionsRequireAnApplication(t *testing.T) {
@@ -245,18 +331,124 @@ func TestGuildMembershipInviteCannotBeRetargetedByOutsider(t *testing.T) {
 
 	// The attacker owns their own guild, so CanManageConnectionsBy passes on the
 	// substation they are redirecting to. Only the guild-side check stops them.
+	// testCreateGuild leaves byInvite at member, so CanInviteMembers refuses with
+	// not_member rather than ErrPermission — pin that so a regression that
+	// fails later (in SetSubstationIdOverride) cannot still pass this test.
 	_, err = ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
 		Creator:      attacker.GuildOwner.Creator,
 		GuildId:      gs.Guild.Id,
 		PlayerId:     invitee.Id,
 		SubstationId: attacker.Substation.Id,
 	})
-	require.Error(t, err)
+	require.ErrorIs(t, err, types.ErrGuildMembership)
+	require.Contains(t, err.Error(), "not a member")
+	require.Contains(t, err.Error(), gs.Guild.Id)
 
 	current, found := k.GetGuildMembershipApplication(ctx, gs.Guild.Id, invitee.Id)
 	require.True(t, found)
 	require.Equal(t, original.SubstationId, current.SubstationId, "outsider redirected another guild's invite")
 	require.NotEqual(t, attacker.Substation.Id, current.SubstationId)
+}
+
+func TestGuildMembershipInviteAmendmentFollowsInviteAuthority(t *testing.T) {
+	// Amending an invite takes the same authority as issuing one, deliberately.
+	// CanInviteMembers is the entire boundary and there is no separate, stricter
+	// gate for changing a record somebody else wrote, so at bypass level member —
+	// where every member may invite — every member may also retarget a
+	// colleague's invite. That is accepted policy rather than the bug next door:
+	// TestGuildMembershipInviteCannotBeRetargetedByOutsider covers the case that
+	// was a vulnerability, somebody with no invite authority over the guild at all.
+	//
+	// A guild that wants a narrower set of amenders has a lever, and the second
+	// case is it. Under permissioned, CanInviteMembers demands
+	// PermGuildMembership on the guild object, which an ordinary member does not
+	// hold: PermissionCheck short-circuits for the owner and otherwise requires an
+	// explicit object permission.
+
+	t.Run("a fellow member may amend at bypass level member", func(t *testing.T) {
+		k, ms, ctx := setupMsgServer(t)
+		wctx := sdk.UnwrapSDKContext(ctx)
+		gs := testCreateGuild(k, ctx) // testCreateGuild sets byInvite to member
+
+		member, memberSubstation := testGuildMemberWithSubstation(k, ctx, gs, "policy_memb_amend_01")
+		invitee := testRegisterGuildlessPlayer(k, ctx, "policy_memb_invitee1")
+
+		_, err := ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:  gs.GuildOwner.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: invitee.Id,
+		})
+		require.NoError(t, err)
+
+		_, err = ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:      member.Creator,
+			GuildId:      gs.Guild.Id,
+			PlayerId:     invitee.Id,
+			SubstationId: memberSubstation.Id,
+		})
+		require.NoError(t, err, "at bypass level member every member may invite, so every member may amend")
+
+		app, found := k.GetGuildMembershipApplication(ctx, gs.Guild.Id, invitee.Id)
+		require.True(t, found)
+		require.Equal(t, memberSubstation.Id, app.SubstationId)
+		require.NotEqual(t, gs.Substation.Id, app.SubstationId,
+			"the amendment should have moved the destination off the guild's own substation")
+	})
+
+	t.Run("a fellow member may not amend at bypass level permissioned", func(t *testing.T) {
+		k, ms, ctx := setupMsgServer(t)
+		wctx := sdk.UnwrapSDKContext(ctx)
+		gs := testCreateGuild(k, ctx)
+
+		guild, found := k.GetGuild(ctx, gs.Guild.Id)
+		require.True(t, found)
+		guild.JoinInfusionMinimumBypassByInvite = types.GuildJoinBypassLevel_permissioned
+		k.SetGuild(ctx, guild)
+
+		member, memberSubstation := testGuildMemberWithSubstation(k, ctx, gs, "policy_perm_amend_01")
+		invitee := testRegisterGuildlessPlayer(k, ctx, "policy_perm_invitee1")
+
+		// The owner still invites under permissioned, via PermissionCheck's
+		// owner short-circuit rather than an explicit grant.
+		_, err := ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:  gs.GuildOwner.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: invitee.Id,
+		})
+		require.NoError(t, err)
+
+		_, err = ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:      member.Creator,
+			GuildId:      gs.Guild.Id,
+			PlayerId:     invitee.Id,
+			SubstationId: memberSubstation.Id,
+		})
+		require.Error(t, err, "permissioned is the lever a guild has against members amending invites")
+		// Pin the reason, not just the refusal. The member owns the substation
+		// they named, so CanManageConnectionsBy would have passed; this has to be
+		// the guild-side check failing, and PermissionCheck names the object it
+		// refused on.
+		require.ErrorIs(t, err, types.ErrPermission)
+		require.Contains(t, err.Error(), gs.Guild.Id)
+
+		app, found := k.GetGuildMembershipApplication(ctx, gs.Guild.Id, invitee.Id)
+		require.True(t, found)
+		require.NotEqual(t, memberSubstation.Id, app.SubstationId)
+
+		// And the level narrows who may amend rather than stopping amendment
+		// outright, which is what makes the refusal above meaningful.
+		_, err = ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
+			Creator:      gs.GuildOwner.Creator,
+			GuildId:      gs.Guild.Id,
+			PlayerId:     invitee.Id,
+			SubstationId: gs.Substation.Id,
+		})
+		require.NoError(t, err)
+
+		app, found = k.GetGuildMembershipApplication(ctx, gs.Guild.Id, invitee.Id)
+		require.True(t, found)
+		require.Equal(t, gs.Substation.Id, app.SubstationId)
+	})
 }
 
 func TestGuildMembershipConsentedFlowsStillWork(t *testing.T) {

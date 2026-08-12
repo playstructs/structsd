@@ -45,17 +45,38 @@ func TestMsgGuildMembershipRequestRevoke(t *testing.T) {
 		require.Equal(t, types.RegistrationStatus_revoked, resp.GuildMembershipApplication.RegistrationStatus)
 	})
 
+	// A real player who never filed a request, so the refusal is about the missing
+	// application. Naming a nonexistent id here would be refused as a missing
+	// player before the application lookup, and would leave the case untested.
 	t.Run("no pending request", func(t *testing.T) {
+		strangerAcc := sdk.AccAddress("req_revoke_strangr_0")
+		stranger := types.Player{
+			Creator:        strangerAcc.String(),
+			PrimaryAddress: strangerAcc.String(),
+		}
+		stranger = testAppendPlayer(k, ctx, stranger)
+		testPermissionAdd(k, ctx, keeperlib.GetAddressPermissionIDBytes(stranger.Creator), types.PermGuildMembership)
+
 		_, err := ms.GuildMembershipRequestRevoke(wctx, &types.MsgGuildMembershipRequestRevoke{
-			Creator:  requester.Creator,
+			Creator:  stranger.Creator,
 			GuildId:  gs.Guild.Id,
-			PlayerId: "1-999",
+			PlayerId: stranger.Id,
 		})
 		require.Error(t, err)
 		// Previously a permission failure on a request the loader had just
 		// synthesized for a player who never filed one.
 		require.ErrorIs(t, err, types.ErrGuildMembershipApplication)
 		require.Contains(t, err.Error(), "no application on file")
+	})
+
+	t.Run("player not found", func(t *testing.T) {
+		_, err := ms.GuildMembershipRequestRevoke(wctx, &types.MsgGuildMembershipRequestRevoke{
+			Creator:  requester.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: "1-999",
+		})
+		require.Error(t, err)
+		require.ErrorIs(t, err, types.ErrObjectNotFound)
 	})
 
 	t.Run("unregistered creator", func(t *testing.T) {

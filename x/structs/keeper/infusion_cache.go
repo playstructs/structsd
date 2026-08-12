@@ -87,8 +87,7 @@ func (cache *InfusionCache) GetFuel() uint64              { if !cache.InfusionLo
 func (cache *InfusionCache) GetDefusing() uint64          { if !cache.InfusionLoaded { cache.LoadInfusion() }; return cache.Infusion.Defusing }
 
 func (cache *InfusionCache) GetOwner() *PlayerCache {
-    player, _ := cache.CC.GetPlayer(cache.GetOwnerId())
-    return player
+    return cache.CC.GetPlayer(cache.GetOwnerId())
 }
 
 // IsEmpty reports whether nothing of value remains in the infusion, making it

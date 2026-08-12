@@ -200,8 +200,7 @@ func TestBrownout_PlayerAccessorsClampWhenOverloaded(t *testing.T) {
 	f.k.SetGridAttribute(f.ctx, loadId, 500)
 
 	cc := f.k.NewCurrentContext(f.ctx)
-	player, err := cc.GetPlayer(playerId)
-	require.NoError(t, err)
+	player := cc.GetPlayer(playerId)
 
 	// Without these the test would pass vacuously: if the accessors read
 	// different attributes than the ones set above, both would be zero, zero

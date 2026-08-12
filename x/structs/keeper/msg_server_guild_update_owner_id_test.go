@@ -77,6 +77,11 @@ func TestMsgGuildUpdateOwnerId(t *testing.T) {
 			skip:      true, // Skip - cache system doesn't validate existence before permission check
 		},
 		{
+			// Un-skipped. The handler does resolve the incoming owner before
+			// writing it — this is one of the sites that already paired
+			// cc.GetPlayer with an explicit CheckPlayer, now folded into
+			// cc.GetExistingPlayer, which returns the same error. Only the
+			// expected wording was stale.
 			name: "new owner not found",
 			input: &types.MsgGuildUpdateOwnerId{
 				Creator: owner.Creator,
@@ -84,8 +89,7 @@ func TestMsgGuildUpdateOwnerId(t *testing.T) {
 				Owner:   "invalid-player",
 			},
 			expErr:    true,
-			expErrMsg: "weren't found",
-			skip:      true, // Skip - cache system doesn't validate existence before permission check
+			expErrMsg: "player (invalid-player) not found",
 		},
 		{
 			name: "no update permissions",
@@ -111,7 +115,14 @@ func TestMsgGuildUpdateOwnerId(t *testing.T) {
 			if tc.expErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
+				// The handler pairs its errors with a non-nil empty response, and
+				// MsgGuildUpdateResponse carries no fields, so the error is the
+				// whole assertion. A nil check stood here only because every error
+				// case was skipped.
+				storedGuild, guildFound := k.GetGuild(ctx, guild.Id)
+				require.True(t, guildFound)
+				require.NotEqual(t, "invalid-player", storedGuild.Owner,
+					"a refused update must not write the bogus owner")
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, resp)

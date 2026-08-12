@@ -71,11 +71,7 @@ func createAllStructTypesFromGenesis(t *testing.T, k structskeeper.Keeper, ctx s
 
 func getPlayerCharge(k structskeeper.Keeper, ctx sdk.Context, playerId string) uint64 {
 	cc := k.NewCurrentContext(ctx)
-	playerCache, err := cc.GetPlayer(playerId)
-	if err != nil {
-		return 0
-	}
-	return playerCache.GetCharge()
+	return cc.GetPlayer(playerId).GetCharge()
 }
 
 func setupEnergyGridForSim(t *testing.T, k structskeeper.Keeper, ctx sdk.Context) (reactorOwnerAddr string, substationId string, guildId string) {
@@ -177,8 +173,7 @@ func TestSimulateMsgStructBuildInitiate(t *testing.T) {
 	k.SetFleet(ctx, fleet)
 
 	cc := k.NewCurrentContext(ctx)
-	playerCache, err := cc.GetPlayer(player.Id)
-	require.NoError(t, err)
+	playerCache := cc.GetPlayer(player.Id)
 	playerCache.SetFleetId(fleetId)
 	playerCache.Commit()
 
@@ -221,8 +216,7 @@ func TestSimulateMsgStructMove(t *testing.T) {
 	k.SetFleet(ctx, fleet)
 
 	cc := k.NewCurrentContext(ctx)
-	playerCache, err := cc.GetPlayer(player.Id)
-	require.NoError(t, err)
+	playerCache := cc.GetPlayer(player.Id)
 	playerCache.SetFleetId(fleetId)
 	playerCache.Commit()
 
@@ -240,7 +234,7 @@ func TestSimulateMsgStructMove(t *testing.T) {
 	require.GreaterOrEqual(t, charge, requiredCharge, "Player does not have enough charge to build struct")
 
 	msgServer := structskeeper.NewMsgServerImpl(k)
-	_, err = msgServer.StructBuildInitiate(sdk.WrapSDKContext(ctx), &types.MsgStructBuildInitiate{
+	_, err := msgServer.StructBuildInitiate(sdk.WrapSDKContext(ctx), &types.MsgStructBuildInitiate{
 		Creator:        simAccount.Address.String(),
 		PlayerId:       player.Id,
 		StructTypeId:   1,

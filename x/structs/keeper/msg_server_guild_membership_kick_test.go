@@ -112,6 +112,10 @@ func TestMsgGuildMembershipKick(t *testing.T) {
 			"expected error containing 'permission' or 'administrate', got: %s", errStr)
 	})
 
+	// A player id naming nobody is refused as missing, not as a non-member. The
+	// distinction matters: "not a member" was reached by reading a guild id off a
+	// zero-valued cache, so the kick got as far as comparing fields on a player
+	// who does not exist.
 	t.Run("target player not found", func(t *testing.T) {
 		_, err := ms.GuildMembershipKick(wctx, &types.MsgGuildMembershipKick{
 			Creator:  gs.GuildOwner.Creator,
@@ -119,7 +123,8 @@ func TestMsgGuildMembershipKick(t *testing.T) {
 			PlayerId: "1-999",
 		})
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "not a member")
+		require.ErrorIs(t, err, types.ErrObjectNotFound)
+		require.Contains(t, err.Error(), "1-999")
 	})
 
 	t.Run("unregistered creator", func(t *testing.T) {

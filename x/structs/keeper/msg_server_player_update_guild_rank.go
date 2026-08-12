@@ -27,7 +27,7 @@ func (k msgServer) PlayerUpdateGuildRank(goCtx context.Context, msg *types.MsgPl
 		return emptyResponse, types.NewParameterValidationError("rank", 0, "zero")
 	}
 
-	targetPlayer, targetErr := cc.GetPlayer(msg.PlayerId)
+	targetPlayer, targetErr := cc.GetExistingPlayer(msg.PlayerId)
 	if targetErr != nil {
 		return emptyResponse, targetErr
 	}

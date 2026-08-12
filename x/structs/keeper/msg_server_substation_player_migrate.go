@@ -33,12 +33,9 @@ func (k msgServer) SubstationPlayerMigrate(goCtx context.Context, msg *types.Msg
     var targetPlayers []*PlayerCache
     for _, targetPlayerId := range msg.PlayerId {
 
-        targetPlayer, err := cc.GetPlayer(targetPlayerId)
+        targetPlayer, err := cc.GetExistingPlayer(targetPlayerId)
         if err != nil {
             return emptyResponse, err
-        }
-        if targetPlayer.CheckPlayer() != nil {
-            return emptyResponse, types.NewObjectNotFoundError("player", targetPlayerId)
         }
 
         // check permissions

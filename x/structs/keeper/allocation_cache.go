@@ -72,8 +72,7 @@ func (cache *AllocationCache) GetOwnerId() string {
 }
 
 func (cache *AllocationCache) GetOwner() *PlayerCache {
-	player, _ :=  cache.CC.GetPlayer(cache.GetAllocation().Controller)
-	return player
+	return cache.CC.GetPlayer(cache.GetAllocation().Controller)
 }
 
 func (cache *AllocationCache) GetSourceId() string {

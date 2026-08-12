@@ -26,8 +26,7 @@ func TestMsgStructBuildInitiate(t *testing.T) {
 	_ = fleet
 
 	cc := k.NewCurrentContext(sdkCtx)
-	playerCache, err := cc.GetPlayer(player.Id)
-	require.NoError(t, err)
+	playerCache := cc.GetPlayer(player.Id)
 	playerCache.SetFleetId(fleet.Id)
 	playerCache.Commit()
 

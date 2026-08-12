@@ -86,8 +86,7 @@ func (cache *PlanetCache) GetOwnerId() (string) {
 
 // Get the Owner data
 func (cache *PlanetCache) GetOwner() (player *PlayerCache) {
-    player, _ = cache.CC.GetPlayer(cache.GetOwnerId())
-    return
+    return cache.CC.GetPlayer(cache.GetOwnerId())
 }
 
 func (cache *PlanetCache) GetPlanet() (types.Planet) {

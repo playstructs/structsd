@@ -27,7 +27,6 @@ func (k msgServer) GuildMembershipInvite(goCtx context.Context, msg *types.MsgGu
 		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    // TODO Confirm permissions are being handled properly within.
     guildMembershipApplication, guildMembershipApplicationError := cc.GetOrCreateGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
         return emptyResponse, guildMembershipApplicationError

@@ -65,8 +65,7 @@ func (cache *ProviderCache) GetProvider() types.Provider { if !cache.ProviderLoa
 func (cache *ProviderCache) GetProviderId() string { return cache.ProviderId }
 
 func (cache *ProviderCache) GetOwner() *PlayerCache {
-    player, _ := cache.CC.GetPlayer(cache.GetOwnerId())
-    return player
+    return cache.CC.GetPlayer(cache.GetOwnerId())
 }
 
 func (cache *ProviderCache) GetSubstation() *SubstationCache {

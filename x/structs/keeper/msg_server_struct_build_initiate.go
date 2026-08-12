@@ -29,9 +29,9 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     }
 
     // Load the Owner Player
-    owner, err := cc.GetPlayer(msg.PlayerId)
+    owner, err := cc.GetExistingPlayer(msg.PlayerId)
     if (err != nil) {
-        return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "struct_build_initiate")
+        return emptyResponse, err
     }
 
     // Check address play permissions

@@ -48,14 +48,18 @@ func TestMsgPlanetExplore(t *testing.T) {
 			expErr: false,
 		},
 		{
+			// Un-skipped: the "cache system validation order" this was skipped for
+			// was the defect. cc.GetPlayer allocates without reading the store and
+			// could not report a missing player, so the id reached CanBePlayedBy
+			// and was refused for want of permission on a player that does not
+			// exist. cc.GetExistingPlayer now resolves it first.
 			name: "invalid player id",
 			input: &types.MsgPlanetExplore{
 				Creator:  player.Creator,
 				PlayerId: "invalid-player",
 			},
 			expErr:    true,
-			expErrMsg: "Could not load Player",
-			skip:      true, // Skip - cache system validation order
+			expErrMsg: "player (invalid-player) not found",
 		},
 		{
 			name: "no play permissions",
@@ -101,7 +105,11 @@ func TestMsgPlanetExplore(t *testing.T) {
 			if tc.expErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
+				// PlanetExplore pairs every error with a non-nil empty response,
+				// so no planet coming back is the assertion that means anything.
+				// A nil check stood here unchallenged only because all three
+				// error cases were skipped.
+				require.Empty(t, resp.Planet.Id)
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, resp)

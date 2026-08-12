@@ -169,6 +169,30 @@ the struct is not destroyed; `x/structs/keeper/struct_destroyed_guards_test.go` 
 suite, and `MigrateStructPhantomAggregates` in `app/upgrades/v0_21_0` recomputes what the two bugs
 corrupted.
 
+**A context getter is a cache allocator and says nothing about existence, so resolve
+message-supplied ids with `cc.GetExistingPlayer`.** `cc.GetPlayer` does not read the store. It used
+to return an error anyway, always nil, and twenty-eight callers guarded on it — a dead branch that
+reads exactly like an existence check, which is how `AllocationTransfer` came to accept any string
+as a controller. Nothing else covered it: `CanBeTransferBy` asks only whether the caller may
+transfer. The error return is gone, so the compiler now rejects those guards, and an id a
+transaction chose goes through `cc.GetExistingPlayer`, which loads and returns `ErrObjectNotFound`.
+`cc.GetPlayer` stays correct for an id read off something already loaded from state — an owner, a
+controller, a substation's connection list — because that id exists by construction.
+
+What a phantom cache does is worse than a nil pointer, because it behaves: it loads as a zero value,
+and since a failed load leaves `PlayerLoaded` false, every getter reloads and quietly reverts what
+the handler wrote. What survives is whatever was written under a *different* key — a substation
+index row and connection count keyed by the `PlayerId` field — plus a commit against `Player.Id`
+`""`, which the KV store panics on. That panic is why the guild membership version of this rejected
+the transaction and `AllocationTransfer` did not: its write is keyed by allocation id, so nothing
+tripped, and it committed. **A refusal that only happens because an unrelated write happens to
+panic is not a check.** `TestArch_HandlersResolveMessagePlayerIdsThroughGetExistingPlayer` is the
+enforcement, and it follows a message field through a local variable, a loop over a repeated field
+being one. Ante and permission-resolver reads are deliberately outside it: neither mutates, and a
+phantom owns nothing and holds no permission row, so the following permission check refuses it —
+which in the ante must decline the throttle reservation without rejecting the transaction.
+`MigrateOrphanedAllocationControllers` re-homes what the live bug wrote.
+
 **Commit cache maps in sorted key order, never in map order.** `CommitAll` goes through
 `commitCaches`, which sorts. That is not tidiness: Go randomizes map iteration order per process,
 and `AddressCache.Commit` reaches `SetPlayerIndexForAddress`, which allocates an auth account
@@ -262,6 +286,17 @@ on the destination substation and nothing about the guild, redirecting the invit
 they own. Amending a record needs the authority that creating it needed. Also note why the fix
 needed the handlers repaired to work at all: all six consumption handlers assigned the mutator's
 error and dropped it, which was invisible while every mutator returned `nil`.
+
+That authority is deliberately *equal* to the authority to create, not stricter, so at bypass level
+`member` any member may retarget a colleague's pending invite — `CanInviteMembers` is the whole
+boundary and there is no separate gate for amending. A guild that wants fewer amenders sets
+`JoinInfusionMinimumBypassByInvite` to `permissioned`, which demands `PermGuildMembership` on the
+guild object; `TestGuildMembershipInviteAmendmentFollowsInviteAuthority` pins both halves so the
+intra-guild case is not re-reported as the outsider bug. Note the related gap that lever does not
+close: a pending invite's destination can change under an invitee who is about to accept, and they
+cannot pin it, because `substationId` on `MsgGuildMembershipInviteApprove` is a setter gated by
+`CanManageConnectionsBy` rather than an assertion — naming the guild's own entry substation needs
+connection rights there that a prospective member will not hold.
 
 **Use the typed errors.** Keeper codes (1050–1800) live in
 `x/structs/types/errors_structured.go`, ante codes (2000–2050) in `app/ante/errors.go`. The

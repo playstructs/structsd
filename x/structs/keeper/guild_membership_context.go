@@ -58,9 +58,9 @@ func (cc *CurrentContext) GenesisImportGuildMembershipApplication(app types.Guil
 // attach the caller, and report whether an application is on file.
 func (cc *CurrentContext) resolveGuildMembershipApplication(callingPlayer *PlayerCache, joinType types.GuildJoinType, guildId string, playerId string) (*GuildMembershipApplicationCache, bool, error) {
 
-	targetPlayer, err := cc.GetPlayer(playerId)
+	targetPlayer, err := cc.GetExistingPlayer(playerId)
 	if err != nil {
-		return &GuildMembershipApplicationCache{}, false, types.NewObjectNotFoundError("player", playerId)
+		return &GuildMembershipApplicationCache{}, false, err
 	}
 
 	if targetPlayer.GetGuildId() == guildId {
@@ -176,9 +176,9 @@ func (cc *CurrentContext) GetPendingGuildMembershipApplicationCache(callingPlaye
 
 func (cc *CurrentContext) GetGuildMembershipKickCache(callingPlayer *PlayerCache, guildId string, playerId string) (*GuildMembershipApplicationCache, error) {
 
-	targetPlayer, err := cc.GetPlayer(playerId)
+	targetPlayer, err := cc.GetExistingPlayer(playerId)
 	if err != nil {
-		return &GuildMembershipApplicationCache{}, types.NewObjectNotFoundError("player", playerId)
+		return &GuildMembershipApplicationCache{}, err
 	}
 
 	if targetPlayer.GetGuildId() != guildId {

@@ -115,8 +115,7 @@ func (cache *SubstationCache) GetAvailableCapacity() (uint64) {
 }
 
 func (cache *SubstationCache) GetOwner() (*PlayerCache) {
-    player, _ := cache.CC.GetPlayer( cache.GetOwnerId() )
-    return player
+    return cache.CC.GetPlayer( cache.GetOwnerId() )
 }
 
 func (cache *SubstationCache) Delete(migrationSubstationId string) {

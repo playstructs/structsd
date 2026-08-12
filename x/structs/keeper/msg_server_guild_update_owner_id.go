@@ -34,9 +34,8 @@ func (k msgServer) GuildUpdateOwnerId(goCtx context.Context, msg *types.MsgGuild
     }
 
 	if guild.GetGuild().Owner != msg.Owner {
-		newOwner, _ := cc.GetPlayer(msg.Owner)
-		if newOwner.CheckPlayer() != nil {
-			return emptyResponse, types.NewObjectNotFoundError("player", msg.Owner)
+		if _, err := cc.GetExistingPlayer(msg.Owner); err != nil {
+			return emptyResponse, err
 		}
 
 		guild.SetOwner(msg.Owner)

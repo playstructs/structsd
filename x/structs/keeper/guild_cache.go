@@ -104,8 +104,7 @@ func (cache *GuildCache) GetOwnerId() string {
 	return cache.Guild.Owner
 }
 func (cache *GuildCache) GetOwner() *PlayerCache {
-	player, _ := cache.CC.GetPlayer(cache.GetOwnerId())
-	return player
+	return cache.CC.GetPlayer(cache.GetOwnerId())
 }
 
 func (cache *GuildCache) GetJoinInfusionMinimum() uint64 {

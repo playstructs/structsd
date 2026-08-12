@@ -1425,3 +1425,151 @@ func TestMigrateAutoResizeAllocationIndex_EmptyStateIsSafe(t *testing.T) {
 	require.NoError(t, v0_21_0.MigrateAutoResizeAllocationIndex(f.ctx, f.keepers()))
 	require.Empty(t, f.index())
 }
+
+// --- MigrateOrphanedAllocationControllers -----------------------------------
+//
+// AllocationTransfer checked msg.Controller with a guard on
+// CurrentContext.GetPlayer, which cannot fail, so the id went unchecked and a
+// transfer to any string committed. The allocation ends up controlled by somebody
+// who can never sign for it, with a permission row keyed to them.
+//
+// The repair hands such an allocation to the owner of its source, with the same
+// single bit a legitimate transfer would have granted.
+
+type orphanFixture struct {
+	t   *testing.T
+	k   structskeeper.Keeper
+	ctx sdk.Context
+}
+
+func newOrphanFixture(t *testing.T) *orphanFixture {
+	t.Helper()
+	k, ctx := keepertest.StructsKeeper(t)
+	return &orphanFixture{t: t, k: k, ctx: ctx}
+}
+
+func (f *orphanFixture) keepers() *upgrades.Keepers {
+	return &upgrades.Keepers{StructsKeeper: f.k}
+}
+
+// player puts a real player in state. A player is its own owner, so using one as
+// an allocation's source object makes the expected new controller that player.
+func (f *orphanFixture) player(id string) types.Player {
+	player := types.Player{Id: id}
+	f.k.SetPlayer(f.ctx, player)
+	return player
+}
+
+func (f *orphanFixture) allocation(id string, sourceId string, controller string) types.Allocation {
+	allocation := types.Allocation{
+		Id:             id,
+		SourceObjectId: sourceId,
+		Type:           types.AllocationType_static,
+		Controller:     controller,
+	}
+	f.k.ImportAllocation(f.ctx, allocation)
+	return allocation
+}
+
+func (f *orphanFixture) controllerOf(id string) string {
+	allocation, found := f.k.GetAllocation(f.ctx, id)
+	require.True(f.t, found)
+	return allocation.Controller
+}
+
+func (f *orphanFixture) perms(allocationId string, playerId string) types.Permission {
+	return f.k.GetPermissionsByBytes(f.ctx, structskeeper.GetObjectPermissionIDBytes(allocationId, playerId))
+}
+
+// TestMigrateOrphanedAllocationControllers_RehomesToSourceOwner is the case the
+// bug produces, and pins the permissions the repair is allowed to touch.
+func TestMigrateOrphanedAllocationControllers_RehomesToSourceOwner(t *testing.T) {
+	f := newOrphanFixture(t)
+
+	owner := f.player("1-0")
+	orphan := f.allocation("6-0", owner.Id, "1-999")
+
+	// What the bad transfer left behind, plus the creator's own row on the same
+	// allocation, which the repair must not disturb.
+	f.k.SetPermissionsByBytes(f.ctx, structskeeper.GetObjectPermissionIDBytes(orphan.Id, "1-999"),
+		types.PermAllocationConnection)
+	f.k.SetPermissionsByBytes(f.ctx, structskeeper.GetObjectPermissionIDBytes(orphan.Id, owner.Id),
+		types.PermUpdate|types.PermDelete)
+
+	require.NoError(t, v0_21_0.MigrateOrphanedAllocationControllers(f.ctx, f.keepers()))
+
+	require.Equal(t, owner.Id, f.controllerOf(orphan.Id),
+		"an allocation controlled by nobody belongs to the owner of its source")
+
+	require.Equal(t, types.Permissionless, f.perms(orphan.Id, "1-999"),
+		"the row keyed to a player that does not exist should be gone")
+
+	ownerPerms := f.perms(orphan.Id, owner.Id)
+	require.NotZero(t, ownerPerms&types.PermAllocationConnection,
+		"the new controller can connect what they now control")
+	require.Zero(t, ownerPerms&types.PermAdmin,
+		"the repair grants exactly what a transfer grants, and a transfer does not mint PermAdmin")
+	require.NotZero(t, ownerPerms&types.PermDelete,
+		"bits the owner already held are left alone")
+	require.NotZero(t, ownerPerms&types.PermUpdate,
+		"bits the owner already held are left alone")
+}
+
+// TestMigrateOrphanedAllocationControllers_LeavesAllocationWithNoUsableOwner
+// covers the case where there is nobody to hand it to. Guessing would be worse
+// than leaving it: the source owner can still reach it through
+// PermSourceAllocation on the source.
+func TestMigrateOrphanedAllocationControllers_LeavesAllocationWithNoUsableOwner(t *testing.T) {
+	f := newOrphanFixture(t)
+
+	// The source names a player who is not in state either, so GetOwnerId reports
+	// an id that resolves to nobody.
+	orphan := f.allocation("6-0", "1-404", "1-999")
+
+	require.NoError(t, v0_21_0.MigrateOrphanedAllocationControllers(f.ctx, f.keepers()))
+
+	require.Equal(t, "1-999", f.controllerOf(orphan.Id),
+		"with no owner to hand it to the allocation is left as found")
+}
+
+// TestMigrateOrphanedAllocationControllers_HealthyStateIsUnchanged is the outcome
+// on a chain where no bad transfer ever happened, which is the expected one.
+func TestMigrateOrphanedAllocationControllers_HealthyStateIsUnchanged(t *testing.T) {
+	f := newOrphanFixture(t)
+
+	source := f.player("1-0")
+	controller := f.player("1-1")
+	healthy := f.allocation("6-0", source.Id, controller.Id)
+	f.k.SetPermissionsByBytes(f.ctx, structskeeper.GetObjectPermissionIDBytes(healthy.Id, controller.Id),
+		types.PermAllocationConnection|types.PermAdmin)
+
+	require.NoError(t, v0_21_0.MigrateOrphanedAllocationControllers(f.ctx, f.keepers()))
+
+	require.Equal(t, controller.Id, f.controllerOf(healthy.Id))
+	require.Equal(t, types.PermAllocationConnection|types.PermAdmin, f.perms(healthy.Id, controller.Id),
+		"a healthy allocation keeps the PermAdmin a real transfer left it")
+	require.Equal(t, types.Permissionless, f.perms(healthy.Id, source.Id))
+}
+
+// TestMigrateOrphanedAllocationControllers_IsIdempotent guards a replay of the
+// upgrade block.
+func TestMigrateOrphanedAllocationControllers_IsIdempotent(t *testing.T) {
+	f := newOrphanFixture(t)
+
+	owner := f.player("1-0")
+	orphan := f.allocation("6-0", owner.Id, "1-999")
+
+	require.NoError(t, v0_21_0.MigrateOrphanedAllocationControllers(f.ctx, f.keepers()))
+	once := f.controllerOf(orphan.Id)
+	oncePerms := f.perms(orphan.Id, owner.Id)
+
+	require.NoError(t, v0_21_0.MigrateOrphanedAllocationControllers(f.ctx, f.keepers()))
+	require.Equal(t, once, f.controllerOf(orphan.Id))
+	require.Equal(t, oncePerms, f.perms(orphan.Id, owner.Id))
+}
+
+// TestMigrateOrphanedAllocationControllers_EmptyStateIsSafe guards the walk.
+func TestMigrateOrphanedAllocationControllers_EmptyStateIsSafe(t *testing.T) {
+	f := newOrphanFixture(t)
+	require.NoError(t, v0_21_0.MigrateOrphanedAllocationControllers(f.ctx, f.keepers()))
+}

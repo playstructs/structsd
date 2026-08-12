@@ -27,13 +27,9 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     }
 
 
-    player, err := cc.GetPlayer(msg.PlayerId)
+    player, err := cc.GetExistingPlayer(msg.PlayerId)
     if err != nil {
        return emptyResponse, err
-    }
-
-    if player.CheckPlayer() != nil {
-        return emptyResponse, types.NewObjectNotFoundError("player", msg.PlayerId)
     }
 
 	// Is the address associated with an account yet

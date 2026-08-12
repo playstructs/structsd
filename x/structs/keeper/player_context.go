@@ -4,10 +4,16 @@ import (
 	"structs/x/structs/types"
 )
 
-// GetPlayer returns a PlayerCache by ID, loading from store if not already cached.
-func (cc *CurrentContext) GetPlayer(playerId string) (*PlayerCache, error) {
+// GetPlayer returns a PlayerCache by ID. Like every other context getter it is a
+// cache allocator: it does not read the store, so it cannot report whether the
+// player exists and deliberately has no error return. A caller handed an id by a
+// transaction wants GetExistingPlayer instead — a cache for a player that is not
+// there loads as a zero value, silently drops writes, because a failed load
+// leaves PlayerLoaded false and every getter reloads over them, and commits to
+// the empty key, which the KV store panics on.
+func (cc *CurrentContext) GetPlayer(playerId string) *PlayerCache {
 	if cache, exists := cc.players[playerId]; exists {
-		return cache, nil
+		return cache
 	}
 
    cc.players[playerId] = &PlayerCache{
@@ -31,11 +37,23 @@ func (cc *CurrentContext) GetPlayer(playerId string) (*PlayerCache, error) {
 
            }
 
-	return cc.players[playerId], nil
+	return cc.players[playerId]
+}
+
+// GetExistingPlayer returns a PlayerCache only if that player is in state. Use it
+// for any id a message supplies: GetPlayer cannot fail, so an `if err != nil`
+// guard on it is dead code that reads like an existence check.
+func (cc *CurrentContext) GetExistingPlayer(playerId string) (*PlayerCache, error) {
+	player := cc.GetPlayer(playerId)
+	if err := player.CheckPlayer(); err != nil {
+		return nil, err
+	}
+
+	return player, nil
 }
 
 func (cc *CurrentContext) GenesisImportPlayer(player types.Player) {
-	cache, _ := cc.GetPlayer(player.Id)
+	cache := cc.GetPlayer(player.Id)
 	cache.Player = player
 	cache.PlayerLoaded = true
 	cache.Changed = true
@@ -78,17 +96,12 @@ func (cc *CurrentContext) GetPlayerByAddress(address string) (*PlayerCache, erro
 		return nil, types.NewAddressValidationError(address, "not_registered")
 	}
 
-	return cc.GetPlayer(GetObjectID(types.ObjectType_player, playerIndex))
+	return cc.GetPlayer(GetObjectID(types.ObjectType_player, playerIndex)), nil
 }
 
-// GetPlayerByIndex returns a PlayerCache by index, loading from store if not already cached.
-func (cc *CurrentContext) GetPlayerByIndex(playerIndex uint64) (*PlayerCache, error) {
-	player, err := cc.GetPlayer(GetObjectID(types.ObjectType_player, playerIndex))
-	if err != nil {
-		return nil, err
-	}
-
-	return player, nil
+// GetPlayerByIndex returns a PlayerCache by index. Allocator semantics, as GetPlayer.
+func (cc *CurrentContext) GetPlayerByIndex(playerIndex uint64) *PlayerCache {
+	return cc.GetPlayer(GetObjectID(types.ObjectType_player, playerIndex))
 }
 
 
@@ -96,8 +109,7 @@ func (cc *CurrentContext) GetAllPlayerBySubstation(substationId string) (players
     playerList := cc.k.GetAllPlayerIdBySubstationIndex(cc.ctx, substationId)
 
     for _, playerId := range playerList {
-        player, _ := cc.GetPlayer(playerId)
-        players = append(players, player)
+        players = append(players, cc.GetPlayer(playerId))
     }
     return
 }
@@ -171,7 +183,7 @@ func (cc *CurrentContext) UpsertPlayer(address string) (player *PlayerCache) {
     if (playerIndex == 0) {
         player = cc.NewPlayer(address)
     } else {
-        player, _ = cc.GetPlayerByIndex(playerIndex)
+        player = cc.GetPlayerByIndex(playerIndex)
     }
 
     return
