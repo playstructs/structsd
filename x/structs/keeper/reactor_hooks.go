@@ -62,6 +62,19 @@ func delegationShareValueAgainst(shares math.LegacyDec, delegatorShares math.Leg
 	return shares.Quo(delegatorShares).Mul(tokens).RoundInt()
 }
 
+/* commissionMatches reports whether an infusion already carries the commission
+ * it is about to be written with, so a reconcile can skip the write.
+ *
+ * A nil Dec on either side counts as a mismatch rather than a panic: LegacyDec
+ * wraps a big.Int pointer, Equal dereferences it, and a record predating the
+ * field carries a nil one. Treating that as a mismatch also repairs it.
+ */
+func commissionMatches(infusion *InfusionCache, commission math.LegacyDec) bool {
+	stored := infusion.GetInfusion().Commission
+
+	return !stored.IsNil() && !commission.IsNil() && stored.Equal(commission)
+}
+
 /* Setup Reactor (when a validator is created)
  *
  * Triggered during Staking Hooks:
@@ -130,6 +143,61 @@ func (k Keeper) ReactorUpdatePlayerInfusion(ctx context.Context, playerAddress s
 	k.reconcileInfusionForDelegation(ctx, cc, playerAddress, validatorAddress)
 }
 
+/* ReactorInfusionDelegationRemoved zeroes an infusion's fuel when the Cosmos
+ * delegation behind it is removed outright.
+ *
+ * Triggered during Staking Hooks:
+ *   BeforeDelegationRemoved
+ *
+ * Staking's Unbond routes a delegation whose shares reach zero through
+ * RemoveDelegation, which fires this hook and deliberately skips
+ * AfterDelegationModified. A full redelegation therefore used to leave the
+ * source infusion's Fuel, Power and grid contributions installed while Delegate
+ * on the destination granted capacity for the very same stake, and the other
+ * compensating path is no help: AfterUnbondingInitiated fires with a
+ * redelegation id, which does not resolve to an unbonding delegation.
+ *
+ * The fuel is zeroed explicitly rather than by reconciling, because
+ * RemoveDelegation calls us before it deletes the row. GetDelegation still
+ * succeeds here, and still reports the pre-decrement shares, so a reconcile
+ * would rewrite the exact stale value it was meant to clear.
+ *
+ * Defusing is left alone. It tracks unbonding balances, which outlive the
+ * delegation record, and IsEmpty only releases the row to the destruction queue
+ * once that has reached zero as well.
+ *
+ * Idempotent, and a silent no-op when the reactor or the infusion is absent.
+ */
+func (k Keeper) ReactorInfusionDelegationRemoved(ctx context.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
+
+	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
+	if !reactorBytesFound {
+		return
+	}
+	reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
+
+	// Load, never create. A delegation that never had an infusion has nothing
+	// to clear, and upserting one here would leave an empty record behind.
+	infusion := cc.GetInfusion(reactor.Id, playerAddress.String())
+	if infusion.CheckInfusion() != nil {
+		return
+	}
+
+	// Fuel first: once it is zero the power distribution is zero whatever the
+	// ratio, so the ratio alignment below writes no further grid deltas.
+	if infusion.GetFuel() != 0 {
+		infusion.SetFuel(0)
+	}
+
+	validator, validatorErr := k.stakingKeeper.GetValidator(ctx, validatorAddress)
+	ratio := reactorEnergyRatio(validator, validatorErr)
+	if infusion.GetInfusion().Ratio != ratio {
+		infusion.SetRatio(ratio)
+	}
+}
+
 /* ReconcileInfusionForDelegation refreshes a single (delegator, validator)
  * infusion's Fuel and Defusing fields from the current Cosmos staking state.
  *
@@ -160,17 +228,28 @@ func (k Keeper) reconcileInfusionForDelegation(ctx context.Context, cc *CurrentC
 	infusion := cc.UpsertInfusion(types.ObjectType_reactor, reactor.Id, playerAddress.String(), player.GetPlayerId())
 	delegation, err := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
 
+	// Each write is guarded on the value actually changing. SetInfusion emits an
+	// EventInfusion on every write, and this function is run across every row on
+	// chain by the v0.21.0 reconcile migration, so an unguarded write would emit
+	// an event per healthy infusion.
 	if err == nil {
 		delegationShare := delegationShareValue(delegation.Shares, validator)
 
-		infusion.SetRatio(ratio)
-		infusion.SetFuelAndCommission(delegationShare.Uint64(), reactor.DefaultCommission)
+		if infusion.GetInfusion().Ratio != ratio {
+			infusion.SetRatio(ratio)
+		}
+		if infusion.GetFuel() != delegationShare.Uint64() || !commissionMatches(infusion, reactor.DefaultCommission) {
+			infusion.SetFuelAndCommission(delegationShare.Uint64(), reactor.DefaultCommission)
+		}
 	} else if infusion.GetFuel() != 0 {
 		// No active delegation but stale fuel remains (e.g. recovery sweep
 		// after a full undelegate followed by a missed AfterDelegationModified
-		// path). Clear it so the destruction queue can reclaim the record once
+		// path, or a full redelegation predating the BeforeDelegationRemoved
+		// hook). Clear it so the destruction queue can reclaim the record once
 		// Defusing also drops to zero.
-		infusion.SetRatio(ratio)
+		if infusion.GetInfusion().Ratio != ratio {
+			infusion.SetRatio(ratio)
+		}
 		infusion.SetFuel(0)
 	}
 

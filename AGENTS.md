@@ -115,6 +115,34 @@ allocation creation re-checks correctly, so the outer gate being wrong was invis
 an inner one happened to hold. `x/structs/keeper/substation_overload_test.go` is the regression
 suite.
 
+**A staking removal hook fires before the row is deleted, so it may not reconcile.** Every other
+reactor path refreshes an infusion by reading the delegation and writing what it finds, and
+`BeforeDelegationRemoved` is the one place that is wrong: `RemoveDelegation` calls the hook five
+lines before its `store.Delete`, and the delegation still carries its *pre-decrement* shares, so a
+reconcile there rewrites exactly the stale value it was called to clear. `ReactorInfusionDelegationRemoved`
+therefore zeroes `Fuel` explicitly. It must also be the hook that does it, because staking gives no
+other signal: `Unbond` routes a delegation whose shares reach zero through `RemoveDelegation` and
+deliberately *skips* `AfterDelegationModified`. That is what made the leak invisible — a full
+redelegation left the source infusion's fuel, power and grid capacity installed while `Delegate`
+granted the destination capacity for the same stake, and the one compensating path,
+`AfterUnbondingInitiated`, fires with a redelegation id that does not resolve to an unbonding
+delegation. Note that the neighbouring case, a full *undelegate*, was always safe, because it hands
+us a real unbonding id — the two differ only in which id staking passes, which is why one leaked and
+one did not. `Defusing` stays untouched throughout: it tracks unbonding balances, which outlive the
+delegation record, and is derived from staking rather than trusted from the row. **This was not
+mainly an attack.** `GuildMembershipJoin` redelegates a player's entire infusion, so honest players
+minted capacity every time they joined a guild on a different reactor;
+`MigrateReconcileReactorInfusions` clears what they accumulated, and the grid cascade that follows
+is the intended consequence rather than a bug in the migration.
+
+The reason this survived so long is worth its own line: **`testutil/keeper`'s `MockStakingKeeper`
+fires no hooks at all.** Every keeper test that "exercises" a staking path is really calling our
+own handler directly, which proves the handler and says nothing about whether staking ever reaches
+it. Anything whose correctness depends on *when* the SDK calls us needs a real-app test with real
+staking wired up — `app/reactor_redelegation_test.go` and `app/reactor_jail_gate_test.go` are the
+two, both built on `setupJailGateApp`. `x/structs/keeper/reactor_delegation_removed_test.go` covers
+the keeper method, including a case that pins why reconciling in that window does not work.
+
 **Delete an index row with the same id you wrote it under.** `SetAutoResizeAllocationSource` keys
 the auto-resize hook by *source object id*, and `AllocationCache.Destroy` cleared it with the
 allocation id — a `store.Delete` on a key nobody had written, which compiles, runs, returns

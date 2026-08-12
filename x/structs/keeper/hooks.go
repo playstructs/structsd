@@ -89,7 +89,14 @@ func (h Hooks) BeforeDelegationSharesModified(_ context.Context, _ sdk.AccAddres
 	return nil
 }
 
-func (h Hooks) BeforeDelegationRemoved(_ context.Context, _ sdk.AccAddress, _ sdk.ValAddress) error {
+// BeforeDelegationRemoved clears the infusion behind a delegation that is being
+// removed outright, which is the only signal staking gives for that case:
+// Unbond takes the RemoveDelegation branch when shares reach zero and skips
+// AfterDelegationModified entirely. A full redelegation is the path that made
+// this matter, since it removes the source delegation and immediately grants
+// the destination the same stake.
+func (h Hooks) BeforeDelegationRemoved(ctx context.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
+	h.k.ReactorInfusionDelegationRemoved(ctx, playerAddress, valAddr)
 
 	return nil
 }

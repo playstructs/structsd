@@ -66,6 +66,14 @@ func CreateUpgradeHandler(
 			return newVM, err
 		}
 
+		// After MigrateJailedReactorEnergy, which gates whole reactors. This
+		// then rebuilds each infusion from live staking state, so the two agree
+		// on a jailed validator's zero ratio and this has the final say on the
+		// fuel behind it.
+		if err := MigrateReconcileReactorInfusions(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
 		if err := MigratePrimaryAddressPermissions(ctx, keepers); err != nil {
 			return newVM, err
 		}
@@ -566,6 +574,112 @@ func MigrateJailedReactorEnergy(ctx context.Context, keepers *upgrades.Keepers) 
 	}
 
 	logger.Info("v0.21.0 jailed reactor energy gate complete", "reactorsGated", reactorsGated)
+	return nil
+}
+
+// MigrateReconcileReactorInfusions rebuilds every reactor infusion from live
+// Cosmos staking state, clearing the phantom fuel left behind by full
+// redelegations.
+//
+// Until this release Hooks.BeforeDelegationRemoved was a no-op. Staking's Unbond
+// routes a delegation whose shares reach zero through RemoveDelegation, which
+// fires only that hook and skips AfterDelegationModified, so a full redelegation
+// left the source infusion's Fuel, Power and grid contributions installed while
+// the destination was granted capacity for the same stake. GuildMembershipJoin
+// redelegates a player's entire infusion, so this is not confined to deliberate
+// abuse: ordinary players accrued phantom capacity every time they joined a
+// guild on a different reactor.
+//
+// Capacity that no stake backs has to go, and removing it is deliberately
+// allowed to have consequences. Each cleared row queues a grid cascade, and the
+// EndBlocker of the upgrade block sheds allocations in creation order until load
+// fits capacity again, which can cascade downstream through substations and can
+// tear down provider agreements. That is the correct outcome for capacity that
+// was never real, and the counters logged here are the record of how much of it
+// there was.
+//
+// Idempotent. reconcileInfusionForDelegation guards each write on the value
+// changing, so a re-run writes nothing and emits no duplicate EventInfusion.
+func MigrateReconcileReactorInfusions(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateReconcileReactorInfusions")
+
+	k := keepers.StructsKeeper
+
+	var (
+		infusionsVisited     int
+		infusionsChanged     int
+		phantomFuelCleared   uint64
+		phantomPowerCleared  uint64
+		commissionDivergence int
+		playersAffected      = make(map[string]struct{})
+	)
+
+	for _, reactor := range k.GetAllReactor(ctx) {
+		valAddr, err := sdk.ValAddressFromBech32(reactor.Validator)
+		if err != nil {
+			logger.Error("skipping reactor with unparsable validator address",
+				"reactorId", reactor.Id, "validator", reactor.Validator, "error", err)
+			continue
+		}
+
+		for _, before := range k.GetAllInfusionsByDestination(ctx, reactor.Id) {
+			playerAddress, addrErr := sdk.AccAddressFromBech32(before.Address)
+			if addrErr != nil {
+				logger.Error("skipping infusion with unparsable delegator address",
+					"reactorId", reactor.Id, "address", before.Address, "error", addrErr)
+				continue
+			}
+
+			infusionsVisited++
+
+			// Commission is only ever written from the reactor default, so a
+			// divergence means the record predates that or arrived through a
+			// genesis import. The reconcile re-bases it; count it so the
+			// re-basing is visible rather than silent.
+			if before.Commission.IsNil() || reactor.DefaultCommission.IsNil() ||
+				!before.Commission.Equal(reactor.DefaultCommission) {
+				commissionDivergence++
+			}
+
+			k.ReconcileInfusionForDelegation(ctx, playerAddress, valAddr)
+
+			after, found := k.GetInfusion(ctx, reactor.Id, before.Address)
+			if !found {
+				logger.Error("infusion vanished during reconcile",
+					"reactorId", reactor.Id, "address", before.Address)
+				continue
+			}
+
+			if after.Fuel == before.Fuel && after.Power == before.Power {
+				continue
+			}
+
+			infusionsChanged++
+			playersAffected[before.PlayerId] = struct{}{}
+
+			if after.Fuel < before.Fuel {
+				phantomFuelCleared += before.Fuel - after.Fuel
+			}
+			if after.Power < before.Power {
+				phantomPowerCleared += before.Power - after.Power
+			}
+
+			logger.Info("reconciled reactor infusion",
+				"reactorId", reactor.Id, "address", before.Address, "playerId", before.PlayerId,
+				"fuelBefore", before.Fuel, "fuelAfter", after.Fuel,
+				"powerBefore", before.Power, "powerAfter", after.Power)
+		}
+	}
+
+	logger.Info("v0.21.0 reactor infusion reconcile complete",
+		"infusionsVisited", infusionsVisited,
+		"infusionsChanged", infusionsChanged,
+		"phantomFuelCleared", phantomFuelCleared,
+		"phantomPowerCleared", phantomPowerCleared,
+		"playersAffected", len(playersAffected),
+		"commissionDivergence", commissionDivergence)
+
 	return nil
 }
 

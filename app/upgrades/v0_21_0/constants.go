@@ -78,6 +78,19 @@ package v0_21_0
 //     empty and destroyed by the EndBlock destruction queue, stranding the
 //     delegator's fuel.
 //
+//   - Removing a delegation outright now clears the infusion behind it.
+//     BeforeDelegationRemoved was a no-op, and staking's Unbond routes a
+//     delegation whose shares reach zero through RemoveDelegation, which fires
+//     only that hook and skips AfterDelegationModified. A full redelegation
+//     therefore left the source infusion's Fuel, Power and grid capacity in
+//     place while the destination was granted capacity for the same stake, so
+//     one stake produced energy at two reactors. GuildMembershipJoin redelegates
+//     a player's entire infusion, so this accrued through ordinary play, not
+//     just deliberate abuse. Defusing is left alone, since an unbonding balance
+//     outlives the delegation record. The fuel is zeroed explicitly rather than
+//     by reconciling, because the hook fires before staking deletes the row and
+//     a reconcile would rewrite the stale value it was called to clear.
+//
 //   - PlayerUpdatePrimaryAddress now requires the caller to hold PermAll. The
 //     handler grants PermAll to the incoming address and moves the player's
 //     balance and delegations with it, so a narrower PermAdmin gate was a
@@ -521,6 +534,20 @@ package v0_21_0
 //   - MigrateJailedReactorEnergy: gate every reactor whose validator is already
 //     jailed or missing at the upgrade height. These never passed through the new
 //     hook, so without the backfill they would keep producing energy forever.
+//
+//   - MigrateReconcileReactorInfusions: rebuild every reactor infusion from live
+//     staking state, clearing the phantom fuel that full redelegations left at
+//     source reactors while BeforeDelegationRemoved was a no-op. Runs after
+//     MigrateJailedReactorEnergy, so the two agree on a jailed validator's zero
+//     ratio and this has the final say on the fuel behind it. Removing capacity
+//     no stake backs is deliberately allowed to have consequences: each cleared
+//     row queues a grid cascade, and the EndBlocker of the upgrade block sheds
+//     allocations until load fits capacity, which can cascade downstream through
+//     substations and tear down provider agreements. The counters it logs
+//     (infusionsVisited, infusionsChanged, phantomFuelCleared,
+//     phantomPowerCleared, playersAffected, commissionDivergence) are the record
+//     of how much phantom capacity the chain was carrying. Idempotent, and every
+//     write is guarded on the value changing, so a healthy chain emits no events.
 //
 //   - MigratePrimaryAddressPermissions: grant PermAll to every player's current
 //     primary address so the tightened update gate cannot lock out accounts that

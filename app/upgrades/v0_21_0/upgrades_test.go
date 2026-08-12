@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 
 	"structs/app/upgrades"
@@ -1572,4 +1574,244 @@ func TestMigrateOrphanedAllocationControllers_IsIdempotent(t *testing.T) {
 func TestMigrateOrphanedAllocationControllers_EmptyStateIsSafe(t *testing.T) {
 	f := newOrphanFixture(t)
 	require.NoError(t, v0_21_0.MigrateOrphanedAllocationControllers(f.ctx, f.keepers()))
+}
+
+// reconcileFixture builds reactor infusions through the real
+// AfterDelegationModified path, so their grid attributes carry the values a live
+// chain would have rather than hand-seeded ones. A phantom is then made the way
+// the chain made them: by taking the delegation away and leaving the infusion.
+type reconcileFixture struct {
+	t    *testing.T
+	k    structskeeper.Keeper
+	ctx  sdk.Context
+	mock *keepertest.MockStakingKeeper
+}
+
+func newReconcileFixture(t *testing.T) *reconcileFixture {
+	t.Helper()
+
+	k, ctx := keepertest.StructsKeeper(t)
+	return &reconcileFixture{
+		t:    t,
+		k:    k,
+		ctx:  ctx,
+		mock: k.StakingKeeper().(*keepertest.MockStakingKeeper),
+	}
+}
+
+func (f *reconcileFixture) keepers() *upgrades.Keepers {
+	return &upgrades.Keepers{StructsKeeper: f.k}
+}
+
+func (f *reconcileFixture) addReactor(seed string, tokens int64) (types.Reactor, sdk.ValAddress) {
+	f.t.Helper()
+
+	valAddr := sdk.ValAddress(fmt.Sprintf("%-36s", seed)[:36])
+	f.mock.AddValidator(valAddr, math.NewInt(tokens))
+
+	reactor := f.k.AppendReactor(f.ctx, types.Reactor{
+		Validator:         valAddr.String(),
+		RawAddress:        valAddr.Bytes(),
+		DefaultCommission: math.LegacyMustNewDecFromStr("0.04"),
+	})
+
+	return reactor, valAddr
+}
+
+func (f *reconcileFixture) addPlayer(seed string) (types.Player, sdk.AccAddress) {
+	f.t.Helper()
+
+	playerAcc := sdk.AccAddress(fmt.Sprintf("%-36s", seed)[:36])
+	player := types.Player{Creator: playerAcc.String(), PrimaryAddress: playerAcc.String()}
+	player.Index = f.k.GetPlayerCount(f.ctx)
+	player.Id = fmt.Sprintf("%d-%d", types.ObjectType_player, player.Index)
+	f.k.SetPlayer(f.ctx, player)
+	f.k.SetPlayerCount(f.ctx, player.Index+1)
+	f.k.SetPlayerIndexForAddress(f.ctx, player.PrimaryAddress, player.Index)
+
+	return player, playerAcc
+}
+
+func (f *reconcileFixture) infuse(playerAcc sdk.AccAddress, valAddr sdk.ValAddress, tokens int64) {
+	f.t.Helper()
+
+	require.NoError(f.t, f.mock.SetDelegation(f.ctx, stakingtypes.Delegation{
+		DelegatorAddress: playerAcc.String(),
+		ValidatorAddress: valAddr.String(),
+		Shares:           math.LegacyNewDecFromInt(math.NewInt(tokens)),
+	}))
+
+	f.k.ReactorUpdatePlayerInfusion(f.ctx, playerAcc, valAddr)
+}
+
+// dropDelegation reproduces the corruption: staking loses the delegation while
+// the infusion behind it stays exactly as it was. This is what a full
+// redelegation left on chain while BeforeDelegationRemoved was a no-op.
+func (f *reconcileFixture) dropDelegation(playerAcc sdk.AccAddress, valAddr sdk.ValAddress) {
+	f.t.Helper()
+
+	require.NoError(f.t, f.mock.RemoveDelegation(f.ctx, stakingtypes.Delegation{
+		DelegatorAddress: playerAcc.String(),
+		ValidatorAddress: valAddr.String(),
+	}))
+}
+
+func (f *reconcileFixture) capacity(objectId string) uint64 {
+	return f.k.GetGridAttribute(f.ctx,
+		structskeeper.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId))
+}
+
+func (f *reconcileFixture) infusion(reactorId string, playerAcc sdk.AccAddress) types.Infusion {
+	f.t.Helper()
+
+	infusion, found := f.k.GetInfusion(f.ctx, reactorId, playerAcc.String())
+	require.True(f.t, found, "infusion should exist")
+	return infusion
+}
+
+// TestMigrateReconcileReactorInfusions_ClearsPhantom is the state repair for the
+// redelegation leak. One player holds infusions at two reactors but has only one
+// delegation, which is precisely the shape a full redelegation left behind: the
+// destination is real, the source is capacity backed by nothing.
+func TestMigrateReconcileReactorInfusions_ClearsPhantom(t *testing.T) {
+	f := newReconcileFixture(t)
+
+	sourceReactor, sourceVal := f.addReactor("reconcilesource", 1000)
+	destReactor, destVal := f.addReactor("reconciledest", 1000)
+	player, playerAcc := f.addPlayer("reconcileplayer")
+
+	f.infuse(playerAcc, sourceVal, 1000)
+	f.infuse(playerAcc, destVal, 1000)
+
+	// At 4% commission each infusion gives the player 960 and its reactor 40.
+	require.Equal(t, uint64(1920), f.capacity(player.Id), "two infusions, two player shares")
+	require.Equal(t, uint64(40), f.capacity(sourceReactor.Id))
+
+	f.dropDelegation(playerAcc, sourceVal)
+
+	require.NoError(t, v0_21_0.MigrateReconcileReactorInfusions(f.ctx, f.keepers()))
+
+	source := f.infusion(sourceReactor.Id, playerAcc)
+	require.Equal(t, uint64(0), source.Fuel, "fuel with no delegation behind it must go")
+	require.Equal(t, uint64(0), source.Power)
+	require.Equal(t, uint64(0), f.capacity(sourceReactor.Id), "the source reactor loses its commission share")
+
+	dest := f.infusion(destReactor.Id, playerAcc)
+	require.Equal(t, uint64(1000), dest.Fuel, "the real delegation is untouched")
+	require.Equal(t, uint64(1000), dest.Power)
+	require.Equal(t, uint64(40), f.capacity(destReactor.Id))
+
+	require.Equal(t, uint64(960), f.capacity(player.Id),
+		"the player keeps exactly the capacity one stake buys")
+}
+
+// TestMigrateReconcileReactorInfusions_LeavesHealthyStateAlone guards the blast
+// radius from the other side. The migration walks every infusion on the chain,
+// so an unguarded write would re-emit EventInfusion for every healthy row and
+// flood every downstream indexer.
+func TestMigrateReconcileReactorInfusions_LeavesHealthyStateAlone(t *testing.T) {
+	f := newReconcileFixture(t)
+
+	reactor, valAddr := f.addReactor("reconcilehealthy", 1000)
+	player, playerAcc := f.addPlayer("reconcilehealthyplayer")
+	f.infuse(playerAcc, valAddr, 1000)
+
+	before := f.infusion(reactor.Id, playerAcc)
+	eventsBefore := len(f.ctx.EventManager().Events())
+
+	require.NoError(t, v0_21_0.MigrateReconcileReactorInfusions(f.ctx, f.keepers()))
+
+	require.Equal(t, before, f.infusion(reactor.Id, playerAcc), "a healthy row must be left byte-identical")
+	require.Equal(t, uint64(960), f.capacity(player.Id))
+	require.Equal(t, eventsBefore, len(f.ctx.EventManager().Events()),
+		"reconciling healthy state must emit nothing")
+}
+
+// TestMigrateReconcileReactorInfusions_PreservesDefusing covers a player who was
+// mid-withdrawal when the upgrade lands: they unbonded part of their stake and
+// moved the rest. The unbonding balance is owed to them regardless of the
+// phantom fuel sitting next to it.
+//
+// The balance has to be a real unbonding delegation, because Defusing is
+// derived from staking rather than trusted from the record. That is deliberate,
+// and it is the half of the reconcile that repairs a stored value rather than
+// preserving it.
+func TestMigrateReconcileReactorInfusions_PreservesDefusing(t *testing.T) {
+	f := newReconcileFixture(t)
+
+	reactor, valAddr := f.addReactor("reconciledefusing", 1000)
+	_, playerAcc := f.addPlayer("reconciledefusingplayer")
+	f.infuse(playerAcc, valAddr, 1000)
+
+	require.NoError(t, f.mock.SetUnbondingDelegation(f.ctx, stakingtypes.UnbondingDelegation{
+		DelegatorAddress: playerAcc.String(),
+		ValidatorAddress: valAddr.String(),
+		Entries: []stakingtypes.UnbondingDelegationEntry{
+			{Balance: math.NewInt(250), CompletionTime: time.Now().UTC().Add(time.Hour)},
+		},
+	}))
+
+	f.dropDelegation(playerAcc, valAddr)
+
+	require.NoError(t, v0_21_0.MigrateReconcileReactorInfusions(f.ctx, f.keepers()))
+
+	after := f.infusion(reactor.Id, playerAcc)
+	require.Equal(t, uint64(0), after.Fuel, "the phantom fuel still goes")
+	require.Equal(t, uint64(0), after.Power)
+	require.Equal(t, uint64(250), after.Defusing, "an unbonding balance is not phantom capacity")
+}
+
+// TestMigrateReconcileReactorInfusions_IsIdempotent guards a replayed upgrade
+// block.
+func TestMigrateReconcileReactorInfusions_IsIdempotent(t *testing.T) {
+	f := newReconcileFixture(t)
+
+	reactor, valAddr := f.addReactor("reconcilereplay", 1000)
+	player, playerAcc := f.addPlayer("reconcilereplayplayer")
+	f.infuse(playerAcc, valAddr, 1000)
+	f.dropDelegation(playerAcc, valAddr)
+
+	require.NoError(t, v0_21_0.MigrateReconcileReactorInfusions(f.ctx, f.keepers()))
+	once := f.infusion(reactor.Id, playerAcc)
+	onceCapacity := f.capacity(player.Id)
+	eventsAfterFirst := len(f.ctx.EventManager().Events())
+
+	require.NoError(t, v0_21_0.MigrateReconcileReactorInfusions(f.ctx, f.keepers()))
+
+	require.Equal(t, once, f.infusion(reactor.Id, playerAcc))
+	require.Equal(t, onceCapacity, f.capacity(player.Id))
+	require.Equal(t, eventsAfterFirst, len(f.ctx.EventManager().Events()),
+		"a replay must write nothing the first pass did not")
+}
+
+// TestMigrateReconcileReactorInfusions_EmptyStateIsSafe guards the walk itself.
+func TestMigrateReconcileReactorInfusions_EmptyStateIsSafe(t *testing.T) {
+	f := newReconcileFixture(t)
+	require.NoError(t, v0_21_0.MigrateReconcileReactorInfusions(f.ctx, f.keepers()))
+}
+
+// TestMigrateReconcileReactorInfusions_SkipsUnparsableRows keeps the walk going
+// past a record it cannot resolve, so one malformed row cannot abort the upgrade
+// and strand every phantom behind it.
+func TestMigrateReconcileReactorInfusions_SkipsUnparsableRows(t *testing.T) {
+	f := newReconcileFixture(t)
+
+	reactor, valAddr := f.addReactor("reconcileskip", 1000)
+	_, playerAcc := f.addPlayer("reconcileskipplayer")
+	f.infuse(playerAcc, valAddr, 1000)
+	f.dropDelegation(playerAcc, valAddr)
+
+	f.k.SetInfusion(f.ctx, types.Infusion{
+		DestinationType: types.ObjectType_reactor,
+		DestinationId:   reactor.Id,
+		Address:         "not-a-bech32-address",
+		PlayerId:        "1-999",
+		Commission:      math.LegacyZeroDec(),
+		Fuel:            500,
+	})
+
+	require.NoError(t, v0_21_0.MigrateReconcileReactorInfusions(f.ctx, f.keepers()))
+
+	require.Equal(t, uint64(0), f.infusion(reactor.Id, playerAcc).Fuel,
+		"the resolvable phantom is still cleared")
 }
