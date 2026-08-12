@@ -115,6 +115,12 @@ _check_tx_output() {
     elif echo "${output}" | grep -qi "error\|panic\|failed\|invalid"; then
         echo -e "  ${RED}TX failed (simulation/gas estimate error)${NC}"
         echo "  $(echo "${output}" | tail -3)"
+    elif echo "${output}" | grep -qiE "accepts [0-9]+ arg|unknown (command|flag|shorthand)|^Usage:"; then
+        # cobra rejected the invocation, so nothing was ever broadcast. Its wording
+        # carries none of the words above, which is how a malformed address-register
+        # call read as "TX submitted" for as long as it did.
+        echo -e "  ${RED}TX never broadcast (malformed command)${NC}"
+        echo "  $(echo "${output}" | head -2)"
     else
         echo -e "  ${GREEN}TX submitted${NC}"
     fi
@@ -648,6 +654,45 @@ run_tx_expect_permission_denied() {
     fi
     echo -e "  ${GREEN}Correctly rejected${NC} (no permission phrase in output)"
     PASS_COUNT=$((PASS_COUNT + 1))
+    return 0
+}
+
+# run_tx_expect_reject_matching: expect failure AND pin the reason.
+#
+# run_tx_expect_fail passes on any failure, which cannot tell a deliberate
+# refusal from a handler that happened to panic on the way to the same place.
+# That distinction is the whole point of some of these cases, so this variant
+# takes a regex the rejection must match, and treats a panic as a failure even
+# when the regex would otherwise match.
+run_tx_expect_reject_matching() {
+    local description="$1"
+    local pattern="$2"
+    shift 2
+    info "${description}"
+    echo -e "  ${BOLD}structsd ${PARAMS_TX} $*${NC}"
+    local OUTPUT
+    OUTPUT=$(structsd ${PARAMS_TX} "$@" 2>&1) || true
+    local tx_code
+    tx_code=$(echo "${OUTPUT}" | jq -r '.code // empty' 2>/dev/null || echo "")
+    if [ "${tx_code}" = "0" ]; then
+        echo -e "  ${RED}FAIL${NC}: TX succeeded but was expected to fail"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+        return 0
+    fi
+    if echo "${OUTPUT}" | grep -qi "panic"; then
+        echo -e "  ${RED}FAIL${NC}: TX was rejected by a panic, not a check"
+        echo "  $(echo "${OUTPUT}" | grep -i panic | head -1)"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+        return 0
+    fi
+    if echo "${OUTPUT}" | grep -qiE "${pattern}"; then
+        echo -e "  ${GREEN}PASS${NC}: TX rejected matching /${pattern}/"
+        PASS_COUNT=$((PASS_COUNT + 1))
+        return 0
+    fi
+    echo -e "  ${RED}FAIL${NC}: TX rejected, but not matching /${pattern}/"
+    echo "  $(echo "${OUTPUT}" | grep -iE "error|raw_log" | head -2)"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
     return 0
 }
 
@@ -1479,6 +1524,20 @@ assert_eq "Allocation controller transferred" "${PLAYER_1_ID}" "${ALLOC_CTRL}"
 run_tx "Transferring allocation back to player_5" \
     tx structs allocation-transfer "${P5_ALLOC_ID}" "${PLAYER_5_ID}" --from alice
 
+# ─── allocation-transfer to a player that does not exist ───
+#
+# The controller was unchecked: cc.GetPlayer allocates a cache without reading
+# state, so the handler's error guard could never fire and a transfer to any
+# string committed. The allocation ended up controlled by nobody, since the
+# write is keyed by allocation id and so nothing panicked to refuse it.
+run_tx_expect_reject_matching "Transferring allocation ${P5_ALLOC_ID} to a nonexistent player" \
+    "player \(1-99999\) not found" \
+    tx structs allocation-transfer "${P5_ALLOC_ID}" "1-99999" --from player_5
+
+ALLOC_JSON=$(query query structs allocation "${P5_ALLOC_ID}")
+ALLOC_CTRL=$(jqr "${ALLOC_JSON}" '.Allocation.controller')
+assert_eq "Allocation controller survives a refused transfer" "${PLAYER_5_ID}" "${ALLOC_CTRL}"
+
 # ─── allocation-delete ───
 run_tx "Deleting allocation ${P5_ALLOC_ID}" \
     tx structs allocation-delete "${P5_ALLOC_ID}" --from player_5
@@ -2257,6 +2316,32 @@ run_tx "Kick Player 5 (reset after test 20)" \
 
 run_tx "Restoring request bypass to member" \
     tx structs guild-update-join-infusion-minimum-by-request "${GUILD_ID}" member --from alice
+
+# ─── Test 21: membership messages naming a player that does not exist ───────
+#
+# cc.GetPlayer allocates a cache without reading state, so the id a message
+# carries was never resolved. An approver naming a phantom got a synthesized
+# application and ApproveRequest mutated a zero-valued player; the transaction
+# died only because the commit keyed on the empty player id and the KV store
+# panics on an empty key. These must be refusals now, not panics.
+info "--- Test 21: membership messages naming a nonexistent player ---"
+
+run_tx_expect_reject_matching "Alice approves a request from a nonexistent player" \
+    "player \(1-99999\) not found" \
+    tx structs guild-membership-request-approve "1-99999" --from alice
+
+run_tx_expect_reject_matching "Alice invites a nonexistent player" \
+    "player \(1-99999\) not found" \
+    tx structs guild-membership-invite "1-99999" --from alice
+
+run_tx_expect_reject_matching "Alice kicks a nonexistent player" \
+    "player \(1-99999\) not found" \
+    tx structs guild-membership-kick "1-99999" --from alice
+
+# The guild must be untouched by all three.
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+assert_eq "Guild owner unchanged after phantom membership attempts" "${PLAYER_1_ID}" \
+    "$(jqr "${GUILD_JSON}" '.Guild.owner' '')"
 
 # ─── Final: Re-join Player 5 for subsequent phases ──────────────────────────
 info "--- Re-joining Player 5 for later phases ---"
@@ -3406,6 +3491,7 @@ section "PHASE 5: Address Register & Proxy Join"
 
 run_tx "Registering external address for Player 1" \
     tx structs address-register \
+    "${PLAYER_1_ID}" \
     structs12eufgpe24hnqndwh7hccxw36nhs47wt85hunjw \
     02faf4ada9b17d17441861baa580f95b4e5852cd56f6555c4c1f1ac6d27f6b97f8 \
     cbf4e9276a7f54ecea553779c1a589431e29327d894eef12edadf1e314030e5b3259db9f8f3a2b963f94ed13b7c66b94fa15cb5bf7df4bddd78bb64480093a8b00 \
