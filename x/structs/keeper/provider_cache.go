@@ -317,6 +317,7 @@ func (cache *ProviderCache) Delete() (error) {
     if err := cache.drainPoolsToOwner(); err != nil {
         return err
     }
+    cache.CC.k.RemoveProviderPoolAddresses(cache.CC.ctx, cache.GetProviderId())
 
     cache.CC.ClearGridAttribute(cache.CheckpointBlockAttributeId)
     cache.CC.ClearGridAttribute(cache.AgreementLoadAttributeId)
@@ -434,7 +435,16 @@ func (cache *ProviderCache) SetDurationMinimum(minimum uint64) (error){
 // checkpoint into their earnings pool. It bills the provider's *current*
 // agreement load across the whole span since that checkpoint, so it must run
 // before any load change or the new load is billed over the old span. Every
-// agreement teardown path checkpoints for exactly that reason.
+// agreement teardown path checkpoints for exactly that reason, and so do
+// AgreementOpen and the two capacity handlers.
+//
+// It cannot fail. Provider revenue is subordinate to consumer collateral, so
+// SweepRevenue clamps the payment to what the pool can spare and reports any
+// difference as an EventProviderRevenueShortfall rather than as an error, and the
+// checkpoint block advances either way. The error return is kept only so callers
+// need not change if that ever stops being true — but note what changing it would
+// arm: several callers guard on this result, including one in Expire that sits in
+// front of the load decrement an expiry gets exactly one chance to perform.
 func (cache *ProviderCache) Checkpoint() (error) {
 
     // First handle the balances available via checkpoint

@@ -248,6 +248,19 @@ zero is rejected rather than treated as a free re-base.
 `x/structs/keeper/agreement_capacity_test.go` drives the cache methods directly, without the
 transaction rollback that would otherwise mask a payout moving back ahead of validation.
 
+**The checkpoint for a capacity change lives in the handler, so test it there.** Unlike a teardown,
+which checkpoints inside `agreement_cache.go` and is held to it by
+`TestArch_TeardownPathsCheckpointBeforeMutating`, `CapacityIncrease` and `CapacityDecrease` are
+checkpointed by their message handlers. That put the ordering outside everything that was watching
+it: the arch test only walks functions calling `beginTeardown()`, and every capacity test drove the
+cache method with its own local checkpoint, so deleting `Checkpoint()` from either handler left the
+suite green while the next checkpoint billed the new capacity across the span the old one served.
+`TestCapacityChange_HandlerCheckpointsBeforeRaisingLoad` and its `LoweringLoad` sibling go through
+the message server for exactly that reason. Note that only one direction is visible to the solvency
+invariant — an increase overbills and leaves the pool short, while a decrease underbills and leaves
+it over-funded with the revenue stranded — so both assert the amount swept rather than relying on
+the invariant.
+
 **A destroyed struct is still there, so every handler must reject it.** Destruction does not
 delete: `DestroyAndCommit` sets the Destroyed flag, leaves the Built flag alone and deliberately
 leaves the struct in its planet or fleet slot, and `StructSweepDestroyed` only clears the slot and
@@ -392,6 +405,23 @@ close: a pending invite's destination can change under an invitee who is about t
 cannot pin it, because `substationId` on `MsgGuildMembershipInviteApprove` is a setter gated by
 `CanManageConnectionsBy` rather than an assertion — naming the guild's own entry substation needs
 connection rights there that a prospective member will not hold.
+
+**A clawback token may only live where clawback is coherent.** Native guild tokens may be sent to
+registered player addresses, the structs module, and indexed provider pools — nowhere else. This is
+a bank send restriction rather than an ante check because ordinary bank sends and ICA message
+execution bypass the structs ante, and it makes IBC escrow fail closed without tracking ibc-go's
+address derivations. The restriction is destination-only, so a pre-upgrade balance at an unusual
+address can always leave for a player. Provider pools are not safe-deposit boxes: earnings are
+fully confiscatable, and collateral is protected only up to
+`ProviderCollateralObligation`, the same helper the solvency invariant uses. Excess deposits remain
+confiscatable. `ProviderPoolAddressKey` is derived state but load-bearing — write both rows beside
+provider pool creation, clear them only after deletion drains both pools, rebuild them during
+genesis import, and backfill them before any upgrade migration moves balances. Pre-upgrade IBC
+escrow holding guild tokens is protect-only because it backs vouchers already in circulation; its
+marker is derived too, and `ProtectLegacyGuildEscrowBalances` rebuilds it from exported channel and
+bank state during both the upgrade and genesis import.
+`x/structs/keeper/guild_bank_holder_test.go` and `app/guild_bank_send_restriction_test.go` cover the
+policy and the full guild-denominated agreement lifecycle.
 
 **Use the typed errors.** Keeper codes (1050–1800) live in
 `x/structs/types/errors_structured.go`, ante codes (2000–2050) in `app/ante/errors.go`. The

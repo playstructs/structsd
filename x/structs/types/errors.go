@@ -196,6 +196,8 @@ var (
 	ErrGuildMinimumNotMet         = sdkerrors.Register(ModuleName, 1507, "guild join minimum not met")
 	ErrInvalidGuildJoinBypassLevel = sdkerrors.Register(ModuleName, 1508, "invalid guild join bypass level")
 	ErrGuildNameTaken              = sdkerrors.Register(ModuleName, 1509, "guild name already taken")
+	ErrGuildBankDestination        = sdkerrors.Register(ModuleName, 1510, "guild bank token destination denied")
+	ErrGuildBankConfiscation       = sdkerrors.Register(ModuleName, 1511, "guild bank confiscation denied")
 )
 
 // -----------------------------------------------------------------------------

@@ -45,6 +45,15 @@ package v0_21_0
 //     uint64, matching the transaction and event schema. Values outside that
 //     range are rejected before arithmetic or state mutation.
 //
+//   - Guild tokens are now game-internal, clawback-enabled assets. Bank sends may
+//     deliver them only to registered player addresses, the structs module
+//     account, or provider collateral/earnings pools; this prevents ICS-20
+//     escrow from holding native guild tokens whose backing a later confiscation
+//     could burn. Provider agreements may still be priced in guild tokens.
+//     Confiscation protects only the amount a provider collateral pool currently
+//     owes its open agreements; excess deposits and all swept earnings remain
+//     confiscatable. Existing v1 IBC escrow balances are protect-only.
+//
 //   - StructType gains canDefend (fleet=true, planetary=false). StructDefenseSet
 //     and combat defender resolution reject non-defending types.
 //
@@ -684,6 +693,19 @@ package v0_21_0
 //     pre-upgrade agreement leaves its provider's pool short by
 //     capacity * rate * (1 - providerCancellationPenalty) and the
 //     provider-collateral-solvency invariant reports insolvency.
+//
+//   - MigrateProviderPoolAddressIndex: rebuild the reverse lookup from each
+//     provider's derived collateral and earnings addresses to its id and pool
+//     role. It runs before every custom migration that can move guild-token
+//     balances through those pools, because the binary's bank send restriction
+//     is already active during the upgrade handler.
+//
+//   - MigrateProtectLegacyGuildEscrow: find v1 transfer-channel escrow addresses
+//     already holding native guild tokens and mark them non-confiscatable, since
+//     those balances back vouchers on counterparty chains. It logs every balance
+//     for operator-led voucher unwind; it does not invent an unescrow packet.
+//     The same scan runs during structs genesis import, after IBC and bank have
+//     restored their state, so an export/import restart reconstructs the marker.
 //
 //   - MigrateExpireOverdueAgreements: settle every agreement whose end block has
 //     already passed at the upgrade height, so the new agreement-expiry-liveness

@@ -23,7 +23,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 	"github.com/stretchr/testify/require"
 
 	"structs/x/structs/keeper"
@@ -174,6 +173,10 @@ func (m *MockBankKeeper) SpendableCoins(ctx context.Context, addr sdk.AccAddress
 		return sdk.Coins{}
 	}
 	return coins
+}
+
+func (m *MockBankKeeper) GetAllBalances(ctx context.Context, addr sdk.AccAddress) sdk.Coins {
+	return m.SpendableCoins(ctx, addr)
 }
 
 func (m *MockBankKeeper) SpendableCoin(ctx context.Context, addr sdk.AccAddress, denom string) sdk.Coin {
@@ -680,9 +683,7 @@ func StructsKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 		runtime.NewTransientStoreService(transientStoreKey),
 		log.NewNopLogger(),
 		authority.String(),
-		func() *ibckeeper.Keeper {
-			return &ibckeeper.Keeper{}
-		},
+		nil,
 		mockBankKeeper,
 		mockStakingKeeper,
 		mockAccountKeeper,

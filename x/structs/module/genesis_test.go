@@ -9,11 +9,35 @@ import (
 
 	keepertest "structs/testutil/keeper"
 	"structs/testutil/nullify"
+	keeperlib "structs/x/structs/keeper"
 	structs "structs/x/structs/module"
 	"structs/x/structs/types"
 
 	"github.com/stretchr/testify/require"
 )
+
+func TestGenesis_RebuildsProviderPoolAddressIndex(t *testing.T) {
+	genesisState := types.DefaultGenesis()
+	genesisState.ProviderList = []types.Provider{{Id: "10-9", Index: 9}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	collateral := keeperlib.GetProviderCollateralPoolLocation("10-9").String()
+	providerId, kind, found := k.GetProviderPoolAddress(ctx, collateral)
+	require.True(t, found)
+	require.Equal(t, "10-9", providerId)
+	require.Equal(t, keeperlib.ProviderPoolKindCollateral, kind)
+
+	exported := structs.ExportGenesis(ctx, k)
+	k2, ctx2 := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx2, k2, *exported)
+
+	providerId, kind, found = k2.GetProviderPoolAddress(ctx2, collateral)
+	require.True(t, found)
+	require.Equal(t, "10-9", providerId)
+	require.Equal(t, keeperlib.ProviderPoolKindCollateral, kind)
+}
 
 func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{

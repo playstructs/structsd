@@ -284,6 +284,11 @@ func New(
 		panic(err)
 	}
 
+	// Guild tokens are clawback-enabled game assets. Keep them inside registered
+	// player accounts and the protocol pools whose accounting understands them;
+	// this also prevents ICS-20 from escrowing native guild tokens.
+	app.BankKeeper.AppendSendRestriction(app.StructsKeeper.GuildBankDenomSendRestriction)
+
 	// Below we could construct and set an application specific mempool and
 	// ABCI 1.0 PrepareProposal and ProcessProposal handlers. These defaults are
 	// already set in the SDK's BaseApp, this shows an example of how to override

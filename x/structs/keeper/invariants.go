@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"structs/x/structs/types"
@@ -41,30 +40,8 @@ func ProviderCollateralSolvencyInvariant(k Keeper) sdk.Invariant {
 		var broken bool
 		var msg strings.Builder
 
-		currentBlock := uint64(ctx.BlockHeight())
-
 		for _, provider := range k.GetAllProvider(ctx) {
-			// Nothing can be owed against a provider with no usable published
-			// rate, and the arithmetic below would be meaningless.
-			if provider.Rate.Denom == "" || provider.Rate.Amount.IsNil() || provider.ProviderCancellationPenalty.IsNil() {
-				continue
-			}
-
-			owed := math.ZeroInt()
-
-			for _, agreement := range k.GetAllAgreementByProviderIndex(ctx, provider.Id) {
-				capacity := math.NewIntFromUint64(agreement.Capacity)
-
-				// Both spans are clamped to the agreement's own window, matching
-				// AgreementCache, so served + unearned is always the agreement's
-				// full duration and never more than was deposited against it.
-				unearnedBlocks := math.NewIntFromUint64(blocksBetween(clampToWindow(currentBlock, agreement.StartBlock, agreement.EndBlock), agreement.EndBlock))
-				owed = owed.Add(unearnedBlocks.Mul(provider.Rate.Amount).Mul(capacity))
-
-				servedBlocks := math.NewIntFromUint64(blocksBetween(agreement.StartBlock, clampToWindow(currentBlock, agreement.StartBlock, agreement.EndBlock)))
-				accrued := math.LegacyNewDecFromInt(servedBlocks.Mul(provider.Rate.Amount).Mul(capacity))
-				owed = owed.Add(accrued.Mul(provider.ProviderCancellationPenalty).TruncateInt())
-			}
+			owed := k.ProviderCollateralObligation(ctx, provider)
 
 			if !owed.IsPositive() {
 				continue

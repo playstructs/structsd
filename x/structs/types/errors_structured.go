@@ -1052,7 +1052,99 @@ func (e *GuildUpdateError) LogFields() []interface{} {
 func (e *GuildUpdateError) Unwrap() error { return ErrGuildUpdate }
 
 // =============================================================================
-// 19. AllocationError
+// 19. GuildBankDestinationError
+// =============================================================================
+
+// GuildBankDestinationError indicates that a clawback-enabled guild token was
+// sent to an account outside the game-controlled holder set.
+type GuildBankDestinationError struct {
+	Denom   string
+	Address string
+	Reason  string
+}
+
+func NewGuildBankDestinationError(denom, address, reason string) *GuildBankDestinationError {
+	return &GuildBankDestinationError{Denom: denom, Address: address, Reason: reason}
+}
+
+func (e *GuildBankDestinationError) Error() string {
+	return fmt.Sprintf("guild bank token (%s) cannot be sent to address (%s): %s", e.Denom, e.Address, e.Reason)
+}
+
+func (e *GuildBankDestinationError) Code() uint32 { return 1510 }
+
+func (e *GuildBankDestinationError) LogFields() []interface{} {
+	return []interface{}{
+		"error_type", "guild_bank_destination",
+		"denom", e.Denom,
+		"address", e.Address,
+		"reason", e.Reason,
+	}
+}
+
+func (e *GuildBankDestinationError) Unwrap() error { return ErrGuildBankDestination }
+
+// =============================================================================
+// 20. GuildBankConfiscationError
+// =============================================================================
+
+// GuildBankConfiscationError indicates that a burn would consume protocol
+// custody or collateral currently owed to agreement consumers.
+type GuildBankConfiscationError struct {
+	GuildId       string
+	Denom         string
+	Address       string
+	Requested     string
+	Confiscatable string
+	Protected     string
+	Reason        string
+}
+
+func NewGuildBankConfiscationError(guildId, denom, address, reason string) *GuildBankConfiscationError {
+	return &GuildBankConfiscationError{
+		GuildId: guildId,
+		Denom:   denom,
+		Address: address,
+		Reason:  reason,
+	}
+}
+
+func (e *GuildBankConfiscationError) WithAmounts(requested, confiscatable, protected string) *GuildBankConfiscationError {
+	e.Requested = requested
+	e.Confiscatable = confiscatable
+	e.Protected = protected
+	return e
+}
+
+func (e *GuildBankConfiscationError) Error() string {
+	if e.Requested != "" {
+		return fmt.Sprintf(
+			"guild (%s) cannot confiscate %s%s from address (%s): only %s is confiscatable and %s is protected",
+			e.GuildId, e.Requested, e.Denom, e.Address, e.Confiscatable, e.Protected,
+		)
+	}
+	return fmt.Sprintf("guild (%s) cannot confiscate %s from address (%s): %s", e.GuildId, e.Denom, e.Address, e.Reason)
+}
+
+func (e *GuildBankConfiscationError) Code() uint32 { return 1511 }
+
+func (e *GuildBankConfiscationError) LogFields() []interface{} {
+	return []interface{}{
+		"error_type", "guild_bank_confiscation",
+		"guild_id", e.GuildId,
+		"denom", e.Denom,
+		"address", e.Address,
+		"requested", e.Requested,
+		"confiscatable", e.Confiscatable,
+		"protected", e.Protected,
+		"reason", e.Reason,
+	}
+}
+
+func (e *GuildBankConfiscationError) Unwrap() error { return ErrGuildBankConfiscation }
+
+// =============================================================================
+// 21. AllocationError
 // =============================================================================
 
 // AllocationError indicates an allocation operation failure.
@@ -1142,7 +1234,7 @@ func (e *AllocationError) LogFields() []interface{} {
 func (e *AllocationError) Unwrap() error { return ErrAllocationCreate }
 
 // =============================================================================
-// 20. ReactorError
+// 22. ReactorError
 // =============================================================================
 
 // ReactorError indicates a reactor operation failure.
@@ -1242,7 +1334,7 @@ func (e *ReactorError) LogFields() []interface{} {
 func (e *ReactorError) Unwrap() error { return ErrReactor }
 
 // =============================================================================
-// 21. WorkFailureError
+// 23. WorkFailureError
 // =============================================================================
 
 // WorkFailureError indicates a proof-of-work verification failure.
@@ -1285,7 +1377,7 @@ func (e *WorkFailureError) LogFields() []interface{} {
 func (e *WorkFailureError) Unwrap() error { return ErrWorkFailure }
 
 // =============================================================================
-// 22. ProviderAccessError
+// 24. ProviderAccessError
 // =============================================================================
 
 // ProviderAccessError indicates a provider access denial.
@@ -1348,7 +1440,7 @@ func (e *ProviderAccessError) LogFields() []interface{} {
 func (e *ProviderAccessError) Unwrap() error { return ErrProviderAccess }
 
 // =============================================================================
-// 23. ParameterValidationError
+// 25. ParameterValidationError
 // =============================================================================
 
 // ParameterValidationError indicates a parameter validation failure.
@@ -1493,7 +1585,7 @@ func (e *AgreementSettlementError) LogFields() []interface{} {
 func (e *AgreementSettlementError) Unwrap() error { return ErrAgreementSettlement }
 
 // =============================================================================
-// 24. PlanetStateError
+// 26. PlanetStateError
 // =============================================================================
 
 // PlanetStateError indicates an invalid planet state for an operation.
@@ -1538,7 +1630,7 @@ func (e *PlanetStateError) LogFields() []interface{} {
 func (e *PlanetStateError) Unwrap() error { return ErrPlanetState }
 
 // =============================================================================
-// 25. FuelInfuseError
+// 27. FuelInfuseError
 // =============================================================================
 
 // FuelInfuseError indicates a fuel infusion failure.

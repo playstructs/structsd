@@ -194,9 +194,14 @@ const (
 	ProviderCountKey    = "Provider/count/"
 
 	ProviderGuildAccessKey    = "Provider/guild/"
+	ProviderPoolAddressKey    = "Provider/poolAddress/"
 
 	ProviderCollateralPool  = "structs/Provider/Collateral/"
 	ProviderEarningsPool    = "structs/Provider/Earnings/"
+)
+
+const (
+	GuildBankLegacyEscrowKey = "Guild/bankLegacyEscrow/"
 )
 
 const (

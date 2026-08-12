@@ -34,6 +34,12 @@ func CreateUpgradeHandler(
 			return newVM, err
 		}
 
+		// The binary's bank send restriction is already active while this handler
+		// runs. Build the provider-pool allowlist before any migration below moves
+		// guild-denom balances through those pools.
+		MigrateProviderPoolAddressIndex(ctx, keepers)
+		MigrateProtectLegacyGuildEscrow(ctx, keepers)
+
 		if err := MigrateGuildBankFees(ctx, keepers); err != nil {
 			return newVM, err
 		}
@@ -135,6 +141,23 @@ func CreateUpgradeHandler(
 
 		return newVM, nil
 	}
+}
+
+// MigrateProviderPoolAddressIndex rebuilds the reverse lookup required by the
+// guild-token send restriction and confiscation policy. It must run before any
+// migration that sends a guild denom into or between provider pools.
+func MigrateProviderPoolAddressIndex(ctx context.Context, keepers *upgrades.Keepers) {
+	for _, provider := range keepers.StructsKeeper.GetAllProvider(ctx) {
+		keepers.StructsKeeper.IndexProviderPoolAddresses(ctx, provider.Id)
+	}
+}
+
+// MigrateProtectLegacyGuildEscrow records v1 transfer escrows that already hold
+// native guild tokens. New escrow is rejected by the bank send restriction, but
+// balances written by an older binary still back vouchers and must not be
+// confiscated out from under them.
+func MigrateProtectLegacyGuildEscrow(ctx context.Context, keepers *upgrades.Keepers) {
+	keepers.StructsKeeper.ProtectLegacyGuildEscrowBalances(ctx)
 }
 
 // MigrateGuildBankFees backfills the bankConvertInFee / bankConvertOutFee fields

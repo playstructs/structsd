@@ -107,6 +107,7 @@ type BankKeeper interface {
 	GetDenomMetaData(context.Context, string) (banktypes.Metadata, bool)
 	GetSupply(context.Context, string) sdk.Coin
 	HasBalance(context.Context, sdk.AccAddress, sdk.Coin) bool
+	GetAllBalances(context.Context, sdk.AccAddress) sdk.Coins
 	SpendableCoins(context.Context, sdk.AccAddress) sdk.Coins
 	SpendableCoin(context.Context, sdk.AccAddress, string) sdk.Coin
 	SendCoins(context.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) error

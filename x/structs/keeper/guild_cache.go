@@ -561,6 +561,39 @@ func (cache *GuildCache) BankConfiscateAndBurn(amountToken math.Int, address str
 	if errAddr != nil {
 		return errAddr
 	}
+
+	if cache.CC.k.IsLegacyGuildBankEscrow(cache.CC.ctx, address) {
+		return types.NewGuildBankConfiscationError(
+			cache.GetGuildId(), cache.GetBankDenom(), address, "ibc_escrow_backing",
+		)
+	}
+
+	providerId, poolKind, isProviderPool := cache.CC.k.GetProviderPoolAddress(cache.CC.ctx, address)
+	if isProviderPool && poolKind == ProviderPoolKindCollateral {
+		provider, found := cache.CC.k.GetProvider(cache.CC.ctx, providerId)
+		if !found {
+			return types.NewGuildBankConfiscationError(
+				cache.GetGuildId(), cache.GetBankDenom(), address, "provider_not_found",
+			)
+		}
+
+		protected := math.ZeroInt()
+		if provider.Rate.Denom == cache.GetBankDenom() {
+			protected = cache.CC.k.ProviderCollateralObligation(cache.CC.ctx, provider)
+		}
+
+		held := cache.CC.k.bankKeeper.SpendableCoin(cache.CC.ctx, playerAcc, cache.GetBankDenom()).Amount
+		confiscatable := held.Sub(protected)
+		if confiscatable.IsNegative() {
+			confiscatable = math.ZeroInt()
+		}
+		if amountToken.GT(confiscatable) {
+			return types.NewGuildBankConfiscationError(
+				cache.GetGuildId(), cache.GetBankDenom(), address, "consumer_collateral",
+			).WithAmounts(amountToken.String(), confiscatable.String(), protected.String())
+		}
+	}
+
 	errConfiscate := cache.CC.k.bankKeeper.SendCoinsFromAccountToModule(cache.CC.ctx, playerAcc, types.ModuleName, guildTokenCoins)
 	if errConfiscate != nil {
 		return errConfiscate

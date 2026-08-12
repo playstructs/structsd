@@ -18,6 +18,31 @@ import (
 	"structs/x/structs/types"
 )
 
+func TestMigrateProviderPoolAddressIndex(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+
+	provider := types.Provider{Id: "10-44", Index: 44}
+	k.ImportProvider(ctx, provider)
+
+	collateral := structskeeper.GetProviderCollateralPoolLocation(provider.Id).String()
+	earnings := structskeeper.GetProviderEarningsPoolLocation(provider.Id).String()
+	_, _, found := k.GetProviderPoolAddress(ctx, collateral)
+	require.False(t, found)
+
+	v0_21_0.MigrateProviderPoolAddressIndex(ctx, keepers)
+
+	gotProvider, kind, found := k.GetProviderPoolAddress(ctx, collateral)
+	require.True(t, found)
+	require.Equal(t, provider.Id, gotProvider)
+	require.Equal(t, structskeeper.ProviderPoolKindCollateral, kind)
+
+	gotProvider, kind, found = k.GetProviderPoolAddress(ctx, earnings)
+	require.True(t, found)
+	require.Equal(t, provider.Id, gotProvider)
+	require.Equal(t, structskeeper.ProviderPoolKindEarnings, kind)
+}
+
 // TestMigrateGuildBankFees verifies the backfill leaves valid (non-nil) zero
 // fees on guilds that lack them, preserves guilds that already have fees set,
 // and is idempotent.

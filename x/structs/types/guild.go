@@ -22,6 +22,14 @@ func ParseGuildBankDenom(denom string) (string, error) {
 	return denomSlice[1], nil
 }
 
+// IsGuildBankDenom reports whether denom is one produced by a guild bank.
+// Guild tokens are clawback-enabled game assets, so bank send restrictions use
+// this predicate to keep their holder set aligned with ParseGuildBankDenom.
+func IsGuildBankDenom(denom string) bool {
+	_, err := ParseGuildBankDenom(denom)
+	return err == nil
+}
+
 // NormalizeBankFees replaces the nil LegacyDec values produced when records
 // written before v0.21.0 are decoded. It reports whether the guild changed.
 func (guild *Guild) NormalizeBankFees() bool {

@@ -383,3 +383,114 @@ func TestCapacityChange_CheckpointBillsOnlyServedBlocks(t *testing.T) {
 	require.True(t, f.balance(f.collateralAcc).Equal(collateral.Sub(served.QuoRaw(2))),
 		"the collateral pool should hold everything the sweep did not take")
 }
+
+// TestCapacityChange_HandlerCheckpointsBeforeRaisingLoad drives the message
+// server rather than the cache, because the checkpoint a capacity change depends
+// on lives in the handler and nothing else here exercises it.
+//
+// The rejection tests above deliberately skip that checkpoint, and
+// TestCapacityChange_CheckpointBillsOnlyServedBlocks calls Checkpoint directly,
+// so deleting agreement.GetProvider().Checkpoint() from the handler used to leave
+// the entire suite green. What the deletion costs is not a missing call but
+// retroactive billing: the checkpoint block stays at the opening height while
+// load rises, so the next checkpoint charges the new capacity across the span the
+// old one was serving, out of a collateral pool shared with every other agreement
+// of that provider.
+//
+// The provider penalty is zero so the handler's checkpoint is the only thing that
+// can move money — PayoutVoidedProviderCancellationPenalty prices off it and pays
+// nothing — which makes the first assertion read zero rather than merely low if
+// the checkpoint goes missing.
+//
+// The duration is long on purpose. An increase re-prices the unearned span as
+// remaining*old/new, so enlarging a short agreement is refused for a rescaled
+// duration below the provider's published minimum before any billing happens, and
+// the test would pass whatever the checkpoint did.
+func TestCapacityChange_HandlerCheckpointsBeforeRaisingLoad(t *testing.T) {
+	const rate, capacity, duration, servedBlocks = 10, 100, 5000, 10
+	f := setupTeardownFixture(t, rate, "0", "0")
+
+	agreement, collateral := f.openAgreement(t, capacity, duration)
+	advanceBlocks(f, servedBlocks)
+
+	_, err := f.ms.AgreementCapacityIncrease(f.ctx, &types.MsgAgreementCapacityIncrease{
+		Creator:          f.consumer.Creator,
+		AgreementId:      agreement.Id,
+		CapacityIncrease: capacity,
+	})
+	require.NoError(t, err)
+
+	// The handler's checkpoint settled the span served at the old capacity, and
+	// nothing beyond it.
+	firstSpan := math.NewInt(servedBlocks * rate * capacity)
+	require.True(t, f.balance(f.earningsAcc).Equal(firstSpan),
+		"the handler must sweep the served span at the old capacity: expected %s, got %s",
+		firstSpan, f.balance(f.earningsAcc))
+
+	// The second span is then billed at the new capacity over its own blocks.
+	// Without the handler's checkpoint this charges the doubled load across both
+	// spans and takes one span too much out of the pool.
+	advanceBlocks(f, servedBlocks)
+
+	cc := f.k.NewCurrentContext(sdk.UnwrapSDKContext(f.ctx))
+	require.NoError(t, cc.GetProvider(f.provider.Id).Checkpoint())
+	cc.CommitAll()
+
+	total := firstSpan.Add(math.NewInt(servedBlocks * rate * capacity * 2))
+	require.True(t, f.balance(f.earningsAcc).Equal(total),
+		"each capacity must be billed over its own span only: expected %s, got %s",
+		total, f.balance(f.earningsAcc))
+	require.True(t, f.balance(f.collateralAcc).Equal(collateral.Sub(total)),
+		"the collateral pool should hold everything the sweeps did not take")
+
+	// Overbilling surfaces as insolvency rather than as a wrong number, so assert
+	// it the way the chain itself would notice.
+	invariant := keeperlib.ProviderCollateralSolvencyInvariant(f.k)
+	msg, broken := invariant(sdk.UnwrapSDKContext(f.ctx))
+	require.False(t, broken, "retroactive billing leaves the pool short: %s", msg)
+}
+
+// TestCapacityChange_HandlerCheckpointsBeforeLoweringLoad is the same property on
+// the decrease handler, which has the identical shape.
+//
+// Note that the invariant cannot stand in for the earnings assertion here. A
+// stale checkpoint underbills a decrease rather than overbilling it, which leaves
+// the pool over-funded instead of short — and revenue stranded there is
+// unreachable, since both Checkpoint and WithdrawBalanceAndCommit are computed
+// from load. Only the swept amount shows it.
+func TestCapacityChange_HandlerCheckpointsBeforeLoweringLoad(t *testing.T) {
+	const rate, capacity, duration, servedBlocks = 10, 200, 5000, 10
+	f := setupTeardownFixture(t, rate, "0", "0")
+
+	agreement, collateral := f.openAgreement(t, capacity, duration)
+	advanceBlocks(f, servedBlocks)
+
+	_, err := f.ms.AgreementCapacityDecrease(f.ctx, &types.MsgAgreementCapacityDecrease{
+		Creator:          f.consumer.Creator,
+		AgreementId:      agreement.Id,
+		CapacityDecrease: capacity / 2,
+	})
+	require.NoError(t, err)
+
+	firstSpan := math.NewInt(servedBlocks * rate * capacity)
+	require.True(t, f.balance(f.earningsAcc).Equal(firstSpan),
+		"the handler must sweep the served span at the old capacity: expected %s, got %s",
+		firstSpan, f.balance(f.earningsAcc))
+
+	advanceBlocks(f, servedBlocks)
+
+	cc := f.k.NewCurrentContext(sdk.UnwrapSDKContext(f.ctx))
+	require.NoError(t, cc.GetProvider(f.provider.Id).Checkpoint())
+	cc.CommitAll()
+
+	total := firstSpan.Add(math.NewInt(servedBlocks * rate * capacity / 2))
+	require.True(t, f.balance(f.earningsAcc).Equal(total),
+		"each capacity must be billed over its own span only: expected %s, got %s",
+		total, f.balance(f.earningsAcc))
+	require.True(t, f.balance(f.collateralAcc).Equal(collateral.Sub(total)),
+		"the collateral pool should hold everything the sweeps did not take")
+
+	invariant := keeperlib.ProviderCollateralSolvencyInvariant(f.k)
+	msg, broken := invariant(sdk.UnwrapSDKContext(f.ctx))
+	require.False(t, broken, "a decrease must leave the pool solvent: %s", msg)
+}

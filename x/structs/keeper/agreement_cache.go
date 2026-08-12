@@ -595,6 +595,12 @@ func (cache *AgreementCache) Expire() error {
 		return err
 	}
 
+	// This guard is inert and has to stay that way: Checkpoint cannot fail, and
+	// the two statements below are the ones an expiry gets a single chance to
+	// perform. Returning here would not defer the teardown, it would cancel it,
+	// leaving the agreement holding capacity in the provider's load that every
+	// later checkpoint bills against other consumers' escrow. If Checkpoint ever
+	// becomes fallible, this call site has to stop propagating rather than start.
 	if err := cache.checkpointProvider(); err != nil {
 		return err
 	}

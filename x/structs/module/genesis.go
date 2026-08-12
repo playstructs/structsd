@@ -123,6 +123,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	// Providers
 	for _, provider := range genState.ProviderList {
 		cc.GenesisImportProvider(provider)
+		k.IndexProviderPoolAddresses(ctx, provider.Id)
 	}
 
 	// Permissions
@@ -194,6 +195,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	// =========================================================================
 
 	cc.CommitAll()
+	// IBC core, transfer and bank initialize before structs in app_config.go.
+	// Rebuild this derived protect-only index from their exported state so an
+	// export/import restart cannot make existing voucher backing confiscatable.
+	k.ProtectLegacyGuildEscrowBalances(ctx)
 
 	// Struct defenders (after CC commit, so structs are in KV store)
 	for _, elem := range genState.StructDefenderList {
