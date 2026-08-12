@@ -4,7 +4,6 @@ import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
-	"math"
 )
 
 func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.MsgPlayerUpdatePrimaryAddress) (*types.MsgPlayerUpdatePrimaryAddressResponse, error) {
@@ -50,13 +49,7 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
     }
 
     // Move Reactor Infusions over
-    primaryDelegations, _ := k.stakingKeeper.GetDelegatorDelegations(ctx, oldAcc, math.MaxUint16)
-    for _, delegation := range primaryDelegations {
-        k.stakingKeeper.RemoveDelegation(ctx, delegation)
-
-        delegation.DelegatorAddress = msg.PrimaryAddress
-        k.stakingKeeper.SetDelegation(ctx, delegation)
-    }
+    k.MoveDelegationsToAddress(ctx, cc, oldAcc, msg.PrimaryAddress)
 
     // Help the indexer along regarding Ore balances
     _ = ctx.EventManager().EmitTypedEvent(&types.EventOreMigrate{&types.EventOreMigrateDetail{PlayerId: player.GetPlayerId(), PrimaryAddress: msg.PrimaryAddress, OldPrimaryAddress: player.GetPrimaryAddress(), Amount: player.GetStoredOre()}})

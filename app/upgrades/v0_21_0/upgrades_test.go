@@ -1815,3 +1815,126 @@ func TestMigrateReconcileReactorInfusions_SkipsUnparsableRows(t *testing.T) {
 	require.Equal(t, uint64(0), f.infusion(reactor.Id, playerAcc).Fuel,
 		"the resolvable phantom is still cleared")
 }
+
+// reassignAddress hands an address from one player to the next, which is what
+// AddressRevoke followed by AddressRegister leaves in the index and what
+// UpsertInfusion used to ignore.
+func (f *reconcileFixture) reassignAddress(playerAcc sdk.AccAddress, from types.Player, to types.Player) {
+	f.t.Helper()
+
+	f.k.RevokePlayerIndexForAddress(f.ctx, playerAcc.String(), from.Index)
+	require.NoError(f.t, f.k.SetPlayerIndexForAddress(f.ctx, playerAcc.String(), to.Index))
+}
+
+// TestMigrateInfusionOwnership_RehomesStaleRow is the state repair for the
+// ownership leak. The address changed hands and the record did not, so the
+// former owner kept both the capacity and, through GuildMembershipJoin, the
+// authority to redelegate stake they no longer control.
+func TestMigrateInfusionOwnership_RehomesStaleRow(t *testing.T) {
+	f := newReconcileFixture(t)
+
+	reactor, valAddr := f.addReactor("ownershipstale", 1000)
+	formerOwner, playerAcc := f.addPlayer("ownershipformer")
+	newOwner, _ := f.addPlayer("ownershipnew")
+
+	f.infuse(playerAcc, valAddr, 1000)
+	require.Equal(t, formerOwner.Id, f.infusion(reactor.Id, playerAcc).PlayerId)
+	require.Equal(t, uint64(960), f.capacity(formerOwner.Id))
+
+	f.reassignAddress(playerAcc, formerOwner, newOwner)
+
+	require.NoError(t, v0_21_0.MigrateInfusionOwnership(f.ctx, f.keepers()))
+
+	after := f.infusion(reactor.Id, playerAcc)
+	require.Equal(t, newOwner.Id, after.PlayerId, "the record must follow the address")
+	require.Equal(t, uint64(0), f.capacity(formerOwner.Id),
+		"the former owner stops being paid for stake they cannot reach")
+	require.Equal(t, uint64(960), f.capacity(newOwner.Id))
+
+	require.Equal(t, uint64(1000), after.Fuel, "a re-home moves nobody's stake")
+	require.Equal(t, uint64(1000), after.Power)
+	require.Equal(t, uint64(40), f.capacity(reactor.Id),
+		"the reactor's commission is keyed by destination and is not the delegator's to move")
+
+	// Idempotent: a replayed upgrade block must not double-credit the new owner.
+	eventsAfterFirst := len(f.ctx.EventManager().Events())
+	require.NoError(t, v0_21_0.MigrateInfusionOwnership(f.ctx, f.keepers()))
+
+	require.Equal(t, after, f.infusion(reactor.Id, playerAcc))
+	require.Equal(t, uint64(960), f.capacity(newOwner.Id))
+	require.Equal(t, eventsAfterFirst, len(f.ctx.EventManager().Events()),
+		"a replay must write nothing the first pass did not")
+}
+
+// TestMigrateInfusionOwnership_LeavesCorrectRowsAlone guards the blast radius.
+// The migration walks every infusion on the chain, and the overwhelming majority
+// are correct, so an unguarded write would re-emit EventInfusion for all of them.
+func TestMigrateInfusionOwnership_LeavesCorrectRowsAlone(t *testing.T) {
+	f := newReconcileFixture(t)
+
+	reactor, valAddr := f.addReactor("ownershiphealthy", 1000)
+	player, playerAcc := f.addPlayer("ownershiphealthyplayer")
+	f.infuse(playerAcc, valAddr, 1000)
+
+	before := f.infusion(reactor.Id, playerAcc)
+	eventsBefore := len(f.ctx.EventManager().Events())
+
+	require.NoError(t, v0_21_0.MigrateInfusionOwnership(f.ctx, f.keepers()))
+
+	require.Equal(t, before, f.infusion(reactor.Id, playerAcc), "a correct row must be left byte-identical")
+	require.Equal(t, uint64(960), f.capacity(player.Id))
+	require.Equal(t, eventsBefore, len(f.ctx.EventManager().Events()),
+		"re-homing nothing must emit nothing")
+}
+
+// TestMigrateInfusionOwnership_SkipsUnregisteredAddress covers an address that
+// was revoked and never re-registered. There is nobody to re-home to, and
+// stripping the capacity would punish whoever still holds the stake for a bug
+// that was never theirs.
+func TestMigrateInfusionOwnership_SkipsUnregisteredAddress(t *testing.T) {
+	f := newReconcileFixture(t)
+
+	reactor, valAddr := f.addReactor("ownershiporphan", 1000)
+	player, playerAcc := f.addPlayer("ownershiporphanplayer")
+	f.infuse(playerAcc, valAddr, 1000)
+
+	f.k.RevokePlayerIndexForAddress(f.ctx, playerAcc.String(), player.Index)
+
+	require.NoError(t, v0_21_0.MigrateInfusionOwnership(f.ctx, f.keepers()))
+
+	require.Equal(t, player.Id, f.infusion(reactor.Id, playerAcc).PlayerId,
+		"an unowned address leaves ownership where it was")
+	require.Equal(t, uint64(960), f.capacity(player.Id))
+}
+
+// TestMigrateInfusionOwnership_EmptyStateIsSafe guards the walk itself.
+func TestMigrateInfusionOwnership_EmptyStateIsSafe(t *testing.T) {
+	f := newReconcileFixture(t)
+	require.NoError(t, v0_21_0.MigrateInfusionOwnership(f.ctx, f.keepers()))
+}
+
+// TestMigrateInfusionOwnership_RunsBeforeReconcile pins the registration order.
+// The reconcile recomputes each row's fuel and therefore the capacity credited
+// to its owner, so running it first would rebuild the same misattribution this
+// migration exists to correct.
+func TestMigrateInfusionOwnership_RunsBeforeReconcile(t *testing.T) {
+	f := newReconcileFixture(t)
+
+	reactor, valAddr := f.addReactor("ownershiporder", 1000)
+	formerOwner, playerAcc := f.addPlayer("ownershiporderformer")
+	newOwner, _ := f.addPlayer("ownershipordernew")
+
+	f.infuse(playerAcc, valAddr, 1000)
+	f.reassignAddress(playerAcc, formerOwner, newOwner)
+
+	// The order the upgrade handler registers them in.
+	require.NoError(t, v0_21_0.MigrateInfusionOwnership(f.ctx, f.keepers()))
+	require.NoError(t, v0_21_0.MigrateReconcileReactorInfusions(f.ctx, f.keepers()))
+
+	require.Equal(t, newOwner.Id, f.infusion(reactor.Id, playerAcc).PlayerId)
+	require.Equal(t, uint64(0), f.capacity(formerOwner.Id))
+	require.Equal(t, uint64(960), f.capacity(newOwner.Id),
+		"the reconcile must credit the corrected owner, not rebuild the old one")
+	require.Equal(t, uint64(1000), f.infusion(reactor.Id, playerAcc).Fuel,
+		"the live delegation is left where it is")
+}

@@ -78,6 +78,26 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
                 return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "infusion_ownership").WithInfusion(infusionId)
             }
 
+            /* The stored PlayerId is not enough on its own to authorize what
+             * follows. Below we redelegate on infusion.Address's behalf through
+             * a raw keeper call, so that address, not the record describing it,
+             * is what has to belong to the claimant. An address can be revoked
+             * and re-registered to somebody else, and while UpsertInfusion
+             * re-homes the record the next time staking touches it, a record
+             * holding only a Defusing balance is never touched again.
+             *
+             * A subject address, so the pure lookup: an unregistered one has no
+             * owner and is refused.
+             */
+            infusionAddressOwner, infusionAddressOwnerErr := cc.GetPlayerByAddress(infusion.Address)
+            if infusionAddressOwnerErr != nil {
+                return emptyResponse, infusionAddressOwnerErr
+            }
+
+            if (infusionAddressOwner.GetPlayerId() != msg.PlayerId) {
+                return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "infusion_address_ownership").WithInfusion(infusionId)
+            }
+
             if (infusion.DestinationType != types.ObjectType_reactor) {
                 return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "invalid_infusion_type").WithInfusion(infusionId)
             }

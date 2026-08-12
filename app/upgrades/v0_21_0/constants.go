@@ -91,6 +91,36 @@ package v0_21_0
 //     by reconciling, because the hook fires before staking deletes the row and
 //     a reconcile would rewrite the stale value it was called to clear.
 //
+//   - An infusion's ownership now follows its address. UpsertInfusion wrote
+//     PlayerId only when creating the record and nothing else ever wrote the
+//     field, so an address that changed hands — AddressRevoke clears the index,
+//     AddressRegister binds an unindexed address to any player on a key proof —
+//     left the infusion pinned to whoever held it first. Two consequences, one
+//     field: the delegator's share of the power was credited to the former
+//     player's grid capacity, and GuildMembershipJoin used the stored PlayerId
+//     as its whole ownership check before redelegating on the record's address.
+//     Re-homing is the right answer rather than an error return, because the
+//     callers are staking hooks that cannot refuse without desynchronising
+//     staking from structs, and because whoever controls the address controls
+//     the stake. Only PlayerId can go stale: DestinationId and Address are the
+//     cache key and DestinationType follows the destinationId prefix.
+//
+//   - GuildMembershipJoin now resolves infusion.Address to its current player
+//     and requires that to be the claimant, on top of the stored PlayerId
+//     comparison. The redelegation below it is a raw keeper call on that
+//     address's behalf, so the address is what has to belong to the claimant.
+//     The re-home above closes most of this on its own, but a record carrying
+//     only a Defusing balance is never touched by staking again, and an
+//     unregistered address now errors rather than passing.
+//
+//   - The three address-move handlers (AddressRevoke, AddressRegister,
+//     PlayerUpdatePrimaryAddress) now reconcile both ends of the delegations
+//     they sweep onto a player's primary address. Their two staking calls are
+//     asymmetric: RemoveDelegation fires BeforeDelegationRemoved, which since
+//     this release zeroes the source infusion, while SetDelegation is a bare
+//     store write that fires nothing. Left to the hooks the move destroyed the
+//     player's capacity instead of relocating it.
+//
 //   - PlayerUpdatePrimaryAddress now requires the caller to hold PermAll. The
 //     handler grants PermAll to the incoming address and moves the player's
 //     balance and delegations with it, so a narrower PermAdmin gate was a
@@ -534,6 +564,17 @@ package v0_21_0
 //   - MigrateJailedReactorEnergy: gate every reactor whose validator is already
 //     jailed or missing at the upgrade height. These never passed through the new
 //     hook, so without the backfill they would keep producing energy forever.
+//
+//   - MigrateInfusionOwnership: re-home every infusion whose PlayerId disagrees
+//     with the player its address is currently indexed to, moving the capacity
+//     it contributes from the former owner to the current one. Walks
+//     GetAllInfusion rather than the reactors, since struct generator infusions
+//     carry the same field and took the same misattribution. Runs before
+//     MigrateReconcileReactorInfusions, which recomputes each row's capacity
+//     contribution and so has to see corrected owners. An address registered to
+//     nobody is logged at error and left alone: there is no player to re-home to
+//     and stripping the capacity would punish whoever still holds the stake.
+//     Idempotent, and a no-op on a chain where no address ever changed hands.
 //
 //   - MigrateReconcileReactorInfusions: rebuild every reactor infusion from live
 //     staking state, clearing the phantom fuel that full redelegations left at

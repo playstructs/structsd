@@ -66,6 +66,12 @@ func CreateUpgradeHandler(
 			return newVM, err
 		}
 
+		// Before the reconcile below, which recomputes each infusion's capacity
+		// contribution and so needs the owner it is crediting to be correct.
+		if err := MigrateInfusionOwnership(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
 		// After MigrateJailedReactorEnergy, which gates whole reactors. This
 		// then rebuilds each infusion from live staking state, so the two agree
 		// on a jailed validator's zero ratio and this has the final say on the
@@ -1401,6 +1407,93 @@ func MigrateOrphanedAllocationControllers(ctx context.Context, keepers *upgrades
 
 	logger.Info("v0.21.0 orphaned allocation controller repair complete",
 		"rehomed", rehomed, "leftAlone", unrecoverable)
+	return nil
+}
+
+// MigrateInfusionOwnership re-homes infusions whose PlayerId no longer matches
+// the player their address belongs to.
+//
+// UpsertInfusion wrote PlayerId only when creating the record, and nothing else
+// ever wrote the field. An address can change hands — AddressRevoke clears the
+// address index and AddressRegister binds an unindexed address to any player on
+// a key proof — while the infusion, keyed by (destination, address), survives
+// intact. Every reactor hook then went on refreshing that record's fuel with
+// ownership still pinned to whoever held the address first.
+//
+// Two things were wrong as a result, and this fixes both at once because they
+// are the same field. The delegator's share of the infusion's power was credited
+// to the former player's grid capacity, so the new owner staked and got nothing
+// while the old one kept capacity they no longer funded. And GuildMembershipJoin
+// used the stored PlayerId as its whole ownership check before redelegating on
+// infusion.Address's behalf, so the former owner could move the current owner's
+// stake.
+//
+// Registered before MigrateReconcileReactorInfusions so that the reconcile,
+// which recomputes each row's fuel and therefore its capacity contribution,
+// works against corrected owners.
+//
+// An address that is no longer registered to anybody is logged and left alone.
+// There is nobody to re-home it to, and stripping the capacity would punish the
+// current holder of the stake for a bug. The row heals on its own the next time
+// the address is registered and staking touches it.
+//
+// Idempotent, and expected to be a no-op after the first run: SetPlayerId
+// returns without writing when the id already matches.
+func MigrateInfusionOwnership(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateInfusionOwnership")
+
+	k := keepers.StructsKeeper
+	cc := k.NewCurrentContext(ctx)
+
+	var (
+		visited       int
+		rehomed       int
+		unregistered  int
+		capacityMoved uint64
+	)
+
+	// GetAllInfusion walks the infusion prefix in key order, so every node
+	// repairs the same rows in the same sequence. It covers struct generator
+	// infusions as well as reactor ones, which carry the same field and took
+	// the same misattribution.
+	for _, infusion := range k.GetAllInfusion(ctx) {
+		visited++
+
+		playerIndex := k.GetPlayerIndexFromAddress(ctx, infusion.Address)
+		if playerIndex == 0 {
+			// Not an error in the record: the address is simply unregistered.
+			logger.Error("infusion address belongs to no player; leaving ownership alone",
+				"infusionId", infusion.DestinationId+"-"+infusion.Address,
+				"address", infusion.Address, "playerId", infusion.PlayerId)
+			unregistered++
+			continue
+		}
+
+		currentPlayerId := structskeeper.GetObjectID(structstypes.ObjectType_player, playerIndex)
+		if currentPlayerId == infusion.PlayerId {
+			continue
+		}
+
+		_, _, playerPower := infusion.GetPowerDistribution()
+
+		cc.GetInfusion(infusion.DestinationId, infusion.Address).SetPlayerId(currentPlayerId)
+
+		rehomed++
+		capacityMoved += playerPower
+
+		logger.Error("infusion ownership was stale; re-homed to the address's current player",
+			"infusionId", infusion.DestinationId+"-"+infusion.Address,
+			"address", infusion.Address, "previousPlayerId", infusion.PlayerId,
+			"newPlayerId", currentPlayerId, "capacity", playerPower)
+	}
+
+	cc.CommitAll()
+
+	logger.Info("v0.21.0 infusion ownership repair complete",
+		"infusionsVisited", visited, "rehomed", rehomed,
+		"capacityMoved", capacityMoved, "unregisteredAddresses", unregistered)
+
 	return nil
 }
 

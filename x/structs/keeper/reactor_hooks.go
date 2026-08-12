@@ -5,6 +5,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"context"
+	stdmath "math"
 
 	"structs/x/structs/types"
 
@@ -262,6 +263,67 @@ func (k Keeper) reconcileInfusionForDelegation(ctx context.Context, cc *CurrentC
 	}
 	if infusion.GetDefusing() != amount.Uint64() {
 		infusion.SetDefusing(amount.Uint64())
+	}
+}
+
+/* MoveDelegationsToAddress hands every delegation held by one address to
+ * another and rebuilds the reactor infusions on both sides.
+ *
+ * The three address-move handlers (AddressRevoke, AddressRegister,
+ * PlayerUpdatePrimaryAddress) all sweep a player's stake onto their primary
+ * address, and staking gives them no help keeping structs in step. The two
+ * store calls are asymmetric: RemoveDelegation fires BeforeDelegationRemoved,
+ * which zeroes the source infusion, while SetDelegation is a bare write that
+ * fires nothing at all. Left to the hooks the source loses its capacity and the
+ * destination is credited by nobody, so the move destroys the player's energy
+ * rather than relocating it.
+ *
+ * Both sides are therefore reconciled explicitly. Doing the source as well as
+ * the destination makes the repair independent of whether the hook ran, which
+ * is also what lets the mock staking keeper — which fires no hooks — exercise
+ * it.
+ *
+ * The reconciles run after the loop rather than inside it. The hook commits a
+ * CurrentContext of its own, so a reconcile interleaved with it would leave cc
+ * holding a grid capacity read from before the hook's write and clobber that
+ * write at CommitAll.
+ */
+func (k Keeper) MoveDelegationsToAddress(ctx context.Context, cc *CurrentContext, from sdk.AccAddress, to string) {
+	toAcc, toErr := sdk.AccAddressFromBech32(to)
+	if toErr != nil {
+		k.logger.Error("MoveDelegationsToAddress: unparsable destination address", "from", from.String(), "to", to, "error", toErr)
+		return
+	}
+
+	if from.Equals(toAcc) {
+		return
+	}
+
+	delegations, err := k.stakingKeeper.GetDelegatorDelegations(ctx, from, stdmath.MaxUint16)
+	if err != nil {
+		k.logger.Error("MoveDelegationsToAddress: could not read delegations", "from", from.String(), "error", err)
+		return
+	}
+
+	validatorAddresses := make([]sdk.ValAddress, 0, len(delegations))
+	for _, delegation := range delegations {
+		validatorAddress, validatorAddressErr := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
+		if validatorAddressErr != nil {
+			k.logger.Error("MoveDelegationsToAddress: unparsable validator address", "validator", delegation.ValidatorAddress, "error", validatorAddressErr)
+			continue
+		}
+
+		_ = k.stakingKeeper.RemoveDelegation(ctx, delegation)
+
+		delegation.DelegatorAddress = to
+		_ = k.stakingKeeper.SetDelegation(ctx, delegation)
+
+		validatorAddresses = append(validatorAddresses, validatorAddress)
+	}
+
+	for _, validatorAddress := range validatorAddresses {
+		k.reconcileInfusionForDelegation(ctx, cc, from, validatorAddress)
+		k.reconcileInfusionForDelegation(ctx, cc, toAcc, validatorAddress)
 	}
 }
 

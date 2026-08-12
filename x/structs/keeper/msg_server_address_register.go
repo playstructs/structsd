@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
     "encoding/hex"
-    "math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
@@ -102,15 +101,11 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
         return emptyResponse, err
     }
 
-    // Move Reactor Infusions over
-    primaryDelegations, _ := k.stakingKeeper.GetDelegatorDelegations(ctx, newAcc, math.MaxUint16)
-    for _, delegation := range primaryDelegations {
-        k.stakingKeeper.RemoveDelegation(ctx, delegation)
-
-        delegation.DelegatorAddress = player.GetPrimaryAddress()
-        k.stakingKeeper.SetDelegation(ctx, delegation)
-    }
-
+    // Move Reactor Infusions over.
+    // The address index was written above, so the newly registered address
+    // resolves to this player and its infusion is re-homed rather than left
+    // with whoever held the address before.
+    k.MoveDelegationsToAddress(ctx, cc, newAcc, player.GetPrimaryAddress())
 
 	cc.CommitAll()
 	return &types.MsgAddressRegisterResponse{}, nil

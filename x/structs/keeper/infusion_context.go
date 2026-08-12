@@ -79,6 +79,16 @@ func (cc *CurrentContext) GetAllInfusionByDestination(destinationId string) (inf
     return
 }
 
+// UpsertInfusion returns the infusion for a (destination, address) pair,
+// creating it if it does not exist yet.
+//
+// Every caller resolves playerId from the address itself, so it is always that
+// address's current owner. An existing record is therefore re-homed rather than
+// left alone: the address may have been revoked and re-registered to somebody
+// else since the record was written, and only PlayerId can drift that way.
+// DestinationId and Address are the cache key, and DestinationType is implied by
+// the destinationId prefix, so none of those three can disagree without corrupt
+// state.
 func (cc *CurrentContext) UpsertInfusion(destinationType types.ObjectType, destinationId string, address string, playerId string) (*InfusionCache){
     infusion := cc.GetInfusion(destinationId, address)
 
@@ -93,6 +103,8 @@ func (cc *CurrentContext) UpsertInfusion(destinationType types.ObjectType, desti
 
          infusion.InfusionLoaded = true
          infusion.Changed = true
+    } else if infusion.GetInfusion().PlayerId != playerId {
+        infusion.SetPlayerId(playerId)
     }
     return infusion
 }

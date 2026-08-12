@@ -5,7 +5,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
-	"math"
 )
 
 func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRevoke) (*types.MsgAddressRevokeResponse, error) {
@@ -51,15 +50,10 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
         return emptyResponse, err
     }
 
-    // Move Reactor Infusions over
-    primaryDelegations, _ := k.stakingKeeper.GetDelegatorDelegations(ctx, oldAcc, math.MaxUint16)
-    for _, delegation := range primaryDelegations {
-        k.stakingKeeper.RemoveDelegation(ctx, delegation)
-
-        delegation.DelegatorAddress = player.GetPrimaryAddress()
-        k.stakingKeeper.SetDelegation(ctx, delegation)
-    }
-
+    // Move Reactor Infusions over.
+    // Ahead of the index revocation below, so the source address still resolves
+    // to this player while its infusion is being wound down.
+    k.MoveDelegationsToAddress(ctx, cc, oldAcc, player.GetPrimaryAddress())
 
     // Clear Permissions
     addressClearPermissionId := GetAddressPermissionIDBytes(msg.Address)

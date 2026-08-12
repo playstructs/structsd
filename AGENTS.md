@@ -135,13 +135,46 @@ minted capacity every time they joined a guild on a different reactor;
 `MigrateReconcileReactorInfusions` clears what they accumulated, and the grid cascade that follows
 is the intended consequence rather than a bug in the migration.
 
-The reason this survived so long is worth its own line: **`testutil/keeper`'s `MockStakingKeeper`
-fires no hooks at all.** Every keeper test that "exercises" a staking path is really calling our
-own handler directly, which proves the handler and says nothing about whether staking ever reaches
-it. Anything whose correctness depends on *when* the SDK calls us needs a real-app test with real
-staking wired up — `app/reactor_redelegation_test.go` and `app/reactor_jail_gate_test.go` are the
-two, both built on `setupJailGateApp`. `x/structs/keeper/reactor_delegation_removed_test.go` covers
-the keeper method, including a case that pins why reconciling in that window does not work.
+Know the other half of that pair, because fixing the hook is what exposed it: **`SetDelegation`
+fires nothing.** `AddressRevoke`, `AddressRegister` and `PlayerUpdatePrimaryAddress` all sweep a
+player's stake onto their primary address with a `RemoveDelegation` followed by a `SetDelegation`,
+and only the first of those is hooked — so the moment the removal hook started clearing the source,
+the move stopped misattributing the player's capacity and started destroying it, the destination
+being credited by nobody. All three now go through `MoveDelegationsToAddress`, which reconciles the
+source *and* the destination explicitly rather than relying on either hook, which is also what lets
+the mock exercise it. Two things about that function are load-bearing. The reconciles run after the
+loop, not inside it: the hook commits a `CurrentContext` of its own, and `SetGridAttributeDelta`
+reads through `cc`'s cache, so a reconcile interleaved with the hook leaves `cc` holding a capacity
+read from before the hook's write and clobbers it at `CommitAll` — **a nested context that commits
+is invisible to an outer context that has already read the same attribute.** And reconciling the
+source is not redundant with the hook: it is what makes the repair independent of whether the hook
+ran at all.
+
+The reason all of this survived so long is worth its own line: **`testutil/keeper`'s
+`MockStakingKeeper` fires no hooks at all.** Every keeper test that "exercises" a staking path is
+really calling our own handler directly, which proves the handler and says nothing about whether
+staking ever reaches it. Anything whose correctness depends on *when* the SDK calls us needs a
+real-app test with real staking wired up — `app/reactor_redelegation_test.go`,
+`app/address_revoke_infusion_test.go` and `app/reactor_jail_gate_test.go` are the three, all built
+on `setupJailGateApp`. `x/structs/keeper/reactor_delegation_removed_test.go` covers the keeper
+method, including a case that pins why reconciling in that window does not work.
+
+**An infusion is owned by whoever owns its address, not by whoever owned it first.** `PlayerId` is
+the only field on an infusion that can go stale — `DestinationId` and `Address` are the cache key,
+`DestinationType` follows the id prefix — and `UpsertInfusion` used to write it on creation only.
+An address changes hands (`AddressRevoke` clears the index, `AddressRegister` binds an unindexed
+address to any player on a key proof) while the record, keyed by (destination, address), survives
+intact, so the former player kept being credited the capacity and, through `GuildMembershipJoin`'s
+`infusion.PlayerId` check, kept the authority to redelegate stake they could no longer reach.
+`UpsertInfusion` now re-homes through `InfusionCache.SetPlayerId`, which withdraws the delegator
+share from the outgoing owner and credits the incoming one. Re-homing rather than erroring is
+deliberate: every caller is a staking hook that cannot refuse without desynchronising staking from
+structs, and whoever controls the address controls the stake. **An ownership field consulted for
+authorization needs a live resolution behind it**, so `GuildMembershipJoin` also resolves
+`infusion.Address` through `cc.GetPlayerByAddress` — the record catching up eventually is no help
+for a row carrying only a `Defusing` balance, which staking never touches again.
+`MigrateInfusionOwnership` re-homes what the live bug wrote, walking `GetAllInfusion` because struct
+generator infusions carry the same field.
 
 **Delete an index row with the same id you wrote it under.** `SetAutoResizeAllocationSource` keys
 the auto-resize hook by *source object id*, and `AllocationCache.Destroy` cleared it with the
