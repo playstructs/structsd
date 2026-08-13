@@ -13,6 +13,7 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
 	"github.com/stretchr/testify/require"
 
+	"structs/app"
 	"structs/app/upgrades"
 	v0_21_0 "structs/app/upgrades/v0_21_0"
 	keeperlib "structs/x/structs/keeper"
@@ -156,6 +157,65 @@ func TestGuildTokenMintSendAndAgreementStillWork(t *testing.T) {
 
 	collateralPool := keeperlib.GetProviderCollateralPoolLocation(providerCache.GetProviderId())
 	require.True(t, bApp.BankKeeper.GetBalance(ctx, collateralPool, denom).Amount.IsPositive())
+}
+
+func setupAppGuildBank(t *testing.T, bApp *app.App, ctx sdk.Context, seed byte, guildIndex uint64) (structstypes.Player, structstypes.Guild, sdk.AccAddress) {
+	t.Helper()
+
+	ownerAcc := sdk.AccAddress(bytes.Repeat([]byte{seed}, 20))
+	owner := appendAppPlayer(t, bApp.StructsKeeper, ctx, ownerAcc)
+
+	guild := structstypes.CreateEmptyGuild()
+	guild.Id = keeperlib.GetObjectID(structstypes.ObjectType_guild, guildIndex)
+	guild.Index = guildIndex
+	guild.Owner = owner.Id
+	guild.Creator = owner.Creator
+	bApp.StructsKeeper.SetGuild(ctx, guild)
+	owner.GuildId = guild.Id
+	bApp.StructsKeeper.SetPlayer(ctx, owner)
+
+	alpha := sdk.NewCoins(sdk.NewCoin("ualpha", math.NewInt(2_000)))
+	require.NoError(t, bApp.BankKeeper.MintCoins(ctx, structstypes.ModuleName, alpha))
+	require.NoError(t, bApp.BankKeeper.SendCoinsFromModuleToAccount(ctx, structstypes.ModuleName, ownerAcc, alpha))
+
+	ms := keeperlib.NewMsgServerImpl(bApp.StructsKeeper)
+	_, err := ms.GuildBankMint(ctx, &structstypes.MsgGuildBankMint{
+		Creator: owner.Creator, AmountAlpha: 1_000, AmountToken: 500,
+	})
+	require.NoError(t, err)
+
+	return owner, guild, ownerAcc
+}
+
+// TestGuildBankConvertAndConvertTokenWithSendRestriction runs alpha->token and
+// token->token through the live bank restriction. Guild collateral pools are not
+// on the uguild allowlist; these paths only send ualpha through them and mint
+// tokens to the player's registered primary.
+func TestGuildBankConvertAndConvertTokenWithSendRestriction(t *testing.T) {
+	bApp, ctx := setupJailGateApp(t)
+	ms := keeperlib.NewMsgServerImpl(bApp.StructsKeeper)
+
+	ownerA, guildA, accA := setupAppGuildBank(t, bApp, ctx, 0x61, 911)
+	_, guildB, _ := setupAppGuildBank(t, bApp, ctx, 0x62, 912)
+
+	denomA := "uguild." + guildA.Id
+	denomB := "uguild." + guildB.Id
+
+	_, err := ms.GuildBankConvert(ctx, &structstypes.MsgGuildBankConvert{
+		Creator: ownerA.Creator, GuildId: guildA.Id, AmountAlpha: 100, MinAmountToken: 1,
+	})
+	require.NoError(t, err, "converting ualpha into guild tokens must still credit the player")
+	require.Equal(t, math.NewInt(550), bApp.BankKeeper.GetBalance(ctx, accA, denomA).Amount)
+
+	_, err = ms.GuildBankConvertToken(ctx, &structstypes.MsgGuildBankConvertToken{
+		Creator:        ownerA.Creator,
+		AmountToken:    sdk.NewCoin(denomA, math.NewInt(50)),
+		GuildId:        guildB.Id,
+		MinAmountToken: 1,
+	})
+	require.NoError(t, err, "swapping one guild token for another must still land on the player")
+	require.Equal(t, math.NewInt(500), bApp.BankKeeper.GetBalance(ctx, accA, denomA).Amount)
+	require.Equal(t, math.NewInt(50), bApp.BankKeeper.GetBalance(ctx, accA, denomB).Amount)
 }
 
 func TestGuildDenominatedAgreementLifecycleWithSendRestriction(t *testing.T) {
