@@ -623,9 +623,26 @@ func (cache *GuildCache) SetEndpoint(endpoint string) {
 	cache.Changed = true
 }
 
+/* SetOwner hands a guild to another player, taking the outgoing owner's rights
+ * away as it goes.
+ *
+ * Revoking is the point, not housekeeping. Guilds are traded, and that market is
+ * how the cost of founding one is priced, so a transfer has to actually transfer:
+ * PermGuildAll carries PermGuildTokenMint, PermGuildTokenBurn and PermAdmin, so
+ * a seller who kept their row could mint the token, confiscate holders' balances
+ * and grant themselves the guild back afterwards.
+ *
+ * Only the recorded owner's row goes. Anyone else the guild has granted rights to
+ * is untouched, and a party who should keep a role across a transfer is
+ * re-granted explicitly through MsgPermissionGrantOnObject.
+ */
 func (cache *GuildCache) SetOwner(owner string) {
 	if !cache.GuildLoaded {
 		cache.LoadGuild()
+	}
+
+	if previousOwner := cache.Guild.Owner; previousOwner != "" && previousOwner != owner {
+		cache.CC.PermissionRemove(GetObjectPermissionIDBytes(cache.ID(), previousOwner), types.PermGuildAll)
 	}
 
 	cache.CC.PermissionAdd(GetObjectPermissionIDBytes(cache.ID(), owner), types.PermGuildAll)

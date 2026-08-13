@@ -108,6 +108,15 @@ func TestGenesisState_Validate(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
+			// Every fixture above is about a list rather than about params, and a
+			// zero-value Params is now invalid on its own account: the guild
+			// charter difficulty range cannot be below 2, since CalculateDifficulty
+			// divides by log10 of it. Filling in the defaults keeps each case
+			// failing for the reason it declares.
+			if tc.genState.Params.GuildCharterDifficultyRange == 0 {
+				tc.genState.Params = types.DefaultParams()
+			}
+
 			err := tc.genState.Validate()
 			if tc.valid {
 				require.NoError(t, err)

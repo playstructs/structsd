@@ -26,6 +26,14 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Params defines the parameters for the module.
 type Params struct {
+	// guildCharterDifficultyRange is the block count at which the guild charter
+	// proof-of-work bottoms out at one leading zero. Must be at least 2:
+	// CalculateDifficulty divides by log10(range), so 1 divides by zero and 0
+	// yields negative infinity.
+	GuildCharterDifficultyRange uint64 `protobuf:"varint,1,opt,name=guildCharterDifficultyRange,proto3" json:"guildCharterDifficultyRange,omitempty"`
+	// guildCharterReactorAge is how many blocks after creation a reactor becomes
+	// eligible to found one guild without solving the puzzle.
+	GuildCharterReactorAge uint64 `protobuf:"varint,2,opt,name=guildCharterReactorAge,proto3" json:"guildCharterReactorAge,omitempty"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }
@@ -61,6 +69,20 @@ func (m *Params) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Params proto.InternalMessageInfo
 
+func (m *Params) GetGuildCharterDifficultyRange() uint64 {
+	if m != nil {
+		return m.GuildCharterDifficultyRange
+	}
+	return 0
+}
+
+func (m *Params) GetGuildCharterReactorAge() uint64 {
+	if m != nil {
+		return m.GuildCharterReactorAge
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*Params)(nil), "structs.structs.Params")
 }
@@ -68,16 +90,20 @@ func init() {
 func init() { proto.RegisterFile("structs/structs/params.proto", fileDescriptor_1b10b399be786fe8) }
 
 var fileDescriptor_1b10b399be786fe8 = []byte{
-	// 146 bytes of a gzipped FileDescriptorProto
+	// 210 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x29, 0x2e, 0x29, 0x2a,
 	0x4d, 0x2e, 0x29, 0xd6, 0x87, 0xd1, 0x05, 0x89, 0x45, 0x89, 0xb9, 0xc5, 0x7a, 0x05, 0x45, 0xf9,
 	0x25, 0xf9, 0x42, 0xfc, 0x50, 0x51, 0x3d, 0x28, 0x2d, 0x25, 0x98, 0x98, 0x9b, 0x99, 0x97, 0xaf,
 	0x0f, 0x26, 0x21, 0x6a, 0xa4, 0x44, 0xd2, 0xf3, 0xd3, 0xf3, 0xc1, 0x4c, 0x7d, 0x10, 0x0b, 0x22,
-	0xaa, 0xa4, 0xcd, 0xc5, 0x16, 0x00, 0x36, 0xc9, 0x4a, 0xf1, 0xc5, 0x02, 0x79, 0xc6, 0xae, 0xe7,
-	0x1b, 0xb4, 0x24, 0x60, 0x56, 0x54, 0xc0, 0x2d, 0x83, 0x28, 0x71, 0x32, 0x3c, 0xf1, 0x48, 0x8e,
+	0xaa, 0xb4, 0x94, 0x91, 0x8b, 0x2d, 0x00, 0x6c, 0x94, 0x90, 0x03, 0x97, 0x74, 0x7a, 0x69, 0x66,
+	0x4e, 0x8a, 0x73, 0x46, 0x62, 0x51, 0x49, 0x6a, 0x91, 0x4b, 0x66, 0x5a, 0x5a, 0x66, 0x72, 0x69,
+	0x4e, 0x49, 0x65, 0x50, 0x62, 0x5e, 0x7a, 0xaa, 0x04, 0xa3, 0x02, 0xa3, 0x06, 0x4b, 0x10, 0x3e,
+	0x25, 0x42, 0x66, 0x5c, 0x62, 0xc8, 0xd2, 0x41, 0xa9, 0x89, 0xc9, 0x25, 0xf9, 0x45, 0x8e, 0xe9,
+	0xa9, 0x12, 0x4c, 0x60, 0xcd, 0x38, 0x64, 0xad, 0x14, 0x5f, 0x2c, 0x90, 0x67, 0xec, 0x7a, 0xbe,
+	0x41, 0x4b, 0x02, 0xe6, 0xbb, 0x0a, 0xb8, 0x3f, 0x21, 0x8e, 0x73, 0x32, 0x3c, 0xf1, 0x48, 0x8e,
 	0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8, 0xf0, 0x58,
 	0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28, 0x71, 0x4c, 0x3d, 0x25, 0x95, 0x05, 0xa9, 0xc5, 0x49,
-	0x6c, 0x60, 0x6b, 0x8c, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0xb8, 0x94, 0xa1, 0x87, 0xc0, 0x00,
+	0x6c, 0x60, 0x1f, 0x1a, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0x77, 0xdf, 0x85, 0x47, 0x3b, 0x01,
 	0x00, 0x00,
 }
 
@@ -98,6 +124,12 @@ func (this *Params) Equal(that interface{}) bool {
 	if that1 == nil {
 		return this == nil
 	} else if this == nil {
+		return false
+	}
+	if this.GuildCharterDifficultyRange != that1.GuildCharterDifficultyRange {
+		return false
+	}
+	if this.GuildCharterReactorAge != that1.GuildCharterReactorAge {
 		return false
 	}
 	return true
@@ -122,6 +154,16 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.GuildCharterReactorAge != 0 {
+		i = encodeVarintParams(dAtA, i, uint64(m.GuildCharterReactorAge))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.GuildCharterDifficultyRange != 0 {
+		i = encodeVarintParams(dAtA, i, uint64(m.GuildCharterDifficultyRange))
+		i--
+		dAtA[i] = 0x8
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -142,6 +184,12 @@ func (m *Params) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if m.GuildCharterDifficultyRange != 0 {
+		n += 1 + sovParams(uint64(m.GuildCharterDifficultyRange))
+	}
+	if m.GuildCharterReactorAge != 0 {
+		n += 1 + sovParams(uint64(m.GuildCharterReactorAge))
+	}
 	return n
 }
 
@@ -180,6 +228,44 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: Params: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuildCharterDifficultyRange", wireType)
+			}
+			m.GuildCharterDifficultyRange = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GuildCharterDifficultyRange |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuildCharterReactorAge", wireType)
+			}
+			m.GuildCharterReactorAge = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GuildCharterReactorAge |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipParams(dAtA[iNdEx:])

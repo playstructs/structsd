@@ -421,6 +421,94 @@ func TestMigrateJailedReactorEnergy(t *testing.T) {
 	require.Equal(t, jailed, replayed)
 }
 
+/* All three writes MigrateGuildCharter makes are the difference between the
+ * charter working and being permanently unreachable, so each is asserted rather
+ * than the migration merely being run.
+ */
+func TestMigrateGuildCharter(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	keepers := &upgrades.Keepers{StructsKeeper: k}
+
+	upgradeHeight := int64(9100)
+	ctx = ctx.WithBlockHeight(upgradeHeight)
+
+	// A Params record written by an earlier binary decodes both new fields as
+	// zero, which is what the migration has to repair.
+	params := k.GetParams(ctx)
+	params.GuildCharterDifficultyRange = 0
+	params.GuildCharterReactorAge = 0
+	require.NoError(t, k.SetParams(ctx, params))
+
+	freshVal := sdk.ValAddress([]byte("charter-fresh-------"))
+	fresh := k.AppendReactor(ctx, types.Reactor{
+		Validator:         freshVal.String(),
+		RawAddress:        freshVal.Bytes(),
+		DefaultCommission: math.LegacyZeroDec(),
+	})
+	spentVal := sdk.ValAddress([]byte("charter-spent-------"))
+	spent := k.AppendReactor(ctx, types.Reactor{
+		Validator:         spentVal.String(),
+		RawAddress:        spentVal.Bytes(),
+		DefaultCommission: math.LegacyZeroDec(),
+	})
+
+	// AppendReactor stamps new reactors itself, so clear both to stand in for
+	// records written before the field existed.
+	for _, reactor := range []types.Reactor{fresh, spent} {
+		reactor.GuildCharterEligibleHeight = 0
+		if reactor.Id == spent.Id {
+			reactor.GuildId = "4-7"
+		}
+		k.SetReactor(ctx, reactor)
+	}
+
+	require.NoError(t, v0_21_0.MigrateGuildCharter(ctx, keepers))
+
+	/* Zero is the one difficulty range CalculateDifficulty cannot take: it pins
+	 * the requirement at 64 leading zeros forever, so leaving it would make
+	 * founding a guild by proof permanently impossible.
+	 */
+	migrated := k.GetParams(ctx)
+	require.Equal(t, uint64(types.DefaultGuildCharterDifficultyRange), migrated.GuildCharterDifficultyRange)
+	require.Equal(t, uint64(types.DefaultGuildCharterReactorAge), migrated.GuildCharterReactorAge)
+
+	anchor, found := k.GetGuildCharterAnchor(ctx)
+	require.True(t, found, "the anchor cannot be derived from anything else on disk")
+	require.Equal(t, uint64(upgradeHeight), anchor)
+	require.Equal(t, uint64(0), k.CharterAge(ctx))
+	require.Equal(t, 64, k.CharterDifficulty(ctx), "the puzzle starts at its hardest")
+
+	/* Eligibility is a stored height and zero reads as never eligible, so an
+	 * unstamped reactor would be shut out of the free path for good.
+	 */
+	stampedFresh, foundFresh := k.GetReactor(ctx, fresh.Id)
+	require.True(t, foundFresh)
+	require.Equal(t, uint64(upgradeHeight), stampedFresh.GuildCharterEligibleHeight)
+
+	// A reactor that already founded a guild is stamped too, but its GuildId is
+	// what spends the entitlement, so the stamp buys it nothing.
+	stampedSpent, foundSpent := k.GetReactor(ctx, spent.Id)
+	require.True(t, foundSpent)
+	require.Equal(t, uint64(upgradeHeight), stampedSpent.GuildCharterEligibleHeight)
+	require.Equal(t, "4-7", stampedSpent.GuildId)
+
+	// Idempotent, including the params of a chain that has already tuned them.
+	tuned := k.GetParams(ctx)
+	tuned.GuildCharterDifficultyRange = 4000
+	tuned.GuildCharterReactorAge = 50
+	require.NoError(t, k.SetParams(ctx, tuned))
+
+	require.NoError(t, v0_21_0.MigrateGuildCharter(ctx, keepers))
+
+	replayed := k.GetParams(ctx)
+	require.Equal(t, uint64(4000), replayed.GuildCharterDifficultyRange, "a tuned range must survive a replay")
+	require.Equal(t, uint64(50), replayed.GuildCharterReactorAge)
+
+	replayedFresh, found := k.GetReactor(ctx, fresh.Id)
+	require.True(t, found)
+	require.Equal(t, stampedFresh, replayedFresh)
+}
+
 func TestMigratePrimaryAddressPermissions(t *testing.T) {
 	k, ctx := keepertest.StructsKeeper(t)
 	keepers := &upgrades.Keepers{StructsKeeper: k}

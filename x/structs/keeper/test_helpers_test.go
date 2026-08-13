@@ -225,7 +225,7 @@ func testCreateGuild(k keeperlib.Keeper, ctx context.Context) testGuildSetup {
 	substationPermId := keeperlib.GetObjectPermissionIDBytes(substation.Id, owner.Id)
 	testPermissionAdd(k, ctx, substationPermId, types.PermAll)
 
-	guild := k.AppendGuild(ctx, "test-endpoint", substation.Id, reactor, owner)
+	guild := k.AppendGuild(ctx, "test-endpoint", substation.Id, reactor, owner, "")
 
 	owner.GuildId = guild.Id
 	owner.GuildRank = 1

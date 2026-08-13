@@ -423,6 +423,70 @@ bank state during both the upgrade and genesis import.
 `x/structs/keeper/guild_bank_holder_test.go` and `app/guild_bank_send_restriction_test.go` cover the
 policy and the full guild-denominated agreement lifecycle.
 
+**Founding a guild has two identities, and every check belongs to the founder.** `GuildCreate`'s
+signer is the *solver*: it is half of the work preimage and gets recorded as `charterSolverId`,
+and that is all. The *founder* — `msg.FounderPlayerId`, or the solver when it is empty — owns the
+guild, so the membership move, the entry substation's `CanManageConnectionsBy`, the reactor's
+`CanCreateGuildBy` and the ownership all resolve against them. The two are the same player in the
+ordinary case, which is exactly why getting this backwards would not show up in the common path.
+A third-party founding is authorized by the founder's offline consent signature and nothing else,
+so **that signature has to bind the whole shape of the guild** (`GuildCharterConsentInput`:
+founder, reactor, entry substation, endpoint, anchor). It is a bearer token shared with a whole
+mining pool — unbound, any holder could name their own substation as the guild's entry point,
+which is every future member's power supply. It is collected *before* the grind, because a charter
+is a race and a winning nonce that had to travel to the founder for a signature would lose to the
+pool with the most attentive leader, not the most hashpower.
+
+**The charter anchor is the replay protection, for the proof and the consent alike.** Both
+preimages bind it, and founding a guild on a proof moves it to the current height, so every nonce
+anyone was grinding dies at once — including the winning one. Block heights never repeat, so
+nothing comes back. Do not add a counter: the obvious candidate, `GuildMembershipJoinProxy`'s
+`proxyNonce`, is bumped by unrelated events and would expire a consent that has to survive weeks
+of mining. The reactor entitlement path deliberately does *not* move the anchor, or a validator
+collecting a perk would wipe every pool's work. Two things follow for anyone touching this:
+`CharterAnchor` falls back to the current height rather than reading an unset key as zero (zero
+would make the age the whole chain's history and sell a guild for one leading zero), and
+`CharterAge` clamps rather than subtracting, since an anchor ahead of the height would wrap to a
+maximally easy puzzle. Because moving the anchor is the *whole* of what retires a consent, only a
+path that moves it may spend one: `GuildCreate` refuses a third-party founding on the entitlement
+path outright, since that path leaves the anchor alone and would otherwise leave the signature live
+until an unrelated player proof-founded — long enough to mine a fresh proof and replay it, dragging
+the founder into a second guild at the entry rank. That refusal costs nothing, the entitlement path
+already requiring reactor permission from the founder, who can therefore sign for themselves.
+Anything added later that accepts a consent inherits the same either-or. The proof path also checks
+that the named reactor's validator exists and is not jailed, matching `GuildUpdatePrimaryReactor`,
+because `AppendGuild` writes `PrimaryReactorId` unconditionally and `GuildMembershipJoin`
+redelegates every joiner's infusion to it; that check cannot strand a solution, since the work
+preimage binds no reactor and a refused solver renames it and re-submits the same nonce.
+`guildCharterDifficultyRange` and `guildCharterReactorAge` are params
+because production values make a fresh dev chain unusable — see `config.yml`, and note that
+`AppendReactor` stamps `guildCharterEligibleHeight` from the param at creation and never revisits
+it, so changing the param does not re-age existing reactors. `x/structs/keeper/guild_charter_test.go`
+is the suite; `app/guild_charter_reactor_test.go` is the one that proves real staking's bonded and
+jailed states reach the free path's gate, since the mock returns whatever the test handed it.
+
+**Guilds are property, so ownership and membership are separate and a handler must take a
+`guildId`.** `GuildCache.SetOwner` moves `guild.Owner` and the `PermGuildAll` row and touches
+neither player's `GuildId`, so every sale produces an owner who is not a member — and membership is
+singular while ownership is not, a buyer being free to found or join elsewhere while holding what
+they bought. This is deliberate and `TestCharterOwnedGuildNeedNotBeJoined` pins it, because the
+obvious "fix" is worse: forcing a buyer into the guild would evict them from their own or make a
+purchase impossible while they are in one. Authorization was never the gap —
+`PermissionCheck`'s owner shortcut passes an owner on their own guild regardless of membership — but
+a handler that resolves the guild from the *signer's* membership cannot be addressed to it at all,
+which is how `GuildBankMint`, `GuildBankConfiscateAndBurn`, `GuildUpdateEntryRank` and
+`PlayerUpdateGuildRank` came to be unusable by the person who owned the guild. All four now take an
+optional `guildId` with membership as the fallback, and a supplied id needs `CheckGuild()` beside
+it or it is the phantom-cache class above, `cc.GetGuild("")` being an allocator. Two rules had to be
+restated rather than merely widened, and both times the new wording is identical for a member
+caller: `PlayerUpdateGuildRank` asks whether the target is in the *named* guild instead of whether
+it shares the caller's, and rank-derived authority — the entry-rank ceiling, and the
+"outrank the target" fallback when `PermAdmin` fails — applies only to a caller who is a member of
+the guild being edited, since a rank in some other guild is an unrelated number and a guildless
+caller's zero would outrank everyone. `GuildBankRedeem` needs nothing, resolving the guild from the
+token denom, which is what makes the token tradeable; the membership handlers already worked this
+way. `x/structs/keeper/guild_non_member_owner_test.go` covers all of it, fallback included.
+
 **Use the typed errors.** Keeper codes (1050–1800) live in
 `x/structs/types/errors_structured.go`, ante codes (2000–2050) in `app/ante/errors.go`. The
 numbers are a public contract that clients and tests assert on: never `fmt.Errorf` out of a

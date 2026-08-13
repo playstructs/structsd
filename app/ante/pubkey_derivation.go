@@ -44,6 +44,13 @@ func (d PubKeyDerivationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simula
 		pubKeyHex := pkMsg.GetProofPubKey()
 		claimedAddr := pkMsg.GetAddress()
 
+		// A message whose proof is optional may legitimately carry none, but
+		// only if it carries none at all. Half-populated stays a rejection, or
+		// omitting one field would be a way around the pre-filter.
+		if pubKeyHex == "" && claimedAddr == "" && OptionalSignatureMessages[typeURL] {
+			continue
+		}
+
 		if pubKeyHex == "" || claimedAddr == "" {
 			return ctx, fmt.Errorf("structs ante: %s missing proofPubKey or address", typeURL)
 		}

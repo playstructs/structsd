@@ -147,6 +147,17 @@ func (k Keeper) ThrottleTargetAuthorized(ctx context.Context, creator string, ki
 		}
 		owner = fleet.GetOwner()
 
+	case types.ObjectType_address:
+		// A signer-scoped throttle key (see SignerScopedThrottleMessages). The
+		// target is the signing address itself, so there is no third party to
+		// resolve and the check collapses to "is this a registered player" —
+		// which the shared PermissionCheck below still performs rather than
+		// being assumed, so an unregistered signer reserves nothing.
+		if targetId != creator {
+			return false
+		}
+		owner = signer
+
 	default:
 		return false
 	}

@@ -43,7 +43,15 @@ func (k Keeper) SetGuildCount(ctx context.Context, count uint64) {
 	store.Set(byteKey, bz)
 }
 
-// AppendGuild appends a guild in the store with a new id and update the count
+/* AppendGuild appends a guild in the store with a new id and update the count.
+ *
+ * player is the founder, who becomes Owner and whose address becomes Creator
+ * even when somebody else signed the transaction. charterSolverId credits
+ * whoever solved the proof-of-work and is empty for a guild founded through a
+ * reactor's entitlement. It is taken here rather than through a cache setter
+ * because it is written once and never mutated, so credit cannot drift after a
+ * transfer.
+ */
 func (k Keeper) AppendGuild(
 	ctx context.Context,
 	//guild types.Guild,
@@ -51,6 +59,7 @@ func (k Keeper) AppendGuild(
 	substationId string,
 	reactor types.Reactor,
 	player types.Player,
+	charterSolverId string,
 ) (guild types.Guild) {
 	guild = types.CreateEmptyGuild()
 
@@ -66,6 +75,7 @@ func (k Keeper) AppendGuild(
 	guild.PrimaryReactorId = reactor.Id
 	guild.EntrySubstationId = substationId
 	guild.EntryRank = types.DefaultEntryRank
+	guild.CharterSolverId = charterSolverId
 
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildKey))
 	appendedValue := k.cdc.MustMarshal(&guild)
@@ -107,6 +117,39 @@ func (k Keeper) AppendGuild(
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankAddress{&types.EventGuildBankAddressDetail{GuildId: guild.Id, BankCollateralPool: guildCollateralAddressStr, BankTokenPool: types.ModuleName}})
 
 	return guild
+}
+
+/* GetGuildCharterAnchor returns the height the charter difficulty is measured
+ * from: the height of the last proof-founded guild.
+ *
+ * A missing row returns false rather than zero, because the two mean opposite
+ * things. Zero age is the hardest point on the curve, but a caller that reads a
+ * missing anchor as height zero gets an age of the entire chain, which is the
+ * easiest. Callers must decide explicitly; see CharterAnchor on the context.
+ */
+func (k Keeper) GetGuildCharterAnchor(ctx context.Context) (uint64, bool) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
+	bz := store.Get(types.KeyPrefix(types.GuildCharterAnchorKey))
+	if bz == nil {
+		return 0, false
+	}
+
+	return binary.BigEndian.Uint64(bz), true
+}
+
+/* SetGuildCharterAnchor stamps the charter anchor.
+ *
+ * Called from the proof branch of GuildCreate and nowhere else in the live
+ * path. Deliberately not from AppendGuild: the reactor entitlement founds a
+ * guild too, and resetting there would wipe every pool's in-flight mining
+ * because a validator collected a perk. Genesis import and the upgrade handler
+ * also call it, which is why it is a plain setter rather than "reset to now".
+ */
+func (k Keeper) SetGuildCharterAnchor(ctx context.Context, height uint64) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, height)
+	store.Set(types.KeyPrefix(types.GuildCharterAnchorKey), bz)
 }
 
 // SetGuild set a specific guild in the store

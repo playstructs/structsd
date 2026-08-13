@@ -177,15 +177,21 @@ func SimulateMsgGuildCreate(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildCreate{}), "player not found"), nil, nil
 		}
 
-		// Check if player already has a guild
+		/* Membership alone does not block creation — the handler makes a plain
+		 * member leave and join the new guild. Only an owner is refused, so skip
+		 * exactly that case and let the leave-and-join path get fuzzed.
+		 */
 		if player.GuildId != "" {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildCreate{}), "player already in guild"), nil, nil
+			currentGuild, currentGuildFound := k.GetGuild(ctx, player.GuildId)
+			if currentGuildFound && currentGuild.Owner == player.Id {
+				return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildCreate{}), "player owns their guild"), nil, nil
+			}
 		}
 
 		// Check if player has a reactor (required for guild creation)
 		validatorAddress := sdk.ValAddress(simAccount.Address.Bytes())
 		reactorBytes, _ := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
-		_, reactorFound := k.GetReactorByBytes(ctx, reactorBytes)
+		reactor, reactorFound := k.GetReactorByBytes(ctx, reactorBytes)
 		if !reactorFound {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildCreate{}), "reactor not found"), nil, nil
 		}
@@ -207,10 +213,41 @@ func SimulateMsgGuildCreate(
 		// Generate random endpoint
 		endpoint := simtypes.RandStringOfLength(r, 10)
 
+		/* Solve the charter puzzle, and give up rather than grinding when the
+		 * anchor is too fresh. Only the solo path is simulated: the third-party
+		 * flow needs a founder's offline signature, which is a keyring operation
+		 * the simulation has no reason to model.
+		 */
+		difficulty := k.CharterDifficulty(ctx)
+		if difficulty > 2 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildCreate{}), "charter difficulty too high"), nil, nil
+		}
+
+		anchor := k.CharterAnchor(ctx)
+		age := k.CharterAge(ctx)
+		difficultyRange := k.GetParams(ctx).CharterDifficultyRange()
+
+		var proof, nonce string
+		for attempt := 0; attempt < 100000; attempt++ {
+			nonce = strconv.Itoa(attempt)
+			hashInput := types.GuildCharterWorkInput(player.Id, player.Id, anchor, nonce)
+			proof = types.HashBuild(hashInput)
+			if valid, _ := types.HashBuildAndCheckDifficulty(hashInput, proof, age, difficultyRange); valid {
+				break
+			}
+			proof = ""
+		}
+		if proof == "" {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildCreate{}), "could not find valid proof"), nil, nil
+		}
+
 		msg := &types.MsgGuildCreate{
 			Creator:           simAccount.Address.String(),
+			ReactorId:         reactor.Id,
 			Endpoint:          endpoint,
 			EntrySubstationId: entrySubstationId,
+			Proof:             proof,
+			Nonce:             nonce,
 		}
 
 		// Execute the message using the message server

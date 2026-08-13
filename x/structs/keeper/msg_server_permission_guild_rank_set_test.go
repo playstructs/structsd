@@ -32,7 +32,7 @@ func TestMsgPermissionGuildRankSet(t *testing.T) {
 	reactor := types.Reactor{RawAddress: validatorAddress.Bytes()}
 	reactor = k.AppendReactor(ctx, reactor)
 
-	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, owner)
+	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, owner, "")
 
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(owner.Creator)
 	testPermissionAdd(k, ctx, addressPermissionId, types.PermAdmin)

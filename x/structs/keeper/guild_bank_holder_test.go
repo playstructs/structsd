@@ -69,7 +69,7 @@ func TestGuildBankConfiscationProtectsOnlyProviderObligation(t *testing.T) {
 	f := setupTeardownFixture(t, 10, "0.5", "0.25")
 
 	reactor := f.k.AppendReactor(f.ctx, types.Reactor{RawAddress: sdk.ValAddress(f.consumerAcc.Bytes()).Bytes()})
-	guild := f.k.AppendGuild(f.ctx, "test-endpoint", "", reactor, f.consumer)
+	guild := f.k.AppendGuild(f.ctx, "test-endpoint", "", reactor, f.consumer, "")
 	f.consumer.GuildId = guild.Id
 	f.k.SetPlayer(f.ctx, f.consumer)
 

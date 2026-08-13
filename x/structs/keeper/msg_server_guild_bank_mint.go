@@ -24,7 +24,15 @@ func (k msgServer) GuildBankMint(goCtx context.Context, msg *types.MsgGuildBankM
         return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_bank_mint")
     }
 
-    guild := cc.GetGuild(activePlayer.GetGuildId())
+    guildId := msg.GuildId
+    if guildId == "" {
+        guildId = activePlayer.GetGuildId()
+    }
+
+    guild := cc.GetGuild(guildId)
+    if guild.CheckGuild() != nil {
+        return emptyResponse, types.NewObjectNotFoundError("guild", guildId)
+    }
 
     permissionError := guild.CanMintTokenBy(activePlayer)
     if (permissionError != nil) {

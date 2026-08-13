@@ -52,6 +52,10 @@ func CreateUpgradeHandler(
 			return newVM, err
 		}
 
+		if err := MigrateGuildCharter(ctx, keepers); err != nil {
+			return newVM, err
+		}
+
 		// Order matters: rewrite struct types first so the new canDefend flag is
 		// populated in state, then prune defender relationships that the flag
 		// now invalidates.
@@ -184,6 +188,74 @@ func MigrateGuildBankFees(ctx context.Context, keepers *upgrades.Keepers) error 
 	}
 
 	logger.Info("v0.21.0 guild bank fee backfill complete", "guildsMigrated", guildsMigrated)
+	return nil
+}
+
+/* MigrateGuildCharter makes the new proof-of-work guild charter usable.
+ *
+ * Three writes, and each of them is load-bearing rather than cosmetic:
+ *
+ * The params. A Params record written by an earlier binary decodes the two new
+ * fields as zero, and zero is the one difficulty range CalculateDifficulty
+ * cannot take — it would pin the requirement at 64 leading zeros forever, which
+ * is guild creation being permanently impossible. Only unset fields are filled,
+ * so a chain that has already tuned them keeps its values.
+ *
+ * The anchor. It is the height the difficulty decays from and cannot be derived
+ * from anything else on disk. Left unset, the first read would fall back to the
+ * current height anyway, but stamping it explicitly is what makes the first
+ * proof-founded guild land a predictable window after the upgrade rather than
+ * depending on when someone first asks.
+ *
+ * The reactors. Eligibility is a stored height, so an existing reactor has none
+ * and would never become eligible. They are stamped at the upgrade height, which
+ * makes them all eligible at once: the accepted launch burst is one free guild
+ * for every currently bonded validator whose reactor has not already founded
+ * one. A reactor whose GuildId is already set is spent and cannot double-dip.
+ *
+ * Idempotent. Params and reactors are only written where the field is unset, and
+ * a re-run at the same height stamps the same anchor.
+ */
+func MigrateGuildCharter(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateGuildCharter")
+
+	k := keepers.StructsKeeper
+	upgradeHeight := uint64(sdkCtx.BlockHeight())
+
+	params := k.GetParams(ctx)
+	if params.GuildCharterDifficultyRange < structstypes.MinGuildCharterDifficultyRange {
+		params.GuildCharterDifficultyRange = structstypes.DefaultGuildCharterDifficultyRange
+	}
+	if params.GuildCharterReactorAge == 0 {
+		params.GuildCharterReactorAge = structstypes.DefaultGuildCharterReactorAge
+	}
+	if err := k.SetParams(ctx, params); err != nil {
+		return err
+	}
+
+	k.SetGuildCharterAnchor(ctx, upgradeHeight)
+
+	var reactorsStamped, alreadySpent int
+	for _, reactor := range k.GetAllReactor(ctx) {
+		if reactor.GuildCharterEligibleHeight != 0 {
+			continue
+		}
+		if reactor.GuildId != "" {
+			alreadySpent++
+		}
+
+		reactor.GuildCharterEligibleHeight = upgradeHeight
+		k.SetReactor(ctx, reactor)
+		reactorsStamped++
+	}
+
+	logger.Info("v0.21.0 guild charter migration complete",
+		"anchor", upgradeHeight,
+		"difficultyRange", params.GuildCharterDifficultyRange,
+		"reactorAge", params.GuildCharterReactorAge,
+		"reactorsStamped", reactorsStamped,
+		"reactorsAlreadySpent", alreadySpent)
 	return nil
 }
 

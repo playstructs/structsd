@@ -11,4 +11,14 @@ option go_package = "structs/x/structs/types";
 message Params {
   option (amino.name) = "structs/x/structs/Params";
   option (gogoproto.equal) = true;
+
+  // guildCharterDifficultyRange is the block count at which the guild charter
+  // proof-of-work bottoms out at one leading zero. Must be at least 2:
+  // CalculateDifficulty divides by log10(range), so 1 divides by zero and 0
+  // yields negative infinity.
+  uint64 guildCharterDifficultyRange = 1;
+
+  // guildCharterReactorAge is how many blocks after creation a reactor becomes
+  // eligible to found one guild without solving the puzzle.
+  uint64 guildCharterReactorAge = 2;
 }

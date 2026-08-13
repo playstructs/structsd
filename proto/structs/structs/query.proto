@@ -32,6 +32,11 @@ service Query {
     option (google.api.http).get = "/blockheight";
   }
 
+  // State of the global guild charter puzzle.
+  rpc GuildCharter (QueryGuildCharter) returns (QueryGuildCharterResponse) {
+    option (google.api.http).get = "/structs/structs/guild_charter";
+  }
+
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/structs/structs/params";
@@ -311,6 +316,20 @@ message QueryParamsResponse {
 message QueryBlockHeight {}
 
 message QueryBlockHeightResponse { uint64 blockHeight = 1;}
+
+message QueryGuildCharter {}
+
+message QueryGuildCharterResponse {
+  // Block height the current puzzle started from. Moves on every guild founded
+  // with a proof, which invalidates any proof or consent bound to the old value.
+  uint64 anchor = 1;
+  // Blocks elapsed since the anchor.
+  uint64 age = 2;
+  // Leading zero bits a proof must currently have.
+  uint32 difficulty = 3;
+  // The decay parameter the difficulty is computed from.
+  uint64 difficultyRange = 4;
+}
 
 
 message QueryGetAddressRequest {

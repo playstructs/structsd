@@ -1396,21 +1396,46 @@ run_tx "Granting PermSubstationConnection on substation to Guild Leader B" \
 run_tx "Granting PermSubstationConnection on substation to Guild Leader C" \
     tx structs permission-grant-on-object "${SUBSTATION_ID}" "${GUILD_LEADER_C_ID}" 1024 --from alice
 
-# Create Guild B
-run_tx "Guild Leader B creates Guild B" \
-    tx structs guild-create "${REACTOR_ID}" "guild-b.energy" "${SUBSTATION_ID}" --from guild_leader_b
+# Guilds B and C go through the charter puzzle. Guild A spent the only reactor
+# entitlement on this chain, so guild-create with no proof would be refused with
+# entitlement_spent from here on. guild-create-compute mines the global puzzle,
+# which the dev genesis keeps at difficulty 1.
+run_compute "Guild Leader B creates Guild B" \
+    tx structs guild-create-compute "${REACTOR_ID}" --endpoint "guild-b.energy" --entry-substation-id "${SUBSTATION_ID}" --from guild_leader_b
 
 GUILD_B_ID=$(query query structs player "${GUILD_LEADER_B_ID}" | jq -r '.Player.guildId // empty' 2>/dev/null || echo "")
 assert_not_empty "Guild B ID" "${GUILD_B_ID}"
 echo "  Guild B ID: ${GUILD_B_ID}"
 
-# Create Guild C
-run_tx "Guild Leader C creates Guild C" \
-    tx structs guild-create "${REACTOR_ID}" "guild-c.energy" "${SUBSTATION_ID}" --from guild_leader_c
+# Founding moved the anchor, so this is a fresh puzzle rather than a second win
+# off the same one.
+run_compute "Guild Leader C creates Guild C" \
+    tx structs guild-create-compute "${REACTOR_ID}" --endpoint "guild-c.energy" --entry-substation-id "${SUBSTATION_ID}" --from guild_leader_c
 
 GUILD_C_ID=$(query query structs player "${GUILD_LEADER_C_ID}" | jq -r '.Player.guildId // empty' 2>/dev/null || echo "")
 assert_not_empty "Guild C ID" "${GUILD_C_ID}"
 echo "  Guild C ID: ${GUILD_C_ID}"
+
+# The solver is recorded on the guild forever, and is the same player here
+# because each leader founded their own.
+GUILD_B_SOLVER=$(query query structs guild "${GUILD_B_ID}" | jq -r '.Guild.charterSolverId // empty' 2>/dev/null || echo "")
+assert_eq "Guild B charter solver" "${GUILD_LEADER_B_ID}" "${GUILD_B_SOLVER}"
+
+# Guild A took the reactor route, so it records no solver.
+GUILD_A_SOLVER=$(query query structs guild "${GUILD_ID}" | jq -r '.Guild.charterSolverId // empty' 2>/dev/null || echo "")
+assert_eq "Guild A has no charter solver" "" "${GUILD_A_SOLVER}"
+
+# A guild owner may not found a second guild. This is the state corruption the
+# old handler allowed: an owner whose Player record pointed at the newest guild
+# while they kept full permissions on every earlier one.
+run_tx_expect_fail "Guild owner founding a second guild rejected" \
+    tx structs guild-create-compute "${REACTOR_ID}" --endpoint "guild-c2.energy" --entry-substation-id "${SUBSTATION_ID}" --from guild_leader_c
+
+# And the proof-free route is gone once the reactor's one entitlement is spent.
+# player_2 is guildless here and names no entry substation, so the entitlement is
+# the only thing left to refuse it.
+run_tx_expect_fail "Proof-free guild refused after the reactor entitlement is spent" \
+    tx structs guild-create "${REACTOR_ID}" "guild-d.energy" "" --from player_2
 
 info "Guilds: A=${GUILD_ID}  B=${GUILD_B_ID}  C=${GUILD_C_ID}"
 

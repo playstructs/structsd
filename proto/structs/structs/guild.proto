@@ -39,6 +39,12 @@ message Guild {
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
   ];
+
+  // charterSolverId is the player who solved the proof-of-work that founded
+  // this guild, which need not be the owner. Written once at creation and never
+  // mutated, so the credit survives a transfer. Empty on a guild founded
+  // through the reactor entitlement, where nobody solved anything.
+  string charterSolverId    = 16;
 }
 
 

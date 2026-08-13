@@ -44,6 +44,31 @@ func TestIsFreeTransaction(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
 		require.False(t, IsFreeTransaction([]sdk.Msg{}))
 	})
+
+	/* Founding a guild is a race for one global puzzle, and the throttle only
+	 * caps one attempt per signer per block. Free attempts would make flooding
+	 * that race from a spread of throwaway signers cost nothing at all, so a
+	 * losing proof has to cost gas.
+	 */
+	t.Run("MsgGuildCreate pays", func(t *testing.T) {
+		msgs := []sdk.Msg{&types.MsgGuildCreate{}}
+		require.False(t, IsFreeTransaction(msgs))
+		require.False(t, IsAnyFreeTransaction(msgs))
+	})
+
+	// And it cannot be smuggled onto the free path by pairing it with one.
+	t.Run("MsgGuildCreate poisons a free batch", func(t *testing.T) {
+		msgs := []sdk.Msg{&types.MsgFleetMove{}, &types.MsgGuildCreate{}}
+		require.False(t, IsFreeTransaction(msgs))
+	})
+}
+
+// Every priced message still has to be a Structs message, or IsFreeTransaction
+// would have refused it for the wrong reason and the entry would be decoration.
+func TestPricedStructsMessagesAreKnown(t *testing.T) {
+	for typeURL := range PricedStructsMessages {
+		require.True(t, KnownStructsMessages[typeURL], "PricedStructsMessages entry %s not in KnownStructsMessages", typeURL)
+	}
 }
 
 func TestKnownMessagesCompleteness(t *testing.T) {
@@ -437,6 +462,15 @@ func TestArch_ThrottleTargetAuthMatchesHandlers(t *testing.T) {
 			}
 			checked[typeURL] = true
 
+			// A signer-scoped key authorizes the signer as themselves, which is
+			// not what the handler's Can*By calls are about — MsgGuildCreate's
+			// authorize the founder, who need not be the signer. Asserting the
+			// mirror here would demand the wrong thing; the property that does
+			// hold is checked in TestThrottleTargetAuthTargetsMatchThrottleKeys.
+			if SignerScopedThrottleMessages[typeURL] {
+				continue
+			}
+
 			var authMethods []string
 			ast.Inspect(fn.Body, func(n ast.Node) bool {
 				sel, ok := n.(*ast.SelectorExpr)
@@ -533,7 +567,43 @@ func TestThrottleTargetAuthTargetsMatchThrottleKeys(t *testing.T) {
 		"/structs.structs.MsgAddressRegister":           {"PlayerId", types.ObjectType_player},
 	}
 
+	// Signer-scoped messages name the creator instead of an object, so the id
+	// they have to agree on is the signing address.
+	for typeURL := range SignerScopedThrottleMessages {
+		extractor, hasAuth := ThrottleTargetAuth[typeURL]
+		require.True(t, hasAuth, "%s is signer-scoped but has no ThrottleTargetAuth entry", typeURL)
+
+		msg, err := registry.Resolve(typeURL)
+		require.NoError(t, err)
+
+		const signer = "structs1sentinelsigneraddress"
+		field := reflect.ValueOf(msg).Elem().FieldByName("Creator")
+		require.True(t, field.IsValid() && field.Kind() == reflect.String,
+			"%s has no string Creator field", typeURL)
+		field.SetString(signer)
+
+		target, ok := extractor(msg)
+		require.True(t, ok, "ThrottleTargetAuth entry for %s rejected its own message type", typeURL)
+		require.Equal(t, types.ObjectType_address, target.Kind,
+			"a signer-scoped %s must authorize against the signing address, not an object", typeURL)
+		require.Equal(t, signer, target.TargetId,
+			"ThrottleTargetAuth for %s authorizes against something other than its signer", typeURL)
+
+		if proofExtractor, hasProof := ProofMessages[typeURL]; hasProof {
+			require.Contains(t, proofExtractor(msg), signer,
+				"%s is signer-scoped but reserves a key that does not name its signer, so one attempt would throttle everyone", typeURL)
+		}
+		if keyExtractor, hasKey := ThrottleKeyExtractors[typeURL]; hasKey {
+			require.Contains(t, keyExtractor(msg), signer,
+				"%s is signer-scoped but reserves a key that does not name its signer", typeURL)
+		}
+	}
+
 	for typeURL, extractor := range ThrottleTargetAuth {
+		if SignerScopedThrottleMessages[typeURL] {
+			continue
+		}
+
 		spec, known := idFields[typeURL]
 		require.True(t, known, "%s has no id field declared in this test", typeURL)
 

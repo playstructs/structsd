@@ -83,6 +83,19 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	}
 
 	k.SetGuildCount(ctx, advanceCount(k.GetGuildCount(ctx), maxIndex(genState.GuildList, func(g types.Guild) uint64 { return g.Index })+1))
+
+	/* The charter anchor cannot be rebuilt from anything else, so an unset one
+	 * falls back to the current height rather than to zero. Zero is not a
+	 * neutral default here: it would read as an age of the whole chain, which is
+	 * the easiest point on the difficulty curve, and hand out a guild for one
+	 * leading zero on the first block after import.
+	 */
+	if genState.GuildCharterAnchor == 0 {
+		k.SetGuildCharterAnchor(ctx, uint64(ctx.BlockHeight()))
+	} else {
+		k.SetGuildCharterAnchor(ctx, genState.GuildCharterAnchor)
+	}
+
 	k.SetReactorCount(ctx, advanceCount(k.GetReactorCount(ctx), maxIndexFromId(genState.ReactorList, func(r types.Reactor) string { return r.Id })+1))
 	k.SetSubstationCount(ctx, advanceCount(k.GetSubstationCount(ctx), maxIndexFromId(genState.SubstationList, func(s types.Substation) string { return s.Id })+1))
 	k.SetPlayerCount(ctx, advanceCount(k.GetPlayerCount(ctx), maxIndex(genState.PlayerList, func(p types.Player) uint64 { return p.Index })+1))
@@ -241,6 +254,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.GuildList = k.GetAllGuild(ctx)
 	genesis.GuildCount = k.GetGuildCount(ctx)
 	genesis.GuildMembershipApplicationList = k.GetAllGuildMembershipApplicationExport(ctx)
+	genesis.GuildCharterAnchor, _ = k.GetGuildCharterAnchor(ctx)
 
 	genesis.PlanetList = k.GetAllPlanet(ctx)
 	genesis.PlanetCount = k.GetPlanetCount(ctx)

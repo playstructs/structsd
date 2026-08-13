@@ -112,15 +112,22 @@ func setupEnergyGridForSim(t *testing.T, k structskeeper.Keeper, ctx sdk.Context
 	require.NoError(t, err)
 	substationId = substationResp.SubstationId
 
-	guildMsg := &types.MsgGuildCreate{
-		Creator:           reactorOwnerAddr,
-		ReactorId:         reactor.Id,
-		Endpoint:          "test-endpoint",
-		EntrySubstationId: substationId,
-	}
-	guildResp, err := msgServer.GuildCreate(sdk.WrapSDKContext(ctx), guildMsg)
-	require.NoError(t, err)
-	guildId = guildResp.GuildId
+	/* Written directly rather than through MsgGuildCreate. This fixture exists to
+	 * stand up an energy grid, and founding a guild now costs either a solved
+	 * charter proof or a bonded validator past its eligibility height — neither of
+	 * which this fixture's reactor has, since its "validator" is an account
+	 * address that the mock staking keeper has never heard of. Guild founding is
+	 * covered in x/structs/keeper/guild_charter_test.go.
+	 */
+	guild := k.AppendGuild(ctx, "test-endpoint", substationId, reactor, player, "")
+	guildId = guild.Id
+
+	player.GuildId = guildId
+	player.GuildRank = 1
+	k.SetPlayer(ctx, player)
+
+	reactor.GuildId = guildId
+	k.SetReactor(ctx, reactor)
 
 	return reactorOwnerAddr, substationId, guildId
 }

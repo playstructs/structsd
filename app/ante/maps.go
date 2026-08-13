@@ -220,8 +220,14 @@ var PermissionMap = map[string]types.Permission{
 	// Provider
 	"/structs.structs.MsgProviderWithdrawBalance": types.PermProviderWithdraw,
 
-	// Reactor
-	"/structs.structs.MsgGuildCreate": types.PermReactorGuildCreate,
+	// Guild founding is gated by proof-of-work rather than by a permission, so
+	// the ante bit is only "may act at all". PermPlay rather than a new
+	// PermGuildCharter bit: a new bit would force a PermissionRegisterSize
+	// migration and a backfill into every existing PermGuildAll record, which
+	// docs/incident-2026-05-defusing.md already ruled out for exactly this. The
+	// handler still checks PermReactorGuildCreate before binding a reactor's own
+	// GuildId, which a single map value could not express alongside PermPlay.
+	"/structs.structs.MsgGuildCreate": types.PermPlay,
 }
 
 // DynamicPermissionMessages are messages where the required permission bits
@@ -302,6 +308,17 @@ var ProofMessages = map[string]func(sdk.Msg) string{
 		}
 		return ""
 	},
+	// Signer-scoped, unlike every other entry here. The charter puzzle is
+	// chain-global, so an object-global key would be one key for the whole
+	// chain — and because ThrottleDecorator reserves before the handler runs, a
+	// single bogus proof would then deny guild founding to everyone for that
+	// block. Scoping to the signer keeps the throttle a per-attacker cost.
+	"/structs.structs.MsgGuildCreate": func(msg sdk.Msg) string {
+		if m, ok := msg.(*types.MsgGuildCreate); ok {
+			return "guild/" + m.Creator
+		}
+		return ""
+	},
 }
 
 // SignatureMessages are messages with application-level secp256k1 proof
@@ -310,6 +327,21 @@ var ProofMessages = map[string]func(sdk.Msg) string{
 var SignatureMessages = map[string]bool{
 	"/structs.structs.MsgAddressRegister":          true,
 	"/structs.structs.MsgGuildMembershipJoinProxy": true,
+	"/structs.structs.MsgGuildCreate":              true,
+}
+
+// OptionalSignatureMessages are the subset of SignatureMessages whose proof is
+// only present in some uses, so an absent one is legitimate rather than
+// malformed. PubKeyDerivationDecorator skips a message listed here when the
+// pubkey and address are *both* empty, and applies the full check otherwise —
+// half-populated has to keep failing, or the pre-filter would be bypassable by
+// omitting one field.
+//
+// MsgGuildCreate carries a founder's consent signature only when somebody else
+// is founding their guild; a founder signing for themselves already signed the
+// transaction.
+var OptionalSignatureMessages = map[string]bool{
+	"/structs.structs.MsgGuildCreate": true,
 }
 
 // CreatorExtractors provides direct field access for messages that have
@@ -450,6 +482,34 @@ var ThrottleTargetAuth = map[string]func(sdk.Msg) (ThrottleTarget, bool){
 		}
 		return ThrottleTarget{}, false
 	},
+	// Signer-scoped; see SignerScopedThrottleMessages.
+	"/structs.structs.MsgGuildCreate": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgGuildCreate); ok {
+			return ThrottleTarget{types.ObjectType_address, m.Creator, types.PermPlay}, true
+		}
+		return ThrottleTarget{}, false
+	},
+}
+
+// SignerScopedThrottleMessages are throttled messages whose key names the signer
+// rather than an object the transaction chooses.
+//
+// The whole reason ThrottleTargetAuth exists is that an object-global key can be
+// reserved for somebody else's object, parking their slot for the block. A
+// signer-scoped key cannot: it names only the signer, so the reservation costs
+// nobody else anything, and there is no third-party standing to mirror. The
+// authorization degenerates to "is the signer a registered player acting as
+// themselves", which is what ObjectType_address resolves to in
+// Keeper.ThrottleTargetAuthorized.
+//
+// This is deliberately a declared set rather than an inference, because the two
+// shapes need opposite things from the arch guards: an object-scoped entry must
+// mirror its handler's Can*By permission and name the id in its key, while a
+// signer-scoped one must name the creator and must NOT be confused for the
+// handler's own authorization. MsgGuildCreate's handler authorizes the founder,
+// who is not the signer at all.
+var SignerScopedThrottleMessages = map[string]bool{
+	"/structs.structs.MsgGuildCreate": true,
 }
 
 // FreeStakingMessages enumerates the x/staking message type URLs that receive
@@ -477,15 +537,27 @@ func IsStakingMessage(typeURL string) bool {
 	return FreeStakingMessages[typeURL]
 }
 
+// PricedStructsMessages are Structs messages that pay ordinary gas rather than
+// riding the free-transaction path.
+//
+// MsgGuildCreate is here because it is a race: the throttle caps one attempt per
+// signer per block, but attempts that cost literally nothing invite flooding the
+// charter race from a spread of throwaway signers. A failed proof should cost
+// something.
+var PricedStructsMessages = map[string]bool{
+	"/structs.structs.MsgGuildCreate": true,
+}
+
 // IsFreeTransaction returns true if all messages in the tx are Structs gameplay
-// messages (excluding MsgUpdateParams, which is a governance operation).
+// messages (excluding MsgUpdateParams, which is a governance operation, and the
+// PricedStructsMessages, which deliberately pay).
 func IsFreeTransaction(msgs []sdk.Msg) bool {
 	if len(msgs) == 0 {
 		return false
 	}
 	for _, msg := range msgs {
 		typeURL := sdk.MsgTypeURL(msg)
-		if !IsStructsMessage(typeURL) || typeURL == MsgUpdateParamsTypeURL {
+		if !IsStructsMessage(typeURL) || typeURL == MsgUpdateParamsTypeURL || PricedStructsMessages[typeURL] {
 			return false
 		}
 	}

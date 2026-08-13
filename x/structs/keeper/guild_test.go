@@ -24,7 +24,7 @@ func createNGuild(keeper keeper.Keeper, ctx sdk.Context, n int) []types.Guild {
 			PrimaryAddress: "creator" + string(rune(i)),
 		}
 		player = testAppendPlayer(keeper, ctx, player)
-		items[i] = keeper.AppendGuild(ctx, endpoint, substationId, reactor, player)
+		items[i] = keeper.AppendGuild(ctx, endpoint, substationId, reactor, player, "")
 	}
 	return items
 }
@@ -87,7 +87,7 @@ func TestGuildCount(t *testing.T) {
 }
 
 func createTestGuild(k keeper.Keeper, ctx sdk.Context, endpoint string, substationId string, reactor types.Reactor, player types.Player) types.Guild {
-	return k.AppendGuild(ctx, endpoint, substationId, reactor, player)
+	return k.AppendGuild(ctx, endpoint, substationId, reactor, player, "")
 }
 
 func TestGuildBasicOperations(t *testing.T) {

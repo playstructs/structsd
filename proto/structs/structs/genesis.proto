@@ -45,6 +45,13 @@ message GenesisState {
             uint64      guildCount       = 7;
   repeated  GuildMembershipApplication guildMembershipApplicationList = 33 [(gogoproto.nullable) = false];
 
+  // guildCharterAnchor is the height of the last proof-founded guild, and the
+  // age the charter difficulty curve is measured from. It cannot be rebuilt
+  // from anything else, so it has to round-trip through genesis; zero is read
+  // as "unset" and falls back to the current height on import, because zero
+  // would otherwise mean maximally easy.
+            uint64      guildCharterAnchor = 36;
+
 
   repeated  Planet                planetList            = 8 [(gogoproto.nullable) = false];
             uint64                planetCount           = 9;

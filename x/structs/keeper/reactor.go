@@ -65,7 +65,18 @@ func (k Keeper) SetReactorValidatorBytes(ctx context.Context, reactorId string, 
 	store.Set(validatorAddress, []byte(reactorId))
 }
 
-// AppendReactor appends a reactor in the store with a new id and update the count
+/* AppendReactor appends a reactor in the store with a new id and update the
+ * count.
+ *
+ * Stamps the guild charter eligibility height here, at creation, rather than
+ * deriving it from an age at read time. A stored deadline means the check is one
+ * comparison with nothing to underflow, and it means lowering the param can only
+ * shorten the wait for new reactors rather than retroactively unlocking a wave
+ * of existing ones.
+ *
+ * A caller that has already set the field keeps its value, which is what lets
+ * genesis import round-trip a reactor without resetting its clock.
+ */
 func (k Keeper) AppendReactor(
 	ctx context.Context,
 	reactor types.Reactor,
@@ -75,6 +86,11 @@ func (k Keeper) AppendReactor(
 
 	// Set the ID of the appended value
 	reactor.Id = GetObjectID(types.ObjectType_reactor, count)
+
+	if reactor.GuildCharterEligibleHeight == 0 {
+		blockHeight := uint64(sdk.UnwrapSDKContext(ctx).BlockHeight())
+		reactor.GuildCharterEligibleHeight = blockHeight + k.GetParams(ctx).CharterReactorAge()
+	}
 
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.ReactorKey))
 	appendedValue := k.cdc.MustMarshal(&reactor)

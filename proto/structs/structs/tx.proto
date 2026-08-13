@@ -269,6 +269,9 @@ message MsgGuildBankMint {
   string creator  = 1;
   uint64 amountAlpha = 2;
   uint64 amountToken = 3;
+  // Optional; defaults to the signer's own guild. Named explicitly by an owner
+  // who is not a member, which is what a guild transfer produces.
+  string guildId = 4;
 }
 
 message MsgGuildBankMintResponse { }
@@ -296,6 +299,9 @@ message MsgGuildBankConfiscateAndBurn {
   string creator  = 1;
   string address = 2;
   uint64 amountToken = 3;
+  // Optional; defaults to the signer's own guild. Named explicitly by an owner
+  // who is not a member, which is what a guild transfer produces.
+  string guildId = 4;
 }
 
 message MsgGuildBankConfiscateAndBurnResponse { }
@@ -341,6 +347,15 @@ message MsgGuildBankConvertTokenResponse { }
 
 
 
+// MsgGuildCreate founds a guild, either by solving the chain-global charter
+// proof-of-work or by spending a reactor's one-time entitlement.
+//
+// The signer is the solver, not necessarily the owner. Work is bound to the
+// (solver, founder) pair so a pool searches disjoint spaces and nobody can be
+// robbed of credit or have the guild redirected. When founderPlayerId names
+// somebody else, the founder's consent is proved by an offline signature over a
+// preimage the chain rebuilds, collected before the grind starts so the solver
+// can broadcast the instant they win.
 message MsgGuildCreate {
   option (cosmos.msg.v1.signer) = "creator";
 
@@ -348,6 +363,19 @@ message MsgGuildCreate {
   string reactorId          = 2;
   string endpoint           = 3;
   string entrySubstationId  = 4;
+
+  string proof              = 5;
+  string nonce              = 6;
+
+  // founderPlayerId is who ends up owning the guild. Empty means the signer.
+  string founderPlayerId    = 7;
+
+  // address, proofPubKey and proofSignature carry the founder's consent and are
+  // all empty when the signer is the founder. The names satisfy the ante's
+  // pubKeyMessage interface; see OptionalSignatureMessages.
+  string address            = 8;
+  string proofPubKey        = 9;
+  string proofSignature     = 10;
 }
 
 message MsgGuildCreateResponse { string guildId = 1; }
@@ -454,6 +482,9 @@ message MsgGuildUpdateEntryRank {
 
   string creator       = 1;
   uint64 newEntryRank  = 2;
+  // Optional; defaults to the signer's own guild. Named explicitly by an owner
+  // who is not a member, which is what a guild transfer produces.
+  string guildId       = 3;
 }
 
 message MsgGuildUpdateResponse{}
@@ -717,6 +748,10 @@ message MsgPlayerUpdateGuildRank {
   string creator      = 1;
   string playerId     = 2;
   uint64 guildRank    = 3;
+  // Optional; defaults to the signer's own guild. Named explicitly by an owner
+  // who is not a member, which is what a guild transfer produces. The target
+  // must be a member of the named guild either way.
+  string guildId      = 4;
 }
 
 message MsgPlayerUpdateGuildRankResponse {}

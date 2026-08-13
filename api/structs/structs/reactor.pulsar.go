@@ -15,13 +15,14 @@ import (
 )
 
 var (
-	md_Reactor                   protoreflect.MessageDescriptor
-	fd_Reactor_id                protoreflect.FieldDescriptor
-	fd_Reactor_validator         protoreflect.FieldDescriptor
-	fd_Reactor_guildId           protoreflect.FieldDescriptor
-	fd_Reactor_defaultCommission protoreflect.FieldDescriptor
-	fd_Reactor_rawAddress        protoreflect.FieldDescriptor
-	fd_Reactor_owner             protoreflect.FieldDescriptor
+	md_Reactor                            protoreflect.MessageDescriptor
+	fd_Reactor_id                         protoreflect.FieldDescriptor
+	fd_Reactor_validator                  protoreflect.FieldDescriptor
+	fd_Reactor_guildId                    protoreflect.FieldDescriptor
+	fd_Reactor_defaultCommission          protoreflect.FieldDescriptor
+	fd_Reactor_rawAddress                 protoreflect.FieldDescriptor
+	fd_Reactor_owner                      protoreflect.FieldDescriptor
+	fd_Reactor_guildCharterEligibleHeight protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -33,6 +34,7 @@ func init() {
 	fd_Reactor_defaultCommission = md_Reactor.Fields().ByName("defaultCommission")
 	fd_Reactor_rawAddress = md_Reactor.Fields().ByName("rawAddress")
 	fd_Reactor_owner = md_Reactor.Fields().ByName("owner")
+	fd_Reactor_guildCharterEligibleHeight = md_Reactor.Fields().ByName("guildCharterEligibleHeight")
 }
 
 var _ protoreflect.Message = (*fastReflection_Reactor)(nil)
@@ -136,6 +138,12 @@ func (x *fastReflection_Reactor) Range(f func(protoreflect.FieldDescriptor, prot
 			return
 		}
 	}
+	if x.GuildCharterEligibleHeight != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.GuildCharterEligibleHeight)
+		if !f(fd_Reactor_guildCharterEligibleHeight, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -163,6 +171,8 @@ func (x *fastReflection_Reactor) Has(fd protoreflect.FieldDescriptor) bool {
 		return len(x.RawAddress) != 0
 	case "structs.structs.Reactor.owner":
 		return x.Owner != ""
+	case "structs.structs.Reactor.guildCharterEligibleHeight":
+		return x.GuildCharterEligibleHeight != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Reactor"))
@@ -191,6 +201,8 @@ func (x *fastReflection_Reactor) Clear(fd protoreflect.FieldDescriptor) {
 		x.RawAddress = nil
 	case "structs.structs.Reactor.owner":
 		x.Owner = ""
+	case "structs.structs.Reactor.guildCharterEligibleHeight":
+		x.GuildCharterEligibleHeight = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Reactor"))
@@ -225,6 +237,9 @@ func (x *fastReflection_Reactor) Get(descriptor protoreflect.FieldDescriptor) pr
 	case "structs.structs.Reactor.owner":
 		value := x.Owner
 		return protoreflect.ValueOfString(value)
+	case "structs.structs.Reactor.guildCharterEligibleHeight":
+		value := x.GuildCharterEligibleHeight
+		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Reactor"))
@@ -257,6 +272,8 @@ func (x *fastReflection_Reactor) Set(fd protoreflect.FieldDescriptor, value prot
 		x.RawAddress = value.Bytes()
 	case "structs.structs.Reactor.owner":
 		x.Owner = value.Interface().(string)
+	case "structs.structs.Reactor.guildCharterEligibleHeight":
+		x.GuildCharterEligibleHeight = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Reactor"))
@@ -289,6 +306,8 @@ func (x *fastReflection_Reactor) Mutable(fd protoreflect.FieldDescriptor) protor
 		panic(fmt.Errorf("field rawAddress of message structs.structs.Reactor is not mutable"))
 	case "structs.structs.Reactor.owner":
 		panic(fmt.Errorf("field owner of message structs.structs.Reactor is not mutable"))
+	case "structs.structs.Reactor.guildCharterEligibleHeight":
+		panic(fmt.Errorf("field guildCharterEligibleHeight of message structs.structs.Reactor is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Reactor"))
@@ -314,6 +333,8 @@ func (x *fastReflection_Reactor) NewField(fd protoreflect.FieldDescriptor) proto
 		return protoreflect.ValueOfBytes(nil)
 	case "structs.structs.Reactor.owner":
 		return protoreflect.ValueOfString("")
+	case "structs.structs.Reactor.guildCharterEligibleHeight":
+		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Reactor"))
@@ -407,6 +428,9 @@ func (x *fastReflection_Reactor) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		if x.GuildCharterEligibleHeight != 0 {
+			n += 1 + runtime.Sov(uint64(x.GuildCharterEligibleHeight))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -435,6 +459,11 @@ func (x *fastReflection_Reactor) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.GuildCharterEligibleHeight != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.GuildCharterEligibleHeight))
+			i--
+			dAtA[i] = 0x38
 		}
 		if len(x.Owner) > 0 {
 			i -= len(x.Owner)
@@ -721,6 +750,25 @@ func (x *fastReflection_Reactor) ProtoMethods() *protoiface.Methods {
 				}
 				x.Owner = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
+			case 7:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuildCharterEligibleHeight", wireType)
+				}
+				x.GuildCharterEligibleHeight = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.GuildCharterEligibleHeight |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -780,6 +828,12 @@ type Reactor struct {
 	DefaultCommission string `protobuf:"bytes,4,opt,name=defaultCommission,proto3" json:"defaultCommission,omitempty"`
 	RawAddress        []byte `protobuf:"bytes,5,opt,name=rawAddress,proto3" json:"rawAddress,omitempty"`
 	Owner             string `protobuf:"bytes,6,opt,name=owner,proto3" json:"owner,omitempty"`
+	// guildCharterEligibleHeight is the block from which this reactor may found
+	// one guild without solving the charter proof-of-work. Stored as a height
+	// rather than derived from an age so that lowering the param cannot
+	// retroactively unlock a wave of existing reactors, and so the check is one
+	// comparison with no subtraction to underflow.
+	GuildCharterEligibleHeight uint64 `protobuf:"varint,7,opt,name=guildCharterEligibleHeight,proto3" json:"guildCharterEligibleHeight,omitempty"`
 }
 
 func (x *Reactor) Reset() {
@@ -844,6 +898,13 @@ func (x *Reactor) GetOwner() string {
 	return ""
 }
 
+func (x *Reactor) GetGuildCharterEligibleHeight() uint64 {
+	if x != nil {
+		return x.GuildCharterEligibleHeight
+	}
+	return 0
+}
+
 var File_structs_structs_reactor_proto protoreflect.FileDescriptor
 
 var file_structs_structs_reactor_proto_rawDesc = []byte{
@@ -853,7 +914,7 @@ var file_structs_structs_reactor_proto_rawDesc = []byte{
 	0x1a, 0x19, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x63,
 	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x14, 0x67, 0x6f, 0x67,
 	0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x22, 0x88, 0x02, 0x0a, 0x07, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x0e, 0x0a,
+	0x6f, 0x22, 0xc8, 0x02, 0x0a, 0x07, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x0e, 0x0a,
 	0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x36, 0x0a,
 	0x09, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
 	0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64,
@@ -869,7 +930,11 @@ var file_structs_structs_reactor_proto_rawDesc = []byte{
 	0x12, 0x1e, 0x0a, 0x0a, 0x72, 0x61, 0x77, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x05,
 	0x20, 0x01, 0x28, 0x0c, 0x52, 0x0a, 0x72, 0x61, 0x77, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
 	0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x3a, 0x04, 0xe8, 0xa0, 0x1f, 0x01, 0x42, 0xa2, 0x01, 0x0a,
+	0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x12, 0x3e, 0x0a, 0x1a, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x43,
+	0x68, 0x61, 0x72, 0x74, 0x65, 0x72, 0x45, 0x6c, 0x69, 0x67, 0x69, 0x62, 0x6c, 0x65, 0x48, 0x65,
+	0x69, 0x67, 0x68, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x1a, 0x67, 0x75, 0x69, 0x6c,
+	0x64, 0x43, 0x68, 0x61, 0x72, 0x74, 0x65, 0x72, 0x45, 0x6c, 0x69, 0x67, 0x69, 0x62, 0x6c, 0x65,
+	0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x3a, 0x04, 0xe8, 0xa0, 0x1f, 0x01, 0x42, 0xa2, 0x01, 0x0a,
 	0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
 	0x75, 0x63, 0x74, 0x73, 0x42, 0x0c, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x50, 0x72, 0x6f,
 	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e,

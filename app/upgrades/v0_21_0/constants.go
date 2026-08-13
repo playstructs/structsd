@@ -566,7 +566,152 @@ package v0_21_0
 //     which reads the handler sources and follows a message field through a local
 //     variable, since a loop over a repeated field is one.
 //
+//   - Founding a guild is no longer a validator perk. GuildCreate checked only
+//     PermReactorGuildCreate on a reactor, which is granted as part of
+//     PermReactorAll at reactor creation and never revoked, and it never looked
+//     at the founder's existing GuildId. The check being idempotent, one
+//     permissioned player could call the handler repeatedly: each call appended a
+//     guild owning them PermGuildAll, minted denom metadata and a module account,
+//     and overwrote their GuildId and GuildRank, so their Player record pointed at
+//     the newest guild while they kept full administrative and token authority
+//     over every earlier one — an owner who is not a member of their own guild,
+//     the same reactor recorded as primary by several guilds, and unbounded state
+//     growth for a message that was on the free-transaction path. The simulation
+//     had encoded the intended invariant all along, skipping the message when
+//     GuildId was non-empty.
+//
+//     Creation is now priced in work rather than permission, and the price is a
+//     chain-global figure rather than a per-player one. A single charter puzzle
+//     exists for the whole chain; its difficulty decays logarithmically from an
+//     anchor height over guildCharterDifficultyRange blocks, and founding a guild
+//     with a proof resets the anchor to that height, which makes the puzzle
+//     maximally hard again and invalidates every nonce anyone else was grinding.
+//     Supply is therefore a rate — roughly one guild per range, whatever the total
+//     hashpower — rather than something an attacker can buy more of. The default
+//     range is 2,500,000 blocks, about three weeks. Anyone may found a guild by
+//     solving it; PermReactorGuildCreate survives only as the gate on binding a
+//     reactor's own GuildId, which matters because that field is also what spends
+//     the entitlement below.
+//
+//     The second route is a reactor's one-time entitlement: no proof, but the
+//     reactor must be past guildCharterEligibleHeight (stamped at creation as the
+//     current height plus guildCharterReactorAge, a month of blocks by default),
+//     must not already have founded a guild, and its validator must be *currently
+//     bonded and not jailed*. That last condition is what makes the route safe to
+//     offer at all: ReactorInitialize runs from AfterValidatorCreated and
+//     MsgCreateValidator picks its own min_self_delegation, so a validator that
+//     never joins the active set is nearly free, and requiring bonded caps the
+//     free supply at the size of the active set. It is deliberately stricter than
+//     GuildUpdatePrimaryReactor, which tolerates an unbonded validator because it
+//     is a recovery path. The entitlement path does not move the anchor: wiping
+//     every pool's in-flight mining because a validator collected a perk would
+//     make the two routes interfere for no reason.
+//
+//     A solver need not be the founder. MsgGuildCreate gains founderPlayerId plus
+//     the address/proofPubKey/proofSignature triple, and a mining pool can found a
+//     guild for a member who signed an offline consent. The consent is collected
+//     *before* the grind starts, because a charter is a race and a winning nonce
+//     that had to travel to the founder for a signature would lose to a pool with
+//     a more attentive leader. It binds the founder, reactor, entry substation,
+//     endpoint and anchor — an unbound "I consent" blob would be a bearer token
+//     letting any holder name their own substation as the new guild's entry point,
+//     which is every future member's power supply. Replay protection is the anchor
+//     rather than a counter: spending a consent founds a guild, which moves the
+//     anchor and kills it, the same nonce-free single-use shape AddressRegister
+//     has. Deliberately not the proxyNonce grid attribute, which
+//     GuildMembershipJoinProxy bumps for unrelated reasons and would expire a
+//     consent mid-grind. The work preimage binds solver and founder with a
+//     separator, since both are player ids with the same type prefix and bare
+//     concatenation would let ("1-4","21-7") and ("1-42","1-7") share a solution.
+//     The solver is recorded permanently as Guild.charterSolverId.
+//
+//     Because moving the anchor is the whole of what retires a consent, a
+//     third-party founding is accepted only on the path that moves it: the
+//     entitlement path refuses one outright with ReactorError
+//     guild_charter/consent_needs_proof. Otherwise the signature would stay live
+//     until an unrelated player proof-founded, which is long enough for the
+//     solver to mine a fresh proof and replay it — griefing rather than theft,
+//     but it drags the founder out of whatever guild they had since joined and
+//     into a second one at the entry rank. No capability is lost, since the
+//     entitlement path already demands reactor permission from the founder, who
+//     can therefore sign the transaction themselves, and there is no race on that
+//     path to sign ahead of.
+//
+//     The proof path also requires the named reactor's validator to exist and not
+//     be jailed, which is parity with GuildUpdatePrimaryReactor rather than the
+//     stricter bonded test the entitlement path uses. AppendGuild writes
+//     PrimaryReactorId unconditionally and GuildMembershipJoin redelegates every
+//     joiner's infusion to whatever it names, so a guild founded on a tombstoned
+//     validator is a trap for its members from the first block. Adding the check
+//     cannot strand a mined solution: the work preimage binds solver, founder and
+//     anchor and says nothing about the reactor, so a solver refused here names a
+//     different reactor and re-submits the same nonce.
+//
+//     The membership rule the old handler was missing is now explicit, and it is
+//     two rules. A plain member founding a guild leaves the one they are in,
+//     dropping their substation connection only when it was that guild's entry
+//     substation. An owner is refused outright with GuildMembershipError
+//     is_owner: leaving a guild you own is what stranded it, and there is a proper
+//     way to hand it over. Which is now real — GuildCache.SetOwner revokes the
+//     outgoing owner's PermGuildAll row instead of leaving them in full control of
+//     a guild they no longer own, so MsgGuildUpdateOwnerId is a transfer rather
+//     than the addition of a second administrator. That makes guilds tradeable,
+//     which is where their price is discovered.
+//
+//     Tradeable guilds make ownership and membership separate, since SetOwner
+//     moves the owner and the permission row and touches neither player's GuildId.
+//     Ownership already carried full authority without membership — PermissionCheck
+//     grants the recorded owner an unconditional yes — but four handlers resolved
+//     the guild from the signer's own membership and so could not be addressed to
+//     a guild the signer was not in. MsgGuildBankMint,
+//     MsgGuildBankConfiscateAndBurn, MsgGuildUpdateEntryRank and
+//     MsgPlayerUpdateGuildRank each gain an optional guildId field (4, 4, 3 and 4)
+//     with membership as the fallback, so existing clients are unaffected; the
+//     fields are additive on transaction messages, which are never stored, so no
+//     migration. They are not in autocli's PositionalArgs and therefore appear as
+//     a --guild-id flag. Two rules are restated in the process, both identical for
+//     a member caller: PlayerUpdateGuildRank asks whether the target belongs to the
+//     named guild rather than to the caller's, and rank-derived authority (the
+//     entry-rank ceiling, and the outrank-the-target fallback when PermAdmin fails)
+//     applies only to a caller who is a member of the guild being edited — a rank
+//     held in some other guild is an unrelated number, and a guildless caller's
+//     zero would otherwise outrank every member.
+//
+//     Ante wiring: MsgGuildCreate's PermissionMap bit moves from
+//     PermReactorGuildCreate to the existing PermPlay (a new bit would force a
+//     PermissionRegisterSize migration for no benefit), it joins ProofMessages
+//     with a signer-scoped throttle key, and it leaves the free-transaction set
+//     through the new PricedStructsMessages so a losing proof costs gas — the
+//     throttle caps one attempt per signer per block, which is no deterrent at
+//     all if attempts are free across throwaway signers. It also joins
+//     SignatureMessages and the new OptionalSignatureMessages, since its consent
+//     proof is present only when somebody else is founding: PubKeyDerivationDecorator
+//     skips a message in that set when pubkey and address are both empty and
+//     applies the full check otherwise, half-populated still failing so the
+//     pre-filter cannot be bypassed by omitting one field.
+//
+//     guildCharterDifficultyRange and guildCharterReactorAge are params rather
+//     than constants because at production values a fresh chain cannot produce a
+//     guild for weeks, which would make every dev chain and tests/test_chain.sh
+//     unusable. config.yml sets them to 2 and 5.
+//
+//     Note the floating-point hazard this inherits rather than introduces:
+//     CalculateDifficulty uses math.Log10, shared with the four existing
+//     proof-of-work paths. It is not new exposure and is left for its own change.
+//
 // State migrations:
+//
+//   - MigrateGuildCharter: fill the two new params where unset, stamp the charter
+//     anchor at the upgrade height, and stamp guildCharterEligibleHeight on every
+//     existing reactor. All three are load-bearing. A zero difficulty range would
+//     pin the requirement at 64 leading zeros forever, which is guild creation
+//     being permanently impossible. The anchor cannot be derived from anything
+//     else on disk. And eligibility is a stored height, so a reactor that predates
+//     the field would never become eligible — they are stamped at the upgrade
+//     height, which makes them all eligible at once. The accepted consequence is a
+//     launch burst of one free guild per currently bonded validator whose reactor
+//     has not already founded one; a reactor with a GuildId is spent and cannot
+//     double-dip. Idempotent.
 //
 //   - MigrateGuildJoinBypassLevels: clamp either bypass field to closed on any
 //     guild holding a value outside the declared enum. The new default branches

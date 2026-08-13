@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	Query_GetBlockHeight_FullMethodName                      = "/structs.structs.Query/GetBlockHeight"
+	Query_GuildCharter_FullMethodName                        = "/structs.structs.Query/GuildCharter"
 	Query_Params_FullMethodName                              = "/structs.structs.Query/Params"
 	Query_Address_FullMethodName                             = "/structs.structs.Query/Address"
 	Query_AddressAll_FullMethodName                          = "/structs.structs.Query/AddressAll"
@@ -84,6 +85,8 @@ const (
 // Query defines the gRPC querier service.
 type QueryClient interface {
 	GetBlockHeight(ctx context.Context, in *QueryBlockHeight, opts ...grpc.CallOption) (*QueryBlockHeightResponse, error)
+	// State of the global guild charter puzzle.
+	GuildCharter(ctx context.Context, in *QueryGuildCharter, opts ...grpc.CallOption) (*QueryGuildCharterResponse, error)
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// Queries for Addresses.
@@ -181,6 +184,16 @@ func (c *queryClient) GetBlockHeight(ctx context.Context, in *QueryBlockHeight, 
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(QueryBlockHeightResponse)
 	err := c.cc.Invoke(ctx, Query_GetBlockHeight_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GuildCharter(ctx context.Context, in *QueryGuildCharter, opts ...grpc.CallOption) (*QueryGuildCharterResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryGuildCharterResponse)
+	err := c.cc.Invoke(ctx, Query_GuildCharter_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -744,6 +757,8 @@ func (c *queryClient) ValidateSignature(ctx context.Context, in *QueryValidateSi
 // Query defines the gRPC querier service.
 type QueryServer interface {
 	GetBlockHeight(context.Context, *QueryBlockHeight) (*QueryBlockHeightResponse, error)
+	// State of the global guild charter puzzle.
+	GuildCharter(context.Context, *QueryGuildCharter) (*QueryGuildCharterResponse, error)
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// Queries for Addresses.
@@ -839,6 +854,9 @@ type UnimplementedQueryServer struct{}
 
 func (UnimplementedQueryServer) GetBlockHeight(context.Context, *QueryBlockHeight) (*QueryBlockHeightResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBlockHeight not implemented")
+}
+func (UnimplementedQueryServer) GuildCharter(context.Context, *QueryGuildCharter) (*QueryGuildCharterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildCharter not implemented")
 }
 func (UnimplementedQueryServer) Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
@@ -1040,6 +1058,24 @@ func _Query_GetBlockHeight_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).GetBlockHeight(ctx, req.(*QueryBlockHeight))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GuildCharter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGuildCharter)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GuildCharter(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GuildCharter_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GuildCharter(ctx, req.(*QueryGuildCharter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2044,6 +2080,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetBlockHeight",
 			Handler:    _Query_GetBlockHeight_Handler,
+		},
+		{
+			MethodName: "GuildCharter",
+			Handler:    _Query_GuildCharter_Handler,
 		},
 		{
 			MethodName: "Params",

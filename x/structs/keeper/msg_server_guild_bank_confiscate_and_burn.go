@@ -25,7 +25,15 @@ func (k msgServer) GuildBankConfiscateAndBurn(goCtx context.Context, msg *types.
         return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_bank_confiscate")
     }
 
-    guild := cc.GetGuild(activePlayer.GetGuildId())
+    guildId := msg.GuildId
+    if guildId == "" {
+        guildId = activePlayer.GetGuildId()
+    }
+
+    guild := cc.GetGuild(guildId)
+    if guild.CheckGuild() != nil {
+        return emptyResponse, types.NewObjectNotFoundError("guild", guildId)
+    }
 
     permissionError := guild.CanBurnTokenBy(activePlayer)
     if (permissionError != nil) {

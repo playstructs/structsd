@@ -38,7 +38,7 @@ func TestMsgGuildUpdateOwnerId(t *testing.T) {
 	reactor = k.AppendReactor(ctx, reactor)
 
 	// Create guild
-	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, owner)
+	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, owner, "")
 	owner.GuildId = guild.Id
 	k.SetPlayer(ctx, owner)
 
@@ -82,9 +82,14 @@ func TestMsgGuildUpdateOwnerId(t *testing.T) {
 			// cc.GetPlayer with an explicit CheckPlayer, now folded into
 			// cc.GetExistingPlayer, which returns the same error. Only the
 			// expected wording was stale.
+			//
+			// Signed by newOwner rather than owner because the case above has
+			// already transferred the guild, and a transfer now revokes the
+			// seller's row: owner would be refused for want of permission before
+			// ever reaching the resolution this case is about.
 			name: "new owner not found",
 			input: &types.MsgGuildUpdateOwnerId{
-				Creator: owner.Creator,
+				Creator: newOwner.Creator,
 				GuildId: guild.Id,
 				Owner:   "invalid-player",
 			},

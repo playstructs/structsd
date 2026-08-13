@@ -1236,6 +1236,7 @@ var (
 	fd_GenesisState_guildList                      protoreflect.FieldDescriptor
 	fd_GenesisState_guildCount                     protoreflect.FieldDescriptor
 	fd_GenesisState_guildMembershipApplicationList protoreflect.FieldDescriptor
+	fd_GenesisState_guildCharterAnchor             protoreflect.FieldDescriptor
 	fd_GenesisState_planetList                     protoreflect.FieldDescriptor
 	fd_GenesisState_planetCount                    protoreflect.FieldDescriptor
 	fd_GenesisState_planetAttributeList            protoreflect.FieldDescriptor
@@ -1275,6 +1276,7 @@ func init() {
 	fd_GenesisState_guildList = md_GenesisState.Fields().ByName("guildList")
 	fd_GenesisState_guildCount = md_GenesisState.Fields().ByName("guildCount")
 	fd_GenesisState_guildMembershipApplicationList = md_GenesisState.Fields().ByName("guildMembershipApplicationList")
+	fd_GenesisState_guildCharterAnchor = md_GenesisState.Fields().ByName("guildCharterAnchor")
 	fd_GenesisState_planetList = md_GenesisState.Fields().ByName("planetList")
 	fd_GenesisState_planetCount = md_GenesisState.Fields().ByName("planetCount")
 	fd_GenesisState_planetAttributeList = md_GenesisState.Fields().ByName("planetAttributeList")
@@ -1428,6 +1430,12 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 	if len(x.GuildMembershipApplicationList) != 0 {
 		value := protoreflect.ValueOfList(&_GenesisState_33_list{list: &x.GuildMembershipApplicationList})
 		if !f(fd_GenesisState_guildMembershipApplicationList, value) {
+			return
+		}
+	}
+	if x.GuildCharterAnchor != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.GuildCharterAnchor)
+		if !f(fd_GenesisState_guildCharterAnchor, value) {
 			return
 		}
 	}
@@ -1606,6 +1614,8 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 		return x.GuildCount != uint64(0)
 	case "structs.structs.GenesisState.guildMembershipApplicationList":
 		return len(x.GuildMembershipApplicationList) != 0
+	case "structs.structs.GenesisState.guildCharterAnchor":
+		return x.GuildCharterAnchor != uint64(0)
 	case "structs.structs.GenesisState.planetList":
 		return len(x.PlanetList) != 0
 	case "structs.structs.GenesisState.planetCount":
@@ -1690,6 +1700,8 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 		x.GuildCount = uint64(0)
 	case "structs.structs.GenesisState.guildMembershipApplicationList":
 		x.GuildMembershipApplicationList = nil
+	case "structs.structs.GenesisState.guildCharterAnchor":
+		x.GuildCharterAnchor = uint64(0)
 	case "structs.structs.GenesisState.planetList":
 		x.PlanetList = nil
 	case "structs.structs.GenesisState.planetCount":
@@ -1806,6 +1818,9 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 		}
 		listValue := &_GenesisState_33_list{list: &x.GuildMembershipApplicationList}
 		return protoreflect.ValueOfList(listValue)
+	case "structs.structs.GenesisState.guildCharterAnchor":
+		value := x.GuildCharterAnchor
+		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.GenesisState.planetList":
 		if len(x.PlanetList) == 0 {
 			return protoreflect.ValueOfList(&_GenesisState_8_list{})
@@ -1982,6 +1997,8 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 		lv := value.List()
 		clv := lv.(*_GenesisState_33_list)
 		x.GuildMembershipApplicationList = *clv.list
+	case "structs.structs.GenesisState.guildCharterAnchor":
+		x.GuildCharterAnchor = value.Uint()
 	case "structs.structs.GenesisState.planetList":
 		lv := value.List()
 		clv := lv.(*_GenesisState_8_list)
@@ -2237,6 +2254,8 @@ func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) p
 		panic(fmt.Errorf("field allocationCount of message structs.structs.GenesisState is not mutable"))
 	case "structs.structs.GenesisState.guildCount":
 		panic(fmt.Errorf("field guildCount of message structs.structs.GenesisState is not mutable"))
+	case "structs.structs.GenesisState.guildCharterAnchor":
+		panic(fmt.Errorf("field guildCharterAnchor of message structs.structs.GenesisState is not mutable"))
 	case "structs.structs.GenesisState.planetCount":
 		panic(fmt.Errorf("field planetCount of message structs.structs.GenesisState is not mutable"))
 	case "structs.structs.GenesisState.playerCount":
@@ -2292,6 +2311,8 @@ func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) 
 	case "structs.structs.GenesisState.guildMembershipApplicationList":
 		list := []*GuildMembershipApplication{}
 		return protoreflect.ValueOfList(&_GenesisState_33_list{list: &list})
+	case "structs.structs.GenesisState.guildCharterAnchor":
+		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.GenesisState.planetList":
 		list := []*Planet{}
 		return protoreflect.ValueOfList(&_GenesisState_8_list{list: &list})
@@ -2480,6 +2501,9 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				n += 2 + l + runtime.Sov(uint64(l))
 			}
 		}
+		if x.GuildCharterAnchor != 0 {
+			n += 2 + runtime.Sov(uint64(x.GuildCharterAnchor))
+		}
 		if len(x.PlanetList) > 0 {
 			for _, e := range x.PlanetList {
 				l = options.Size(e)
@@ -2628,6 +2652,13 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.GuildCharterAnchor != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.GuildCharterAnchor))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0xa0
 		}
 		if len(x.InfusionMaturitySweepQueue) > 0 {
 			for iNdEx := len(x.InfusionMaturitySweepQueue) - 1; iNdEx >= 0; iNdEx-- {
@@ -3480,6 +3511,25 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
+			case 36:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuildCharterAnchor", wireType)
+				}
+				x.GuildCharterAnchor = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.GuildCharterAnchor |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
 			case 8:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetList", wireType)
@@ -4225,40 +4275,46 @@ type GenesisState struct {
 	unknownFields protoimpl.UnknownFields
 
 	// params defines all the parameters of the module.
-	Params                         *Params                         `protobuf:"bytes,1,opt,name=params,proto3" json:"params,omitempty"`
-	PortId                         string                          `protobuf:"bytes,2,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
-	AllocationList                 []*Allocation                   `protobuf:"bytes,3,rep,name=allocationList,proto3" json:"allocationList,omitempty"`
-	AllocationCount                uint64                          `protobuf:"varint,28,opt,name=allocationCount,proto3" json:"allocationCount,omitempty"`
-	AgreementList                  []*Agreement                    `protobuf:"bytes,4,rep,name=agreementList,proto3" json:"agreementList,omitempty"`
-	InfusionList                   []*Infusion                     `protobuf:"bytes,5,rep,name=infusionList,proto3" json:"infusionList,omitempty"`
-	InfusionDestructionQueue       []string                        `protobuf:"bytes,29,rep,name=infusionDestructionQueue,proto3" json:"infusionDestructionQueue,omitempty"`
-	InfusionMaturitySweepQueue     []string                        `protobuf:"bytes,35,rep,name=infusionMaturitySweepQueue,proto3" json:"infusionMaturitySweepQueue,omitempty"`
-	GuildList                      []*Guild                        `protobuf:"bytes,6,rep,name=guildList,proto3" json:"guildList,omitempty"`
-	GuildCount                     uint64                          `protobuf:"varint,7,opt,name=guildCount,proto3" json:"guildCount,omitempty"`
-	GuildMembershipApplicationList []*GuildMembershipApplication   `protobuf:"bytes,33,rep,name=guildMembershipApplicationList,proto3" json:"guildMembershipApplicationList,omitempty"`
-	PlanetList                     []*Planet                       `protobuf:"bytes,8,rep,name=planetList,proto3" json:"planetList,omitempty"`
-	PlanetCount                    uint64                          `protobuf:"varint,9,opt,name=planetCount,proto3" json:"planetCount,omitempty"`
-	PlanetAttributeList            []*PlanetAttributeRecord        `protobuf:"bytes,24,rep,name=planetAttributeList,proto3" json:"planetAttributeList,omitempty"`
-	PlayerList                     []*Player                       `protobuf:"bytes,10,rep,name=playerList,proto3" json:"playerList,omitempty"`
-	PlayerCount                    uint64                          `protobuf:"varint,11,opt,name=playerCount,proto3" json:"playerCount,omitempty"`
-	ProviderList                   []*Provider                     `protobuf:"bytes,12,rep,name=providerList,proto3" json:"providerList,omitempty"`
-	ProviderCount                  uint64                          `protobuf:"varint,13,opt,name=providerCount,proto3" json:"providerCount,omitempty"`
-	ProviderGuildAccessList        []*ProviderGuildAccessRecord    `protobuf:"bytes,27,rep,name=providerGuildAccessList,proto3" json:"providerGuildAccessList,omitempty"`
-	ReactorList                    []*Reactor                      `protobuf:"bytes,14,rep,name=reactorList,proto3" json:"reactorList,omitempty"`
-	ReactorCount                   uint64                          `protobuf:"varint,15,opt,name=reactorCount,proto3" json:"reactorCount,omitempty"`
-	StructList                     []*Struct                       `protobuf:"bytes,16,rep,name=structList,proto3" json:"structList,omitempty"`
-	StructCount                    uint64                          `protobuf:"varint,17,opt,name=structCount,proto3" json:"structCount,omitempty"`
-	StructAttributeList            []*StructAttributeRecord        `protobuf:"bytes,25,rep,name=structAttributeList,proto3" json:"structAttributeList,omitempty"`
-	StructDefenderList             []*StructDefender               `protobuf:"bytes,26,rep,name=structDefenderList,proto3" json:"structDefenderList,omitempty"`
-	StructDestructionQueue         []*StructDestructionQueueRecord `protobuf:"bytes,31,rep,name=structDestructionQueue,proto3" json:"structDestructionQueue,omitempty"`
-	SubstationList                 []*Substation                   `protobuf:"bytes,18,rep,name=substationList,proto3" json:"substationList,omitempty"`
-	SubstationCount                uint64                          `protobuf:"varint,19,opt,name=substationCount,proto3" json:"substationCount,omitempty"`
-	PermissionList                 []*PermissionRecord             `protobuf:"bytes,20,rep,name=permissionList,proto3" json:"permissionList,omitempty"`
-	GuildRankPermissionList        []*GuildRankPermissionRecord    `protobuf:"bytes,34,rep,name=guildRankPermissionList,proto3" json:"guildRankPermissionList,omitempty"`
-	GridList                       []*GridRecord                   `protobuf:"bytes,21,rep,name=gridList,proto3" json:"gridList,omitempty"`
-	GridCascadeQueue               []string                        `protobuf:"bytes,30,rep,name=gridCascadeQueue,proto3" json:"gridCascadeQueue,omitempty"`
-	AddressList                    []*AddressRecord                `protobuf:"bytes,22,rep,name=addressList,proto3" json:"addressList,omitempty"`
-	FleetList                      []*Fleet                        `protobuf:"bytes,23,rep,name=fleetList,proto3" json:"fleetList,omitempty"`
+	Params                         *Params                       `protobuf:"bytes,1,opt,name=params,proto3" json:"params,omitempty"`
+	PortId                         string                        `protobuf:"bytes,2,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
+	AllocationList                 []*Allocation                 `protobuf:"bytes,3,rep,name=allocationList,proto3" json:"allocationList,omitempty"`
+	AllocationCount                uint64                        `protobuf:"varint,28,opt,name=allocationCount,proto3" json:"allocationCount,omitempty"`
+	AgreementList                  []*Agreement                  `protobuf:"bytes,4,rep,name=agreementList,proto3" json:"agreementList,omitempty"`
+	InfusionList                   []*Infusion                   `protobuf:"bytes,5,rep,name=infusionList,proto3" json:"infusionList,omitempty"`
+	InfusionDestructionQueue       []string                      `protobuf:"bytes,29,rep,name=infusionDestructionQueue,proto3" json:"infusionDestructionQueue,omitempty"`
+	InfusionMaturitySweepQueue     []string                      `protobuf:"bytes,35,rep,name=infusionMaturitySweepQueue,proto3" json:"infusionMaturitySweepQueue,omitempty"`
+	GuildList                      []*Guild                      `protobuf:"bytes,6,rep,name=guildList,proto3" json:"guildList,omitempty"`
+	GuildCount                     uint64                        `protobuf:"varint,7,opt,name=guildCount,proto3" json:"guildCount,omitempty"`
+	GuildMembershipApplicationList []*GuildMembershipApplication `protobuf:"bytes,33,rep,name=guildMembershipApplicationList,proto3" json:"guildMembershipApplicationList,omitempty"`
+	// guildCharterAnchor is the height of the last proof-founded guild, and the
+	// age the charter difficulty curve is measured from. It cannot be rebuilt
+	// from anything else, so it has to round-trip through genesis; zero is read
+	// as "unset" and falls back to the current height on import, because zero
+	// would otherwise mean maximally easy.
+	GuildCharterAnchor      uint64                          `protobuf:"varint,36,opt,name=guildCharterAnchor,proto3" json:"guildCharterAnchor,omitempty"`
+	PlanetList              []*Planet                       `protobuf:"bytes,8,rep,name=planetList,proto3" json:"planetList,omitempty"`
+	PlanetCount             uint64                          `protobuf:"varint,9,opt,name=planetCount,proto3" json:"planetCount,omitempty"`
+	PlanetAttributeList     []*PlanetAttributeRecord        `protobuf:"bytes,24,rep,name=planetAttributeList,proto3" json:"planetAttributeList,omitempty"`
+	PlayerList              []*Player                       `protobuf:"bytes,10,rep,name=playerList,proto3" json:"playerList,omitempty"`
+	PlayerCount             uint64                          `protobuf:"varint,11,opt,name=playerCount,proto3" json:"playerCount,omitempty"`
+	ProviderList            []*Provider                     `protobuf:"bytes,12,rep,name=providerList,proto3" json:"providerList,omitempty"`
+	ProviderCount           uint64                          `protobuf:"varint,13,opt,name=providerCount,proto3" json:"providerCount,omitempty"`
+	ProviderGuildAccessList []*ProviderGuildAccessRecord    `protobuf:"bytes,27,rep,name=providerGuildAccessList,proto3" json:"providerGuildAccessList,omitempty"`
+	ReactorList             []*Reactor                      `protobuf:"bytes,14,rep,name=reactorList,proto3" json:"reactorList,omitempty"`
+	ReactorCount            uint64                          `protobuf:"varint,15,opt,name=reactorCount,proto3" json:"reactorCount,omitempty"`
+	StructList              []*Struct                       `protobuf:"bytes,16,rep,name=structList,proto3" json:"structList,omitempty"`
+	StructCount             uint64                          `protobuf:"varint,17,opt,name=structCount,proto3" json:"structCount,omitempty"`
+	StructAttributeList     []*StructAttributeRecord        `protobuf:"bytes,25,rep,name=structAttributeList,proto3" json:"structAttributeList,omitempty"`
+	StructDefenderList      []*StructDefender               `protobuf:"bytes,26,rep,name=structDefenderList,proto3" json:"structDefenderList,omitempty"`
+	StructDestructionQueue  []*StructDestructionQueueRecord `protobuf:"bytes,31,rep,name=structDestructionQueue,proto3" json:"structDestructionQueue,omitempty"`
+	SubstationList          []*Substation                   `protobuf:"bytes,18,rep,name=substationList,proto3" json:"substationList,omitempty"`
+	SubstationCount         uint64                          `protobuf:"varint,19,opt,name=substationCount,proto3" json:"substationCount,omitempty"`
+	PermissionList          []*PermissionRecord             `protobuf:"bytes,20,rep,name=permissionList,proto3" json:"permissionList,omitempty"`
+	GuildRankPermissionList []*GuildRankPermissionRecord    `protobuf:"bytes,34,rep,name=guildRankPermissionList,proto3" json:"guildRankPermissionList,omitempty"`
+	GridList                []*GridRecord                   `protobuf:"bytes,21,rep,name=gridList,proto3" json:"gridList,omitempty"`
+	GridCascadeQueue        []string                        `protobuf:"bytes,30,rep,name=gridCascadeQueue,proto3" json:"gridCascadeQueue,omitempty"`
+	AddressList             []*AddressRecord                `protobuf:"bytes,22,rep,name=addressList,proto3" json:"addressList,omitempty"`
+	FleetList               []*Fleet                        `protobuf:"bytes,23,rep,name=fleetList,proto3" json:"fleetList,omitempty"`
 }
 
 func (x *GenesisState) Reset() {
@@ -4356,6 +4412,13 @@ func (x *GenesisState) GetGuildMembershipApplicationList() []*GuildMembershipApp
 		return x.GuildMembershipApplicationList
 	}
 	return nil
+}
+
+func (x *GenesisState) GetGuildCharterAnchor() uint64 {
+	if x != nil {
+		return x.GuildCharterAnchor
+	}
+	return 0
 }
 
 func (x *GenesisState) GetPlanetList() []*Planet {
@@ -4558,7 +4621,7 @@ var file_structs_structs_genesis_proto_rawDesc = []byte{
 	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x87, 0x11, 0x0a, 0x0c, 0x47, 0x65, 0x6e,
+	0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xb7, 0x11, 0x0a, 0x0c, 0x47, 0x65, 0x6e,
 	0x65, 0x73, 0x69, 0x73, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x3a, 0x0a, 0x06, 0x70, 0x61, 0x72,
 	0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x61, 0x72, 0x61,
@@ -4602,7 +4665,10 @@ var file_structs_structs_genesis_proto_rawDesc = []byte{
 	0x69, 0x70, 0x41, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8,
 	0xde, 0x1f, 0x00, 0x52, 0x1e, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72,
 	0x73, 0x68, 0x69, 0x70, 0x41, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4c,
-	0x69, 0x73, 0x74, 0x12, 0x3d, 0x0a, 0x0a, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x4c, 0x69, 0x73,
+	0x69, 0x73, 0x74, 0x12, 0x2e, 0x0a, 0x12, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x68, 0x61, 0x72,
+	0x74, 0x65, 0x72, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x18, 0x24, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x12, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x68, 0x61, 0x72, 0x74, 0x65, 0x72, 0x41, 0x6e, 0x63,
+	0x68, 0x6f, 0x72, 0x12, 0x3d, 0x0a, 0x0a, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x4c, 0x69, 0x73,
 	0x74, 0x18, 0x08, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74,
 	0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0a, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x4c, 0x69,
