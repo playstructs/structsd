@@ -62,6 +62,15 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	}
 	k.SetParams(ctx, genState.Params)
 
+	/* Staking and genutil initialise before this module, so a genesis validator's
+	 * reactor was already created by AfterValidatorCreated — and stamped with an
+	 * eligibility height computed from params that did not exist yet, which means
+	 * the production default rather than whatever the genesis file says. Restamp
+	 * now that the params are real. Imported reactors are overwritten by
+	 * GenesisImportReactor below, so a restored chain keeps its own clock.
+	 */
+	k.RestampReactorCharterEligibility(ctx)
+
 	var structTypeTop uint64
 	for _, elem := range types.CreateStructTypeGenesis() {
 		if elem.Id > structTypeTop {

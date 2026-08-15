@@ -840,6 +840,47 @@ func TestCharterReactorPath(t *testing.T) {
 	})
 }
 
+/* TestCharterRestampFollowsParams is the keeper half of the genesis ordering
+ * repair, whose app-level counterpart is TestGuildCharterGenesisReactorHonoursParams.
+ *
+ * A genesis validator's reactor is created by a staking hook that runs before this
+ * module's InitGenesis, so its stamp is taken while GetParams still returns a zero
+ * Params — and CharterReactorAge substitutes the production default there, which
+ * means the stamp ignores the genesis file entirely. InitGenesis restamps once the
+ * params are real; this pins what that does and that repeating it cannot push
+ * eligibility further away.
+ */
+func TestCharterRestampFollowsParams(t *testing.T) {
+	f := newCharterFixture(t)
+
+	reactor, found := f.k.GetReactor(f.ctx, f.reactor.Id)
+	require.True(t, found)
+
+	// What the hook actually wrote on a dev chain asking for ten blocks.
+	reactor.GuildCharterEligibleHeight = types.DefaultGuildCharterReactorAge
+	f.k.SetReactor(f.ctx, reactor)
+
+	f.k.RestampReactorCharterEligibility(f.ctx)
+
+	restamped, _ := f.k.GetReactor(f.ctx, f.reactor.Id)
+	require.Equal(t, uint64(f.ctx.BlockHeight())+charterTestReactorAge, restamped.GuildCharterEligibleHeight)
+
+	f.k.RestampReactorCharterEligibility(f.ctx)
+	again, _ := f.k.GetReactor(f.ctx, f.reactor.Id)
+	require.Equal(t, restamped.GuildCharterEligibleHeight, again.GuildCharterEligibleHeight,
+		"restamping twice must not move the deadline")
+
+	// And the point of all of it: the free path is reachable in the handful of
+	// blocks the params asked for.
+	f.advanceTo(int64(restamped.GuildCharterEligibleHeight))
+	_, err := f.ms.GuildCreate(f.ctx, &types.MsgGuildCreate{
+		Creator:   f.player.Creator,
+		ReactorId: f.reactor.Id,
+		Endpoint:  "restamped",
+	})
+	require.NoError(t, err)
+}
+
 /* TestCharterProofDoesNotStealAReactorEntitlement is the hole that opened when
  * PermReactorGuildCreate stopped being the creation gate.
  *

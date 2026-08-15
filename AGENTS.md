@@ -461,9 +461,20 @@ preimage binds no reactor and a refused solver renames it and re-submits the sam
 `guildCharterDifficultyRange` and `guildCharterReactorAge` are params
 because production values make a fresh dev chain unusable — see `config.yml`, and note that
 `AppendReactor` stamps `guildCharterEligibleHeight` from the param at creation and never revisits
-it, so changing the param does not re-age existing reactors. `x/structs/keeper/guild_charter_test.go`
+it, so changing the param does not re-age existing reactors. **A genesis validator's reactor is
+created before this module has params**, which is the trap that made every fresh dev chain unable to
+found its first guild: staking and genutil precede `structs` in `genesisModuleOrder`, so
+`AfterValidatorCreated` reaches `AppendReactor` while `GetParams` still returns a zero `Params` and
+`CharterReactorAge` substitutes the production month — the stamp on disk ignored the genesis file
+while the params query went on reporting what the file asked for, which is why it reads as a
+permission bug. `InitGenesis` restamps through `RestampReactorCharterEligibility` straight after
+`SetParams`, before the import loop, so a restored chain keeps the clock it exported. The fallback
+itself stays: a zero age would make every reactor eligible at once, which is the worse direction to
+fail in. Anything else that derives state from a param inside a staking hook inherits this.
+`x/structs/keeper/guild_charter_test.go`
 is the suite; `app/guild_charter_reactor_test.go` is the one that proves real staking's bonded and
-jailed states reach the free path's gate, since the mock returns whatever the test handed it.
+jailed states reach the free path's gate, since the mock returns whatever the test handed it, and
+holds the genesis ordering with `TestGuildCharterGenesisReactorHonoursParams`.
 
 **Guilds are property, so ownership and membership are separate and a handler must take a
 `guildId`.** `GuildCache.SetOwner` moves `guild.Owner` and the `PermGuildAll` row and touches
@@ -560,6 +571,19 @@ chain and cannot run concurrently. Ask before starting one.
 - `test_upgrade.sh` — boots its own chain from versioned binaries. Not a Makefile target.
 
 See `tests/README.md` for the full flag and prerequisite reference.
+
+**Combat is seeded from the block, so no test may name the survivors.** `StructCache.IsSuccessful`
+draws evasion and each individual shot from the block `AppHash` plus an incrementing per-player
+nonce, so the same attack sequence leaves different structs standing on different runs. Per-hit
+damage in `struct_type.go` *is* fixed, which is what makes the outcome look predictable enough to
+hardcode. A script that records one run's survivors and aims a later phase at them decays into a
+phase that never runs: `test_chain.sh`'s AR3 defender matrix pointed at the EB-era structs, and by
+AR3 most were rubble, so twenty-six `struct-defense-set` calls came back as permission denials — a
+destroyed struct still loads, as a phantom owned by the empty string, so the permission check is
+what refuses it — and thirteen attacks skipped without anything saying so. Resolve combatants at
+use time through `ar_live` / `ar_defense_set` / `ar_defense_clear`, build a phase its own fresh
+targets when it needs one to live, and report the count of attacks that actually executed, or lost
+coverage is silent.
 
 ## Don't
 

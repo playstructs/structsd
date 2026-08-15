@@ -1,5 +1,7 @@
 package types
 
+import "fmt"
+
 type Permission uint64
 
 /*
@@ -129,6 +131,53 @@ var PermissionLabel = map[Permission]string{
 	PermHashRaid:                   "hash_raid",
 	PermGuildUGCUpdate:             "guild_ugc_update",
 	PermAll:                        "all",
+}
+
+// PermissionName renders a permission for a human reading an error. Single bits and
+// the named composites come straight from PermissionLabel; anything else is spelled
+// out as the bits it is made of, so a caller denied PermAdmin|PermUpdate is told
+// which two rather than being handed a number to decode.
+//
+// This exists because every object-level denial used to read "has no administrate
+// permission" regardless of the bit actually missing -- twenty distinct refusals in
+// one test run looked identical, and the one that mattered wanted PermProviderOpen.
+// It is diagnostic text only: the error code is the contract and does not change.
+func PermissionName(p Permission) string {
+	// PermAll's label is "all", which the error template turns into "has no all
+	// permission". It is a reachable requirement (CanUpdatePrimaryAddressBy), so it
+	// gets prose that survives being dropped into that sentence.
+	if p == PermAll {
+		return "full-access"
+	}
+
+	if label, found := PermissionLabel[p]; found {
+		return label
+	}
+
+	names := ""
+	remaining := p
+	for bit := 0; bit < PermissionBitCount; bit++ {
+		single := Permission(1) << bit
+		if p&single == 0 {
+			continue
+		}
+		label, found := PermissionLabel[single]
+		if !found {
+			continue
+		}
+		if names != "" {
+			names += "+"
+		}
+		names += label
+		remaining &= ^single
+	}
+
+	// An undeclared bit leaves nothing to name it with, so fall back to the number
+	// rather than reporting a partial list as if it were the whole requirement.
+	if names == "" || remaining != 0 {
+		return fmt.Sprintf("permission(%d)", uint64(p))
+	}
+	return names
 }
 
 func init() {

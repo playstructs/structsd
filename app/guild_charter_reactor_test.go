@@ -1,11 +1,25 @@
 package app_test
 
 import (
+	"encoding/json"
 	"testing"
+	"time"
 
+	"cosmossdk.io/log"
 	"cosmossdk.io/math"
+	dbm "github.com/cosmos/cosmos-db"
+	abci "github.com/cometbft/cometbft/abci/types"
+	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	cmttypes "github.com/cometbft/cometbft/types"
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
@@ -161,6 +175,92 @@ func TestGuildCharterReactorPathAgainstRealStaking(t *testing.T) {
 		Endpoint:  "seconds.energy",
 	})
 	require.ErrorContains(t, err, "entitlement_spent")
+}
+
+/* TestGuildCharterGenesisReactorHonoursParams covers a genesis ordering trap that
+ * made every fresh dev chain unable to found its first guild.
+ *
+ * Staking and genutil both initialise ahead of this module, so a genesis
+ * validator's AfterValidatorCreated hook reaches AppendReactor before InitGenesis
+ * has called SetParams. GetParams returns a zero Params there and
+ * CharterReactorAge substitutes the production default, so the stamp silently
+ * ignored the genesis file: a chain asking for five blocks got a month, and the
+ * params query reported five the whole time, which is what made it confusing to
+ * diagnose from a failing tests/test_chain.sh rather than obvious.
+ *
+ * Note that the substitution inside CharterReactorAge is correct everywhere else
+ * — a zero age would make every reactor eligible immediately, which is the worse
+ * direction to fail in — so the repair is a restamp in InitGenesis rather than a
+ * change to the fallback. This test is at app level because the ordering is a
+ * property of the module manager and no keeper test can see it.
+ */
+func TestGuildCharterGenesisReactorHonoursParams(t *testing.T) {
+	const chainID = "charter-genesis-1"
+	const reactorAge = uint64(5)
+
+	appOptions := make(simtestutil.AppOptionsMap, 0)
+	appOptions[flags.FlagHome] = app.DefaultNodeHome
+
+	bApp, err := app.New(log.NewNopLogger(), dbm.NewMemDB(), nil, true, appOptions,
+		baseapp.SetChainID(chainID))
+	require.NoError(t, err)
+
+	consPubKey, err := cryptocodec.ToCmtPubKeyInterface(ed25519.GenPrivKey().PubKey())
+	require.NoError(t, err)
+	valSet := cmttypes.NewValidatorSet([]*cmttypes.Validator{
+		cmttypes.NewValidator(consPubKey, 1),
+	})
+
+	privKey := secp256k1.GenPrivKey()
+	acc := authtypes.NewBaseAccount(privKey.PubKey().Address().Bytes(), privKey.PubKey(), 0, 0)
+	balance := banktypes.Balance{
+		Address: acc.GetAddress().String(),
+		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.DefaultPowerReduction.MulRaw(100))),
+	}
+
+	genesisState, err := simtestutil.GenesisStateWithValSet(
+		bApp.AppCodec(), bApp.DefaultGenesis(), valSet,
+		[]authtypes.GenesisAccount{acc}, balance)
+	require.NoError(t, err)
+
+	// Tune the two charter params down the way config.yml does, so a dev chain is
+	// playable. This is the file the stamp was ignoring.
+	var structsGenesis structstypes.GenesisState
+	bApp.AppCodec().MustUnmarshalJSON(genesisState[structstypes.ModuleName], &structsGenesis)
+	structsGenesis.Params.GuildCharterDifficultyRange = structstypes.MinGuildCharterDifficultyRange
+	structsGenesis.Params.GuildCharterReactorAge = reactorAge
+	require.NoError(t, structsGenesis.Validate())
+	genesisState[structstypes.ModuleName] = bApp.AppCodec().MustMarshalJSON(&structsGenesis)
+
+	genesisBytes, err := json.Marshal(genesisState)
+	require.NoError(t, err)
+
+	_, err = bApp.InitChain(&abci.RequestInitChain{
+		ChainId:         chainID,
+		InitialHeight:   1,
+		ConsensusParams: simtestutil.DefaultConsensusParams,
+		AppStateBytes:   genesisBytes,
+	})
+	require.NoError(t, err)
+
+	ctx := bApp.NewContextLegacy(false, cmtproto.Header{
+		Height:  1,
+		ChainID: chainID,
+		Time:    time.Now().UTC(),
+	})
+
+	require.Equal(t, reactorAge, bApp.StructsKeeper.GetParams(ctx).GuildCharterReactorAge,
+		"the genesis params should be in state; the bug was never about this half")
+
+	reactors := bApp.StructsKeeper.GetAllReactor(ctx)
+	require.Len(t, reactors, 1, "the genesis validator's creation hook should have built one reactor")
+
+	stamp := reactors[0].GuildCharterEligibleHeight
+	require.NotZero(t, stamp, "zero reads as never eligible")
+	require.Less(t, stamp, structstypes.DefaultGuildCharterReactorAge,
+		"the stamp came from the default rather than from genesis, so the free path is shut for a month")
+	require.LessOrEqual(t, stamp, reactorAge+1,
+		"a genesis reactor becomes eligible reactorAge blocks after genesis, whether that is height 0 or 1")
 }
 
 func charterPlayerId(t *testing.T, bApp *app.App, ctx sdk.Context, address string) string {

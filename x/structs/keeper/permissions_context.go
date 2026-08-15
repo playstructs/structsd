@@ -215,19 +215,25 @@ func (cc *CurrentContext) GetPermissionedObject(objectId string) PermissionedObj
 
 func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlayer *PlayerCache, permission types.Permission) error {
 
+	// The Action carries the bit that was actually wanted rather than a fixed
+	// "administrate". Every denial below used to name administrate whatever it was
+	// checking, which made unrelated refusals indistinguishable in a log and sent
+	// readers looking for the wrong grant.
+	wanted := types.PermissionName(permission)
+
 	// Really shouldn't have got here but let's do a quick check
 	if object == nil || activePlayer == nil {
-		return types.NewPermissionError("player", "", "object", "", uint64(permission), "administrate")
+		return types.NewPermissionError("player", "", "object", "", uint64(permission), wanted)
 	}
 
 	// A check with Permissionless should always return an error
 	if permission == types.Permissionless {
-		return types.NewPermissionError("player", activePlayer.GetPlayerId(), "object", object.ID(), uint64(permission), "administrate")
+		return types.NewPermissionError("player", activePlayer.GetPlayerId(), "object", object.ID(), uint64(permission), wanted)
 	}
 
 	// Check the Active Player exists
 	if !activePlayer.HasPlayerAccount() {
-		return types.NewPlayerRequiredError(cc.signerAddress, "administrate")
+		return types.NewPlayerRequiredError(cc.signerAddress, wanted)
 	}
 
 	// Layer 1: the key that signed must itself hold the permission, whatever
@@ -235,11 +241,11 @@ func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlaye
 	// was ever authenticated for this operation, so there is nothing to check
 	// against and the only safe answer is no.
 	if cc.signerAddress == "" {
-		return types.NewPermissionError("address", "", "object", object.ID(), uint64(permission), "administrate")
+		return types.NewPermissionError("address", "", "object", object.ID(), uint64(permission), wanted)
 	}
 
 	if !cc.PermissionHasAll(GetAddressPermissionIDBytes(cc.signerAddress), permission) {
-		return types.NewPermissionError("address", cc.signerAddress, "", "", uint64(permission), "administrate")
+		return types.NewPermissionError("address", cc.signerAddress, "", "", uint64(permission), wanted)
 	}
 
 	// If the player is the owner, it's an easy yes
@@ -259,7 +265,7 @@ func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlaye
 		}
 	}
 
-	return types.NewPermissionError("player", activePlayer.GetPlayerId(), "object", object.ID(), uint64(permission), "administrate")
+	return types.NewPermissionError("player", activePlayer.GetPlayerId(), "object", object.ID(), uint64(permission), wanted)
 }
 
 func (cc *CurrentContext) UGCPermissionCheck(object PermissionedObject, activePlayer *PlayerCache) error {

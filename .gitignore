@@ -12,6 +12,8 @@ structs.sh
 keeper.test
 coverage.txt
 tests/run_logs/
+tests/logs/
+tests/battle_logs/
 
 # Read-only checkouts of sibling repos, cloned for reference. See AGENTS.md.
 .references/
