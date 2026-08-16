@@ -623,18 +623,8 @@ func (cache *GuildCache) SetEndpoint(endpoint string) {
 	cache.Changed = true
 }
 
-/* SetOwner hands a guild to another player, taking the outgoing owner's rights
- * away as it goes.
- *
- * Revoking is the point, not housekeeping. Guilds are traded, and that market is
- * how the cost of founding one is priced, so a transfer has to actually transfer:
- * PermGuildAll carries PermGuildTokenMint, PermGuildTokenBurn and PermAdmin, so
- * a seller who kept their row could mint the token, confiscate holders' balances
- * and grant themselves the guild back afterwards.
- *
- * Only the recorded owner's row goes. Anyone else the guild has granted rights to
- * is untouched, and a party who should keep a role across a transfer is
- * re-granted explicitly through MsgPermissionGrantOnObject.
+/* SetOwner transfers PermGuildAll with ownership. Only the outgoing owner's
+ * permission row is removed; explicit grants to other players remain.
  */
 func (cache *GuildCache) SetOwner(owner string) {
 	if !cache.GuildLoaded {
@@ -651,14 +641,8 @@ func (cache *GuildCache) SetOwner(owner string) {
 }
 
 // SetJoinInfusionMinimumBypassByRequest and SetJoinInfusionMinimumBypassByInvite
-// are the only paths that write a bypass level from a transaction, so they are
-// where an undeclared enum value is refused. Validating here rather than in the
-// handlers means a future caller inherits the check; validating before the
-// assignment means a rejected level never reaches the cache, so nothing depends
-// on the handler returning before CommitAll.
-//
-// Genesis does not come through here — GenesisImportGuild assigns the whole
-// record — which is why GenesisState.Validate carries the same check.
+// reject undeclared enum values before they enter the cache. Genesis validates
+// separately because it imports complete records.
 func (cache *GuildCache) SetJoinInfusionMinimumBypassByRequest(level types.GuildJoinBypassLevel) error {
 	if !level.IsValid() {
 		return errorsmod.Wrapf(types.ErrInvalidGuildJoinBypassLevel, "level (%d) on guild (%s)", int32(level), cache.GuildId)

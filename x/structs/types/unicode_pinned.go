@@ -10,26 +10,10 @@ import (
 // PinnedUnicodeVersion is the Unicode version that governs every
 // consensus-visible character decision in this package.
 //
-// Go resolves \p{L} in a regexp, and unicode.Is against unicode.L, Mn, Me or
-// Cf, using the Unicode tables of the toolchain that compiled the binary.
-// Those tables grow with Go releases, and nothing in this repository pins a
-// toolchain hard enough to prevent two validators from disagreeing: go.mod's
-// toolchain directive is a floor rather than a ceiling, and an operator can
-// opt out of it entirely with GOTOOLCHAIN=local. A code point that one
-// toolchain calls a letter and another calls unassigned would be accepted by
-// some validators and rejected by others, and since the name write only
-// happens on the accepting side, that is an application hash split.
-//
-// So the tables live in unicode_tables.go instead, generated once from a
-// toolchain at this version. Note the distinction that makes this work:
-// unicode.Is(pinnedL, r) is a pure binary search over data we control and is
-// deterministic, while unicode.Is(unicode.L, r) reads the toolchain and is
-// not. Everything below is deliberately phrased in terms of the former.
-//
-// The remaining external dependency is golang.org/x/text/unicode/norm for NFC,
-// which is pinned by go.sum rather than by the toolchain. Bumping either that
-// module or this version changes which names the chain accepts and is a
-// consensus-breaking change requiring an upgrade handler.
+// Standard-library Unicode tables vary by Go release, so consensus code uses
+// the generated tables in unicode_tables.go instead. NFC remains pinned through
+// golang.org/x/text in go.sum. Changing either version changes accepted names
+// and requires a chain upgrade.
 const PinnedUnicodeVersion = "15.0.0"
 
 // pinnedCaseRange is one range of the simple-lowercase mapping. It mirrors

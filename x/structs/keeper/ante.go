@@ -88,26 +88,11 @@ func (k Keeper) SetThrottleKey(ctx context.Context, throttleKey string) {
 }
 
 // ThrottleTargetAuthorized reports whether creator may act on targetId under
-// perm. It mirrors the target check the handler performs, so an unauthorized
-// signer cannot reserve an object-global throttle key it could never
-// legitimately consume.
+// perm, using the same owner PermissionCheck as the handler.
 //
-// Every throttled handler authorizes against a *player* — the owner of the
-// struct or fleet, or the named player itself — so resolving the target to an
-// owner PlayerCache and calling the handlers' own PermissionCheck reproduces
-// all seven checks without restating any policy. Owner equality alone would not
-// do: a player can delegate a hash bit to a second account, and that account's
-// transactions would then never reserve.
-//
-// Read-only by construction. Caches only reach state through CommitAll, which
-// this never calls — which matters more here than in a handler, because ante
-// writes are committed even when the message goes on to fail.
-//
-// A false answer only skips the reservation; the handler still runs and still
-// produces the real error. That is deliberate. The ante sees pre-transaction
-// state while the handler sees state left by earlier messages in the same
-// transaction, so a transaction that grants a permission and then uses it is
-// authorized there and not here. Rejecting on this answer would break it.
+// This context is read-only and never committed. A false result skips the
+// reservation rather than rejecting because ante sees pre-transaction state,
+// while a later message may rely on an earlier message in the same transaction.
 func (k Keeper) ThrottleTargetAuthorized(ctx context.Context, creator string, kind types.ObjectType, targetId string, perm types.Permission) bool {
 	if creator == "" || targetId == "" {
 		return false
@@ -124,11 +109,7 @@ func (k Keeper) ThrottleTargetAuthorized(ctx context.Context, creator string, ki
 
 	switch kind {
 	case types.ObjectType_player:
-		// A PlayerCache is its own owner, so a self-targeted explore takes the
-		// owner shortcut inside PermissionCheck. A target that does not exist
-		// needs no existence check of its own: it owns nothing and holds no
-		// permission row, so the check below refuses it, which declines the
-		// reservation without rejecting the transaction.
+		// A nonexistent player owns nothing, so PermissionCheck refuses it.
 		owner = cc.GetPlayer(targetId)
 
 	case types.ObjectType_struct:
@@ -148,11 +129,7 @@ func (k Keeper) ThrottleTargetAuthorized(ctx context.Context, creator string, ki
 		owner = fleet.GetOwner()
 
 	case types.ObjectType_address:
-		// A signer-scoped throttle key (see SignerScopedThrottleMessages). The
-		// target is the signing address itself, so there is no third party to
-		// resolve and the check collapses to "is this a registered player" —
-		// which the shared PermissionCheck below still performs rather than
-		// being assumed, so an unregistered signer reserves nothing.
+		// Signer-scoped keys may target only the signing address itself.
 		if targetId != creator {
 			return false
 		}

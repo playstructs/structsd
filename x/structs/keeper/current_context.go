@@ -42,25 +42,20 @@ type Committable interface {
 //	func (k msgServer) SomeHandler(goCtx context.Context, msg *types.MsgSome) (...) {
 //	    ctx := sdk.UnwrapSDKContext(goCtx)
 //	    cc := k.NewCurrentContext(ctx)
-//	    defer cc.CommitAll()
 //	    // ... use cc.GetStruct(), cc.GetPlayer(), etc.
-//	}
-//
-// Usage in ABCI hooks:
-//
-//	func (k Keeper) EndBlocker(ctx context.Context) error {
-//	    cc := k.NewCurrentContext(ctx)
-//	    cc.ProcessSomething()
 //	    cc.CommitAll()
-//	    return nil
+//	    return response, nil
 //	}
+//
+// Message handlers commit only after every validation and mutation succeeds.
+// Hook entry points that own their context may defer CommitAll when every return
+// should flush the work accumulated so far.
 type CurrentContext struct {
 	ctx context.Context
 	k   *Keeper
 
 
 
-    // Actually Implemented Shit (AIS)
     addresses       map[string]*AddressCache
   	gridAttributes   map[string]*GridAttributeCache
   	structAttributes map[string]*StructAttributeCache
@@ -78,7 +73,6 @@ type CurrentContext struct {
 	infusions           map[string]*InfusionCache
 	planets             map[string]*PlanetCache
 
-	// Complex entity caches (Committable, tracked in pendingCommits)
 
 
 
@@ -87,10 +81,9 @@ type CurrentContext struct {
 	structs             map[string]*StructCache
 	substations         map[string]*SubstationCache
 
-	// Write-through attribute caches (read cache + immediate write to store)
 
 
-	// Lightweight caches (committed directly by CommitAll)
+
 
 	allocations     map[string]*AllocationCache
 
@@ -120,7 +113,7 @@ func (k *Keeper) NewCurrentContext(ctx context.Context) *CurrentContext {
 		ctx: ctx,
 		k:   k,
 
-        // Actually Implemented Shit (AIS)
+
 		addresses:       make(map[string]*AddressCache),
 
 		gridAttributes:   make(map[string]*GridAttributeCache),
@@ -142,7 +135,7 @@ func (k *Keeper) NewCurrentContext(ctx context.Context) *CurrentContext {
 		planets:             make(map[string]*PlanetCache),
 
 
-		// Complex entity caches
+
 
 
 		providers:           make(map[string]*ProviderCache),
@@ -151,7 +144,7 @@ func (k *Keeper) NewCurrentContext(ctx context.Context) *CurrentContext {
 
 
 
-		// Lightweight caches
+
 
 		allocations:     make(map[string]*AllocationCache),
 
@@ -202,7 +195,6 @@ func (cc *CurrentContext) setSigner(address string) error {
 // =============================================================================
 
 // CommitAll persists all changes from all accessed caches.
-// This should be called at the end of the operation (typically via defer).
 func (cc *CurrentContext) CommitAll() {
 	if cc.committed {
 		cc.k.logger.Warn("CurrentContext.CommitAll called multiple times")
@@ -233,19 +225,9 @@ func (cc *CurrentContext) CommitAll() {
 
 // commitCaches commits every entry of a cache map in ascending key order.
 //
-// Go randomizes map iteration order per process, so ranging a cache map
-// directly is only safe while every Commit writes to keys derived from its own
-// map key. AddressCache.Commit does not: it allocates an auth account number
-// from the account keeper's global sequence for any address that has none, so
-// two addresses committed in map order get their numbers swapped from one node
-// to the next. That is divergent auth state and a different app hash, reachable
-// both from a genesis AddressList and from one transaction carrying two
-// AddressRegister messages.
-//
-// Sorting is what makes the order a property of the data rather than of the
-// runtime. Every caller must go through here; x/structs/keeper/arch_commit_test.go
-// fails on a bare range over a cache map inside CommitAll, and on a cache map
-// that CommitAll never commits at all.
+// Commit order is consensus-sensitive: AddressCache.Commit may allocate an auth
+// account number from a global sequence. Sorting makes that order a property of
+// state rather than Go's randomized map iteration.
 func commitCaches[K cmp.Ordered, V interface{ Commit() }](caches map[K]V) {
 	keys := make([]K, 0, len(caches))
 	for key := range caches {

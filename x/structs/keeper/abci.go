@@ -26,10 +26,12 @@ func (k *Keeper) BeginBlocker(ctx context.Context) {
 // Called every block, update validator set
 func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error) {
 	k.logger.Debug("End Block Processes")
-    cc := k.NewCurrentContext(ctx)
-    defer cc.CommitAll()
 
-	cc.AgreementExpirations()
+	// Commit each phase before the next one opens a CurrentContext. Grid
+	// cascade and infusion reconciliation can update the same attributes, and
+	// overlapping contexts would calculate and commit from stale snapshots.
+	preSweepCC := k.NewCurrentContext(ctx)
+	preSweepCC.AgreementExpirations()
 
 	/* Cascade all the possible failures across the grid
 	 *
@@ -37,20 +39,23 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 	 * devices have one last block of power before shutting down
 	 * but I think that's ok. We'll see how it goes in practice.
 	 */
-	cc.GridCascade()
+	preSweepCC.GridCascade()
+	preSweepCC.CommitAll()
 
-    /* Reconcile any infusions whose unbonding-delegation entries matured this
-     * block. Cosmos SDK v0.53 silently completes UBDs in x/staking's EndBlocker
-     * (which runs before ours) and fires no hook, so we walk the structs-side
-     * maturity queue to clear stale Defusing values. Empty infusions get
-     * enqueued for destruction by the reconciliation helper, then processed in
-     * the immediately-following ProcessInfusionDestructionQueue.
-     */
-    k.ProcessInfusionMaturitySweep(ctx)
+	/* Reconcile any infusions whose unbonding-delegation entries matured this
+	 * block. Cosmos SDK v0.53 silently completes UBDs in x/staking's EndBlocker
+	 * (which runs before ours) and fires no hook, so we walk the structs-side
+	 * maturity queue to clear stale Defusing values. Empty infusions get
+	 * enqueued for destruction by the reconciliation helper, then processed in
+	 * the immediately-following ProcessInfusionDestructionQueue.
+	 */
+	k.ProcessInfusionMaturitySweep(ctx)
 
-    cc.ProcessInfusionDestructionQueue()
+	destructionCC := k.NewCurrentContext(ctx)
+	destructionCC.ProcessInfusionDestructionQueue()
+	destructionCC.CommitAll()
 
-    k.logger.Debug("End Block Complete")
+	k.logger.Debug("End Block Complete")
 
 	return []abci.ValidatorUpdate{}, nil
 }
@@ -60,6 +65,13 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 // infusion against the live Cosmos staking state. This is the structs-module
 // substitute for the missing AfterUnbondingComplete hook in Cosmos SDK v0.53.
 func (k *Keeper) ProcessInfusionMaturitySweep(ctx context.Context) {
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
+
+	k.processInfusionMaturitySweep(ctx, cc)
+}
+
+func (k *Keeper) processInfusionMaturitySweep(ctx context.Context, cc *CurrentContext) {
     ctxSDK := sdk.UnwrapSDKContext(ctx)
     blockTime := ctxSDK.HeaderInfo().Time
 
@@ -98,7 +110,7 @@ func (k *Keeper) ProcessInfusionMaturitySweep(ctx context.Context) {
             continue
         }
 
-        k.ReconcileInfusionForDelegation(ctx, playerAddress, validatorAddress)
+        k.reconcileInfusionForDelegation(ctx, cc, playerAddress, validatorAddress)
     }
 }
 

@@ -11,12 +11,8 @@ import (
 )
 
 /* CharterAnchor resolves the height the charter difficulty is measured from.
- *
- * Falls back to the current height when no anchor has ever been stamped, which
- * is the safe direction: an unset anchor read as zero would make the age the
- * whole chain's history and hand out a guild for one leading zero. Genesis
- * import and the upgrade handler both stamp it, so this fallback should only be
- * reachable from a test keeper.
+ * An unset anchor falls back to the current height so it cannot make a fresh
+ * puzzle inherit the chain's entire age.
  */
 func (k Keeper) CharterAnchor(ctx context.Context) uint64 {
 	if anchor, found := k.GetGuildCharterAnchor(ctx); found {
@@ -27,11 +23,8 @@ func (k Keeper) CharterAnchor(ctx context.Context) uint64 {
 }
 
 /* CharterAge is how many blocks of decay the current puzzle has accumulated.
- *
- * Clamped rather than subtracted blind. An anchor ahead of the current height is
- * only reachable through a hand-written genesis file or a chain rolled back
- * behind an export, but in uint64 the subtraction would wrap to an enormous age
- * and read as maximally easy, which is precisely the wrong way for this to fail.
+ * It clamps at zero so an anchor ahead of the current height cannot underflow
+ * into a maximally easy puzzle.
  */
 func (k Keeper) CharterAge(ctx context.Context) uint64 {
 	blockHeight := uint64(sdk.UnwrapSDKContext(ctx).BlockHeight())
@@ -53,21 +46,8 @@ func (k Keeper) CharterDifficulty(ctx context.Context) int {
 /* verifyGuildCharterConsent checks a founder's offline signature authorising
  * somebody else to found their guild.
  *
- * Mirrors GuildMembershipJoinProxy: derive the address from the declared pubkey,
- * require it to be the one named, verify the signature over a preimage rebuilt
- * here rather than accepted from the client, then resolve the address to a
- * player.
- *
- * The address is a subject rather than an identity, so it goes through the pure
- * GetPlayerByAddress and never GetSigningPlayer. Requiring it to resolve to the
- * founder named in the work preimage is deliberate belt-and-braces over a
- * consent that has to survive weeks of mining: addresses change hands, and a
- * key that has since been revoked and re-registered elsewhere must refuse rather
- * than found a guild for whoever holds it now.
- *
- * PermPlay on that specific address is required so a narrowly-scoped key cannot
- * sign a guild away. It is an address-level read, not a PermissionCheck, because
- * the consenting key is not the acting identity for this transaction.
+ * The consenting address is a subject, not the transaction identity. It must
+ * still belong to the founder and hold PermPlay when the consent is used.
  */
 func (k Keeper) verifyGuildCharterConsent(cc *CurrentContext, msg *types.MsgGuildCreate, solver *PlayerCache, founder *PlayerCache, anchor uint64) error {
 	if msg.Address == "" || msg.ProofPubKey == "" || msg.ProofSignature == "" {
@@ -120,24 +100,9 @@ func (k Keeper) verifyGuildCharterConsent(cc *CurrentContext, msg *types.MsgGuil
 	return nil
 }
 
-/* guildCharterReactorLive is the floor a reactor must clear to become a new
- * guild's primary reactor: its validator has to exist and not be jailed.
- *
- * AppendGuild writes PrimaryReactorId unconditionally, and GuildMembershipJoin
- * redelegates every joiner's infusion to whatever reactor that names, so a guild
- * founded on a tombstoned validator is a trap for its members from the moment it
- * exists. GuildUpdatePrimaryReactor holds the recovery path to exactly this bar,
- * and creation was holding it to nothing.
- *
- * Deliberately no bonded check, for the same reason that handler gives: a guild
- * may legitimately form around a validator that is still working its way into
- * the active set. The entitlement path is stricter and checks bonded itself,
- * because there the reactor's health is what is being rewarded.
- *
- * A jailed validator cannot strand a mined proof, which is what makes this safe
- * to add: the work preimage binds solver, founder and anchor and says nothing
- * about the reactor, so a solver refused here names a different reactor and
- * re-submits the same nonce.
+/* guildCharterReactorLive requires an existing, unjailed validator. Bonded
+ * status is deliberately not required on the proof path because a guild may
+ * form while its validator is still entering the active set.
  */
 func (k Keeper) guildCharterReactorLive(ctx context.Context, reactor *ReactorCache) error {
 	validatorAddress, addressErr := sdk.ValAddressFromBech32(reactor.GetReactor().Validator)
@@ -162,17 +127,8 @@ func (k Keeper) guildCharterReactorLive(ctx context.Context, reactor *ReactorCac
 /* guildCharterReactorEligible reports whether a reactor may found a guild
  * without a proof, and why not when it may not.
  *
- * Four conditions, and the bonded one is the load-bearing one. ReactorInitialize
- * runs from AfterValidatorCreated, so a reactor exists for every validator ever
- * created, and MsgCreateValidator picks its own min_self_delegation — a
- * validator that never joins the active set costs almost nothing, so without
- * this a hundred throwaway validators would be a hundred free guilds. Requiring
- * currently bonded caps the free supply at the size of the active set.
- *
- * This is deliberately stricter than GuildUpdatePrimaryReactor, which tolerates
- * an unbonded validator because it is a recovery path for a guild whose
- * validator is already gone. Here the whole point is rewarding a reactor that
- * works.
+ * The entitlement path requires a currently bonded validator so throwaway
+ * validators cannot create an unbounded supply of free guilds.
  */
 func (k Keeper) guildCharterReactorEligible(ctx context.Context, reactor *ReactorCache, founder *PlayerCache) error {
 	blockHeight := uint64(sdk.UnwrapSDKContext(ctx).BlockHeight())
@@ -210,4 +166,41 @@ func (k Keeper) guildCharterReactorEligible(ctx context.Context, reactor *Reacto
 	}
 
 	return reactor.CanCreateGuildBy(founder)
+}
+
+/* guildCharterLeavable returns the guild a founder must leave. An owner cannot
+ * leave through creation because that would strand their existing guild.
+ */
+func guildCharterLeavable(cc *CurrentContext, founder *PlayerCache) (*GuildCache, error) {
+	if founder.GetGuildId() == "" {
+		return nil, nil
+	}
+
+	oldGuild := cc.GetGuild(founder.GetGuildId())
+	if oldGuild.CheckGuild() != nil {
+		return nil, nil
+	}
+
+	if oldGuild.GetOwnerId() == founder.GetPlayerId() {
+		return nil, types.NewGuildMembershipError(oldGuild.GetGuildId(), founder.GetPlayerId(), "is_owner")
+	}
+
+	return oldGuild, nil
+}
+
+// guildCharterLeaveAndJoin preserves an unrelated substation connection while
+// moving the founder between guilds.
+func guildCharterLeaveAndJoin(cc *CurrentContext, founder *PlayerCache, oldGuild *GuildCache, guildId string, entrySubstationId string) {
+	if oldGuild != nil {
+		if founder.GetSubstationId() != "" && founder.GetSubstationId() == oldGuild.GetEntrySubstationId() {
+			founder.DisconnectSubstation()
+		}
+	}
+
+	founder.SetGuild(guildId)
+	founder.SetGuildRank(1)
+
+	if entrySubstationId != "" && founder.GetSubstationId() == "" {
+		founder.MigrateSubstation(entrySubstationId)
+	}
 }

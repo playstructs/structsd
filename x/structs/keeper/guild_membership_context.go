@@ -29,28 +29,9 @@ func (cc *CurrentContext) GenesisImportGuildMembershipApplication(app types.Guil
 	cache.Changed = true
 }
 
-/* Membership applications have two constructors, and which one a handler picks
- * is the whole authorization story.
- *
- * Guild membership is two-sided by design: a player files a request and the
- * guild approves it, or the guild issues an invite and the player accepts it.
- * Each leg has its own check — VerifyRequestAsPlayer / VerifyRequestAsGuild,
- * VerifyInviteAsGuild / VerifyInviteAsPlayer — and the stored application is the
- * only evidence that the first leg ever happened.
- *
- * A single constructor that synthesized a proposed application on a store miss
- * therefore handed every approval path the evidence it was about to check. On
- * GuildMembershipRequestApprove that was a force-join: CanRequestMembership
- * takes no player argument and only asks whether the guild has requests open, so
- * any member of a recruiting guild could name any player and have ApproveRequest
- * overwrite their GuildId, reset their GuildRank and move their substation
- * connection, with no involvement from the victim at all.
- *
- * Creation paths take GetOrCreateGuildMembershipApplicationCache. Everything
- * that acts on an application somebody else filed takes
- * GetPendingGuildMembershipApplicationCache, which refuses when there is nothing
- * on file. TestArch_MembershipTransitionsRequirePendingApplication holds the
- * pairing.
+/* Membership applications are two-sided. Creation paths use GetOrCreate;
+ * approval and acceptance paths use GetPending so a missing first leg can
+ * never be synthesized as evidence of consent.
  */
 
 // resolveGuildMembershipApplication is the part both constructors share:

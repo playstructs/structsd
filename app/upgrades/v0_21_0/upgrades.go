@@ -21,8 +21,7 @@ import (
 
 // CreateUpgradeHandler returns the v0.21.0 upgrade handler.
 //
-// Beyond the binary guild-bank conversion changes described in constants.go,
-// this upgrade backfills the new guild bank fee fields via MigrateGuildBankFees.
+// Detailed behavior and migration notes live in docs/upgrades/v0.21.0.md.
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,

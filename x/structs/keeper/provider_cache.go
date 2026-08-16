@@ -112,18 +112,9 @@ func (cache *ProviderCache) GetEarningsPoolLocation() sdk.AccAddress { return Ge
 // SweepRevenue moves provider revenue out of the collateral pool, clamped to
 // what the pool actually holds.
 //
-// The pool is keyed only by provider, so every agreement's collateral is
-// commingled in it. Consumer collateral therefore has first claim: it is the
-// consumers' own money and is always paid in full. Provider revenue is
-// subordinate, and an unclamped sweep would let a provider be paid out of a
-// different consumer's collateral. Clamping cannot cost the provider anything
-// they are owed, because the shortfall stays in their own pool.
-//
-// A nonzero shortfall means the pool is holding less than the accounting says
-// it should, so it is logged loudly and emitted. It is never an error: refusing
-// would strand the agreement, and the payout runs in block hooks that cannot
-// abort. The registered provider-collateral-solvency invariant is what catches
-// the underlying cause.
+// Consumer collateral has first claim on the shared pool; provider revenue is
+// subordinate. A shortfall is reported rather than returned because block-hook
+// settlement must continue.
 func (cache *ProviderCache) SweepRevenue(destination sdk.AccAddress, amount math.Int, agreementId string) {
     if !amount.IsPositive() {
         return
@@ -438,13 +429,8 @@ func (cache *ProviderCache) SetDurationMinimum(minimum uint64) (error){
 // agreement teardown path checkpoints for exactly that reason, and so do
 // AgreementOpen and the two capacity handlers.
 //
-// It cannot fail. Provider revenue is subordinate to consumer collateral, so
-// SweepRevenue clamps the payment to what the pool can spare and reports any
-// difference as an EventProviderRevenueShortfall rather than as an error, and the
-// checkpoint block advances either way. The error return is kept only so callers
-// need not change if that ever stops being true — but note what changing it would
-// arm: several callers guard on this result, including one in Expire that sits in
-// front of the load decrement an expiry gets exactly one chance to perform.
+// It cannot currently fail: SweepRevenue clamps and reports shortfalls, then
+// the checkpoint advances. The error return is retained for caller stability.
 func (cache *ProviderCache) Checkpoint() (error) {
 
     // First handle the balances available via checkpoint

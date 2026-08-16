@@ -416,19 +416,9 @@ type ThrottleTarget struct {
 	Permission types.Permission
 }
 
-// ThrottleTargetAuth mirrors, for every throttled message, the target-object
-// authorization its handler performs. The keys of ProofMessages and
-// ThrottleKeyExtractors both name objects the transaction chooses, and the
-// throttle those keys drive is object-global, so a signer with no standing on
-// the named object must not be allowed to reserve one. Layer 1 does not catch
-// this: a primary address holds PermAll and so passes PermissionMap while
-// naming somebody else's struct.
-//
-// The permission here must be the one the handler's Can*By call resolves to;
-// TestArch_ThrottleTargetAuthMatchesHandlers reads the handler sources and
-// fails if the two drift. An entry missing from this map means that message
-// reserves no throttle key at all, which under-throttles rather than erroring —
-// TestThrottleTargetAuthCompleteness is what catches it.
+// ThrottleTargetAuth mirrors each throttled handler's target-object check.
+// Unauthorized callers must not reserve object-global keys, and the permission
+// here must stay aligned with the handler's Can*By call.
 var ThrottleTargetAuth = map[string]func(sdk.Msg) (ThrottleTarget, bool){
 	// structure.GetOwner().CanBuildHashedBy(callingPlayer)
 	"/structs.structs.MsgStructBuildComplete": func(msg sdk.Msg) (ThrottleTarget, bool) {

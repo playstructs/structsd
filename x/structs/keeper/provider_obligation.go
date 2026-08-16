@@ -38,3 +38,22 @@ func (k Keeper) ProviderCollateralObligation(ctx context.Context, provider types
 
 	return owed
 }
+
+// blocksBetween is the span from one block to another, floored at zero.
+func blocksBetween(from uint64, to uint64) uint64 {
+	if to <= from {
+		return 0
+	}
+	return to - from
+}
+
+// clampToWindow pins a height inside an agreement's start and end blocks.
+func clampToWindow(block uint64, start uint64, end uint64) uint64 {
+	if block < start {
+		return start
+	}
+	if block > end {
+		return end
+	}
+	return block
+}

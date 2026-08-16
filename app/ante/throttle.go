@@ -13,35 +13,10 @@ import (
 // limits on free Structs transactions.
 //
 // It runs in every transaction phase (CheckTx, ReCheckTx, DeliverTx, and
-// simulation) and combines two layers of protection:
-//
-//  1. Per-tx in-memory deduplication. A local `seen` map is built for every
-//     tx, indexed by throttle key (e.g. "charge/<playerId>", "proof/<structId>",
-//     "fleet/<fleetId>"). Two messages in the same tx that map to the same key
-//     are always rejected, in every phase, with no dependency on consensus or
-//     mempool state. This is the layer that catches the duplicate-charge-in-
-//     same-tx admission bug (incident 2026-05).
-//
-//  2. Cross-tx transient-store check. After per-tx dedup passes, every key is
-//     looked up in the keeper's transient store (writes are scoped per-phase
-//     by the SDK: CheckTx state writes are isolated from DeliverTx state). A
-//     key already set this block (because an earlier tx from the same block
-//     consumed it) causes a reject. This is the layer that prevents two
-//     distinct charge txs from the same player landing in one block.
-//
-//  3. Target authorization before reserving. The proof and operational keys
-//     name an object the transaction chose, and the reservation is written
-//     during ante processing, which the SDK commits even when the message goes
-//     on to fail. Reserving one for an object the signer has no standing on
-//     would let anybody park up to MaxMsgCount victim objects per block. So a
-//     key is only written once ThrottleTargetAuthorized agrees the signer could
-//     legitimately consume it. See mayReserve for why a refusal skips the
-//     reservation rather than rejecting the tx.
-//
-// All three layers run in CheckTx. Letting the throttle skip CheckTx is what
-// caused invalid txs to sit in the mempool indefinitely on structstestnet-111,
-// since CometBFT v0.38.21 only evicts txs that fail ReCheckTx or get included
-// in a block. See docs/incident-2026-05-ante.md.
+// simulation). It rejects duplicate keys within one transaction, checks the
+// per-block transient store across transactions, and authorizes caller-supplied
+// targets before reserving them. All three checks run in CheckTx so invalid
+// transactions are not admitted to the mempool.
 type ThrottleDecorator struct {
 	keeper StructsAnteKeeper
 }
