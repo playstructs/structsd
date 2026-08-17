@@ -188,7 +188,10 @@ func (cc *CurrentContext) GetGuildMembershipKickCache(callingPlayer *PlayerCache
 		return &GuildMembershipApplicationCache{}, guildPermissionError
 	}
 
-	if callingPlayer.GetGuildRank() >= targetPlayer.GetGuildRank() {
+	// Rank is standing inside this guild. A caller who is not a member has
+	// only CanKickMembers, which the owner already passed; their rank in
+	// some other guild is an unrelated number.
+	if callingPlayer.GetGuildId() == guildId && callingPlayer.GetGuildRank() >= targetPlayer.GetGuildRank() {
 		return &GuildMembershipApplicationCache{}, types.NewPermissionError(
 			"player", callingPlayer.GetPlayerId(),
 			"guild", guildId,

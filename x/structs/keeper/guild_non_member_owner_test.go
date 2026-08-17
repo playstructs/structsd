@@ -23,6 +23,10 @@ import (
  * Each of them now takes a guildId, with membership as the fallback. The fallback
  * cases below matter as much as the new ones: an existing client sends no guildId
  * and must keep working unchanged.
+ *
+ * Kick, invite and request-approve are the leftover membership gates: rank
+ * authority is members-only in the named guild, and at bypass level member the
+ * owner counts as able to staff the guild without joining it.
  */
 
 // nonMemberOwnerFixture is a guild whose owner is not a member of it, produced
@@ -324,4 +328,164 @@ func TestGuildHandlerMembershipFallback(t *testing.T) {
 		NewEntryRank: 6,
 	})
 	require.Error(t, err)
+}
+
+func (f *nonMemberOwnerFixture) setBypass(invite, request types.GuildJoinBypassLevel) {
+	f.t.Helper()
+
+	guild, found := f.k.GetGuild(f.ctx, f.guild.Id)
+	require.True(f.t, found)
+	guild.JoinInfusionMinimumBypassByInvite = invite
+	guild.JoinInfusionMinimumBypassByRequest = request
+	f.k.SetGuild(f.ctx, guild)
+	f.guild = guild
+}
+
+func (f *nonMemberOwnerFixture) guildlessPlayer(seed string) types.Player {
+	f.t.Helper()
+
+	acc := sdk.AccAddress(seed)
+	return testAppendPlayer(f.k, f.ctx, types.Player{
+		Creator:        acc.String(),
+		PrimaryAddress: acc.String(),
+	})
+}
+
+// TestNonMemberOwnerKicksMember is the kick half of the restated rank rule.
+// CanKickMembers already passes the owner; the outrank test must not then
+// read a guildless owner's zero as a rank in this guild.
+func TestNonMemberOwnerKicksMember(t *testing.T) {
+	f := newNonMemberOwnerFixture(t)
+
+	unranked := f.guildlessPlayer("guildrankzero123456789012345678901")
+	unranked.GuildId = f.guild.Id
+	unranked.GuildRank = 0
+	f.k.SetPlayer(f.ctx, unranked)
+
+	_, err := f.ms.GuildMembershipKick(f.ctx, &types.MsgGuildMembershipKick{
+		Creator:  f.buyer.Creator,
+		GuildId:  f.guild.Id,
+		PlayerId: unranked.Id,
+	})
+	require.NoError(t, err, "a guildless owner must not be limited by a rank they do not hold here")
+
+	kicked, found := f.k.GetPlayer(f.ctx, unranked.Id)
+	require.True(t, found)
+	require.Empty(t, kicked.GuildId)
+
+	_, err = f.ms.GuildMembershipKick(f.ctx, &types.MsgGuildMembershipKick{
+		Creator:  f.buyer.Creator,
+		GuildId:  f.guild.Id,
+		PlayerId: f.member.Id,
+	})
+	require.NoError(t, err)
+
+	member, found := f.k.GetPlayer(f.ctx, f.member.Id)
+	require.True(t, found)
+	require.Empty(t, member.GuildId)
+}
+
+// TestNonMemberOwnerKicksWhileMemberElsewhere pins the other half: a rank in
+// some other guild says nothing about who this owner may remove.
+func TestNonMemberOwnerKicksWhileMemberElsewhere(t *testing.T) {
+	f := newNonMemberOwnerFixture(t)
+
+	buyer, found := f.k.GetPlayer(f.ctx, f.buyer.Id)
+	require.True(t, found)
+	buyer.GuildId = "5-999"
+	buyer.GuildRank = 5
+	f.k.SetPlayer(f.ctx, buyer)
+
+	_, err := f.ms.GuildMembershipKick(f.ctx, &types.MsgGuildMembershipKick{
+		Creator:  f.buyer.Creator,
+		GuildId:  f.guild.Id,
+		PlayerId: f.member.Id,
+	})
+	require.NoError(t, err, "a rank in another guild must not decide a kick here")
+
+	member, found := f.k.GetPlayer(f.ctx, f.member.Id)
+	require.True(t, found)
+	require.Empty(t, member.GuildId)
+}
+
+// TestNonMemberOwnerInvitesAndApprovesAtMemberBypass is the remaining
+// "you must be in it" gate: at member, invite and approve used to demand
+// Player.GuildId equality even of the owner. member still means any member
+// may invite; the owner now counts as well. permissioned is unchanged —
+// the owner already passed through PermissionCheck, and an ordinary member
+// still does not.
+func TestNonMemberOwnerInvitesAndApprovesAtMemberBypass(t *testing.T) {
+	f := newNonMemberOwnerFixture(t)
+	f.setBypass(types.GuildJoinBypassLevel_member, types.GuildJoinBypassLevel_member)
+
+	invitee := f.guildlessPlayer("guildinvitee12345678901234567890123")
+	_, err := f.ms.GuildMembershipInvite(f.ctx, &types.MsgGuildMembershipInvite{
+		Creator:  f.buyer.Creator,
+		GuildId:  f.guild.Id,
+		PlayerId: invitee.Id,
+	})
+	require.NoError(t, err, "an owner must be able to invite without joining")
+
+	app, found := f.k.GetGuildMembershipApplication(f.ctx, f.guild.Id, invitee.Id)
+	require.True(t, found)
+	require.Equal(t, types.RegistrationStatus_proposed, app.RegistrationStatus)
+
+	// Ordinary members still invite at this level; that is the intra-guild
+	// policy, not the owner exception.
+	colleague := f.guildlessPlayer("guildcolleague12345678901234567890")
+	_, err = f.ms.GuildMembershipInvite(f.ctx, &types.MsgGuildMembershipInvite{
+		Creator:  f.member.Creator,
+		GuildId:  f.guild.Id,
+		PlayerId: colleague.Id,
+	})
+	require.NoError(t, err, "any member may still invite at bypass level member")
+
+	stranger := f.guildlessPlayer("guildstrangerinv123456789012345678")
+	_, err = f.ms.GuildMembershipInvite(f.ctx, &types.MsgGuildMembershipInvite{
+		Creator:  stranger.Creator,
+		GuildId:  f.guild.Id,
+		PlayerId: colleague.Id,
+	})
+	require.Error(t, err, "naming the guild is not membership")
+	require.ErrorIs(t, err, types.ErrGuildMembership)
+
+	requester := f.guildlessPlayer("guildrequester12345678901234567890")
+	_, err = f.ms.GuildMembershipRequest(f.ctx, &types.MsgGuildMembershipRequest{
+		Creator:  requester.Creator,
+		GuildId:  f.guild.Id,
+		PlayerId: requester.Id,
+	})
+	require.NoError(t, err)
+
+	_, err = f.ms.GuildMembershipRequestApprove(f.ctx, &types.MsgGuildMembershipRequestApprove{
+		Creator:  f.buyer.Creator,
+		GuildId:  f.guild.Id,
+		PlayerId: requester.Id,
+	})
+	require.NoError(t, err, "an owner must be able to approve a request without joining")
+
+	joined, found := f.k.GetPlayer(f.ctx, requester.Id)
+	require.True(t, found)
+	require.Equal(t, f.guild.Id, joined.GuildId)
+}
+
+func TestNonMemberOwnerInvitesAtPermissionedBypass(t *testing.T) {
+	f := newNonMemberOwnerFixture(t)
+	f.setBypass(types.GuildJoinBypassLevel_permissioned, types.GuildJoinBypassLevel_permissioned)
+
+	invitee := f.guildlessPlayer("guildperminvitee123456789012345678")
+	_, err := f.ms.GuildMembershipInvite(f.ctx, &types.MsgGuildMembershipInvite{
+		Creator:  f.buyer.Creator,
+		GuildId:  f.guild.Id,
+		PlayerId: invitee.Id,
+	})
+	require.NoError(t, err, "permissioned still passes the owner through PermissionCheck")
+
+	colleague := f.guildlessPlayer("guildpermcolleague1234567890123456")
+	_, err = f.ms.GuildMembershipInvite(f.ctx, &types.MsgGuildMembershipInvite{
+		Creator:  f.member.Creator,
+		GuildId:  f.guild.Id,
+		PlayerId: colleague.Id,
+	})
+	require.Error(t, err, "an ordinary member still needs PermGuildMembership at permissioned")
 }

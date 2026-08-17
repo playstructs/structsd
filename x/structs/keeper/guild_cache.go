@@ -265,7 +265,7 @@ func (cache *GuildCache) CanAddMembersByProxy(activePlayer *PlayerCache) error {
 // Without it the unmatched value left err nil and every membership gate opened
 // — the sharpest case being CanApproveMembershipRequest, where an undeclared
 // level demanded nothing at all while permissioned demands PermGuildMembership
-// and member demands existing membership.
+// and member demands existing membership or ownership.
 func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error) {
 
 	switch cache.GetJoinInfusionMinimumBypassByInvite() {
@@ -277,9 +277,10 @@ func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error)
 	case types.GuildJoinBypassLevel_permissioned:
 		err = cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildMembership)
 
-	// All Guild Members can Invite
+	// Members can invite, and so can the owner: they may staff a guild
+	// they hold without joining it.
 	case types.GuildJoinBypassLevel_member:
-		if activePlayer.GetGuildId() != cache.GetGuildId() {
+		if cache.GetOwnerId() != activePlayer.ID() && activePlayer.GetGuildId() != cache.GetGuildId() {
 			err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_member")
 		}
 
@@ -300,9 +301,10 @@ func (cache *GuildCache) CanApproveMembershipRequest(activePlayer *PlayerCache) 
 	case types.GuildJoinBypassLevel_permissioned:
 		err = cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildMembership)
 
-	// All Guild Members can Invite
+	// Members can approve, and so can the owner: they may staff a guild
+	// they hold without joining it.
 	case types.GuildJoinBypassLevel_member:
-		if activePlayer.GetGuildId() != cache.GetGuildId() {
+		if cache.GetOwnerId() != activePlayer.ID() && activePlayer.GetGuildId() != cache.GetGuildId() {
 			err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_member")
 		}
 

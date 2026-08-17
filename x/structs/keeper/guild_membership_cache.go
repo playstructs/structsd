@@ -276,7 +276,8 @@ func (cache *GuildMembershipApplicationCache) RevokeRequest() error {
 // Kick deliberately does not call requirePending. GetGuildMembershipKickCache
 // builds its record from scratch every time — a kick is initiated by the guild
 // and there is nothing for a member to have filed — and does its own
-// authorization: CanKickMembers, plus a rank comparison, plus refusing the owner.
+// authorization: CanKickMembers, plus a rank comparison for callers who
+// are members of this guild, plus refusing the owner.
 func (cache *GuildMembershipApplicationCache) Kick() error {
 	cache.GetPlayer().LeaveGuild()
 
