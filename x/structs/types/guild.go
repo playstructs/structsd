@@ -152,6 +152,7 @@ func CreateEmptyGuild() Guild {
 		JoinInfusionMinimumBypassByRequest: GuildJoinBypassLevel_closed,
 		PrimaryReactorId:                   "",
 		EntrySubstationId:                  "",
+		EntryRank:                          DefaultEntryRank,
 		BankConvertInFee:                   math.LegacyZeroDec(),
 		BankConvertOutFee:                  math.LegacyZeroDec(),
 	}

@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"structs/app/ante"
 	"structs/x/structs/types"
@@ -54,6 +54,7 @@ func TestPubKeyDerivation_MismatchedAddress(t *testing.T) {
 
 	_, err := dec.AnteHandle(newTestCtx(), tx, false, next)
 	require.Error(t, err)
+	require.True(t, ante.ErrInvalidProofIdentity.Is(err))
 	require.Contains(t, err.Error(), "proofPubKey derives to")
 }
 

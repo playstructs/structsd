@@ -59,6 +59,33 @@ func TestGenesis(t *testing.T) {
 	// this line is used by starport scaffolding # genesis/test/assert
 }
 
+func TestGenesis_RebuildsGuildNameIndexFirstWins(t *testing.T) {
+	first := types.CreateEmptyGuild()
+	first.Id = "4-1"
+	first.Index = 1
+	first.Name = "Alpha Guild"
+
+	second := types.CreateEmptyGuild()
+	second.Id = "4-2"
+	second.Index = 2
+	second.Name = "alpha guild"
+
+	genesisState := types.DefaultGenesis()
+	genesisState.GuildList = []types.Guild{first, second}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	guildId, found := k.GetGuildIdByName(ctx, "ALPHA GUILD")
+	require.True(t, found)
+	require.Equal(t, first.Id, guildId)
+
+	storedSecond, found := k.GetGuild(ctx, second.Id)
+	require.True(t, found)
+	require.Empty(t, storedSecond.Name,
+		"the losing duplicate must not retain a name that can delete the winner's index")
+}
+
 // genesisAddresses builds n valid bech32 addresses whose sorted order differs
 // from the order they appear in the AddressList, so that a test which passes
 // can only be passing because the commit sorted them.

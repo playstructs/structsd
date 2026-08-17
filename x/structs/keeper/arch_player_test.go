@@ -90,6 +90,8 @@ func TestArch_HandlersResolveMessagePlayerIdsThroughGetExistingPlayer(t *testing
 				return true
 			})
 
+			resolvesMessagePlayer := false
+			passesMessageController := false
 			ast.Inspect(fn.Body, func(n ast.Node) bool {
 				call, ok := n.(*ast.CallExpr)
 				if !ok {
@@ -102,7 +104,22 @@ func TestArch_HandlersResolveMessagePlayerIdsThroughGetExistingPlayer(t *testing
 
 				if sel.Sel.Name == "GetExistingPlayer" {
 					checkedLoaders++
+					if len(call.Args) == 1 {
+						arg := call.Args[0]
+						id, isIdent := arg.(*ast.Ident)
+						if rootsAtMsg(arg) || isIdent && tainted[id.Name] {
+							resolvesMessagePlayer = true
+						}
+					}
 					return true
+				}
+
+				if sel.Sel.Name == "NewAllocation" && len(call.Args) > 4 {
+					controller := call.Args[4]
+					id, isIdent := controller.(*ast.Ident)
+					if rootsAtMsg(controller) || isIdent && tainted[id.Name] {
+						passesMessageController = true
+					}
 				}
 
 				// One argument is what distinguishes the CurrentContext getter
@@ -127,6 +144,11 @@ func TestArch_HandlersResolveMessagePlayerIdsThroughGetExistingPlayer(t *testing
 				}
 				return true
 			})
+
+			if passesMessageController && !resolvesMessagePlayer {
+				failures = append(failures, name+": "+fn.Name.Name+
+					" passes a message-supplied controller to cc.NewAllocation without GetExistingPlayer")
+			}
 		}
 	}
 

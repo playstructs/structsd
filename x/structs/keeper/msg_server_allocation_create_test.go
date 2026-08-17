@@ -62,6 +62,18 @@ func TestMsgAllocationCreate(t *testing.T) {
 			expErr:    true,
 			expErrMsg: "unacceptable_source",
 		},
+		{
+			name: "nonexistent controller",
+			input: &types.MsgAllocationCreate{
+				Creator:        player.Creator,
+				AllocationType: types.AllocationType_static,
+				SourceObjectId: reactor.Id,
+				Controller:     "1-999",
+				Power:          100,
+			},
+			expErr:    true,
+			expErrMsg: "not found",
+		},
 	}
 
 	for _, tc := range testCases {

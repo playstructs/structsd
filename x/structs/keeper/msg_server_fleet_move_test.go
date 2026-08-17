@@ -151,6 +151,17 @@ func TestMsgFleetMove(t *testing.T) {
 			}
 		})
 	}
+
+	fullDestination, found := k.GetPlanet(ctx, planet2.Id)
+	require.True(t, found)
+	require.Equal(t, uint64(1)+fullDestination.LocationListExtra, fullDestination.LocationListCount)
+	resp, err := ms.FleetMove(wctx, &types.MsgFleetMove{
+		Creator:               player.Creator,
+		FleetId:               fleet.Id,
+		DestinationLocationId: planet2.Id,
+	})
+	require.NoError(t, err, "moving to the current location is a no-op even when its queue is full")
+	require.NotNil(t, resp)
 }
 
 // TestFleetMoveRaidVulnerability verifies that moving the defending fleet

@@ -174,12 +174,49 @@ func (k Keeper) reconcileInfusionForDelegation(ctx context.Context, cc *CurrentC
 	if !reactorBytesFound {
 		return
 	}
-	reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
+	reactor, reactorFound := k.GetReactorByBytes(ctx, reactorBytes)
+	if !reactorFound {
+		return
+	}
 	validator, validatorErr := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 	ratio := reactorEnergyRatio(validator, validatorErr)
 
 	player := cc.UpsertPlayer(playerAddress.String())
 	infusion := cc.UpsertInfusion(types.ObjectType_reactor, reactor.Id, playerAddress.String(), player.GetPlayerId())
+	k.reconcileInfusionState(ctx, infusion, playerAddress, validatorAddress, validator, ratio, reactor.DefaultCommission)
+}
+
+// reconcileExistingInfusionForDelegation is the removal-side form used after a
+// delegation move. A source that never had an infusion has nothing to create.
+func (k Keeper) reconcileExistingInfusionForDelegation(ctx context.Context, cc *CurrentContext, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
+	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
+	if !reactorBytesFound {
+		return
+	}
+	reactor, reactorFound := k.GetReactorByBytes(ctx, reactorBytes)
+	if !reactorFound {
+		return
+	}
+
+	infusion := cc.GetInfusion(reactor.Id, playerAddress.String())
+	if infusion.CheckInfusion() != nil {
+		return
+	}
+
+	validator, validatorErr := k.stakingKeeper.GetValidator(ctx, validatorAddress)
+	ratio := reactorEnergyRatio(validator, validatorErr)
+	k.reconcileInfusionState(ctx, infusion, playerAddress, validatorAddress, validator, ratio, reactor.DefaultCommission)
+}
+
+func (k Keeper) reconcileInfusionState(
+	ctx context.Context,
+	infusion *InfusionCache,
+	playerAddress sdk.AccAddress,
+	validatorAddress sdk.ValAddress,
+	validator stakingtypes.Validator,
+	ratio uint64,
+	commission math.LegacyDec,
+) {
 	delegation, err := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
 
 	// Each write is guarded on the value actually changing. SetInfusion emits an
@@ -192,8 +229,8 @@ func (k Keeper) reconcileInfusionForDelegation(ctx context.Context, cc *CurrentC
 		if infusion.GetInfusion().Ratio != ratio {
 			infusion.SetRatio(ratio)
 		}
-		if infusion.GetFuel() != delegationShare.Uint64() || !commissionMatches(infusion, reactor.DefaultCommission) {
-			infusion.SetFuelAndCommission(delegationShare.Uint64(), reactor.DefaultCommission)
+		if infusion.GetFuel() != delegationShare.Uint64() || !commissionMatches(infusion, commission) {
+			infusion.SetFuelAndCommission(delegationShare.Uint64(), commission)
 		}
 	} else if infusion.GetFuel() != 0 {
 		// No active delegation but stale fuel remains (e.g. recovery sweep

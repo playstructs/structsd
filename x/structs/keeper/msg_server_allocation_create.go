@@ -2,8 +2,8 @@ package keeper
 
 import (
 	"context"
-	"structs/x/structs/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"structs/x/structs/types"
 )
 
 func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocationCreate) (*types.MsgAllocationCreateResponse, error) {
@@ -21,9 +21,12 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
     }
 
     // If no controller set, then make it the Creator
-    if (msg.Controller == ""){
+	if msg.Controller == "" {
         msg.Controller = callingPlayer.GetPlayerId()
     }
+	if _, err := cc.GetExistingPlayer(msg.Controller); err != nil {
+		return emptyResponse, err
+	}
 
     sourceObject := cc.GetPermissionedObject(msg.SourceObjectId)
     if sourceObject == nil {

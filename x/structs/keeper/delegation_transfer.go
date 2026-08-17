@@ -62,7 +62,7 @@ func (k Keeper) MoveDelegationsToAddress(ctx context.Context, cc *CurrentContext
 	}
 
 	for _, validatorAddress := range touched {
-		k.reconcileInfusionForDelegation(ctx, cc, from, validatorAddress)
+		k.reconcileExistingInfusionForDelegation(ctx, cc, from, validatorAddress)
 		k.reconcileInfusionForDelegation(ctx, cc, toAcc, validatorAddress)
 	}
 

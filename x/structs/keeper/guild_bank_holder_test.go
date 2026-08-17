@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 
 	"cosmossdk.io/math"
@@ -115,6 +116,12 @@ func TestGuildBankConfiscationProtectsOnlyProviderObligation(t *testing.T) {
 	require.Equal(t, "consumer_collateral", protectedErr.Reason)
 	require.Equal(t, collateral, f.k.ProviderCollateralObligation(f.ctx, f.provider))
 
+	cc := f.k.NewCurrentContext(f.ctx)
+	err = cc.GetGuild(guild.Id).BankConfiscateAndBurn(math.OneInt(), strings.ToUpper(f.collateralAcc.String()))
+	require.ErrorAs(t, err, &protectedErr)
+	require.Equal(t, "consumer_collateral", protectedErr.Reason,
+		"bech32 casing must not bypass provider collateral protection")
+
 	excess := math.NewInt(37)
 	fundGuildToken(t, f.k, f.ctx, f.collateralAcc, guildDenom, excess)
 	require.NoError(t, confiscate(guild.Id, excess, f.collateralAcc))
@@ -131,6 +138,12 @@ func TestGuildBankConfiscationProtectsOnlyProviderObligation(t *testing.T) {
 	err = confiscate(guild.Id, math.OneInt(), legacyEscrow)
 	require.True(t, errors.As(err, &protectedErr))
 	require.Equal(t, "ibc_escrow_backing", protectedErr.Reason)
+
+	cc = f.k.NewCurrentContext(f.ctx)
+	err = cc.GetGuild(guild.Id).BankConfiscateAndBurn(math.OneInt(), strings.ToUpper(legacyEscrow.String()))
+	require.True(t, errors.As(err, &protectedErr))
+	require.Equal(t, "ibc_escrow_backing", protectedErr.Reason,
+		"bech32 casing must not bypass legacy escrow protection")
 }
 
 func TestProviderDeleteClearsGuildBankPoolRoles(t *testing.T) {

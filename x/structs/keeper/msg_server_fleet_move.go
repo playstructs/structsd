@@ -22,24 +22,28 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
 
     // Load the fleet
     fleet, fleetLookupErr := cc.GetFleetById(msg.FleetId)
-    if (fleetLookupErr != nil) {
+	if fleetLookupErr != nil {
         return emptyResponse, fleetLookupErr
     }
 
     // Check address play permissions
     permissionError := fleet.GetOwner().CanBePlayedBy(activePlayer)
-    if (permissionError != nil) {
+	if permissionError != nil {
         return emptyResponse, permissionError
     }
 
     destination := cc.GetPlanet(msg.DestinationLocationId)
-    if (!destination.LoadPlanet()) {
+	if !destination.LoadPlanet() {
         return emptyResponse, types.NewObjectNotFoundError("planet", msg.DestinationLocationId)
     }
 
+	if fleet.GetLocationId() == msg.DestinationLocationId {
+		return &types.MsgFleetMoveResponse{Fleet: &fleet.Fleet}, nil
+	}
+
     // Is the Fleet able to move?
     readinessError := fleet.PlanetMoveReadinessCheck()
-    if (readinessError != nil) {
+	if readinessError != nil {
         return emptyResponse, readinessError
     }
 

@@ -34,7 +34,6 @@ func (cc *CurrentContext) GetPlayer(playerId string) *PlayerCache {
                StructsLoadAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, playerId),
 
                StoredOreAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_ore, playerId),
-
            }
 
 	return cc.players[playerId]
@@ -104,7 +103,6 @@ func (cc *CurrentContext) GetPlayerByIndex(playerIndex uint64) *PlayerCache {
 	return cc.GetPlayer(GetObjectID(types.ObjectType_player, playerIndex))
 }
 
-
 func (cc *CurrentContext) GetAllPlayerBySubstation(substationId string) (players []*PlayerCache) {
     playerList := cc.k.GetAllPlayerIdBySubstationIndex(cc.ctx, substationId)
 
@@ -169,7 +167,6 @@ func (cc *CurrentContext) NewPlayer(address string) *PlayerCache {
     playerPermissionId := GetObjectPermissionIDBytes(playerId, playerId)
     cc.SetPermissions(playerPermissionId, types.PermAll)
 
-
     // Add the initial Player Load
     cc.SetGridAttributeIncrement(cc.players[playerId].StructsLoadAttributeId, types.PlayerPassiveDraw)
 
@@ -178,9 +175,9 @@ func (cc *CurrentContext) NewPlayer(address string) *PlayerCache {
 
 // Technically more of an InGet than an UpSert
 func (cc *CurrentContext) UpsertPlayer(address string) (player *PlayerCache) {
-    playerIndex := cc.k.GetPlayerIndexFromAddress(cc.ctx, address)
+	playerIndex := cc.GetPlayerIndexFromAddress(address)
 
-    if (playerIndex == 0) {
+	if playerIndex == 0 {
         player = cc.NewPlayer(address)
     } else {
         player = cc.GetPlayerByIndex(playerIndex)
@@ -188,4 +185,3 @@ func (cc *CurrentContext) UpsertPlayer(address string) (player *PlayerCache) {
 
     return
 }
-

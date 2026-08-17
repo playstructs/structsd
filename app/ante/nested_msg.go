@@ -2,6 +2,7 @@ package ante
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 )
@@ -28,6 +29,8 @@ import (
 // which no player-facing Structs message is.
 type NestedStructsMsgDecorator struct{}
 
+const maxAuthzNestingDepth = 8
+
 func NewNestedStructsMsgDecorator() NestedStructsMsgDecorator {
 	return NestedStructsMsgDecorator{}
 }
@@ -39,19 +42,46 @@ func (d NestedStructsMsgDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simula
 			continue
 		}
 
-		// Read the type URL off the Any directly. Unpacking would need the
-		// interface registry and would fail closed on unregistered types
-		// anyway; the URL is the whole basis for the decision.
-		for _, nested := range exec.Msgs {
-			if nested == nil {
-				continue
-			}
-			if IsStructsMessage(nested.TypeUrl) {
-				return ctx, observeReject(ctx, "NestedStructsMsgDecorator",
-					errorsmod.Wrapf(ErrNestedStructsMessage, "%s inside %s", nested.TypeUrl, sdk.MsgTypeURL(msg)))
-			}
+		nestedType, err := nestedStructsType(exec.Msgs, 1)
+		if err != nil {
+			return ctx, observeReject(ctx, "NestedStructsMsgDecorator", err)
+		}
+		if nestedType != "" {
+			return ctx, observeReject(ctx, "NestedStructsMsgDecorator",
+				errorsmod.Wrapf(ErrNestedStructsMessage, "%s inside %s", nestedType, sdk.MsgTypeURL(msg)))
 		}
 	}
 
 	return next(ctx, tx, simulate)
+}
+
+func nestedStructsType(messages []*codectypes.Any, depth int) (string, error) {
+	if depth > maxAuthzNestingDepth {
+		return "", errorsmod.Wrapf(ErrNestedStructsMessage,
+			"authz nesting exceeds maximum depth %d", maxAuthzNestingDepth)
+	}
+
+	for _, nested := range messages {
+		if nested == nil {
+			continue
+		}
+		if IsStructsMessage(nested.TypeUrl) {
+			return nested.TypeUrl, nil
+		}
+		if nested.TypeUrl != sdk.MsgTypeURL(&authz.MsgExec{}) {
+			continue
+		}
+
+		var exec authz.MsgExec
+		if err := exec.Unmarshal(nested.Value); err != nil {
+			return "", errorsmod.Wrapf(ErrNestedStructsMessage,
+				"cannot decode nested %s: %v", nested.TypeUrl, err)
+		}
+		found, err := nestedStructsType(exec.Msgs, depth+1)
+		if err != nil || found != "" {
+			return found, err
+		}
+	}
+
+	return "", nil
 }

@@ -52,6 +52,18 @@ func TestGasRouterDecorator_UpdateParamsNotFree(t *testing.T) {
 	require.False(t, sante.IsFreeTx(newCtx))
 }
 
+func TestGasRouterDecorator_ReactorRestartUsesPaidGas(t *testing.T) {
+	dec := sante.NewGasRouterDecorator(10_000_000, 0)
+	next, called := identityHandler()
+
+	tx := mockTx{msgs: []sdk.Msg{&types.MsgReactorRestart{}}}
+	newCtx, err := dec.AnteHandle(newTestCtx(), tx, false, next)
+	require.NoError(t, err)
+	require.True(t, *called)
+	require.False(t, sante.IsFreeTx(newCtx),
+		"the unbounded infusion walk must remain on the fee-paying gas meter")
+}
+
 func TestGasRouterDecorator_DefaultCapApplied(t *testing.T) {
 	dec := sante.NewGasRouterDecorator(0, 0)
 	next, called := identityHandler()

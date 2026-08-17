@@ -123,6 +123,12 @@ func TestMigrateGuildJoinBypassLevels(t *testing.T) {
 	healthy.JoinInfusionMinimumBypassByInvite = types.GuildJoinBypassLevel_permissioned
 	k.SetGuild(ctx, healthy)
 
+	zeroRank := types.CreateEmptyGuild()
+	zeroRank.Id = "4-3"
+	zeroRank.Index = 3
+	zeroRank.EntryRank = 0
+	k.SetGuild(ctx, zeroRank)
+
 	require.NoError(t, v0_21_0.MigrateGuildJoinBypassLevels(ctx, keepers))
 
 	got0, found := k.GetGuild(ctx, "4-0")
@@ -139,6 +145,10 @@ func TestMigrateGuildJoinBypassLevels(t *testing.T) {
 	require.True(t, found)
 	require.Equal(t, types.GuildJoinBypassLevel_member, got2.JoinInfusionMinimumBypassByRequest)
 	require.Equal(t, types.GuildJoinBypassLevel_permissioned, got2.JoinInfusionMinimumBypassByInvite)
+
+	got3, found := k.GetGuild(ctx, "4-3")
+	require.True(t, found)
+	require.Equal(t, uint64(types.DefaultEntryRank), got3.EntryRank)
 
 	// Idempotent: closed is a declared value, so a re-run finds nothing to do.
 	require.NoError(t, v0_21_0.MigrateGuildJoinBypassLevels(ctx, keepers))
@@ -192,8 +202,12 @@ func TestMigrateDefenderCanDefend(t *testing.T) {
 	planetaryDefenderId := structId(102)
 	k.SetStruct(ctx, types.Struct{Id: planetaryDefenderId, Index: 102, Type: 14})
 
+	unknownTypeDefenderId := structId(103)
+	k.SetStruct(ctx, types.Struct{Id: unknownTypeDefenderId, Index: 103, Type: 999})
+
 	k.SetStructDefender(ctx, protectedId, protectedIndex, fleetDefenderId)
 	k.SetStructDefender(ctx, protectedId, protectedIndex, planetaryDefenderId)
+	k.SetStructDefender(ctx, protectedId, protectedIndex, unknownTypeDefenderId)
 
 	// Reset the event buffer so we only observe events from the migration.
 	sdkCtx := sdk.UnwrapSDKContext(ctx).WithEventManager(sdk.NewEventManager())
@@ -206,6 +220,9 @@ func TestMigrateDefenderCanDefend(t *testing.T) {
 
 	_, planetaryFound := k.GetStructDefender(ctx, protectedId, planetaryDefenderId)
 	require.False(t, planetaryFound, "planetary defender should be pruned")
+
+	_, unknownFound := k.GetStructDefender(ctx, protectedId, unknownTypeDefenderId)
+	require.False(t, unknownFound, "an unknown type cannot be trusted with defender authority")
 
 	// The defender's reverse protectedStructIndex attribute must also be cleared.
 	planetaryAttrId := structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, planetaryDefenderId)
@@ -271,12 +288,16 @@ func TestMigrateOreClocksToPlanet(t *testing.T) {
 		Id: fmt.Sprintf("%d-%d", types.ObjectType_struct, 4), Index: 4,
 		Type: 14, LocationId: planetId, LocationType: types.ObjectType_planet,
 	}
+	destroyedMiner := types.Struct{
+		Id: fmt.Sprintf("%d-%d", types.ObjectType_struct, 6), Index: 6,
+		Type: 14, LocationId: planetId, LocationType: types.ObjectType_planet,
+	}
 	fleetStruct := types.Struct{
 		Id: fmt.Sprintf("%d-%d", types.ObjectType_struct, 5), Index: 5,
 		Type: 1, LocationId: "5-0", LocationType: types.ObjectType_fleet,
 	}
 
-	for _, s := range []types.Struct{minerA, minerB, refinery, offlineMiner, fleetStruct} {
+	for _, s := range []types.Struct{minerA, minerB, refinery, offlineMiner, destroyedMiner, fleetStruct} {
 		k.SetStruct(ctx, s)
 	}
 
@@ -288,12 +309,14 @@ func TestMigrateOreClocksToPlanet(t *testing.T) {
 	setStatus(minerB.Id, onlineStatus)
 	setStatus(refinery.Id, onlineStatus)
 	setStatus(offlineMiner.Id, offlineStatus)
+	setStatus(destroyedMiner.Id, onlineStatus|uint64(types.StructStateDestroyed))
 	setStatus(fleetStruct.Id, onlineStatus)
 
 	// minerA clock 100, minerB clock 50 -> planet should get min=50
 	k.SetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, minerA.Id), 100)
 	k.SetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, minerB.Id), 50)
 	k.SetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, offlineMiner.Id), 25)
+	k.SetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, destroyedMiner.Id), 10)
 	k.SetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, refinery.Id), 75)
 
 	require.NoError(t, v0_21_0.MigrateOreClocksToPlanet(ctx, keepers))
@@ -312,6 +335,7 @@ func TestMigrateOreClocksToPlanet(t *testing.T) {
 	require.Equal(t, uint64(0), k.GetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, minerA.Id)))
 	require.Equal(t, uint64(0), k.GetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, minerB.Id)))
 	require.Equal(t, uint64(0), k.GetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, offlineMiner.Id)))
+	require.Equal(t, uint64(0), k.GetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, destroyedMiner.Id)))
 	require.Equal(t, uint64(0), k.GetStructAttribute(ctx, structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, refinery.Id)))
 
 	// Idempotent: re-run preserves planet clocks and counters.
@@ -690,6 +714,15 @@ func TestMigrateFleetQueueLimit(t *testing.T) {
 	require.Equal(t, uint64(1), gotTarget.LocationListCount)
 	require.Equal(t, f1.Id, gotTarget.LocationListStart)
 
+	gotTarget.LocationListStart = "2-missing"
+	gotTarget.LocationListCount = 7
+	k.SetPlanet(ctx, gotTarget)
+	require.NoError(t, v0_21_0.MigrateFleetQueueLimit(ctx, keepers))
+	gotTarget, _ = k.GetPlanet(ctx, target.Id)
+	require.Equal(t, uint64(7), gotTarget.LocationListCount,
+		"a partial walk must not replace the stored count with zero")
+	require.Equal(t, "2-missing", gotTarget.LocationListStart)
+
 	_ = sdkCtx
 }
 
@@ -994,6 +1027,31 @@ func TestMigrateStructPhantomAggregates_RepairsCorruption(t *testing.T) {
 	require.Equal(t, uint64(types.PlayerPassiveDraw+phantomPassiveDraw*2+phantomBuildDraw), f.structsLoad())
 	require.Equal(t, uint64(types.PlanetaryShieldBase+phantomShield), f.planetAttr(types.PlanetAttributeType_planetaryShield))
 	require.Equal(t, uint64(2), f.typeCount(phantomBunkerType))
+}
+
+func TestMigrateStructPhantomAggregates_DestroyedOnlineStaysRepairedAfterSweep(t *testing.T) {
+	f := setupPhantomFixture(t)
+	keepers := &upgrades.Keepers{StructsKeeper: f.k}
+	f.seedBaseAggregates()
+
+	structure := f.buildThroughRuntime(phantomBunkerType, true, true)
+	statusAttr := structskeeper.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id)
+	status := f.k.GetStructAttribute(f.ctx, statusAttr)
+	f.k.SetStructAttribute(f.ctx, statusAttr, status|uint64(types.StructStateDestroyed))
+	f.k.AppendStructDestructionQueue(f.ctx, structure.Id)
+
+	require.NoError(t, v0_21_0.MigrateStructPhantomAggregates(f.ctx, keepers))
+	require.Equal(t, uint64(types.PlayerPassiveDraw), f.structsLoad())
+	require.Equal(t, uint64(types.PlanetaryShieldBase), f.planetAttr(types.PlanetAttributeType_planetaryShield))
+	require.Equal(t, uint64(0), f.planetAttr(types.PlanetAttributeType_defensiveCannonQuantity))
+
+	sweepCtx := f.ctx.WithBlockHeight(f.ctx.BlockHeight() + types.StructSweepDelay)
+	f.k.StructSweepDestroyed(sweepCtx)
+
+	require.Equal(t, uint64(types.PlayerPassiveDraw), f.structsLoad(),
+		"the sweep must not subtract a struct the migration already excluded")
+	require.Equal(t, uint64(types.PlanetaryShieldBase), f.planetAttr(types.PlanetAttributeType_planetaryShield))
+	require.Equal(t, uint64(0), f.planetAttr(types.PlanetAttributeType_defensiveCannonQuantity))
 }
 
 // TestMigrateStructPhantomAggregates_LeavesHealthyStateAlone is the important
@@ -1927,6 +1985,26 @@ func TestMigrateReconcileReactorInfusions_SkipsUnparsableRows(t *testing.T) {
 
 	require.Equal(t, uint64(0), f.infusion(reactor.Id, playerAcc).Fuel,
 		"the resolvable phantom is still cleared")
+}
+
+func TestMigrateReconcileReactorInfusions_DoesNotRecreateRevokedAddress(t *testing.T) {
+	f := newReconcileFixture(t)
+
+	reactor, valAddr := f.addReactor("reconcilerevoked", 1000)
+	player, playerAcc := f.addPlayer("reconcilerevokedplayer")
+	f.infuse(playerAcc, valAddr, 1000)
+
+	f.k.RevokePlayerIndexForAddress(f.ctx, playerAcc.String(), player.Index)
+	playerCount := f.k.GetPlayerCount(f.ctx)
+	before := f.infusion(reactor.Id, playerAcc)
+
+	require.NoError(t, v0_21_0.MigrateReconcileReactorInfusions(f.ctx, f.keepers()))
+
+	require.Equal(t, uint64(0), f.k.GetPlayerIndexFromAddress(f.ctx, playerAcc.String()))
+	require.Equal(t, playerCount, f.k.GetPlayerCount(f.ctx),
+		"reconcile must not mint a replacement player for a revoked key")
+	require.Equal(t, before, f.infusion(reactor.Id, playerAcc),
+		"an unregistered address is intentionally left for a future registration to re-home")
 }
 
 // reassignAddress hands an address from one player to the next, which is what

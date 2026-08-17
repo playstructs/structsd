@@ -212,14 +212,16 @@ func TestAddressRegisterSweepPreservesInfusionCapacity(t *testing.T) {
 		Commission:      math.LegacyZeroDec(),
 	})
 
-	// The handler writes the index before it sweeps, so the incoming address
-	// already resolves to the registering player.
-	require.NoError(t, f.k.SetPlayerIndexForAddress(f.ctx, incomingAcc.String(), f.player.Index))
-
 	cc := f.k.NewCurrentContext(f.sdkCtx)
+	// Match AddressRegister exactly: the association exists only in this
+	// CurrentContext until CommitAll.
+	cc.SetPlayerIndexForAddress(incomingAcc.String(), f.player.Index)
+	playerCount := f.k.GetPlayerCount(f.sdkCtx)
 	require.NoError(t, f.k.MoveDelegationsToAddress(f.sdkCtx, cc, incomingAcc, primaryAcc.String(), keeperlib.DelegationTransferStrict))
 	cc.CommitAll()
 
+	require.Equal(t, playerCount, f.k.GetPlayerCount(f.sdkCtx),
+		"reconciling the staged address must not synthesize an orphan player")
 	assertDelegationMoved(t, f, incomingAcc, primaryAcc)
 	require.Equal(t, uint64(0), f.k.GetGridAttribute(f.sdkCtx,
 		keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, stranger.Id)),

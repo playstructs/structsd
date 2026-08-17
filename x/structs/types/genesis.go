@@ -48,6 +48,9 @@ func (gs GenesisState) Validate() error {
 	// but failing `structsd genesis validate` on the file beats discovering it
 	// as a permanently closed guild.
 	for _, guild := range gs.GuildList {
+		if guild.EntryRank == 0 {
+			return NewParameterValidationError("guild.entryRank", guild.EntryRank, "must_be_positive")
+		}
 		if !guild.JoinInfusionMinimumBypassByRequest.IsValid() {
 			return errorsmod.Wrapf(ErrInvalidGuildJoinBypassLevel, "byRequest level (%d) on guild (%s)", int32(guild.JoinInfusionMinimumBypassByRequest), guild.Id)
 		}

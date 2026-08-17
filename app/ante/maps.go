@@ -158,7 +158,7 @@ var PermissionMap = map[string]types.Permission{
 
 	// Guild banking
 	"/structs.structs.MsgGuildBankConfiscateAndBurn": types.PermGuildTokenBurn,
-	"/structs.structs.MsgGuildBankMint":              types.PermGuildTokenMint,
+	"/structs.structs.MsgGuildBankMint":              types.PermGuildTokenMint | types.PermTokenTransfer,
 
 	// Guild settings
 	"/structs.structs.MsgGuildUpdateEndpoint":                            types.PermGuildEndpointUpdate,
@@ -536,6 +536,7 @@ func IsStakingMessage(typeURL string) bool {
 // something.
 var PricedStructsMessages = map[string]bool{
 	"/structs.structs.MsgGuildCreate": true,
+	"/structs.structs.MsgReactorRestart": true,
 }
 
 // IsFreeTransaction returns true if all messages in the tx are Structs gameplay

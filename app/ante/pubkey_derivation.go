@@ -2,8 +2,8 @@ package ante
 
 import (
 	"encoding/hex"
-	"fmt"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"structs/x/structs/types"
@@ -38,7 +38,9 @@ func (d PubKeyDerivationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simula
 			// pubKeyMessage interface. This is always a maintainer bug
 			// (SignatureMessages drift) -- fail closed rather than skip
 			// the cryptographic pre-check.
-			return ctx, fmt.Errorf("structs ante: %s declared in SignatureMessages but does not implement pubKeyMessage", typeURL)
+			return ctx, observeReject(ctx, "PubKeyDerivationDecorator",
+				errorsmod.Wrapf(ErrInvalidProofIdentity,
+					"%s declared in SignatureMessages but does not implement pubKeyMessage", typeURL))
 		}
 
 		pubKeyHex := pkMsg.GetProofPubKey()
@@ -52,21 +54,27 @@ func (d PubKeyDerivationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simula
 		}
 
 		if pubKeyHex == "" || claimedAddr == "" {
-			return ctx, fmt.Errorf("structs ante: %s missing proofPubKey or address", typeURL)
+			return ctx, observeReject(ctx, "PubKeyDerivationDecorator",
+				errorsmod.Wrapf(ErrInvalidProofIdentity, "%s missing proofPubKey or address", typeURL))
 		}
 
 		decoded, err := hex.DecodeString(pubKeyHex)
 		if err != nil {
-			return ctx, fmt.Errorf("structs ante: %s invalid proofPubKey hex: %w", typeURL, err)
+			return ctx, observeReject(ctx, "PubKeyDerivationDecorator",
+				errorsmod.Wrapf(ErrInvalidProofIdentity, "%s invalid proofPubKey hex: %v", typeURL, err))
 		}
 
 		if len(decoded) != 33 {
-			return ctx, fmt.Errorf("structs ante: %s proofPubKey must be 33 bytes (compressed secp256k1), got %d", typeURL, len(decoded))
+			return ctx, observeReject(ctx, "PubKeyDerivationDecorator",
+				errorsmod.Wrapf(ErrInvalidProofIdentity,
+					"%s proofPubKey must be 33 bytes (compressed secp256k1), got %d", typeURL, len(decoded)))
 		}
 
 		derivedAddr := types.PubKeyToBech32(decoded)
 		if derivedAddr != claimedAddr {
-			return ctx, fmt.Errorf("structs ante: %s proofPubKey derives to %s, expected %s", typeURL, derivedAddr, claimedAddr)
+			return ctx, observeReject(ctx, "PubKeyDerivationDecorator",
+				errorsmod.Wrapf(ErrInvalidProofIdentity,
+					"%s proofPubKey derives to %s, expected %s", typeURL, derivedAddr, claimedAddr))
 		}
 	}
 

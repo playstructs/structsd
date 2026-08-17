@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 
 	"cosmossdk.io/math"
@@ -258,8 +259,8 @@ func MigrateGuildCharter(ctx context.Context, keepers *upgrades.Keepers) error {
 	return nil
 }
 
-// MigrateGuildJoinBypassLevels clamps guild join bypass levels that hold a value
-// outside the three declared in the guildJoinBypassLevel enum.
+// MigrateGuildJoinBypassLevels clamps invalid join policy values and repairs the
+// legacy zero entry rank, which would outrank every ordinary member.
 //
 // Before v0.21.0 the update handlers wrote msg.GuildJoinBypassLevel straight
 // through, and proto3 enums are open, so any int32 both decoded and persisted.
@@ -285,13 +286,22 @@ func MigrateGuildJoinBypassLevels(ctx context.Context, keepers *upgrades.Keepers
 	for _, guild := range k.GetAllGuild(ctx) {
 		byRequest := guild.JoinInfusionMinimumBypassByRequest
 		byInvite := guild.JoinInfusionMinimumBypassByInvite
+		changed := guild.NormalizeJoinBypassLevels()
 
-		if guild.NormalizeJoinBypassLevels() {
+		if changed {
 			// Error level: no correct binary writes an undeclared level, so a
 			// hit here means the guild was exposed to the membership bypass and
 			// its owner needs to know their join policy was reset.
 			logger.Error("guild holds an undeclared join bypass level; clamping to closed",
 				"guildId", guild.Id, "byRequest", int32(byRequest), "byInvite", int32(byInvite))
+		}
+		if guild.EntryRank == 0 {
+			logger.Error("guild holds entry rank zero; resetting to the default",
+				"guildId", guild.Id, "entryRank", guild.EntryRank)
+			guild.EntryRank = structstypes.DefaultEntryRank
+			changed = true
+		}
+		if changed {
 			k.SetGuild(ctx, guild)
 			guildsMigrated++
 		}
@@ -456,7 +466,10 @@ func MigrateDefenderCanDefend(ctx context.Context, keepers *upgrades.Keepers) er
 		if !cached {
 			loadedType, typeFound := k.GetStructType(ctx, structure.Type)
 			if !typeFound {
-				logger.Warn("defender references unknown struct type; skipping", "defendingStructId", defender.DefendingStructId, "structType", structure.Type)
+				logger.Error("defender references unknown struct type; clearing registration",
+					"defendingStructId", defender.DefendingStructId, "structType", structure.Type)
+				k.ClearStructDefender(ctx, defender.ProtectedStructId, defender.DefendingStructId)
+				defendersCleared++
 				continue
 			}
 			structType = loadedType
@@ -547,7 +560,7 @@ func MigrateOreClocksToPlanet(ctx context.Context, keepers *upgrades.Keepers) er
 		// Only online rigs contribute to the planet counters and clocks.
 		statusAttrId := structskeeper.GetStructAttributeIDByObjectId(structstypes.StructAttributeType_status, structure.Id)
 		status := structstypes.StructState(k.GetStructAttribute(ctx, statusAttrId))
-		if status&structstypes.StructStateOnline == 0 {
+		if status&structstypes.StructStateOnline == 0 || status&structstypes.StructStateDestroyed != 0 {
 			continue
 		}
 
@@ -573,7 +586,13 @@ func MigrateOreClocksToPlanet(ctx context.Context, keepers *upgrades.Keepers) er
 
 	upgradeHeight := uint64(sdkCtx.BlockHeight())
 	var planetsUpdated int
-	for planetId, agg := range byPlanet {
+	planetIds := make([]string, 0, len(byPlanet))
+	for planetId := range byPlanet {
+		planetIds = append(planetIds, planetId)
+	}
+	sort.Strings(planetIds)
+	for _, planetId := range planetIds {
+		agg := byPlanet[planetId]
 		if agg.mineCount > 0 {
 			mineQtyId := structskeeper.GetPlanetAttributeIDByObjectId(structstypes.PlanetAttributeType_oreMiningActiveQuantity, planetId)
 			k.SetPlanetAttribute(ctx, mineQtyId, agg.mineCount)
@@ -617,8 +636,8 @@ func MigrateOreClocksToPlanet(ctx context.Context, keepers *upgrades.Keepers) er
 
 // MigrateRaiderArrived seeds blockRaiderArrived on every planet that
 // currently has a raid in progress (LocationListStart != ""). Without this,
-// an in-flight raid would treat the pause window as starting at block 0 and
-// shift ore clocks by their entire age at raid end.
+// ending a pre-upgrade raid would see no marker and leave the ore clocks
+// unshifted for the post-upgrade portion of the pause.
 //
 // The marker is set to the upgrade block height. Idempotent: a re-run
 // overwrites with the same height while the raid is still active.
@@ -744,6 +763,11 @@ func MigrateReconcileReactorInfusions(ctx context.Context, keepers *upgrades.Kee
 					"reactorId", reactor.Id, "address", before.Address, "error", addrErr)
 				continue
 			}
+			if k.GetPlayerIndexFromAddress(ctx, before.Address) == 0 {
+				logger.Error("skipping infusion for an unregistered delegator address",
+					"reactorId", reactor.Id, "address", before.Address)
+				continue
+			}
 
 			infusionsVisited++
 
@@ -859,25 +883,45 @@ func MigrateFleetQueueLimit(ctx context.Context, keepers *upgrades.Keepers) erro
 
 	for _, planet := range k.GetAllPlanet(ctx) {
 		fleetIds := make([]string, 0)
+		seen := make(map[string]bool)
+		corrupt := false
 		for fleetId := planet.LocationListStart; fleetId != ""; {
+			if seen[fleetId] {
+				logger.Error("raid queue contains a cycle; leaving planet unchanged",
+					"planetId", planet.Id, "fleetId", fleetId,
+					"storedCount", planet.LocationListCount)
+				corrupt = true
+				break
+			}
+			seen[fleetId] = true
+
 			fleet, found := k.GetFleet(ctx, fleetId)
 			if !found {
-				logger.Error("raid queue points at missing fleet; stopping walk",
-					"planetId", planet.Id, "fleetId", fleetId)
+				logger.Error("raid queue points at missing fleet; leaving planet unchanged",
+					"planetId", planet.Id, "fleetId", fleetId,
+					"storedCount", planet.LocationListCount)
+				corrupt = true
 				break
 			}
 			fleetIds = append(fleetIds, fleetId)
 			fleetId = fleet.LocationListBackward
 		}
+		if corrupt {
+			continue
+		}
 
-		// Seed the denormalized counter from the live list before any eviction
-		// so SetLocationToPlanet decrements from a correct baseline.
+		// Seed the denormalized counter only after a complete walk. A partial
+		// walk must not turn a corrupt queue into an understated authoritative
+		// count and admit more fleets than the planet can hold.
 		if planet.LocationListCount != uint64(len(fleetIds)) {
 			planet.LocationListCount = uint64(len(fleetIds))
 			k.SetPlanet(ctx, planet)
 		}
 
-		capacity := uint64(1) + planet.LocationListExtra
+		capacity := planet.LocationListExtra
+		if capacity != ^uint64(0) {
+			capacity++
+		}
 		if uint64(len(fleetIds)) <= capacity {
 			if len(fleetIds) > 0 {
 				planetsTouched++
@@ -1113,6 +1157,28 @@ func MigrateStructPhantomAggregates(ctx context.Context, keepers *upgrades.Keepe
 
 	k := keepers.StructsKeeper
 
+	// A destroyed struct that was reactivated is still in the sweep queue. Take
+	// it offline through the normal path before deriving totals, then let the
+	// recompute below overwrite any clamped decrements with the exact values.
+	// The later sweep now sees it offline and cannot subtract the ghost twice.
+	cleanupCC := k.NewCurrentContext(ctx)
+	destroyedOnline := 0
+	for _, structure := range k.GetAllStruct(ctx) {
+		status := structstypes.StructState(k.GetStructAttribute(ctx,
+			structskeeper.GetStructAttributeIDByObjectId(structstypes.StructAttributeType_status, structure.Id)))
+		if status&structstypes.StructStateDestroyed == 0 || status&structstypes.StructStateOnline == 0 {
+			continue
+		}
+
+		cache := cleanupCC.GetStruct(structure.Id)
+		if !cache.LoadStruct() {
+			continue
+		}
+		cache.GoOffline()
+		destroyedOnline++
+	}
+	cleanupCC.CommitAll()
+
 	structTypeCache := make(map[uint64]structstypes.StructType)
 	structType := func(structure structstypes.Struct) (structstypes.StructType, bool) {
 		if cached, ok := structTypeCache[structure.Type]; ok {
@@ -1231,7 +1297,13 @@ func MigrateStructPhantomAggregates(ctx context.Context, keepers *upgrades.Keepe
 	}
 
 	var loadsRepaired int
-	for playerId, expected := range playerLoad {
+	playerIds := make([]string, 0, len(playerLoad))
+	for playerId := range playerLoad {
+		playerIds = append(playerIds, playerId)
+	}
+	sort.Strings(playerIds)
+	for _, playerId := range playerIds {
+		expected := playerLoad[playerId]
 		attrId := structskeeper.GetGridAttributeIDByObjectId(structstypes.GridAttributeType_structsLoad, playerId)
 		if k.GetGridAttribute(ctx, attrId) == expected {
 			continue
@@ -1241,7 +1313,18 @@ func MigrateStructPhantomAggregates(ctx context.Context, keepers *upgrades.Keepe
 	}
 
 	var typeCountsRepaired int
-	for key, expected := range typeCount {
+	typeCountKeys := make([]ownerType, 0, len(typeCount))
+	for key := range typeCount {
+		typeCountKeys = append(typeCountKeys, key)
+	}
+	sort.Slice(typeCountKeys, func(i, j int) bool {
+		if typeCountKeys[i].owner != typeCountKeys[j].owner {
+			return typeCountKeys[i].owner < typeCountKeys[j].owner
+		}
+		return typeCountKeys[i].typeId < typeCountKeys[j].typeId
+	})
+	for _, key := range typeCountKeys {
+		expected := typeCount[key]
 		attrId := structskeeper.GetStructAttributeIDByObjectIdAndSubIndex(
 			structstypes.StructAttributeType_typeCount, key.owner, key.typeId)
 		if k.GetStructAttribute(ctx, attrId) == expected {
@@ -1326,6 +1409,7 @@ func MigrateStructPhantomAggregates(ctx context.Context, keepers *upgrades.Keepe
 	}
 
 	logger.Info("v0.21.0 struct phantom aggregate repair complete",
+		"destroyedOnlineTakenOffline", destroyedOnline,
 		"loadsRepaired", loadsRepaired,
 		"typeCountsRepaired", typeCountsRepaired,
 		"planetsRepaired", planetsRepaired,

@@ -563,19 +563,20 @@ func (cache *GuildCache) BankConfiscateAndBurn(amountToken math.Int, address str
 	if errAddr != nil {
 		return errAddr
 	}
+	canonicalAddress := playerAcc.String()
 
-	if cache.CC.k.IsLegacyGuildBankEscrow(cache.CC.ctx, address) {
+	if cache.CC.k.IsLegacyGuildBankEscrow(cache.CC.ctx, canonicalAddress) {
 		return types.NewGuildBankConfiscationError(
-			cache.GetGuildId(), cache.GetBankDenom(), address, "ibc_escrow_backing",
+			cache.GetGuildId(), cache.GetBankDenom(), canonicalAddress, "ibc_escrow_backing",
 		)
 	}
 
-	providerId, poolKind, isProviderPool := cache.CC.k.GetProviderPoolAddress(cache.CC.ctx, address)
+	providerId, poolKind, isProviderPool := cache.CC.k.GetProviderPoolAddress(cache.CC.ctx, canonicalAddress)
 	if isProviderPool && poolKind == ProviderPoolKindCollateral {
 		provider, found := cache.CC.k.GetProvider(cache.CC.ctx, providerId)
 		if !found {
 			return types.NewGuildBankConfiscationError(
-				cache.GetGuildId(), cache.GetBankDenom(), address, "provider_not_found",
+				cache.GetGuildId(), cache.GetBankDenom(), canonicalAddress, "provider_not_found",
 			)
 		}
 
@@ -591,7 +592,7 @@ func (cache *GuildCache) BankConfiscateAndBurn(amountToken math.Int, address str
 		}
 		if amountToken.GT(confiscatable) {
 			return types.NewGuildBankConfiscationError(
-				cache.GetGuildId(), cache.GetBankDenom(), address, "consumer_collateral",
+				cache.GetGuildId(), cache.GetBankDenom(), canonicalAddress, "consumer_collateral",
 			).WithAmounts(amountToken.String(), confiscatable.String(), protected.String())
 		}
 	}
@@ -610,7 +611,7 @@ func (cache *GuildCache) BankConfiscateAndBurn(amountToken math.Int, address str
 	ctxSDK := sdk.UnwrapSDKContext(cache.CC.ctx)
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankConfiscateAndBurn{
 		EventGuildBankConfiscateAndBurnDetail: &types.EventGuildBankConfiscateAndBurnDetail{
-			GuildId: cache.GetGuildId(), AmountToken: amountToken.Uint64(), Address: address,
+			GuildId: cache.GetGuildId(), AmountToken: amountToken.Uint64(), Address: canonicalAddress,
 		},
 	})
 
@@ -733,12 +734,16 @@ func (cache *GuildCache) SetBankConvertOutFee(fee math.LegacyDec) error {
 	return nil
 }
 
-func (cache *GuildCache) SetEntryRank(entryRank uint64) {
+func (cache *GuildCache) SetEntryRank(entryRank uint64) error {
+	if entryRank == 0 {
+		return types.NewParameterValidationError("newEntryRank", entryRank, "must_be_positive")
+	}
 	if !cache.GuildLoaded {
 		cache.LoadGuild()
 	}
 	cache.Guild.EntryRank = entryRank
 	cache.Changed = true
+	return nil
 }
 
 func (cache *GuildCache) GetName() string {

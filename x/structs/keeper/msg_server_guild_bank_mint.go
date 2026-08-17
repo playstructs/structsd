@@ -5,15 +5,14 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	//sdkerrors "cosmossdk.io/errors"
-	"structs/x/structs/types"
 	"cosmossdk.io/math"
+	"structs/x/structs/types"
 )
 
 func (k msgServer) GuildBankMint(goCtx context.Context, msg *types.MsgGuildBankMint) (*types.MsgGuildBankMintResponse, error) {
     emptyResponse := &types.MsgGuildBankMintResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -23,6 +22,11 @@ func (k msgServer) GuildBankMint(goCtx context.Context, msg *types.MsgGuildBankM
     if lookupErr != nil {
         return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_bank_mint")
     }
+
+	transferError := activePlayer.CanTransferTokensBy(activePlayer)
+	if transferError != nil {
+		return emptyResponse, transferError
+	}
 
     guildId := msg.GuildId
     if guildId == "" {
@@ -35,7 +39,7 @@ func (k msgServer) GuildBankMint(goCtx context.Context, msg *types.MsgGuildBankM
     }
 
     permissionError := guild.CanMintTokenBy(activePlayer)
-    if (permissionError != nil) {
+	if permissionError != nil {
         return emptyResponse, permissionError
     }
 

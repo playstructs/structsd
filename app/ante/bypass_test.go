@@ -133,6 +133,32 @@ func TestNestedStructsMsgDecorator_RejectsStructsInsideMsgExec(t *testing.T) {
 	require.False(t, *called)
 }
 
+func TestNestedStructsMsgDecorator_RejectsStructsInsideNestedMsgExec(t *testing.T) {
+	structsMsg, err := codectypes.NewAnyWithValue(&types.MsgPlayerSend{
+		Creator:     "structs1granter",
+		FromAddress: "structs1granter",
+		ToAddress:   "structs1grantee",
+	})
+	require.NoError(t, err)
+	innerExec, err := codectypes.NewAnyWithValue(&authz.MsgExec{
+		Grantee: "structs1middle",
+		Msgs:    []*codectypes.Any{structsMsg},
+	})
+	require.NoError(t, err)
+
+	dec := sante.NewNestedStructsMsgDecorator()
+	next, called := identityHandler()
+	tx := mockTx{msgs: []sdk.Msg{&authz.MsgExec{
+		Grantee: "structs1grantee",
+		Msgs:    []*codectypes.Any{innerExec},
+	}}}
+
+	_, err = dec.AnteHandle(newTestCtx(), tx, false, next)
+	require.Error(t, err)
+	require.True(t, sante.ErrNestedStructsMessage.Is(err))
+	require.False(t, *called)
+}
+
 func TestNestedStructsMsgDecorator_AllowsNonStructsInsideMsgExec(t *testing.T) {
 	inner, err := codectypes.NewAnyWithValue(&banktypes.MsgSend{
 		FromAddress: "structs1granter",

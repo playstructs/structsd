@@ -28,11 +28,25 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: true,
 		},
 		{
+			desc: "guild with entry rank zero is invalid",
+			genState: &types.GenesisState{
+				PortId: types.PortID,
+				GuildList: []types.Guild{{
+					Id:                                 "5-0",
+					EntryRank:                          0,
+					JoinInfusionMinimumBypassByRequest: types.GuildJoinBypassLevel_closed,
+					JoinInfusionMinimumBypassByInvite:  types.GuildJoinBypassLevel_closed,
+				}},
+			},
+			valid: false,
+		},
+		{
 			desc: "guild with declared bypass levels is valid",
 			genState: &types.GenesisState{
 				PortId: types.PortID,
 				GuildList: []types.Guild{{
 					Id:                                 "5-0",
+					EntryRank:                          types.DefaultEntryRank,
 					JoinInfusionMinimumBypassByRequest: types.GuildJoinBypassLevel_member,
 					JoinInfusionMinimumBypassByInvite:  types.GuildJoinBypassLevel_permissioned,
 				}},

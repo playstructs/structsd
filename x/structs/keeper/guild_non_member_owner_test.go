@@ -277,6 +277,13 @@ func TestNonMemberOwnerNeedsPermission(t *testing.T) {
 		NewEntryRank: 2,
 	})
 	require.Error(t, err)
+
+	_, err = f.ms.GuildUpdateEntryRank(f.ctx, &types.MsgGuildUpdateEntryRank{
+		Creator:      f.buyer.Creator,
+		GuildId:      f.guild.Id,
+		NewEntryRank: 0,
+	})
+	require.Error(t, err, "rank zero would outrank every ordinary member")
 }
 
 /* TestGuildHandlerMembershipFallback is the compatibility half: a client that

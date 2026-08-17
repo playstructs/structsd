@@ -41,9 +41,7 @@ type AgreementCache struct {
 
 	CurrentBlock       uint64
 	CurrentBlockLoaded bool
-
 }
-
 
 func (cache *AgreementCache) Commit() {
     if cache.Changed {
@@ -59,7 +57,7 @@ func (cache *AgreementCache) Commit() {
     	    cache.CC.k.ClearAgreement(cache.CC.ctx, cache.AgreementId)
     	} else {
     		cache.CC.k.SetAgreement(cache.CC.ctx, cache.Agreement)
-    		if (cache.EndBlockChanged) {
+			if cache.EndBlockChanged {
     		    if cache.PreviousEndBlock > 0 {
                     cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.PreviousEndBlock, cache.GetAgreementId())
                 }
@@ -80,8 +78,6 @@ func (cache *AgreementCache) IsChanged() bool {
 func (cache *AgreementCache) ID() string {
 	return cache.AgreementId
 }
-
-
 
 /* Separate Loading functions for each of the underlying containers */
 
@@ -165,7 +161,6 @@ func (cache *AgreementCache) CanUpdate(activePlayer *PlayerCache) error {
 func (cache *AgreementCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
     return types.NewAllocationError(cache.ID(), "unacceptable_source")
 }
-
 
 /* Getters
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
@@ -775,14 +770,27 @@ func (cache *AgreementCache) CapacityDecrease(amount uint64) error {
 }
 
 func (cache *AgreementCache) DurationIncrease(amount uint64) error {
+	if amount == 0 {
+		return types.NewParameterValidationError("duration", amount, "no_change")
+	}
 
-	newDuration := (cache.GetEndBlock() - cache.GetStartBlock()) + amount
+	endBlock := cache.GetEndBlock()
+	startBlock := cache.GetStartBlock()
+	if endBlock < startBlock {
+		return types.NewParameterValidationError("duration", amount, "invalid_window")
+	}
+	newEndBlock := endBlock + amount
+	if newEndBlock < endBlock {
+		return types.NewParameterValidationError("duration", amount, "above_maximum")
+	}
+
+	newDuration := newEndBlock - startBlock
 	verifyError := cache.GetProvider().AgreementDurationVerify(newDuration)
 	if verifyError != nil {
 		return verifyError
 	}
 
-	cache.SetEndBlock(cache.GetEndBlock() + amount)
+	cache.SetEndBlock(newEndBlock)
 	cache.Changed = true
 
 	return nil

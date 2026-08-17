@@ -174,7 +174,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	// Fleets (send all home)
 	for _, fleet := range genState.FleetList {
 		homePlanetId := playerPlanetMap[fleet.Owner]
-        cc.GenesisImportFleet(fleet, homePlanetId)
+		cc.GenesisImportFleet(fleet, homePlanetId)
 	}
 
 	// Structs
@@ -211,12 +211,33 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		cc.GenesisImportReactorInfusions(reactor)
 	}
 
-
 	// =========================================================================
 	// Commit
 	// =========================================================================
 
 	cc.CommitAll()
+
+	// Guild names are stored on guild records, while the normalized lookup is
+	// derived state. Rebuild it on every import in list order; first wins is
+	// deterministic and matches the upgrade migration's collision policy.
+	k.ClearGuildNameIndex(ctx)
+	claimedGuildNames := make(map[string]bool)
+	for _, guild := range genState.GuildList {
+		if guild.Name == "" {
+			continue
+		}
+		normalized := types.NormalizeName(guild.Name)
+		if claimedGuildNames[normalized] {
+			if duplicate, found := k.GetGuild(ctx, guild.Id); found {
+				duplicate.Name = ""
+				k.SetGuild(ctx, duplicate)
+			}
+			continue
+		}
+		claimedGuildNames[normalized] = true
+		k.SetGuildNameIndex(ctx, guild.Name, guild.Id)
+	}
+
 	// IBC core, transfer and bank initialize before structs in app_config.go.
 	// Rebuild this derived protect-only index from their exported state so an
 	// export/import restart cannot make existing voucher backing confiscatable.

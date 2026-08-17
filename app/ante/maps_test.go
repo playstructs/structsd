@@ -61,6 +61,17 @@ func TestIsFreeTransaction(t *testing.T) {
 		msgs := []sdk.Msg{&types.MsgFleetMove{}, &types.MsgGuildCreate{}}
 		require.False(t, IsFreeTransaction(msgs))
 	})
+
+	t.Run("MsgReactorRestart pays", func(t *testing.T) {
+		msgs := []sdk.Msg{&types.MsgReactorRestart{}}
+		require.False(t, IsFreeTransaction(msgs))
+		require.False(t, IsAnyFreeTransaction(msgs))
+	})
+
+	t.Run("MsgReactorRestart poisons a free batch", func(t *testing.T) {
+		msgs := []sdk.Msg{&types.MsgFleetMove{}, &types.MsgReactorRestart{}}
+		require.False(t, IsFreeTransaction(msgs))
+	})
 }
 
 // Every priced message still has to be a Structs message, or IsFreeTransaction
@@ -183,17 +194,17 @@ func TestEveryKnownMessageHasPermissionOrDynamic(t *testing.T) {
 	for typeURL := range KnownStructsMessages {
 		_, hasPerm := PermissionMap[typeURL]
 		_, hasDyn := DynamicPermissionMessages[typeURL]
-		require.True(t, hasPerm || hasDyn,
-			"message %s is in KnownStructsMessages but has no entry in PermissionMap or DynamicPermissionMessages", typeURL)
+		require.NotEqual(t, hasPerm, hasDyn,
+			"message %s must be in exactly one of PermissionMap or DynamicPermissionMessages", typeURL)
 	}
 }
 
 func TestProofMessagesHaveCorrectPermissions(t *testing.T) {
 	expected := map[string]types.Permission{
-		"/structs.structs.MsgStructBuildComplete":      types.PermHashBuild,
-		"/structs.structs.MsgStructOreMinerComplete":   types.PermHashMine,
+		"/structs.structs.MsgStructBuildComplete":       types.PermHashBuild,
+		"/structs.structs.MsgStructOreMinerComplete":    types.PermHashMine,
 		"/structs.structs.MsgStructOreRefineryComplete": types.PermHashRefine,
-		"/structs.structs.MsgPlanetRaidComplete":       types.PermHashRaid,
+		"/structs.structs.MsgPlanetRaidComplete":        types.PermHashRaid,
 	}
 	for typeURL, expectedPerm := range expected {
 		actualPerm, ok := PermissionMap[typeURL]
@@ -232,6 +243,14 @@ func TestAgreementDurationIncreaseRequiresTokenTransfer(t *testing.T) {
 		"the spend bit is additional to update rights on the agreement, not a replacement")
 }
 
+func TestGuildBankMintRequiresTokenTransfer(t *testing.T) {
+	actualPerm, ok := PermissionMap["/structs.structs.MsgGuildBankMint"]
+	require.True(t, ok, "MsgGuildBankMint missing from PermissionMap")
+	require.NotZero(t, actualPerm&types.PermGuildTokenMint)
+	require.NotZero(t, actualPerm&types.PermTokenTransfer,
+		"minting debits alpha from the primary address, so mint authority alone is not enough")
+}
+
 // TestArch_PrimaryAddressDebitsRequireTokenBit is the standing guard for the whole
 // family of gaps the open-market bypass belonged to. A handler that debits the
 // player's primary address is spending the player's money on the signer's
@@ -262,6 +281,13 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 	}
 	creditCalls := map[string]bool{
 		"SendCoinsFromModuleToAccount": true,
+	}
+	// These cache methods hide a primary-account debit from the handler AST.
+	// Keep the list explicit so adding another such method requires classifying it.
+	primaryDebitHelpers := map[string]bool{
+		"BankConvert": true,
+		"BankMint":    true,
+		"BankRedeem":  true,
 	}
 	seenSendCalls := map[string]bool{}
 
@@ -308,6 +334,10 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 					seenSendCalls[called] = true
 				}
 				if debitCalls[called] {
+					debits = true
+				}
+				if primaryDebitHelpers[called] {
+					readsPrimary = true
 					debits = true
 				}
 				return true

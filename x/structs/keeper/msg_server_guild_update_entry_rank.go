@@ -32,10 +32,10 @@ func (k msgServer) GuildUpdateEntryRank(goCtx context.Context, msg *types.MsgGui
 		return emptyResponse, types.NewObjectNotFoundError("guild", guildId)
 	}
 
-    guildPermissionErr := guild.CanUpdateBy(player)
-    if guildPermissionErr != nil {
-        return emptyResponse, guildPermissionErr
-    }
+	guildPermissionErr := guild.CanUpdateBy(player)
+	if guildPermissionErr != nil {
+		return emptyResponse, guildPermissionErr
+	}
 
 	// A member can only set entry rank equal to or worse (numerically higher)
 	// than their own. The ceiling is a member's own rank, so it only applies to a
@@ -49,7 +49,9 @@ func (k msgServer) GuildUpdateEntryRank(goCtx context.Context, msg *types.MsgGui
 		)
 	}
 
-	guild.SetEntryRank(msg.NewEntryRank)
+	if err := guild.SetEntryRank(msg.NewEntryRank); err != nil {
+		return emptyResponse, err
+	}
 
 	cc.CommitAll()
 	return &types.MsgGuildUpdateResponse{}, nil
