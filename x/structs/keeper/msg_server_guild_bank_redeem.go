@@ -37,8 +37,8 @@ func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBan
 	}
 
 	guild := cc.GetGuild(guildId)
-	if !guild.LoadGuild() {
-		return emptyResponse, types.NewObjectNotFoundError("guild", guild.GetGuildId())
+	if err := guild.CheckGuild(); err != nil {
+		return emptyResponse, err
 	}
 
 	_, err := guild.BankRedeem(msg.AmountToken.Amount, math.NewIntFromUint64(msg.MinAmountAlpha), activePlayer)

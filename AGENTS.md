@@ -517,7 +517,7 @@ handler, and never renumber an existing code.
 
 **`app/ante` is incident territory.** Any `ctx.IsCheckTx()` or `IsReCheckTx()` short-circuit needs an adjacent `// SKIP_RATIONALE:` comment
 or an allowlist entry, or `app/ante/arch_test.go` fails. Route new reject branches through
-`observeReject` (see `docs/observability.md`).
+`observeReject` (see `app/ante/observability.go`).
 
 **An ante write is the one write a failed message cannot undo, so never reserve on a
 transaction's say-so.** The SDK commits the ante cache before it runs messages and only discards

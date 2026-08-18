@@ -76,7 +76,7 @@ func (k Keeper) verifyGuildCharterConsent(cc *CurrentContext, msg *types.MsgGuil
 	}
 
 	pubKey := crypto.PubKey{Key: decodedProofPubKey}
-	consentInput := types.GuildCharterConsentInput(founder.GetPlayerId(), msg.ReactorId, msg.EntrySubstationId, msg.Endpoint, anchor)
+	consentInput := types.GuildCharterConsentInput(sdk.UnwrapSDKContext(cc.ctx).ChainID(), founder.GetPlayerId(), msg.ReactorId, msg.EntrySubstationId, msg.Endpoint, anchor)
 
 	if !pubKey.VerifySignature([]byte(consentInput), decodedProofSignature[:64]) {
 		return types.NewAddressValidationError(msg.Address, "signature_invalid")

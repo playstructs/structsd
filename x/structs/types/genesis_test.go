@@ -54,6 +54,34 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: true,
 		},
 		{
+			desc: "guild with a name invalid under the pinned unicode rules is invalid",
+			genState: &types.GenesisState{
+				PortId: types.PortID,
+				GuildList: []types.Guild{{
+					Id:                                 "5-0",
+					EntryRank:                          types.DefaultEntryRank,
+					Name:                               "no", // below the 3-character minimum
+					JoinInfusionMinimumBypassByRequest: types.GuildJoinBypassLevel_closed,
+					JoinInfusionMinimumBypassByInvite:  types.GuildJoinBypassLevel_closed,
+				}},
+			},
+			valid: false,
+		},
+		{
+			desc: "guild with a valid name is valid",
+			genState: &types.GenesisState{
+				PortId: types.PortID,
+				GuildList: []types.Guild{{
+					Id:                                 "5-0",
+					EntryRank:                          types.DefaultEntryRank,
+					Name:                               "Alpha Guild",
+					JoinInfusionMinimumBypassByRequest: types.GuildJoinBypassLevel_closed,
+					JoinInfusionMinimumBypassByInvite:  types.GuildJoinBypassLevel_closed,
+				}},
+			},
+			valid: true,
+		},
+		{
 			// GenesisImportGuild assigns the record wholesale, so a genesis file
 			// is the one path that skips GuildCache.SetJoinInfusionMinimumBypassBy*.
 			desc: "guild with an undeclared byRequest bypass level is invalid",

@@ -39,6 +39,31 @@ func TestGenesis_RebuildsProviderPoolAddressIndex(t *testing.T) {
 	require.Equal(t, keeperlib.ProviderPoolKindCollateral, kind)
 }
 
+// A planet exported while a fleet was visiting carries a nonzero
+// LocationListCount. On import every fleet is sent home, so the count must
+// reset to 0 or the planet is permanently un-raidable (MsgFleetMove rejects
+// queue_full forever). LocationListExtra is real capacity config and persists.
+func TestGenesis_ResetsPlanetLocationListCount(t *testing.T) {
+	genesisState := types.DefaultGenesis()
+	genesisState.PlanetList = []types.Planet{{
+		Id:                "6-1",
+		LocationListStart: "9-1",
+		LocationListLast:  "9-2",
+		LocationListCount: 3,
+		LocationListExtra: 2,
+	}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	planet, found := k.GetPlanet(ctx, "6-1")
+	require.True(t, found)
+	require.Equal(t, uint64(0), planet.LocationListCount, "visitor count must reset on import")
+	require.Equal(t, "", planet.LocationListStart)
+	require.Equal(t, "", planet.LocationListLast)
+	require.Equal(t, uint64(2), planet.LocationListExtra, "capacity config must persist")
+}
+
 func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),

@@ -379,6 +379,18 @@ func (cache *AgreementCache) ReturnRemainingCollateral() error {
 	return cache.payConsumer(cache.GetRemainingCollateral())
 }
 
+// PayoutProviderCancellationPenaltyAndReturnCollateral pays the consumer the
+// provider's forfeited cancellation penalty together with the consumer's
+// remaining collateral in one transfer. Both are the consumer's first-claim
+// money paid from the same pool to the same account, so combining them makes
+// the payout all-or-nothing: on a pool too short to cover both, neither leg
+// settles and teardown fails cleanly. Paid separately, the penalty could commit
+// and the collateral abort, leaving the agreement alive to re-pay the penalty
+// on a later teardown (TearingDown is per-operation only).
+func (cache *AgreementCache) PayoutProviderCancellationPenaltyAndReturnCollateral() error {
+	return cache.payConsumer(cache.providerCancellationPenaltyAmount().Add(cache.GetRemainingCollateral()))
+}
+
 // beginTeardown claims the single settlement this agreement is entitled to in
 // this operation. A false return means settlement is already underway and the
 // caller is the reciprocal leg of it, so it must not pay out again.
@@ -478,11 +490,10 @@ func (cache *AgreementCache) PrematureCloseByProvider() error {
 		return err
 	}
 
-	// Payout Cancellation Penalty
-	if err := cache.PayoutProviderCancellationPenalty(); err != nil {
-		return err
-	}
-	if err := cache.ReturnRemainingCollateral(); err != nil {
+	// Payout the cancellation penalty and remaining collateral together, so a
+	// short pool fails both legs rather than paying the penalty and stranding
+	// the collateral.
+	if err := cache.PayoutProviderCancellationPenaltyAndReturnCollateral(); err != nil {
 		return err
 	}
 
@@ -548,10 +559,11 @@ func (cache *AgreementCache) PrematureCloseByAllocation() error {
 		return err
 	}
 
-	if err := cache.PayoutProviderCancellationPenalty(); err != nil {
-		return err
-	}
-	if err := cache.ReturnRemainingCollateral(); err != nil {
+	// Payout the cancellation penalty and remaining collateral together, so a
+	// short pool fails both legs rather than paying the penalty and stranding
+	// the collateral. This path runs in block hooks that cannot abort, so a
+	// surviving agreement here would re-pay the penalty on the next teardown.
+	if err := cache.PayoutProviderCancellationPenaltyAndReturnCollateral(); err != nil {
 		return err
 	}
 

@@ -357,6 +357,21 @@ func validateGuildBankAmount(parameter string, amount math.Int, requirePositive 
 
 func (cache *GuildCache) BankMint(amountAlpha math.Int, amountToken math.Int, player *PlayerCache) error {
 
+	if err := validateGuildBankAmount("amountAlpha", amountAlpha, true); err != nil {
+		return err
+	}
+	if err := validateGuildBankAmount("amountToken", amountToken, true); err != nil {
+		return err
+	}
+
+	// Reject a mint that would push total supply past uint64. GetSupply and the
+	// redeem/convert ratio math read supply as uint64, so an overflowed supply
+	// would make every redeem and convert fail permanently, bricking holders.
+	supply := cache.CC.k.bankKeeper.GetSupply(cache.CC.ctx, cache.GetBankDenom()).Amount
+	if err := validateGuildBankAmount("bankSupply", supply.Add(amountToken), true); err != nil {
+		return err
+	}
+
 	alphaCollateralCoin := sdk.NewCoin("ualpha", amountAlpha)
 	alphaCollateralCoins := sdk.NewCoins(alphaCollateralCoin)
 
@@ -555,6 +570,10 @@ func (cache *GuildCache) BankRedeem(amountToken math.Int, minAmountAlpha math.In
 
 func (cache *GuildCache) BankConfiscateAndBurn(amountToken math.Int, address string) error {
 
+	if err := validateGuildBankAmount("amountToken", amountToken, true); err != nil {
+		return err
+	}
+
 	guildTokenCoin := sdk.NewCoin(cache.GetBankDenom(), amountToken)
 	guildTokenCoins := sdk.NewCoins(guildTokenCoin)
 
@@ -573,12 +592,13 @@ func (cache *GuildCache) BankConfiscateAndBurn(amountToken math.Int, address str
 
 	providerId, poolKind, isProviderPool := cache.CC.k.GetProviderPoolAddress(cache.CC.ctx, canonicalAddress)
 	if isProviderPool && poolKind == ProviderPoolKindCollateral {
-		provider, found := cache.CC.k.GetProvider(cache.CC.ctx, providerId)
-		if !found {
+		providerCache := cache.CC.GetProvider(providerId)
+		if !providerCache.LoadProvider() {
 			return types.NewGuildBankConfiscationError(
 				cache.GetGuildId(), cache.GetBankDenom(), canonicalAddress, "provider_not_found",
 			)
 		}
+		provider := providerCache.GetProvider()
 
 		protected := math.ZeroInt()
 		if provider.Rate.Denom == cache.GetBankDenom() {

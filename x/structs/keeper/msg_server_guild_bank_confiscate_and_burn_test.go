@@ -106,3 +106,31 @@ func TestMsgGuildBankConfiscateAndBurn(t *testing.T) {
 		})
 	}
 }
+
+// A zero confiscation amount must be rejected up front, matching the sibling
+// bank operations, rather than committing and emitting a zero-value
+// EventGuildBankConfiscateAndBurn that indexers ingest as a real confiscation.
+func TestMsgGuildBankConfiscateAndBurn_RejectsZeroAmount(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	wctx := sdk.UnwrapSDKContext(ctx)
+
+	playerAcc := sdk.AccAddress("creator123456789012345678901234567890")
+	player := testAppendPlayer(k, ctx, types.Player{
+		Creator:        playerAcc.String(),
+		PrimaryAddress: playerAcc.String(),
+	})
+
+	validatorAddress := sdk.ValAddress(playerAcc.Bytes())
+	reactor := k.AppendReactor(ctx, types.Reactor{RawAddress: validatorAddress.Bytes()})
+	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, player, "")
+	player.GuildId = guild.Id
+	k.SetPlayer(ctx, player)
+
+	_, err := ms.GuildBankConfiscateAndBurn(wctx, &types.MsgGuildBankConfiscateAndBurn{
+		Creator:     player.Creator,
+		AmountToken: 0,
+		Address:     player.Creator,
+	})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "must_be_positive")
+}

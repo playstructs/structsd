@@ -34,8 +34,8 @@ func (k msgServer) GuildBankConvert(goCtx context.Context, msg *types.MsgGuildBa
 	}
 
 	guild := cc.GetGuild(msg.GuildId)
-	if !guild.LoadGuild() {
-		return emptyResponse, types.NewObjectNotFoundError("guild", msg.GuildId)
+	if err := guild.CheckGuild(); err != nil {
+		return emptyResponse, err
 	}
 
 	_, err := guild.BankConvert(math.NewIntFromUint64(msg.AmountAlpha), math.NewIntFromUint64(msg.MinAmountToken), activePlayer)

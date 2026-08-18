@@ -94,10 +94,11 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
 
     // Move Reactor Infusions over.
     //
-    // The address index was written above, so the newly registered address
-    // resolves to this player and its infusion is re-homed rather than left
-    // with whoever held the address before. Ahead of the coin sweep so that the
-    // staking rewards the transfer settles are swept along with everything else.
+    // Reassigns the player's delegations onto the newly registered address; the
+    // source infusion is wound down under its previous owner and reclaimed, and
+    // the destination infusion is rebuilt for this player from live staking.
+    // Ahead of the coin sweep so that the staking rewards the transfer settles
+    // are swept along with everything else.
     //
     // Strict: the incoming address belongs to the player either way, so a
     // refusal costs them nothing but a wait, and nobody else can create the

@@ -169,6 +169,17 @@ func (k Keeper) ReconcileInfusionForDelegation(ctx context.Context, playerAddres
 	k.reconcileInfusionForDelegation(ctx, cc, playerAddress, validatorAddress)
 }
 
+// ReconcileExistingInfusionForDelegation refreshes one infusion from live
+// staking state without creating a player, so it is safe for an unregistered
+// delegator address whose infusion still carries phantom fuel (e.g. a pre-fix
+// AddressRevoke sweep). A source that never had an infusion is a no-op.
+func (k Keeper) ReconcileExistingInfusionForDelegation(ctx context.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
+
+	k.reconcileExistingInfusionForDelegation(ctx, cc, playerAddress, validatorAddress)
+}
+
 func (k Keeper) reconcileInfusionForDelegation(ctx context.Context, cc *CurrentContext, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
 	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
 	if !reactorBytesFound {

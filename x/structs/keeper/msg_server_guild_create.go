@@ -90,7 +90,7 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
 			return emptyResponse, liveErr
 		}
 
-		hashInput := types.GuildCharterWorkInput(solver.GetPlayerId(), founder.GetPlayerId(), anchor, msg.Nonce)
+		hashInput := types.GuildCharterWorkInput(ctx.ChainID(), solver.GetPlayerId(), founder.GetPlayerId(), anchor, msg.Nonce)
 
 		var valid bool
 		valid, achievedDifficulty = types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, k.CharterAge(ctx), k.GetParams(ctx).CharterDifficultyRange())

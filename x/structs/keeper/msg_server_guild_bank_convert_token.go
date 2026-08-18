@@ -48,13 +48,13 @@ func (k msgServer) GuildBankConvertToken(goCtx context.Context, msg *types.MsgGu
 	}
 
 	sourceGuild := cc.GetGuild(sourceGuildId)
-	if !sourceGuild.LoadGuild() {
-		return emptyResponse, types.NewObjectNotFoundError("guild", sourceGuildId)
+	if err := sourceGuild.CheckGuild(); err != nil {
+		return emptyResponse, err
 	}
 
 	targetGuild := cc.GetGuild(msg.GuildId)
-	if !targetGuild.LoadGuild() {
-		return emptyResponse, types.NewObjectNotFoundError("guild", msg.GuildId)
+	if err := targetGuild.CheckGuild(); err != nil {
+		return emptyResponse, err
 	}
 
 	// Leg 1: source token -> ualpha. No slippage guard here; the guard applies

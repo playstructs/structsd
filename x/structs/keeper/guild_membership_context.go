@@ -54,8 +54,8 @@ func (cc *CurrentContext) resolveGuildMembershipApplication(callingPlayer *Playe
 	}
 
 	guild := cc.GetGuild(guildId)
-	if !guild.LoadGuild() {
-		return &GuildMembershipApplicationCache{}, false, types.NewObjectNotFoundError("guild", guildId)
+	if err := guild.CheckGuild(); err != nil {
+		return &GuildMembershipApplicationCache{}, false, err
 	}
 
 	guildMembershipApplication := cc.GetGuildMembershipApp(guildId, playerId)
@@ -167,8 +167,8 @@ func (cc *CurrentContext) GetGuildMembershipKickCache(callingPlayer *PlayerCache
 	}
 
 	guild := cc.GetGuild(guildId)
-	if !guild.LoadGuild() {
-		return &GuildMembershipApplicationCache{}, types.NewObjectNotFoundError("guild", guildId)
+	if err := guild.CheckGuild(); err != nil {
+		return &GuildMembershipApplicationCache{}, err
 	}
 
 	if guild.GetOwnerId() == playerId {
@@ -176,12 +176,13 @@ func (cc *CurrentContext) GetGuildMembershipKickCache(callingPlayer *PlayerCache
 	}
 
 	guildMembershipApplication := cc.GetGuildMembershipApp(guildId, playerId)
-    guildMembershipApplicationFound := guildMembershipApplication.LoadGuildMembershipApplication()
+    guildMembershipApplication.LoadGuildMembershipApplication()
     guildMembershipApplication.CallingPlayer = callingPlayer
 
-	if guildMembershipApplicationFound {
-		cc.k.ClearGuildMembershipApplication(cc.ctx, guildId, playerId)
-	}
+	// No direct ClearGuildMembershipApplication here: the revoked status set
+	// below drives the cache commit to clear the row on the success path, so a
+	// raw delete would be a second, unordered deletion that also runs ahead of
+	// the permission checks.
 
 	guildPermissionError := guild.CanKickMembers(callingPlayer)
 	if guildPermissionError != nil {

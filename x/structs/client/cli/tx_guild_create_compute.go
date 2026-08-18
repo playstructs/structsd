@@ -16,6 +16,11 @@ import (
 	"structs/x/structs/types"
 )
 
+// How many nonces to try between wall-clock reads. Small enough that a refresh
+// is never late by anything a human would notice, large enough that the clock
+// read is not on the hashing path.
+const charterClockCheckNonces = 4096
+
 /* charterConsent is the output of guild-charter-consent, read back here.
  *
  * Carrying the guild's shape as well as the signature is what lets this command
@@ -23,11 +28,6 @@ import (
  * mining that the founder signed for a different substation, and the chain's
  * error for that is an indistinguishable bad signature.
  */
-// How many nonces to try between wall-clock reads. Small enough that a refresh
-// is never late by anything a human would notice, large enough that the clock
-// read is not on the hashing path.
-const charterClockCheckNonces = 4096
-
 type charterConsent struct {
 	FounderPlayerId   string `json:"founder_player_id"`
 	Address           string `json:"address"`
@@ -205,7 +205,7 @@ somebody else with a consent.`,
 					}
 
 					candidateNonce := strconv.FormatUint(attempt, 10)
-					hashInput := types.GuildCharterWorkInput(solverPlayerId, founderPlayerId, anchor, candidateNonce)
+					hashInput := types.GuildCharterWorkInput(clientCtx.ChainID, solverPlayerId, founderPlayerId, anchor, candidateNonce)
 					hashOutput := types.HashBuild(hashInput)
 
 					if valid, _ := types.HashBuildAndCheckDifficulty(hashInput, hashOutput, charter.Age, charter.DifficultyRange); valid {

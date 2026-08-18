@@ -35,6 +35,9 @@ type mockAnteKeeper struct {
 	// that generate the ids they are checking rather than naming them.
 	throttleAuthDenyFn func(creator, targetId string) bool
 	hasTransientStore  bool
+	// incrementOrder records the order IncrementPlayerMsgCount was called in,
+	// so a test can assert the cap loop iterates players deterministically.
+	incrementOrder []string
 }
 
 func newMockAnteKeeper() *mockAnteKeeper {
@@ -72,6 +75,7 @@ func (m *mockAnteKeeper) GetGridAttribute(_ context.Context, gridAttributeId str
 }
 
 func (m *mockAnteKeeper) IncrementPlayerMsgCount(_ context.Context, playerId string, delta uint64) uint64 {
+	m.incrementOrder = append(m.incrementOrder, playerId)
 	m.msgCounts[playerId] += delta
 	return m.msgCounts[playerId]
 }

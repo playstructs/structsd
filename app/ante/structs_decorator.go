@@ -2,6 +2,7 @@ package ante
 
 import (
 	"fmt"
+	"sort"
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -119,8 +120,18 @@ func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, 
 	// ThrottleDecorator's per-tx in-memory dedup, which DOES run in every
 	// phase. See docs/incident-2026-05-ante.md.
 	if !ctx.IsCheckTx() && !ctx.IsReCheckTx() && !simulate {
-		for playerId, count := range playerMsgCounts {
-			newTotal := d.keeper.IncrementPlayerMsgCount(ctx, playerId, count)
+		// Iterate in sorted player order. IncrementPlayerMsgCount writes to the
+		// transient store (gas-metered), and this loop can reject mid-way, so
+		// Go's randomized map order would otherwise make the rejected tx's
+		// GasUsed node-dependent, which forks the LastResultsHash.
+		playerIds := make([]string, 0, len(playerMsgCounts))
+		for playerId := range playerMsgCounts {
+			playerIds = append(playerIds, playerId)
+		}
+		sort.Strings(playerIds)
+
+		for _, playerId := range playerIds {
+			newTotal := d.keeper.IncrementPlayerMsgCount(ctx, playerId, playerMsgCounts[playerId])
 			if newTotal > d.playerMsgCap {
 				return ctx, observeReject(ctx, "StructsDecorator",
 					errorsmod.Wrapf(ErrPlayerMsgCapExceeded, "player %s: %d/%d", playerId, newTotal, d.playerMsgCap))

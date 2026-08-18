@@ -126,10 +126,10 @@ func (f *charterFixture) solve(solverPlayerId string, founderPlayerId string) (p
 
 	for attempt := 0; attempt < 5000000; attempt++ {
 		candidate := strconv.Itoa(attempt)
-		hash := types.HashBuild(types.GuildCharterWorkInput(solverPlayerId, founderPlayerId, anchor, candidate))
+		hash := types.HashBuild(types.GuildCharterWorkInput(f.ctx.ChainID(), solverPlayerId, founderPlayerId, anchor, candidate))
 
 		valid, _ := types.HashBuildAndCheckDifficulty(
-			types.GuildCharterWorkInput(solverPlayerId, founderPlayerId, anchor, candidate),
+			types.GuildCharterWorkInput(f.ctx.ChainID(), solverPlayerId, founderPlayerId, anchor, candidate),
 			hash, f.k.CharterAge(f.ctx), charterTestDifficultyRange)
 		if valid {
 			return hash, candidate
@@ -308,9 +308,24 @@ func TestCharterProofBindsSolverAndFounder(t *testing.T) {
 // one solution.
 func TestCharterWorkInputSeparatesPlayers(t *testing.T) {
 	require.NotEqual(t,
-		types.GuildCharterWorkInput("1-4", "21-7", 100, "0"),
-		types.GuildCharterWorkInput("1-42", "1-7", 100, "0"),
+		types.GuildCharterWorkInput("test-chain", "1-4", "21-7", 100, "0"),
+		types.GuildCharterWorkInput("test-chain", "1-42", "1-7", 100, "0"),
 		"a pair boundary that concatenation can slide across would let one proof serve two founders")
+}
+
+// TestCharterInputsBindChainId pins that both preimages are chain-scoped, so a
+// proof mined or a consent signed on one chain cannot be replayed on a fork that
+// shares the founder, reactor, substation and anchor.
+func TestCharterInputsBindChainId(t *testing.T) {
+	require.NotEqual(t,
+		types.GuildCharterWorkInput("chain-a", "1-4", "1-7", 100, "0"),
+		types.GuildCharterWorkInput("chain-b", "1-4", "1-7", 100, "0"),
+		"a work proof must not solve on a different chain")
+
+	require.NotEqual(t,
+		types.GuildCharterConsentInput("chain-a", "1-7", "3-1", "9-1", "endpoint", 100),
+		types.GuildCharterConsentInput("chain-b", "1-7", "3-1", "9-1", "endpoint", 100),
+		"a founder consent must not verify on a different chain")
 }
 
 /* TestCharterThirdPartyFoundingWithConsent is the pool case, and the reason
@@ -1133,7 +1148,7 @@ func (f *charterFixture) signConsent(msg *types.MsgGuildCreate, founder types.Pl
 func (f *charterFixture) signConsentAs(msg *types.MsgGuildCreate, founderPlayerId string, signer types.Player, key *secp256k1.PrivKey) {
 	f.t.Helper()
 
-	input := types.GuildCharterConsentInput(founderPlayerId, msg.ReactorId, msg.EntrySubstationId, msg.Endpoint, f.anchor())
+	input := types.GuildCharterConsentInput(f.ctx.ChainID(), founderPlayerId, msg.ReactorId, msg.EntrySubstationId, msg.Endpoint, f.anchor())
 	signature, err := key.Sign([]byte(input))
 	require.NoError(f.t, err)
 

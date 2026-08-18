@@ -493,6 +493,56 @@ func TestTeardown_UnusablePayoutAddressFailsLoudly(t *testing.T) {
 	require.Equal(t, collateral, f.balance(f.collateralAcc), "the collateral must still be in the pool")
 }
 
+// TestTeardown_AllocationCloseDoesNotPayPartialOnShortPool pins the atomicity of
+// the consumer payout on the block-hook close path. On a pool too short to cover
+// the cancellation penalty AND the returned collateral, the two must settle
+// together or not at all: paying the penalty and then aborting on the collateral
+// would leave the agreement alive to be re-paid the penalty on a later teardown.
+func TestTeardown_AllocationCloseDoesNotPayPartialOnShortPool(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0.5", "0")
+
+	const capacity, duration, elapsed = 100, 50, 20
+	agreement, _ := f.openAgreement(t, capacity, duration)
+
+	opened := uint64(sdk.UnwrapSDKContext(f.ctx).BlockHeight())
+	lateCtx := sdk.UnwrapSDKContext(f.ctx).WithBlockHeight(int64(opened + elapsed))
+	f.ctx = lateCtx
+
+	// Checkpoint now so the close's own checkpoint sweeps nothing further and the
+	// pool balance set below is exactly what the payout sees.
+	cc0 := f.k.NewCurrentContext(lateCtx)
+	require.NoError(t, cc0.GetProvider(f.provider.Id).Checkpoint())
+	cc0.CommitAll()
+
+	cc1 := f.k.NewCurrentContext(lateCtx)
+	ac := cc1.GetAgreement(agreement.Id)
+	require.True(t, ac.LoadAgreement())
+	remaining := ac.GetRemainingCollateral()
+	require.True(t, remaining.IsPositive())
+
+	// Short the pool to exactly the remaining collateral: enough for that leg
+	// alone, but not for the penalty on top of it. (A solvent pool always covers
+	// both; this reproduces a pool already drained by some other defect.)
+	poolBal := f.balance(f.collateralAcc)
+	require.True(t, poolBal.GT(remaining), "test needs the pool above the remaining collateral to short it")
+	burn := sdk.AccAddress("burnburnburnburnburnburnburnburn1234")
+	require.NoError(t, f.k.BankKeeper().SendCoins(f.ctx, f.collateralAcc, burn,
+		sdk.NewCoins(sdk.NewCoin(teardownDenom, poolBal.Sub(remaining)))))
+	require.Equal(t, remaining, f.balance(f.collateralAcc))
+
+	consumerBefore := f.balance(f.consumerAcc)
+
+	err := ac.PrematureCloseByAllocation()
+	require.Error(t, err, "a pool that cannot cover penalty+collateral must fail the close")
+
+	require.Equal(t, consumerBefore, f.balance(f.consumerAcc),
+		"no partial payout: the consumer receives nothing when the whole payout cannot settle")
+	require.Equal(t, remaining, f.balance(f.collateralAcc),
+		"the collateral pool is untouched by a failed close")
+	_, stillThere := f.k.GetAgreement(f.ctx, agreement.Id)
+	require.True(t, stillThere, "a failed close must leave the agreement in place")
+}
+
 // TestTeardown_ProviderRevenueNeverOverdrawsConsumerCollateral pins the priority
 // rule that makes a shared pool safe: provider revenue is clamped to what the
 // pool can spare, so a provider can never be paid out of collateral that belongs

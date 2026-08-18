@@ -32,7 +32,7 @@ func (cache *AddressCache) Commit() {
             // and every transaction path derives its address from a verified
             // pubkey or an already-parsed AccAddress. This is the backstop.
             if err := cache.CC.k.SetPlayerIndexForAddress(cache.CC.ctx, cache.Address, cache.PlayerIndex); err != nil {
-                cache.CC.k.logger.Error("Address index not written", "address", cache.Address, "playerIndex", cache.PlayerIndex, "error", err)
+                cache.CC.k.logger.Error("Auth account not provisioned for address", "address", cache.Address, "playerIndex", cache.PlayerIndex, "error", err)
             }
         }
     }

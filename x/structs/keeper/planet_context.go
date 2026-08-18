@@ -50,6 +50,10 @@ func (cc *CurrentContext) GetPlanet(planetId string) *PlanetCache {
 func (cc *CurrentContext) GenesisImportPlanet(planet types.Planet) {
 	planet.LocationListStart = ""
 	planet.LocationListLast = ""
+	// Fleets are all sent home on import (GenesisImportFleet), so the visitor
+	// queue is empty; the count must match or the planet is permanently
+	// un-raidable. LocationListExtra is real config and is preserved.
+	planet.LocationListCount = 0
 
 	cache := cc.GetPlanet(planet.Id)
 	cache.Planet = planet

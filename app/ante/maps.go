@@ -223,8 +223,7 @@ var PermissionMap = map[string]types.Permission{
 	// Guild founding is gated by proof-of-work rather than by a permission, so
 	// the ante bit is only "may act at all". PermPlay rather than a new
 	// PermGuildCharter bit: a new bit would force a PermissionRegisterSize
-	// migration and a backfill into every existing PermGuildAll record, which
-	// docs/incident-2026-05-defusing.md already ruled out for exactly this. The
+	// migration and a backfill into every existing PermGuildAll record. The
 	// handler still checks PermReactorGuildCreate before binding a reactor's own
 	// GuildId, which a single map value could not express alongside PermPlay.
 	"/structs.structs.MsgGuildCreate": types.PermPlay,

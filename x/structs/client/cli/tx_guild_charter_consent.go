@@ -73,7 +73,16 @@ moves whenever any guild on the chain is founded with a proof -- sign again.`,
 				anchor = charter.Anchor
 			}
 
-			consentInput := types.GuildCharterConsentInput(addressResults.PlayerId, argReactorId, argEntrySubstationId, argEndpoint, anchor)
+			// The chain id is part of the signed message, so it must match the
+			// chain the guild will be founded on exactly. An empty one signs a
+			// consent that can never verify, which the chain reports only as a
+			// bad signature, so refuse it here with a message that points at the
+			// cause.
+			if clientCtx.ChainID == "" {
+				return fmt.Errorf("a --chain-id is required: it is bound into the signed consent and must match the chain the guild is founded on")
+			}
+
+			consentInput := types.GuildCharterConsentInput(clientCtx.ChainID, addressResults.PlayerId, argReactorId, argEntrySubstationId, argEndpoint, anchor)
 
 			signature, pubKey, signErr := clientCtx.Keyring.Sign(clientCtx.FromName, []byte(consentInput), signingtypes.SignMode_SIGN_MODE_DIRECT)
 			if signErr != nil {

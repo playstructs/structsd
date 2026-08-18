@@ -51,6 +51,14 @@ func (gs GenesisState) Validate() error {
 		if guild.EntryRank == 0 {
 			return NewParameterValidationError("guild.entryRank", guild.EntryRank, "must_be_positive")
 		}
+		// A name the pinned-Unicode rules reject is state no transaction could
+		// produce, and InitGenesis would index it anyway; validate here so
+		// `structsd genesis validate` refuses the file the migration would purge.
+		if guild.Name != "" {
+			if err := ValidateEntityName(guild.Name); err != nil {
+				return errorsmod.Wrapf(err, "guild name (%s) on guild (%s)", guild.Name, guild.Id)
+			}
+		}
 		if !guild.JoinInfusionMinimumBypassByRequest.IsValid() {
 			return errorsmod.Wrapf(ErrInvalidGuildJoinBypassLevel, "byRequest level (%d) on guild (%s)", int32(guild.JoinInfusionMinimumBypassByRequest), guild.Id)
 		}

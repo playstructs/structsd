@@ -36,7 +36,13 @@ func (cache *InfusionCache) Commit() {
         cache.Changed = false
     }
 
-    if cache.IsEmpty() {
+    // Only a live, still-present, now-empty record should be queued for
+    // reclamation. Without the guards a just-deleted infusion re-enqueues
+    // itself (its zero-value cache reads IsEmpty), and a phantom cache from a
+    // probe of a nonexistent id (disownInfusion, ReactorInfusionDelegationRemoved)
+    // enqueues a row that the destruction sweep can never clear, growing
+    // EndBlock work forever.
+    if !cache.Deleted && cache.CheckInfusion() == nil && cache.IsEmpty() {
         cache.CC.k.AppendInfusionDestructionQueue(cache.CC.ctx, cache.GetInfusionId())
     }
 }

@@ -230,7 +230,7 @@ func SimulateMsgGuildCreate(
 		var proof, nonce string
 		for attempt := 0; attempt < 100000; attempt++ {
 			nonce = strconv.Itoa(attempt)
-			hashInput := types.GuildCharterWorkInput(player.Id, player.Id, anchor, nonce)
+			hashInput := types.GuildCharterWorkInput(chainID, player.Id, player.Id, anchor, nonce)
 			proof = types.HashBuild(hashInput)
 			if valid, _ := types.HashBuildAndCheckDifficulty(hashInput, proof, age, difficultyRange); valid {
 				break

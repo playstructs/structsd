@@ -22,18 +22,18 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
 
     // Load the fleet
     fleet, fleetLookupErr := cc.GetFleetById(msg.FleetId)
-	if fleetLookupErr != nil {
+    if (fleetLookupErr != nil) {
         return emptyResponse, fleetLookupErr
     }
 
     // Check address play permissions
     permissionError := fleet.GetOwner().CanBePlayedBy(activePlayer)
-	if permissionError != nil {
+    if (permissionError != nil) {
         return emptyResponse, permissionError
     }
 
     destination := cc.GetPlanet(msg.DestinationLocationId)
-	if !destination.LoadPlanet() {
+    if (!destination.LoadPlanet()) {
         return emptyResponse, types.NewObjectNotFoundError("planet", msg.DestinationLocationId)
     }
 
@@ -43,7 +43,7 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
 
     // Is the Fleet able to move?
     readinessError := fleet.PlanetMoveReadinessCheck()
-	if readinessError != nil {
+    if (readinessError != nil) {
         return emptyResponse, readinessError
     }
 
@@ -56,10 +56,10 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
         }
     }
 
-    if fleet.GetLocationId() != msg.DestinationLocationId {
-        if fleet.GetPlanet().GetLocationListStart() == msg.FleetId {
-            _ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: msg.FleetId, PlanetId: fleet.GetLocationId(), Status: types.RaidStatus_attackerRetreated}})
-        }
+    // A moving fleet that heads its current planet's visitor queue is a raider
+    // abandoning the raid. (The same-destination no-op returned earlier.)
+    if fleet.GetPlanet().GetLocationListStart() == msg.FleetId {
+        _ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: msg.FleetId, PlanetId: fleet.GetLocationId(), Status: types.RaidStatus_attackerRetreated}})
     }
 
     fleet.SetLocationToPlanet(destination)

@@ -29,9 +29,14 @@ import (
  * The anchor is what makes a solution single-use: founding a guild moves it, so
  * every nonce mined against the old value dies at once, including the one just
  * spent. Block heights never repeat, so a proof can never come back.
+ *
+ * The chain id is bound first so a proof cannot cross chains. The anchor stops
+ * replay within one chain, but a fork carries identical player ids and anchor,
+ * so a nonce mined on one side would otherwise solve the other until either
+ * anchor moves. The chain id closes that window.
  */
-func GuildCharterWorkInput(solverPlayerId string, founderPlayerId string, anchor uint64, nonce string) string {
-	return solverPlayerId + "@" + founderPlayerId + GuildCharterActivity +
+func GuildCharterWorkInput(chainId string, solverPlayerId string, founderPlayerId string, anchor uint64, nonce string) string {
+	return "CHAIN" + chainId + "|" + solverPlayerId + "@" + founderPlayerId + GuildCharterActivity +
 		strconv.FormatUint(anchor, 10) + "NONCE" + nonce
 }
 
@@ -55,13 +60,19 @@ func GuildCharterWorkInput(solverPlayerId string, founderPlayerId string, anchor
  * there instead of leaving the signature live. Anything else added later that
  * accepts a consent has to move the anchor or be refused the same way.
  *
+ * The chain id is bound first for the same reason as the work preimage: without
+ * it a consent signed on one chain would verify on a fork that shares the
+ * founder, reactor, substation and anchor. The founder must sign against the
+ * chain id the guild will be founded on, which is the --chain-id the CLI already
+ * carries.
+ *
  * Deliberately not the proxyNonce grid attribute used by
  * GuildMembershipJoinProxy: that is bumped when somebody proxy-joins the
  * founder, so a consent that has to survive weeks of mining would die for an
  * unrelated reason.
  */
-func GuildCharterConsentInput(founderPlayerId string, reactorId string, entrySubstationId string, endpoint string, anchor uint64) string {
-	return GuildCharterActivity + founderPlayerId +
+func GuildCharterConsentInput(chainId string, founderPlayerId string, reactorId string, entrySubstationId string, endpoint string, anchor uint64) string {
+	return "CHAIN" + chainId + "|" + GuildCharterActivity + founderPlayerId +
 		"REACTOR" + reactorId +
 		"SUBSTATION" + entrySubstationId +
 		"ENDPOINT" + endpoint +

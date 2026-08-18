@@ -44,6 +44,10 @@ func CreateUpgradeHandler(
 			return newVM, err
 		}
 
+		// After MigrateGuildBankFees: both this and MigrateGuildJoinBypassLevels
+		// re-marshal guild records via SetGuild, whose MustMarshal panics on the
+		// nil bankConvertIn/OutFee LegacyDec fields the fee backfill exists to
+		// populate. Reordering ahead of it halts the chain at the upgrade block.
 		if err := MigrateGuildNameIndex(ctx, keepers); err != nil {
 			return newVM, err
 		}
@@ -745,6 +749,7 @@ func MigrateReconcileReactorInfusions(ctx context.Context, keepers *upgrades.Kee
 		phantomFuelCleared   uint64
 		phantomPowerCleared  uint64
 		commissionDivergence int
+		unregisteredHealed   int
 		playersAffected      = make(map[string]struct{})
 	)
 
@@ -763,11 +768,14 @@ func MigrateReconcileReactorInfusions(ctx context.Context, keepers *upgrades.Kee
 					"reactorId", reactor.Id, "address", before.Address, "error", addrErr)
 				continue
 			}
-			if k.GetPlayerIndexFromAddress(ctx, before.Address) == 0 {
-				logger.Error("skipping infusion for an unregistered delegator address",
-					"reactorId", reactor.Id, "address", before.Address)
-				continue
-			}
+			// An unregistered delegator address whose infusion still carries
+			// fuel is exactly the phantom-capacity population a pre-fix
+			// AddressRevoke sweep left behind, and clearing it is this
+			// migration's job. The registered path creates a player if one is
+			// missing, which we must not do for a dead address, so heal it
+			// through the load-never-create reconcile, which zeroes stale fuel
+			// and cascades the withdrawal against the recorded owner.
+			unregistered := k.GetPlayerIndexFromAddress(ctx, before.Address) == 0
 
 			infusionsVisited++
 
@@ -780,7 +788,11 @@ func MigrateReconcileReactorInfusions(ctx context.Context, keepers *upgrades.Kee
 				commissionDivergence++
 			}
 
-			k.ReconcileInfusionForDelegation(ctx, playerAddress, valAddr)
+			if unregistered {
+				k.ReconcileExistingInfusionForDelegation(ctx, playerAddress, valAddr)
+			} else {
+				k.ReconcileInfusionForDelegation(ctx, playerAddress, valAddr)
+			}
 
 			after, found := k.GetInfusion(ctx, reactor.Id, before.Address)
 			if !found {
@@ -795,6 +807,9 @@ func MigrateReconcileReactorInfusions(ctx context.Context, keepers *upgrades.Kee
 
 			infusionsChanged++
 			playersAffected[before.PlayerId] = struct{}{}
+			if unregistered {
+				unregisteredHealed++
+			}
 
 			if after.Fuel < before.Fuel {
 				phantomFuelCleared += before.Fuel - after.Fuel
@@ -816,7 +831,8 @@ func MigrateReconcileReactorInfusions(ctx context.Context, keepers *upgrades.Kee
 		"phantomFuelCleared", phantomFuelCleared,
 		"phantomPowerCleared", phantomPowerCleared,
 		"playersAffected", len(playersAffected),
-		"commissionDivergence", commissionDivergence)
+		"commissionDivergence", commissionDivergence,
+		"unregisteredHealed", unregisteredHealed)
 
 	return nil
 }

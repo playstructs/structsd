@@ -1955,6 +1955,37 @@ func TestMigrateReconcileReactorInfusions_IsIdempotent(t *testing.T) {
 		"a replay must write nothing the first pass did not")
 }
 
+// TestMigrateReconcileReactorInfusions_HealsUnregisteredAddress covers the
+// phantom capacity a pre-fix AddressRevoke left behind: the infused address was
+// unregistered while its infusion kept full fuel/power. The migration must heal
+// it (not skip it), zeroing the fuel behind stake that no longer backs it,
+// without minting a player for the dead address.
+func TestMigrateReconcileReactorInfusions_HealsUnregisteredAddress(t *testing.T) {
+	f := newReconcileFixture(t)
+
+	reactor, valAddr := f.addReactor("reconcileunreg", 1000)
+	player, playerAcc := f.addPlayer("reconcileunregplayer")
+	f.infuse(playerAcc, valAddr, 1000)
+
+	require.Equal(t, uint64(960), f.capacity(player.Id), "one infusion, one player share")
+
+	// Reproduce a pre-fix revoke: the stake left the address (no delegation) and
+	// the address was unregistered, but the infusion record still carries fuel.
+	f.dropDelegation(playerAcc, valAddr)
+	f.k.RevokePlayerIndexForAddress(f.ctx, playerAcc.String(), player.Index)
+	require.Equal(t, uint64(0), f.k.GetPlayerIndexFromAddress(f.ctx, playerAcc.String()),
+		"address is unregistered going into the migration")
+
+	require.NoError(t, v0_21_0.MigrateReconcileReactorInfusions(f.ctx, f.keepers()))
+
+	healed := f.infusion(reactor.Id, playerAcc)
+	require.Equal(t, uint64(0), healed.Fuel, "phantom fuel behind an unregistered address must go")
+	require.Equal(t, uint64(0), healed.Power)
+	require.Equal(t, uint64(0), f.capacity(player.Id), "the player loses capacity no stake backs")
+	require.Equal(t, uint64(0), f.k.GetPlayerIndexFromAddress(f.ctx, playerAcc.String()),
+		"the migration must not register a player for the dead address")
+}
+
 // TestMigrateReconcileReactorInfusions_EmptyStateIsSafe guards the walk itself.
 func TestMigrateReconcileReactorInfusions_EmptyStateIsSafe(t *testing.T) {
 	f := newReconcileFixture(t)
