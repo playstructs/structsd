@@ -38,6 +38,10 @@ const (
 	OpWeightMsgGuildBankMint              = "op_weight_msg_guild_bank_mint"
 	OpWeightMsgGuildBankRedeem            = "op_weight_msg_guild_bank_redeem"
 	OpWeightMsgGuildBankConfiscateAndBurn = "op_weight_msg_guild_bank_confiscate_and_burn"
+	OpWeightMsgGuildBankConvert = "op_weight_msg_guild_bank_convert"
+	OpWeightMsgGuildBankConvertToken = "op_weight_msg_guild_bank_convert_token"
+	OpWeightMsgGuildUpdateBankConvertInFee = "op_weight_msg_guild_update_bank_convert_in_fee"
+	OpWeightMsgGuildUpdateBankConvertOutFee = "op_weight_msg_guild_update_bank_convert_out_fee"
 	OpWeightMsgAddressRegister            = "op_weight_msg_address_register"
 	OpWeightMsgPlayerSend                 = "op_weight_msg_player_send"
 	OpWeightMsgGuildMembershipRequest     = "op_weight_msg_guild_membership_request"
@@ -790,6 +794,34 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		},
 	)
 
+	var weightMsgGuildBankConvert int
+	simState.AppParams.GetOrGenerate(OpWeightMsgGuildBankConvert, &weightMsgGuildBankConvert, nil,
+		func(_ *rand.Rand) {
+			weightMsgGuildBankConvert = 25
+		},
+	)
+
+	var weightMsgGuildBankConvertToken int
+	simState.AppParams.GetOrGenerate(OpWeightMsgGuildBankConvertToken, &weightMsgGuildBankConvertToken, nil,
+		func(_ *rand.Rand) {
+			weightMsgGuildBankConvertToken = 15
+		},
+	)
+
+	var weightMsgGuildUpdateBankConvertInFee int
+	simState.AppParams.GetOrGenerate(OpWeightMsgGuildUpdateBankConvertInFee, &weightMsgGuildUpdateBankConvertInFee, nil,
+		func(_ *rand.Rand) {
+			weightMsgGuildUpdateBankConvertInFee = 10
+		},
+	)
+
+	var weightMsgGuildUpdateBankConvertOutFee int
+	simState.AppParams.GetOrGenerate(OpWeightMsgGuildUpdateBankConvertOutFee, &weightMsgGuildUpdateBankConvertOutFee, nil,
+		func(_ *rand.Rand) {
+			weightMsgGuildUpdateBankConvertOutFee = 10
+		},
+	)
+
 	var weightMsgAddressRegister int
 	simState.AppParams.GetOrGenerate(OpWeightMsgAddressRegister, &weightMsgAddressRegister, nil,
 		func(_ *rand.Rand) {
@@ -1119,6 +1151,22 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		simulation.NewWeightedOperation(
 			weightMsgGuildBankConfiscateAndBurn,
 			structssimulation.SimulateMsgGuildBankConfiscateAndBurn(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgGuildBankConvert,
+			structssimulation.SimulateMsgGuildBankConvert(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgGuildBankConvertToken,
+			structssimulation.SimulateMsgGuildBankConvertToken(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgGuildUpdateBankConvertInFee,
+			structssimulation.SimulateMsgGuildUpdateBankConvertInFee(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgGuildUpdateBankConvertOutFee,
+			structssimulation.SimulateMsgGuildUpdateBankConvertOutFee(am.keeper, am.accountKeeper, am.bankKeeper),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAddressRegister,

@@ -32,6 +32,12 @@ message Planet {
   string locationListLast   = 15; // End of the line
 
   string name               = 16;
+
+  // Visitors allowed beyond the first. Capacity = 1 + locationListExtra.
+  // Zero (protobuf default) means queue length 1.
+  uint64 locationListExtra  = 17;
+  // Current number of visiting fleets linked in the raid queue.
+  uint64 locationListCount  = 18;
 }
 
 message PlanetAttributeRecord {
@@ -55,4 +61,10 @@ message PlanetAttributes {
   uint64  advancedOrbitalJammingStationQuantity                   = 10;
 
   uint64  blockStartRaid                                          = 11;
+
+  uint64  blockRaiderArrived                                      = 12;
+  uint64  blockStartOreMine                                       = 13;
+  uint64  blockStartOreRefine                                     = 14;
+  uint64  oreMiningActiveQuantity                                 = 15;
+  uint64  oreRefiningActiveQuantity                               = 16;
 }

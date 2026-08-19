@@ -34,6 +34,13 @@ type StakingKeeper interface {
 	SetDelegation(ctx context.Context, delegation staking.Delegation) error
 	RemoveDelegation(ctx context.Context, delegation staking.Delegation) error
 
+	// Needed to refuse a delegation transfer out of an address that is the
+	// destination of an in-flight redelegation. SlashRedelegation resolves the
+	// delegation to slash through the redelegation record's own delegator
+	// address and silently skips when it is missing, so rekeying out from
+	// under one makes the stake unslashable.
+	HasReceivingRedelegation(ctx context.Context, delAddr sdk.AccAddress, valDstAddr sdk.ValAddress) (bool, error)
+
 	// Needed for the Join Migration
 	ValidateUnbondAmount(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, amt math.Int) (shares math.LegacyDec, err error)
 	BeginRedelegation(ctx context.Context, delAddr sdk.AccAddress, valSrcAddr, valDstAddr sdk.ValAddress, sharesAmount math.LegacyDec) (completionTime time.Time, err error)
@@ -43,6 +50,29 @@ type StakingKeeper interface {
 	Undelegate(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, sharesAmount math.LegacyDec) (time.Time, math.Int, error)
 	RemoveUnbondingDelegation(ctx context.Context, ubd staking.UnbondingDelegation) error
 	SetUnbondingDelegation(ctx context.Context, ubd staking.UnbondingDelegation) error
+}
+
+// DistributionKeeper is the read side of x/distribution that a delegation
+// transfer needs: whether a (validator, delegator) pair still has the starting
+// info that prices its rewards.
+type DistributionKeeper interface {
+	HasDelegatorStartingInfo(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress) (bool, error)
+}
+
+// DistributionHooks is the write side, and the only public route to
+// initializeDelegation and withdrawDelegationRewards. Moving a delegation
+// between addresses has to drive that lifecycle by hand: staking's
+// SetDelegation is a bare store write that fires nothing, so without this the
+// destination pair has no starting info and can never withdraw, undelegate or
+// redelegate again.
+//
+// Calling distribution's hooks directly rather than staking's multi-hook is
+// deliberate. Slashing registers no delegation hooks, and structs reconciles
+// its own infusions explicitly, so the multi-hook would only re-enter us.
+type DistributionHooks interface {
+	BeforeDelegationCreated(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error
+	BeforeDelegationSharesModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error
+	AfterDelegationModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error
 }
 
 // StakingHooks event hooks for staking validator object (noalias)
@@ -77,6 +107,7 @@ type BankKeeper interface {
 	GetDenomMetaData(context.Context, string) (banktypes.Metadata, bool)
 	GetSupply(context.Context, string) sdk.Coin
 	HasBalance(context.Context, sdk.AccAddress, sdk.Coin) bool
+	GetAllBalances(context.Context, sdk.AccAddress) sdk.Coins
 	SpendableCoins(context.Context, sdk.AccAddress) sdk.Coins
 	SpendableCoin(context.Context, sdk.AccAddress, string) sdk.Coin
 	SendCoins(context.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) error

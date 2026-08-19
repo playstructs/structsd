@@ -18,7 +18,7 @@ func (k msgServer) GuildUpdateOwnerId(goCtx context.Context, msg *types.MsgGuild
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, err := cc.GetPlayerByAddress(msg.Creator)
+	player, err := cc.GetSigningPlayer(msg.Creator)
 	if err != nil {
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_update_owner")
 	}
@@ -34,9 +34,8 @@ func (k msgServer) GuildUpdateOwnerId(goCtx context.Context, msg *types.MsgGuild
     }
 
 	if guild.GetGuild().Owner != msg.Owner {
-		newOwner, _ := cc.GetPlayer(msg.Owner)
-		if newOwner.CheckPlayer() != nil {
-			return emptyResponse, types.NewObjectNotFoundError("player", msg.Owner)
+		if _, err := cc.GetExistingPlayer(msg.Owner); err != nil {
+			return emptyResponse, err
 		}
 
 		guild.SetOwner(msg.Owner)

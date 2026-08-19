@@ -1,5 +1,15 @@
 package keeper_test
 
+import (
+	"testing"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+
+	keepertest "structs/testutil/keeper"
+	"structs/x/structs/types"
+)
+
 /*
 func TestGuildQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
@@ -249,3 +259,21 @@ func createTestGuildMembershipApplication(keeper keeper.Keeper, ctx context.Cont
 	return application
 }
 */
+
+func TestGuildQueriesNormalizeLegacyBankFees(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	legacyID := "4-legacy-query"
+	legacyBytes := append([]byte{0x0a, byte(len(legacyID))}, []byte(legacyID)...)
+	keepertest.WriteRawGuild(t, ctx, legacyID, legacyBytes)
+
+	response, err := k.Guild(sdk.WrapSDKContext(ctx), &types.QueryGetGuildRequest{Id: legacyID})
+	require.NoError(t, err)
+	require.False(t, response.Guild.BankConvertInFee.IsNil())
+	require.False(t, response.Guild.BankConvertOutFee.IsNil())
+
+	allResponse, err := k.GuildAll(sdk.WrapSDKContext(ctx), &types.QueryAllGuildRequest{})
+	require.NoError(t, err)
+	require.Len(t, allResponse.Guild, 1)
+	require.False(t, allResponse.Guild[0].BankConvertInFee.IsNil())
+	require.False(t, allResponse.Guild[0].BankConvertOutFee.IsNil())
+}

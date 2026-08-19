@@ -65,7 +65,18 @@ func (k Keeper) SetReactorValidatorBytes(ctx context.Context, reactorId string, 
 	store.Set(validatorAddress, []byte(reactorId))
 }
 
-// AppendReactor appends a reactor in the store with a new id and update the count
+/* AppendReactor appends a reactor in the store with a new id and update the
+ * count.
+ *
+ * Stamps the guild charter eligibility height here, at creation, rather than
+ * deriving it from an age at read time. A stored deadline means the check is one
+ * comparison with nothing to underflow, and it means lowering the param can only
+ * shorten the wait for new reactors rather than retroactively unlocking a wave
+ * of existing ones.
+ *
+ * A caller that has already set the field keeps its value, which is what lets
+ * genesis import round-trip a reactor without resetting its clock.
+ */
 func (k Keeper) AppendReactor(
 	ctx context.Context,
 	reactor types.Reactor,
@@ -75,6 +86,11 @@ func (k Keeper) AppendReactor(
 
 	// Set the ID of the appended value
 	reactor.Id = GetObjectID(types.ObjectType_reactor, count)
+
+	if reactor.GuildCharterEligibleHeight == 0 {
+		blockHeight := uint64(sdk.UnwrapSDKContext(ctx).BlockHeight())
+		reactor.GuildCharterEligibleHeight = blockHeight + k.GetParams(ctx).CharterReactorAge()
+	}
 
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.ReactorKey))
 	appendedValue := k.cdc.MustMarshal(&reactor)
@@ -90,6 +106,39 @@ func (k Keeper) AppendReactor(
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventReactor{Reactor: &reactor})
 
 	return reactor
+}
+
+/* RestampReactorCharterEligibility recomputes every reactor's eligibility height
+ * from the params in force right now.
+ *
+ * This exists because of a genesis ordering trap. Staking and genutil both
+ * initialise before this module (see genesisModuleOrder in app/app_config.go), so
+ * a genesis validator's AfterValidatorCreated hook reaches AppendReactor before
+ * InitGenesis has called SetParams. GetParams then returns a zero Params, and
+ * CharterReactorAge substitutes DefaultGuildCharterReactorAge — so the stamp
+ * ignores the genesis file and reads a month of blocks. On a dev chain that
+ * shuts the proof-free route for a month while the params query cheerfully
+ * reports the five blocks that were asked for, which is the confusing part: the
+ * value on disk is not the value in the file, and nothing says so.
+ *
+ * Note that the fallback inside CharterReactorAge is right in every other
+ * caller — a zero age would make every reactor eligible immediately, which is
+ * strictly worse than being too slow — so the fix belongs here rather than there.
+ * InitGenesis calls this immediately after SetParams, while the only reactors in
+ * the store are the ones those hooks just created; the import loop overwrites
+ * them afterwards, so a restored chain keeps the clock it exported.
+ */
+func (k Keeper) RestampReactorCharterEligibility(ctx context.Context) {
+	eligibleHeight := uint64(sdk.UnwrapSDKContext(ctx).BlockHeight()) + k.GetParams(ctx).CharterReactorAge()
+
+	for _, reactor := range k.GetAllReactor(ctx) {
+		if reactor.GuildCharterEligibleHeight == eligibleHeight {
+			continue
+		}
+
+		reactor.GuildCharterEligibleHeight = eligibleHeight
+		k.SetReactor(ctx, reactor)
+	}
 }
 
 // SetReactor set a specific reactor in the store

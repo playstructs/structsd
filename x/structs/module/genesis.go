@@ -62,6 +62,15 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	}
 	k.SetParams(ctx, genState.Params)
 
+	/* Staking and genutil initialise before this module, so a genesis validator's
+	 * reactor was already created by AfterValidatorCreated — and stamped with an
+	 * eligibility height computed from params that did not exist yet, which means
+	 * the production default rather than whatever the genesis file says. Restamp
+	 * now that the params are real. Imported reactors are overwritten by
+	 * GenesisImportReactor below, so a restored chain keeps its own clock.
+	 */
+	k.RestampReactorCharterEligibility(ctx)
+
 	var structTypeTop uint64
 	for _, elem := range types.CreateStructTypeGenesis() {
 		if elem.Id > structTypeTop {
@@ -83,6 +92,19 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	}
 
 	k.SetGuildCount(ctx, advanceCount(k.GetGuildCount(ctx), maxIndex(genState.GuildList, func(g types.Guild) uint64 { return g.Index })+1))
+
+	/* The charter anchor cannot be rebuilt from anything else, so an unset one
+	 * falls back to the current height rather than to zero. Zero is not a
+	 * neutral default here: it would read as an age of the whole chain, which is
+	 * the easiest point on the difficulty curve, and hand out a guild for one
+	 * leading zero on the first block after import.
+	 */
+	if genState.GuildCharterAnchor == 0 {
+		k.SetGuildCharterAnchor(ctx, uint64(ctx.BlockHeight()))
+	} else {
+		k.SetGuildCharterAnchor(ctx, genState.GuildCharterAnchor)
+	}
+
 	k.SetReactorCount(ctx, advanceCount(k.GetReactorCount(ctx), maxIndexFromId(genState.ReactorList, func(r types.Reactor) string { return r.Id })+1))
 	k.SetSubstationCount(ctx, advanceCount(k.GetSubstationCount(ctx), maxIndexFromId(genState.SubstationList, func(s types.Substation) string { return s.Id })+1))
 	k.SetPlayerCount(ctx, advanceCount(k.GetPlayerCount(ctx), maxIndex(genState.PlayerList, func(p types.Player) uint64 { return p.Index })+1))
@@ -123,6 +145,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	// Providers
 	for _, provider := range genState.ProviderList {
 		cc.GenesisImportProvider(provider)
+		k.IndexProviderPoolAddresses(ctx, provider.Id)
 	}
 
 	// Permissions
@@ -151,7 +174,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	// Fleets (send all home)
 	for _, fleet := range genState.FleetList {
 		homePlanetId := playerPlanetMap[fleet.Owner]
-        cc.GenesisImportFleet(fleet, homePlanetId)
+		cc.GenesisImportFleet(fleet, homePlanetId)
 	}
 
 	// Structs
@@ -188,12 +211,37 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		cc.GenesisImportReactorInfusions(reactor)
 	}
 
-
 	// =========================================================================
 	// Commit
 	// =========================================================================
 
 	cc.CommitAll()
+
+	// Guild names are stored on guild records, while the normalized lookup is
+	// derived state. Rebuild it on every import in list order; first wins is
+	// deterministic and matches the upgrade migration's collision policy.
+	k.ClearGuildNameIndex(ctx)
+	claimedGuildNames := make(map[string]bool)
+	for _, guild := range genState.GuildList {
+		if guild.Name == "" {
+			continue
+		}
+		normalized := types.NormalizeName(guild.Name)
+		if claimedGuildNames[normalized] {
+			if duplicate, found := k.GetGuild(ctx, guild.Id); found {
+				duplicate.Name = ""
+				k.SetGuild(ctx, duplicate)
+			}
+			continue
+		}
+		claimedGuildNames[normalized] = true
+		k.SetGuildNameIndex(ctx, guild.Name, guild.Id)
+	}
+
+	// IBC core, transfer and bank initialize before structs in app_config.go.
+	// Rebuild this derived protect-only index from their exported state so an
+	// export/import restart cannot make existing voucher backing confiscatable.
+	k.ProtectLegacyGuildEscrowBalances(ctx)
 
 	// Struct defenders (after CC commit, so structs are in KV store)
 	for _, elem := range genState.StructDefenderList {
@@ -236,6 +284,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.GuildList = k.GetAllGuild(ctx)
 	genesis.GuildCount = k.GetGuildCount(ctx)
 	genesis.GuildMembershipApplicationList = k.GetAllGuildMembershipApplicationExport(ctx)
+	genesis.GuildCharterAnchor, _ = k.GetGuildCharterAnchor(ctx)
 
 	genesis.PlanetList = k.GetAllPlanet(ctx)
 	genesis.PlanetCount = k.GetPlanetCount(ctx)

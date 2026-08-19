@@ -17,7 +17,7 @@ func (k msgServer) GuildMembershipInviteRevoke(goCtx context.Context, msg *types
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    callingPlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
         return emptyResponse, err
     }
@@ -30,7 +30,7 @@ func (k msgServer) GuildMembershipInviteRevoke(goCtx context.Context, msg *types
 		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
+    guildMembershipApplication, guildMembershipApplicationError := cc.GetPendingGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
         return emptyResponse, guildMembershipApplicationError
     }
@@ -41,6 +41,9 @@ func (k msgServer) GuildMembershipInviteRevoke(goCtx context.Context, msg *types
     }
 
     guildMembershipApplicationError = guildMembershipApplication.RevokeInvite()
+    if guildMembershipApplicationError != nil {
+        return emptyResponse, guildMembershipApplicationError
+    }
 
 	cc.CommitAll()
 	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil

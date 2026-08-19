@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	keepertest "structs/testutil/keeper"
+	keeperlib "structs/x/structs/keeper"
 	"structs/x/structs/types"
 )
 
@@ -164,6 +165,52 @@ func TestProcessInfusionMaturitySweepClearsDefusing(t *testing.T) {
 	require.True(t, found)
 	require.Equal(t, uint64(0), infusion.Defusing, "matured UBD should clear Defusing back to zero")
 	require.Empty(t, k.GetInfusionMaturitySweepQueueExport(ctx), "drained queue rows should be deleted")
+}
+
+// TestEndBlockerSeparatesGridAndMaturityContexts covers two EndBlock phases
+// changing the same grid attribute. The cascade removes allocation capacity
+// from a reactor while the maturity sweep removes its stale infusion capacity;
+// both changes must survive, and the emptied infusion must be reclaimed in the
+// same EndBlock.
+func TestEndBlockerSeparatesGridAndMaturityContexts(t *testing.T) {
+	f := setupJailEnergy(t, "endblockphases", 1000, "1")
+
+	const (
+		sourceId        = "test-source"
+		allocationPower = uint64(100)
+	)
+	allocation, err := testAppendAllocation(f.k, f.ctx, types.Allocation{
+		Controller:     f.player.Id,
+		SourceObjectId: sourceId,
+		DestinationId:  f.reactor.Id,
+		Type:           types.AllocationType_static,
+	}, allocationPower)
+	require.NoError(t, err)
+
+	sourceLoadId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_load, sourceId)
+	reactorCapacityId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, f.reactor.Id)
+	f.k.SetGridAttribute(f.ctx, sourceLoadId, allocationPower)
+	f.k.SetGridAttribute(f.ctx, reactorCapacityId, 1000+allocationPower)
+	require.NoError(t, f.k.AppendGridCascadeQueue(f.ctx, sourceId))
+
+	delegation, err := f.mock.GetDelegation(f.ctx, f.playerAcc, f.valAddr)
+	require.NoError(t, err)
+	require.NoError(t, f.mock.RemoveDelegation(f.ctx, delegation))
+
+	blockTime := time.Date(2026, 6, 1, 12, 0, 0, 0, time.UTC)
+	infusionId := f.reactor.Id + "-" + f.playerAcc.String()
+	f.k.EnqueueInfusionMaturitySweep(f.ctx, blockTime, infusionId)
+	endCtx := sdk.UnwrapSDKContext(f.ctx).WithHeaderInfo(header.Info{Time: blockTime})
+
+	_, err = f.k.EndBlocker(endCtx)
+	require.NoError(t, err)
+
+	_, allocationFound := f.k.GetAllocation(f.ctx, allocation.Id)
+	require.False(t, allocationFound, "the cascade should remove the over-capacity allocation")
+	require.Equal(t, uint64(0), f.k.GetGridAttribute(f.ctx, reactorCapacityId),
+		"cascade and maturity deltas must both survive")
+	_, infusionFound := f.k.GetInfusion(f.ctx, f.reactor.Id, f.playerAcc.String())
+	require.False(t, infusionFound, "the maturity-emptied infusion should be destroyed in the same EndBlock")
 }
 
 // TestProcessInfusionMaturitySweepLeavesUnmaturedAlone confirms that an

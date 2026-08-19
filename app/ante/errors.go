@@ -31,6 +31,10 @@ var (
 		"unknown structs message type (update ante maps)")
 	ErrMissingCreator = sdkerrors.Register(AnteCodespace, 2003,
 		"structs message has no accessible creator/signer")
+	ErrNestedStructsMessage = sdkerrors.Register(AnteCodespace, 2004,
+		"structs messages may not be wrapped in another message; submit them directly")
+	ErrInvalidProofIdentity = sdkerrors.Register(AnteCodespace, 2005,
+		"signature-bearing message has invalid proof identity fields")
 
 	// 2010-2019: permission / registration
 	ErrUnregisteredAddress = sdkerrors.Register(AnteCodespace, 2010,

@@ -27,8 +27,6 @@ type StructCache struct {
 	StatusAttributeId string
 
 	BlockStartBuildAttributeId string
-	BlockStartOreMineAttributeId string
-	BlockStartOreRefineAttributeId string
 	ProtectedStructIndexAttributeId string
 	ReadyAttributeId string
 
@@ -110,14 +108,6 @@ func (cache *StructCache) GetBlockStartBuild() uint64 {
 	return cache.CC.GetStructAttribute(cache.BlockStartBuildAttributeId)
 }
 
-func (cache *StructCache) GetBlockStartOreMine() uint64 {
-    return cache.CC.GetStructAttribute(cache.BlockStartOreMineAttributeId)
-}
-
-func (cache *StructCache) GetBlockStartOreRefine() uint64 {
-    return cache.CC.GetStructAttribute(cache.BlockStartOreRefineAttributeId)
-}
-
 func (cache *StructCache) GetStructType() types.StructType {
     if cache.structType == nil {
         st, _ := cache.CC.GetStructType(cache.GetTypeId())
@@ -134,8 +124,7 @@ func (cache *StructCache) GetTypeId() uint64 {
 }
 
 func (cache *StructCache) GetOwner() *PlayerCache {
-	player, _ := cache.CC.GetPlayer(cache.GetOwnerId())
-	return player
+	return cache.CC.GetPlayer(cache.GetOwnerId())
 }
 
 func (cache *StructCache) GetOwnerId() string {
@@ -204,24 +193,6 @@ func (cache *StructCache) SetOwnerId(owner string) {
 
 	cache.Structure.Owner = owner
 	cache.Changed = true
-}
-
-func (cache *StructCache) ResetBlockStartOreMine() {
-	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
-	cache.CC.SetStructAttribute(cache.BlockStartOreMineAttributeId, uint64(uctx.BlockHeight()))
-}
-
-func (cache *StructCache) ResetBlockStartOreRefine() {
-	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
-	cache.CC.SetStructAttribute(cache.BlockStartOreRefineAttributeId, uint64(uctx.BlockHeight()))
-}
-
-func (cache *StructCache) ClearBlockStartOreMine() {
-	cache.CC.SetStructAttribute(cache.BlockStartOreMineAttributeId, 0)
-}
-
-func (cache *StructCache) ClearBlockStartOreRefine() {
-	cache.CC.SetStructAttribute(cache.BlockStartOreRefineAttributeId, 0)
 }
 
 
@@ -303,6 +274,18 @@ func (cache *StructCache) GridStatusRemoveReady() {
 }
 
 func (cache *StructCache) ActivationReadinessCheck() (err error) {
+	// Check the Struct still exists.
+	//
+	// Destruction leaves the Built flag set and only removes Online, so a
+	// destroyed struct satisfies every check below and would come back online
+	// for the rest of the sweep window. The sweep then deletes the object
+	// without going offline again, stranding whatever GoOnline re-added —
+	// planetary shield, defensive cannon or interceptor counts, owner load —
+	// against a struct that no longer exists.
+	if cache.IsDestroyed() {
+		return types.NewStructStateError(cache.StructId, "destroyed", "active", "activation")
+	}
+
 	// Check Struct is Built
 	if !cache.IsBuilt() {
 		return types.NewStructStateError(cache.StructId, "building", "built", "activation")
@@ -333,12 +316,12 @@ func (cache *StructCache) GoOnline() {
 
 	// Turn on the mining systems
 	if cache.GetStructType().HasOreMiningSystem() {
-		cache.ResetBlockStartOreMine()
+		cache.GetPlanet().OreMiningActivate()
 	}
 
 	// Turn on the refinery
 	if cache.GetStructType().HasOreRefiningSystem() {
-		cache.ResetBlockStartOreRefine()
+		cache.GetPlanet().OreRefiningActivate()
 	}
 
 	// Raise the planetary shields
@@ -377,12 +360,12 @@ func (cache *StructCache) GoOffline() {
 
     	// Turn off the mining systems
     	if cache.GetStructType().HasOreMiningSystem() {
-    		cache.ClearBlockStartOreMine()
+    		cache.GetPlanet().OreMiningDeactivate()
     	}
 
     	// Turn off the refinery
     	if cache.GetStructType().HasOreRefiningSystem() {
-    		cache.ClearBlockStartOreRefine()
+    		cache.GetPlanet().OreRefiningDeactivate()
     	}
 
     	// Lower the planetary shields
@@ -406,9 +389,13 @@ func (cache *StructCache) GoOffline() {
     		cache.GridStatusRemoveReady()
 
     		// Remove all allocations
+    		// The struct is going offline regardless, so a failed agreement
+    		// settlement is logged rather than stopping the teardown.
     		allocations := cache.CC.GetAllAllocationBySource(cache.StructId)
     		for _, allocation := range allocations {
-    		    allocation.Destroy()
+    		    if err := allocation.Destroy(); err != nil {
+    		        cache.CC.k.logger.Error("Allocation could not be destroyed on struct offline", "structId", cache.StructId, "allocationId", allocation.GetAllocationId(), "error", err)
+    		    }
     		}
     	}
 
@@ -457,6 +444,15 @@ func (cache *StructCache) CommandStructRaidStatusHook() {
 }
 
 func (cache *StructCache) ReadinessCheck() error {
+	// A destroyed struct is offline, so the check below already rejects it today.
+	// That is incidental rather than deliberate: it only holds while nothing can
+	// bring a destroyed struct back online. State the rule directly so the
+	// handlers sharing this check (attack, mining, refining, stealth) do not
+	// depend on that coincidence, and so the rejection names the real reason.
+	if cache.IsDestroyed() {
+		return types.NewStructStateError(cache.StructId, "destroyed", "active", "readiness_check")
+	}
+
 	if cache.IsOffline() {
 		return types.NewStructStateError(cache.StructId, "offline", "online", "readiness_check")
 	} else {
@@ -533,11 +529,13 @@ func (cache *StructCache) CanOreMinePlanet() error {
 		return types.NewStructCapabilityError(cache.StructId, "mining")
 	}
 
-    /*
-	if cache.GetBlockStartOreMine() == 0 {
+	if cache.GetPlanet().GetOreMiningActiveQuantity() == 0 {
 		return types.NewStructStateError(cache.StructId, "not_mining", "mining", "ore_mine")
 	}
-	*/
+
+	if cache.GetPlanet().GetLocationListStart() != "" {
+		return types.NewPlanetStateError(cache.GetPlanet().GetPlanetId(), "under_raid", "mine")
+	}
 
 	if cache.GetPlanet().IsComplete() {
 		return types.NewPlanetStateError(cache.GetPlanet().GetPlanetId(), "complete", "mine")
@@ -555,7 +553,14 @@ func (cache *StructCache) OreMinePlanet() {
 	cache.GetOwner().StoredOreIncrement(1)
 	cache.GetPlanet().BuriedOreDecrement(1)
 
-	cache.ResetBlockStartOreMine()
+	cache.GetPlanet().ResetBlockStartOreMine()
+}
+
+func (cache *StructCache) CanDefend() error {
+	if !cache.GetStructType().CanDefend {
+		return types.NewStructCannotDefendError(cache.StructId)
+	}
+	return nil
 }
 
 func (cache *StructCache) CanOreRefine() error {
@@ -564,11 +569,13 @@ func (cache *StructCache) CanOreRefine() error {
 		return types.NewStructCapabilityError(cache.StructId, "refining")
 	}
 
-    /*
-	if cache.GetBlockStartOreRefine() == 0 {
+	if cache.GetPlanet().GetOreRefiningActiveQuantity() == 0 {
 		return types.NewStructStateError(cache.StructId, "not_refining", "refining", "ore_refine")
 	}
-	*/
+
+	if cache.GetPlanet().GetLocationListStart() != "" {
+		return types.NewPlanetStateError(cache.GetPlanet().GetPlanetId(), "under_raid", "refine")
+	}
 
 	if !cache.GetOwner().HasStoredOre() {
 		return types.NewPlayerAffordabilityError(cache.GetOwner().PlayerId, "refine", "ore")
@@ -585,7 +592,7 @@ func (cache *StructCache) OreRefine() error {
 		return err
 	}
 
-	cache.ResetBlockStartOreRefine()
+	cache.GetPlanet().ResetBlockStartOreRefine()
 	return nil
 }
 
@@ -718,7 +725,22 @@ func (attackingStruct *StructCache) applyPostDestructionDamageCore(destroyedStru
 }
 
 
+// DestroyAndCommit tears a struct down. It is idempotent: a destroyed struct
+// stays readable and slot-resident until the sweep runs StructSweepDelay blocks
+// later, so several paths can reach the same struct inside that window —
+// AttemptComplete walks every occupied planet slot, StructBuildCancel takes any
+// unbuilt struct, and the attack paths destroy on lethal damage.
+//
+// Without this guard the work above GoOffline replays: the BuildDraw release and
+// the type count decrement would both run again. Neither is a bank transfer, so
+// nothing fails loudly — StructsLoadDecrement clamps at zero — and the owner's
+// tracked load drifts below what their surviving structs actually draw, which
+// buys capacity the player's power never paid for. GoOffline is already
+// idempotent through its own IsOnline() check.
 func (cache *StructCache) DestroyAndCommit() {
+	if cache.IsDestroyed() {
+		return
+	}
 
 	if !cache.IsBuilt() {
 		// Struct was still building — release the BuildDraw energy that was
@@ -741,16 +763,6 @@ func (cache *StructCache) DestroyAndCommit() {
 	// It's possible the build was never complete, so clear out this attribute to be safe
 	cache.CC.ClearStructAttribute(cache.BlockStartBuildAttributeId)
 
-	// Destroy mining systems
-	if cache.GetStructType().HasOreMiningSystem() {
-		cache.CC.ClearStructAttribute(cache.BlockStartOreMineAttributeId)
-	}
-
-	// Turn off the refinery
-	if cache.GetStructType().HasOreRefiningSystem() {
-		cache.CC.ClearStructAttribute(cache.BlockStartOreRefineAttributeId)
-	}
-
 	// Clear Defensive Relationships
 	cache.CC.k.DestroyStructDefender(cache.CC.ctx, cache.GetStructId())
 
@@ -766,7 +778,9 @@ func (cache *StructCache) DestroyAndCommit() {
 		// but some allocations, such as automated ones may still exist
 		allocations := cache.CC.GetAllAllocationBySource(cache.StructId)
         for _, allocation := range allocations {
-            allocation.Destroy()
+            if err := allocation.Destroy(); err != nil {
+                cache.CC.k.logger.Error("Allocation could not be destroyed on struct destruction", "structId", cache.StructId, "allocationId", allocation.GetAllocationId(), "error", err)
+            }
         }
 
 		// Clear Load

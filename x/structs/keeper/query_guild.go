@@ -34,6 +34,7 @@ func (k Keeper) GuildAll(goCtx context.Context, req *types.QueryAllGuildRequest)
 		if err := k.cdc.Unmarshal(value, &guild); err != nil {
 			return err
 		}
+		guild.NormalizeBankFees()
 
 		guilds = append(guilds, guild)
 		return nil
@@ -56,6 +57,7 @@ func (k Keeper) Guild(goCtx context.Context, req *types.QueryGetGuildRequest) (*
 	if !found {
 		return nil, types.ErrObjectNotFound
 	}
+	guild.NormalizeBankFees()
 
 	return &types.QueryGetGuildResponse{Guild: guild}, nil
 }

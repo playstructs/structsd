@@ -23,7 +23,7 @@ func (k msgServer) PermissionGrantOnObject(goCtx context.Context, msg *types.Msg
         return emptyResponse, types.NewParameterValidationError("permissions", 0, "below_minimum").WithRange(1, 0)
     }
 
-    player, err := cc.GetPlayerByAddress(msg.Creator)
+    player, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
         return emptyResponse, err
     }

@@ -17,7 +17,7 @@ func (k msgServer) GuildUpdateJoinInfusionMinimum(goCtx context.Context, msg *ty
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    player, err := cc.GetPlayerByAddress(msg.Creator)
+    player, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
         return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_update_join_infusion_minimum")
     }

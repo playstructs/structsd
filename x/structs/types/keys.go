@@ -147,7 +147,22 @@ const (
 	GuildMembershipApplicationKey = "Guild/membershipApplication/"
 	GuildNameKey  = "Guild/name/"
 
+	// GuildCharterAnchorKey holds the height of the last proof-founded guild.
+	// A single chain-global value, deliberately not per player: it is what makes
+	// guild supply independent of how many identities an actor controls.
+	GuildCharterAnchorKey = "Guild/charterAnchor/"
+
 	GuildBankCollateralPool = "structs/Guild/Collateral/"
+)
+
+const (
+	// GuildCharterActivity is the activity tag in the charter proof-of-work
+	// preimage, and the category on its EventHashSuccess. Distinct from BUILD,
+	// MINE, REFINE and RAID so no proof can cross between operations.
+	GuildCharterActivity = "GUILDCHARTER"
+
+	// GuildCharterErrorOperation names this operation in typed errors.
+	GuildCharterErrorOperation = "guild_charter"
 )
 
 
@@ -194,9 +209,14 @@ const (
 	ProviderCountKey    = "Provider/count/"
 
 	ProviderGuildAccessKey    = "Provider/guild/"
+	ProviderPoolAddressKey    = "Provider/poolAddress/"
 
 	ProviderCollateralPool  = "structs/Provider/Collateral/"
 	ProviderEarningsPool    = "structs/Provider/Earnings/"
+)
+
+const (
+	GuildBankLegacyEscrowKey = "Guild/bankLegacyEscrow/"
 )
 
 const (
@@ -356,6 +376,12 @@ var PlanetAttributeType_enum = map[string]PlanetAttributeType {
     "advancedOrbitalJammingStationQuantity":                    PlanetAttributeType_advancedOrbitalJammingStationQuantity,
 
     "blockStartRaid":                                           PlanetAttributeType_blockStartRaid,
+
+    "blockRaiderArrived":                                       PlanetAttributeType_blockRaiderArrived,
+    "blockStartOreMine":                                        PlanetAttributeType_planetBlockStartOreMine,
+    "blockStartOreRefine":                                      PlanetAttributeType_planetBlockStartOreRefine,
+    "oreMiningActiveQuantity":                                  PlanetAttributeType_oreMiningActiveQuantity,
+    "oreRefiningActiveQuantity":                                PlanetAttributeType_oreRefiningActiveQuantity,
 
 }
 

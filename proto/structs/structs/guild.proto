@@ -4,6 +4,8 @@ package structs.structs;
 
 import "structs/structs/keys.proto";
 import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "structs/x/structs/types";
 
@@ -26,6 +28,23 @@ message Guild {
 
   string name                = 12;
   string pfp                 = 13;
+
+  string bankConvertInFee    = 14 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+  string bankConvertOutFee   = 15 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+
+  // charterSolverId is the player who solved the proof-of-work that founded
+  // this guild, which need not be the owner. Written once at creation and never
+  // mutated, so the credit survives a transfer. Empty on a guild founded
+  // through the reactor entitlement, where nobody solved anything.
+  string charterSolverId    = 16;
 }
 
 

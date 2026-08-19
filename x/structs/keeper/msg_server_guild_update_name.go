@@ -14,7 +14,7 @@ func (k msgServer) GuildUpdateName(goCtx context.Context, msg *types.MsgGuildUpd
 
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, err := cc.GetPlayerByAddress(msg.Creator)
+	player, err := cc.GetSigningPlayer(msg.Creator)
 	if err != nil {
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_update_name")
 	}

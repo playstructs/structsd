@@ -21,8 +21,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 	"github.com/stretchr/testify/require"
 
 	"structs/x/structs/keeper"
@@ -34,12 +34,28 @@ import (
 // MockAccountKeeper is a mock implementation of the AccountKeeper interface
 type MockAccountKeeper struct {
 	accounts map[string]sdk.AccountI
+
+	// nextAccountNumber mirrors the real keeper's global monotonic sequence.
+	// Without it every account would be numbered 0 and the mock would hide the
+	// very ordering bug that map-order commits used to cause.
+	nextAccountNumber uint64
+
+	// creationOrder records the addresses passed to NewAccountWithAddress, in
+	// call order, so a test can assert the order state was written in and not
+	// just the numbers that came out of it.
+	creationOrder []string
 }
 
 func NewMockAccountKeeper() *MockAccountKeeper {
 	return &MockAccountKeeper{
 		accounts: make(map[string]sdk.AccountI),
 	}
+}
+
+// AccountCreationOrder returns the addresses given account numbers, in the
+// order they were assigned.
+func (m *MockAccountKeeper) AccountCreationOrder() []string {
+	return append([]string(nil), m.creationOrder...)
 }
 
 func (m *MockAccountKeeper) GetAccount(ctx context.Context, addr sdk.AccAddress) sdk.AccountI {
@@ -51,7 +67,11 @@ func (m *MockAccountKeeper) SetAccount(ctx context.Context, acc sdk.AccountI) {
 }
 
 func (m *MockAccountKeeper) NewAccountWithAddress(ctx context.Context, addr sdk.AccAddress) sdk.AccountI {
-	acc := authtypes.NewBaseAccount(addr, nil, 0, 0)
+	accountNumber := m.nextAccountNumber
+	m.nextAccountNumber++
+	m.creationOrder = append(m.creationOrder, addr.String())
+
+	acc := authtypes.NewBaseAccount(addr, nil, accountNumber, 0)
 	m.accounts[addr.String()] = acc
 	return acc
 }
@@ -72,6 +92,56 @@ func NewMockBankKeeper() *MockBankKeeper {
 		balances: make(map[string]sdk.Coins),
 		metadata: make(map[string]banktypes.Metadata),
 		supply:   make(map[string]math.Int),
+	}
+}
+
+// MockBankState is a deep copy of everything MockBankKeeper tracks.
+type MockBankState struct {
+	balances map[string]sdk.Coins
+	metadata map[string]banktypes.Metadata
+	supply   map[string]math.Int
+}
+
+// Snapshot copies the mock's current state so Restore can put it back.
+//
+// The mock keeps balances and supply in plain Go maps and ignores the ctx it is
+// handed, so sdk.Context.CacheContext() does not isolate bank state the way it
+// isolates KV state — a branch that mints or sends is writing to the same maps
+// the parent reads. A test that needs several independent bank scenarios must
+// snapshot before each and restore after, or the second scenario starts on top
+// of the first one's balances.
+func (m *MockBankKeeper) Snapshot() MockBankState {
+	snapshot := MockBankState{
+		balances: make(map[string]sdk.Coins, len(m.balances)),
+		metadata: make(map[string]banktypes.Metadata, len(m.metadata)),
+		supply:   make(map[string]math.Int, len(m.supply)),
+	}
+	for addr, coins := range m.balances {
+		// sdk.Coins is a slice; copy it so later Add/Sub cannot write through.
+		snapshot.balances[addr] = append(sdk.Coins{}, coins...)
+	}
+	for denom, meta := range m.metadata {
+		snapshot.metadata[denom] = meta
+	}
+	for denom, amount := range m.supply {
+		snapshot.supply[denom] = amount
+	}
+	return snapshot
+}
+
+// Restore returns the mock to a state captured by Snapshot.
+func (m *MockBankKeeper) Restore(snapshot MockBankState) {
+	m.balances = make(map[string]sdk.Coins, len(snapshot.balances))
+	m.metadata = make(map[string]banktypes.Metadata, len(snapshot.metadata))
+	m.supply = make(map[string]math.Int, len(snapshot.supply))
+	for addr, coins := range snapshot.balances {
+		m.balances[addr] = append(sdk.Coins{}, coins...)
+	}
+	for denom, meta := range snapshot.metadata {
+		m.metadata[denom] = meta
+	}
+	for denom, amount := range snapshot.supply {
+		m.supply[denom] = amount
 	}
 }
 
@@ -103,6 +173,10 @@ func (m *MockBankKeeper) SpendableCoins(ctx context.Context, addr sdk.AccAddress
 		return sdk.Coins{}
 	}
 	return coins
+}
+
+func (m *MockBankKeeper) GetAllBalances(ctx context.Context, addr sdk.AccAddress) sdk.Coins {
+	return m.SpendableCoins(ctx, addr)
 }
 
 func (m *MockBankKeeper) SpendableCoin(ctx context.Context, addr sdk.AccAddress, denom string) sdk.Coin {
@@ -197,6 +271,7 @@ type MockStakingKeeper struct {
 	validators   map[string]stakingtypes.Validator
 	delegations  map[delegationKey]stakingtypes.Delegation
 	unbondings   map[delegationKey]stakingtypes.UnbondingDelegation
+	receiving    map[delegationKey]bool
 	nextUnbondID uint64
 }
 
@@ -205,8 +280,20 @@ func NewMockStakingKeeper() *MockStakingKeeper {
 		validators:   make(map[string]stakingtypes.Validator),
 		delegations:  make(map[delegationKey]stakingtypes.Delegation),
 		unbondings:   make(map[delegationKey]stakingtypes.UnbondingDelegation),
+		receiving:    make(map[delegationKey]bool),
 		nextUnbondID: 1,
 	}
+}
+
+// AddReceivingRedelegation marks (delegator, validator) as the destination of
+// an in-flight redelegation. The mock keeps no redelegation records of its own;
+// this is only the flag the delegation transfer pre-flight reads.
+func (m *MockStakingKeeper) AddReceivingRedelegation(delAddr sdk.AccAddress, valDstAddr sdk.ValAddress) {
+	m.receiving[delegationKey{Delegator: delAddr.String(), Validator: valDstAddr.String()}] = true
+}
+
+func (m *MockStakingKeeper) HasReceivingRedelegation(ctx context.Context, delAddr sdk.AccAddress, valDstAddr sdk.ValAddress) (bool, error) {
+	return m.receiving[delegationKey{Delegator: delAddr.String(), Validator: valDstAddr.String()}], nil
 }
 
 // AddValidator registers a bonded validator with 1:1 token-to-share ratio.
@@ -229,6 +316,43 @@ func (m *MockStakingKeeper) JailValidator(operatorAddr sdk.ValAddress) {
 	}
 	val.Jailed = true
 	val.Status = stakingtypes.Unbonded
+	m.validators[operatorAddr.String()] = val
+}
+
+// UnjailValidator clears the jail flag but leaves the bond status alone, which
+// is exactly what MsgUnjail does: rebonding is a separate decision staking makes
+// in EndBlock, and only if the validator is inside the active-set cutoff. Pair
+// with BondValidator to model the full recovery. Used by tests for the reactor
+// energy recovery path.
+func (m *MockStakingKeeper) UnjailValidator(operatorAddr sdk.ValAddress) {
+	val, ok := m.validators[operatorAddr.String()]
+	if !ok {
+		return
+	}
+	val.Jailed = false
+	m.validators[operatorAddr.String()] = val
+}
+
+// BondValidator returns a validator to the bonded set, modelling the rebond that
+// staking performs in EndBlock for an unjailed validator inside the active set.
+func (m *MockStakingKeeper) BondValidator(operatorAddr sdk.ValAddress) {
+	val, ok := m.validators[operatorAddr.String()]
+	if !ok {
+		return
+	}
+	val.Status = stakingtypes.Bonded
+	m.validators[operatorAddr.String()] = val
+}
+
+// SlashValidatorTokens reduces a validator's token pool while leaving its
+// delegator shares alone, which is how Cosmos slashing devalues each share.
+// Used by tests that check energy returns proportionally lower after a slash.
+func (m *MockStakingKeeper) SlashValidatorTokens(operatorAddr sdk.ValAddress, remaining math.Int) {
+	val, ok := m.validators[operatorAddr.String()]
+	if !ok {
+		return
+	}
+	val.Tokens = remaining
 	m.validators[operatorAddr.String()] = val
 }
 
@@ -465,6 +589,71 @@ func (m *MockStakingKeeper) SetUnbondingDelegation(ctx context.Context, ubd stak
 	return nil
 }
 
+// MockDistributionKeeper stands in for both x/distribution's Keeper and its
+// staking Hooks, which is all the delegation transfer touches.
+//
+// It models the one piece of distribution state that a transfer has to keep
+// straight -- the per-(validator, delegator) starting info -- and mirrors the
+// real lifecycle: BeforeDelegationSharesModified withdraws and so deletes the
+// record, AfterDelegationModified re-initializes it. It reads the staking mock
+// for the same reason initializeDelegation reads staking, so a test that calls
+// AfterDelegationModified before writing the delegation fails here rather than
+// passing on a technicality.
+type MockDistributionKeeper struct {
+	staking      *MockStakingKeeper
+	startingInfo map[delegationKey]bool
+	Calls        []string
+}
+
+func NewMockDistributionKeeper(staking *MockStakingKeeper) *MockDistributionKeeper {
+	return &MockDistributionKeeper{
+		staking:      staking,
+		startingInfo: make(map[delegationKey]bool),
+	}
+}
+
+func distributionKey(val sdk.ValAddress, del sdk.AccAddress) delegationKey {
+	return delegationKey{Delegator: del.String(), Validator: val.String()}
+}
+
+// SeedStartingInfo gives a pair the starting info that a real Delegate would
+// have created, so a test can start from a healthy delegation.
+func (m *MockDistributionKeeper) SeedStartingInfo(val sdk.ValAddress, del sdk.AccAddress) {
+	m.startingInfo[distributionKey(val, del)] = true
+}
+
+func (m *MockDistributionKeeper) ClearStartingInfo(val sdk.ValAddress, del sdk.AccAddress) {
+	delete(m.startingInfo, distributionKey(val, del))
+}
+
+func (m *MockDistributionKeeper) HasDelegatorStartingInfo(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress) (bool, error) {
+	return m.startingInfo[distributionKey(val, del)], nil
+}
+
+func (m *MockDistributionKeeper) BeforeDelegationCreated(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	m.Calls = append(m.Calls, "BeforeDelegationCreated:"+delAddr.String()+":"+valAddr.String())
+	return nil
+}
+
+func (m *MockDistributionKeeper) BeforeDelegationSharesModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	m.Calls = append(m.Calls, "BeforeDelegationSharesModified:"+delAddr.String()+":"+valAddr.String())
+	key := distributionKey(valAddr, delAddr)
+	if !m.startingInfo[key] {
+		return distrtypes.ErrEmptyDelegationDistInfo
+	}
+	delete(m.startingInfo, key)
+	return nil
+}
+
+func (m *MockDistributionKeeper) AfterDelegationModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	m.Calls = append(m.Calls, "AfterDelegationModified:"+delAddr.String()+":"+valAddr.String())
+	if _, err := m.staking.GetDelegation(ctx, delAddr, valAddr); err != nil {
+		return err
+	}
+	m.startingInfo[distributionKey(valAddr, delAddr)] = true
+	return nil
+}
+
 func StructsKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
@@ -485,6 +674,7 @@ func StructsKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 	mockAccountKeeper := NewMockAccountKeeper()
 	mockBankKeeper := NewMockBankKeeper()
 	mockStakingKeeper := NewMockStakingKeeper()
+	mockDistributionKeeper := NewMockDistributionKeeper(mockStakingKeeper)
 
 	// IBC v10 - no capability keeper needed
 	k := keeper.NewKeeper(
@@ -493,12 +683,12 @@ func StructsKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 		runtime.NewTransientStoreService(transientStoreKey),
 		log.NewNopLogger(),
 		authority.String(),
-		func() *ibckeeper.Keeper {
-			return &ibckeeper.Keeper{}
-		},
+		nil,
 		mockBankKeeper,
 		mockStakingKeeper,
 		mockAccountKeeper,
+		mockDistributionKeeper,
+		mockDistributionKeeper,
 	)
 
 	ctx := sdk.NewContext(stateStore, cmtproto.Header{}, false, log.NewNopLogger())
@@ -510,6 +700,7 @@ func StructsKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 	// (e.g. WriteRawGridAttribute) can punch raw KV writes through the
 	// keeper's exported surface to simulate corrupted on-chain state.
 	ctx = ctx.WithValue(testStoreKeyCtx{}, storeKey)
+	ctx = ctx.WithValue(testAccountKeeperCtx{}, mockAccountKeeper)
 
 	return k, ctx
 }
@@ -518,6 +709,18 @@ func StructsKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 // key produced by StructsKeeper so test helpers can reach the underlying KV
 // store without changing the public StructsKeeper return signature.
 type testStoreKeyCtx struct{}
+
+// testAccountKeeperCtx stashes the MockAccountKeeper for the same reason.
+type testAccountKeeperCtx struct{}
+
+// AccountKeeperFrom returns the MockAccountKeeper behind a context produced by
+// StructsKeeper, so a test can inspect how auth accounts were numbered.
+func AccountKeeperFrom(t testing.TB, ctx sdk.Context) *MockAccountKeeper {
+	t.Helper()
+	accountKeeper, ok := ctx.Value(testAccountKeeperCtx{}).(*MockAccountKeeper)
+	require.True(t, ok, "AccountKeeperFrom: ctx not produced by keepertest.StructsKeeper")
+	return accountKeeper
+}
 
 // WriteRawGridAttribute plants a raw GridAttribute KV row, bypassing
 // Keeper.SetGridAttribute. This exists only so tests can simulate the
@@ -534,4 +737,16 @@ func WriteRawGridAttribute(t testing.TB, _ keeper.Keeper, ctx sdk.Context, gridA
 
 	rawStore := ctx.KVStore(storeKey)
 	rawStore.Set(append([]byte(types.GridAttributeKey), []byte(gridAttributeId)...), bz)
+}
+
+// WriteRawGuild plants protobuf bytes directly under a guild key. It is used to
+// exercise migrations and queries against records encoded by pre-upgrade
+// schemas that cannot be produced through the current keeper.
+func WriteRawGuild(t testing.TB, ctx sdk.Context, guildID string, bz []byte) {
+	t.Helper()
+	storeKey, ok := ctx.Value(testStoreKeyCtx{}).(*storetypes.KVStoreKey)
+	require.True(t, ok, "WriteRawGuild: ctx not produced by keepertest.StructsKeeper")
+
+	rawStore := ctx.KVStore(storeKey)
+	rawStore.Set(append([]byte(types.GuildKey), []byte(guildID)...), bz)
 }

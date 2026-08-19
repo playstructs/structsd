@@ -39,6 +39,10 @@ func TestMsgAgreementCapacityIncrease(t *testing.T) {
 	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, player)
 	require.NoError(t, err)
 
+	// A capacity increase is checked against the substation's own available
+	// capacity, so the substation needs headroom for the increase to be valid.
+	k.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, substation.Id), uint64(1000))
+
 	// Create a provider
 	provider := types.Provider{
 		Owner:                       player.Id,
@@ -46,10 +50,13 @@ func TestMsgAgreementCapacityIncrease(t *testing.T) {
 		SubstationId:                substation.Id,
 		Rate:                        sdk.NewCoin("token", math.NewInt(100)),
 		AccessPolicy:                types.ProviderAccessPolicy_openMarket,
-		CapacityMinimum:             100,
+		// Wide enough to admit the change under test once it is rescaled. A
+		// capacity change re-prices the unearned span, so taking capacity 100
+		// up to 150 compresses the 99 remaining blocks to 66.
+		CapacityMinimum:             10,
 		CapacityMaximum:             1000,
 		DurationMinimum:             1,
-		DurationMaximum:             10,
+		DurationMaximum:             1000,
 		ProviderCancellationPenalty: math.LegacyNewDec(1),
 		ConsumerCancellationPenalty: math.LegacyNewDec(1),
 	}

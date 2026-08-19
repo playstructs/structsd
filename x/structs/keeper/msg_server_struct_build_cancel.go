@@ -16,7 +16,7 @@ func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStruct
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    callingPlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
        return emptyResponse, err
     }
@@ -32,6 +32,13 @@ func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStruct
 
     if !structure.LoadStruct(){
         return emptyResponse, types.NewObjectNotFoundError("struct", msg.StructId)
+    }
+
+    // DestroyAndCommit is idempotent, so a repeat cancel is already harmless.
+    // Reject it outright rather than reporting success for work that did not
+    // happen.
+    if structure.IsDestroyed() {
+        return emptyResponse, types.NewStructStateError(msg.StructId, "destroyed", "building", "build_cancel")
     }
 
     if structure.IsBuilt() {

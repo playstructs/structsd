@@ -139,6 +139,8 @@ message StructType {
 
   bool primaryWeaponArmourPiercing   = 69;
   bool secondaryWeaponArmourPiercing = 70;
+
+  bool canDefend = 71; // Can this struct register as a defender? (fleet: true, planetary: false)
 }
 
 message StructDefender {
@@ -160,6 +162,8 @@ message StructAttributes {
   uint64  status                      = 2;
 
   uint64  blockStartBuild             = 3;
+  // Deprecated: ore mine/refine clocks live on PlanetAttributes as of v0.21.0.
+  // These fields remain for wire compatibility and always read 0 after migration.
   uint64  blockStartOreMine           = 4;
   uint64  blockStartOreRefine         = 5;
 

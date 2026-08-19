@@ -19,7 +19,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    callingPlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
        return emptyResponse, err
     }
@@ -43,11 +43,11 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 		return emptyResponse, miningReadinessError
 	}
 
-	activeOreMiningSystemBlockString := strconv.FormatUint(structure.GetBlockStartOreMine(), 10)
+	activeOreMiningSystemBlockString := strconv.FormatUint(structure.GetPlanet().GetBlockStartOreMine(), 10)
 	hashInput := msg.StructId + "MINE" + activeOreMiningSystemBlockString + "NONCE" + msg.Nonce
 
 	blockHeight := uint64(ctx.BlockHeight())
-	blockStart := structure.GetBlockStartOreMine()
+	blockStart := structure.GetPlanet().GetBlockStartOreMine()
 	if blockHeight < blockStart {
 		return emptyResponse, sdkerrors.Wrapf(types.ErrInvalidParameters, "block height %d precedes start block %d", blockHeight, blockStart)
 	}

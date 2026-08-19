@@ -26,7 +26,7 @@ func (k msgServer) PermissionGuildRankRevoke(goCtx context.Context, msg *types.M
 		return emptyResponse, types.NewParameterValidationError("permission", 0, "below_minimum").WithRange(1, 0)
 	}
 
-	player, err := cc.GetPlayerByAddress(msg.Creator)
+	player, err := cc.GetSigningPlayer(msg.Creator)
 	if err != nil {
 		return emptyResponse, err
 	}

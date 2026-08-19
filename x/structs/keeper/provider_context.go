@@ -76,6 +76,7 @@ func (cc *CurrentContext) NewProvider(provider types.Provider) (*ProviderCache) 
 
 	providerCollateralAddressStr := providerCollateralAddress.String()
 	providerEarningsAddressStr := providerEarningsAddress.String()
+	cc.k.IndexProviderPoolAddresses(cc.ctx, provider.Id)
 
 	cc.k.logger.Info("Provider Created",
 		"providerId", provider.Id,

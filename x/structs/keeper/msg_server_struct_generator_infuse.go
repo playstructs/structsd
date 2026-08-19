@@ -19,7 +19,7 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	callingPlayer, playerErr := cc.GetPlayerByAddress(msg.Creator)
+	callingPlayer, playerErr := cc.GetSigningPlayer(msg.Creator)
 	if playerErr != nil {
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "struct_generator_infuse")
 	}
@@ -35,6 +35,13 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 	structure := cc.GetStruct(msg.StructId)
 	if structure.CheckStruct() != nil {
 		return emptyResponse, types.NewObjectNotFoundError("struct", msg.StructId)
+	}
+
+	// A destroyed struct is offline, so the check below would reject it anyway.
+	// Say so explicitly, because this handler moves the player's coins and must
+	// never send them to a generator that is queued for deletion.
+	if structure.IsDestroyed() {
+		return emptyResponse, types.NewStructStateError(msg.StructId, "destroyed", "active", "generator_infuse")
 	}
 
 	// Is the Struct online?

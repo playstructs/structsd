@@ -13,26 +13,10 @@ import (
 // limits on free Structs transactions.
 //
 // It runs in every transaction phase (CheckTx, ReCheckTx, DeliverTx, and
-// simulation) and combines two layers of protection:
-//
-//  1. Per-tx in-memory deduplication. A local `seen` map is built for every
-//     tx, indexed by throttle key (e.g. "charge/<playerId>", "proof/<structId>",
-//     "fleet/<fleetId>"). Two messages in the same tx that map to the same key
-//     are always rejected, in every phase, with no dependency on consensus or
-//     mempool state. This is the layer that catches the duplicate-charge-in-
-//     same-tx admission bug (incident 2026-05).
-//
-//  2. Cross-tx transient-store check. After per-tx dedup passes, every key is
-//     looked up in the keeper's transient store (writes are scoped per-phase
-//     by the SDK: CheckTx state writes are isolated from DeliverTx state). A
-//     key already set this block (because an earlier tx from the same block
-//     consumed it) causes a reject. This is the layer that prevents two
-//     distinct charge txs from the same player landing in one block.
-//
-// Both layers run in CheckTx. Letting the throttle skip CheckTx is what caused
-// invalid txs to sit in the mempool indefinitely on structstestnet-111, since
-// CometBFT v0.38.21 only evicts txs that fail ReCheckTx or get included in a
-// block. See docs/incident-2026-05-ante.md.
+// simulation). It rejects duplicate keys within one transaction, checks the
+// per-block transient store across transactions, and authorizes caller-supplied
+// targets before reserving them. All three checks run in CheckTx so invalid
+// transactions are not admitted to the mempool.
 type ThrottleDecorator struct {
 	keeper StructsAnteKeeper
 }
@@ -42,7 +26,10 @@ func NewThrottleDecorator(keeper StructsAnteKeeper) ThrottleDecorator {
 }
 
 func (d ThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
-	if !IsFreeTx(ctx) || IsFreeStakingTx(ctx) {
+	// Throttling follows the message, not the fee: see
+	// ContainsGatedStructsMessage. Every branch below keys off a map holding only
+	// Structs type URLs, so messages from other modules fall through untouched.
+	if !ContainsGatedStructsMessage(tx.GetMsgs()) {
 		return next(ctx, tx, simulate)
 	}
 
@@ -70,7 +57,7 @@ func (d ThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool,
 				return ctx, observeReject(ctx, "ThrottleDecorator",
 					errorsmod.Wrapf(ErrProofAlreadyAttemptedThisBlock, "%s: %s", typeURL, objectId))
 			}
-			if hasStore {
+			if hasStore && d.mayReserve(ctx, msg, typeURL) {
 				d.keeper.SetThrottleKey(ctx, throttleKey)
 			}
 		}
@@ -91,19 +78,14 @@ func (d ThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool,
 				return ctx, observeReject(ctx, "ThrottleDecorator",
 					errorsmod.Wrapf(ErrObjectThrottledThisBlock, "%s: key %s", typeURL, throttleKey))
 			}
-			if hasStore {
+			if hasStore && d.mayReserve(ctx, msg, typeURL) {
 				d.keeper.SetThrottleKey(ctx, throttleKey)
 			}
 		}
 
 		// Per-player charge throttle: one charge-consuming action per player per block.
 		if ChargeMessages[typeURL] {
-			var creator string
-			if cg, ok := msg.(creatorGetter); ok {
-				creator = cg.GetCreator()
-			} else if extractor, hasExtractor := CreatorExtractors[typeURL]; hasExtractor {
-				creator = extractor(msg)
-			}
+			creator := resolveCreator(msg, typeURL)
 			if creator == "" {
 				return ctx, observeReject(ctx, "ThrottleDecorator",
 					errorsmod.Wrapf(ErrMissingCreator, "%s declared in ChargeMessages but creator could not be resolved", typeURL))
@@ -136,4 +118,52 @@ func (d ThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool,
 	}
 
 	return next(ctx, tx, simulate)
+}
+
+// mayReserve reports whether the signer of msg may claim the object-global
+// throttle key it names, by asking the keeper for the same target-object
+// authorization the handler will perform.
+//
+// A refusal skips the reservation and lets the message continue to its handler,
+// which produces the real error. It is not an ante reject, on purpose: the ante
+// sees pre-transaction state while a handler sees the state left by earlier
+// messages in the same transaction, so a transaction that grants a permission
+// and then uses it is authorized at the handler and not here. Rejecting on this
+// answer would break that transaction; skipping the reservation only leaves the
+// object unthrottled for the block, which is the same position it would be in
+// had the message not been sent.
+//
+// A message with no ThrottleTargetAuth entry reserves nothing. That fails
+// closed against the poisoning this guards, and TestThrottleTargetAuthCompleteness
+// catches the omission before it silently disables a throttle.
+func (d ThrottleDecorator) mayReserve(ctx sdk.Context, msg sdk.Msg, typeURL string) bool {
+	extractor, hasAuth := ThrottleTargetAuth[typeURL]
+	if !hasAuth {
+		return false
+	}
+
+	target, ok := extractor(msg)
+	if !ok || target.TargetId == "" {
+		return false
+	}
+
+	creator := resolveCreator(msg, typeURL)
+	if creator == "" {
+		return false
+	}
+
+	return d.keeper.ThrottleTargetAuthorized(ctx, creator, target.Kind, target.TargetId, target.Permission)
+}
+
+// resolveCreator returns the signing address a message declares, preferring the
+// generated GetCreator accessor and falling back to the explicit extractor for
+// the messages that name the field something else.
+func resolveCreator(msg sdk.Msg, typeURL string) string {
+	if cg, ok := msg.(creatorGetter); ok {
+		return cg.GetCreator()
+	}
+	if extractor, hasExtractor := CreatorExtractors[typeURL]; hasExtractor {
+		return extractor(msg)
+	}
+	return ""
 }

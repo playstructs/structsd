@@ -30,7 +30,7 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    callingPlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
        return emptyResponse, err
     }
@@ -48,8 +48,17 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
         return emptyResponse, types.NewObjectNotFoundError("struct", msg.DefenderStructId)
     }
 
+    if structure.IsDestroyed() {
+        return emptyResponse, types.NewStructStateError(msg.DefenderStructId, "destroyed", "active", "defense_set")
+    }
+
     if structure.IsOffline() {
         return emptyResponse, types.NewStructStateError(msg.DefenderStructId, "offline", "online", "defense_set")
+    }
+
+    // Only struct types flagged as able to defend may register as a defender
+    if defenseCapabilityError := structure.CanDefend(); defenseCapabilityError != nil {
+        return emptyResponse, defenseCapabilityError
     }
 
     // Check Player Charge

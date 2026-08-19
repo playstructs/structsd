@@ -38,7 +38,7 @@ func TestMsgGuildUpdateOwnerId(t *testing.T) {
 	reactor = k.AppendReactor(ctx, reactor)
 
 	// Create guild
-	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, owner)
+	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, owner, "")
 	owner.GuildId = guild.Id
 	k.SetPlayer(ctx, owner)
 
@@ -77,15 +77,24 @@ func TestMsgGuildUpdateOwnerId(t *testing.T) {
 			skip:      true, // Skip - cache system doesn't validate existence before permission check
 		},
 		{
+			// Un-skipped. The handler does resolve the incoming owner before
+			// writing it — this is one of the sites that already paired
+			// cc.GetPlayer with an explicit CheckPlayer, now folded into
+			// cc.GetExistingPlayer, which returns the same error. Only the
+			// expected wording was stale.
+			//
+			// Signed by newOwner rather than owner because the case above has
+			// already transferred the guild, and a transfer now revokes the
+			// seller's row: owner would be refused for want of permission before
+			// ever reaching the resolution this case is about.
 			name: "new owner not found",
 			input: &types.MsgGuildUpdateOwnerId{
-				Creator: owner.Creator,
+				Creator: newOwner.Creator,
 				GuildId: guild.Id,
 				Owner:   "invalid-player",
 			},
 			expErr:    true,
-			expErrMsg: "weren't found",
-			skip:      true, // Skip - cache system doesn't validate existence before permission check
+			expErrMsg: "player (invalid-player) not found",
 		},
 		{
 			name: "no update permissions",
@@ -111,7 +120,14 @@ func TestMsgGuildUpdateOwnerId(t *testing.T) {
 			if tc.expErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
+				// The handler pairs its errors with a non-nil empty response, and
+				// MsgGuildUpdateResponse carries no fields, so the error is the
+				// whole assertion. A nil check stood here only because every error
+				// case was skipped.
+				storedGuild, guildFound := k.GetGuild(ctx, guild.Id)
+				require.True(t, guildFound)
+				require.NotEqual(t, "invalid-player", storedGuild.Owner,
+					"a refused update must not write the bogus owner")
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, resp)

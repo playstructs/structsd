@@ -20,8 +20,6 @@ type PlayerCache struct {
 	PlayerLoaded bool
 	Player       types.Player
 
-	ActiveAddress string
-
 	StorageLoaded bool
 	Storage       sdk.Coins
 
@@ -103,10 +101,6 @@ func (cache *PlayerCache) GetPrimaryAddress() string {
 func (cache *PlayerCache) GetPrimaryAccount() sdk.AccAddress {
 	acc, _ := sdk.AccAddressFromBech32(cache.GetPrimaryAddress())
 	return acc
-}
-func (cache *PlayerCache) GetActiveAddress() string { return cache.ActiveAddress }
-func (cache *PlayerCache) GetActiveAddressPermissionID() []byte {
-	return GetAddressPermissionIDBytes(cache.ActiveAddress)
 }
 func (cache *PlayerCache) GetIndex() uint64 {
 	if !cache.PlayerLoaded {
@@ -197,8 +191,18 @@ func (cache *PlayerCache) GetCharge() uint64 {
 	return uint64(ctxSDK.BlockHeight()) - cache.GetLastAction()
 }
 
+// GetAllocatableCapacity clamps for the same reason GetAvailableCapacity below
+// does: load may exceed capacity, and a bare subtraction would report an
+// over-subscribed player as having nearly 2^64 to give.
 func (cache *PlayerCache) GetAllocatableCapacity() uint64 {
-	return cache.GetCapacity() - cache.GetLoad()
+	capacity := cache.GetCapacity()
+	load := cache.GetLoad()
+
+	if load >= capacity {
+		return 0
+	}
+
+	return capacity - load
 }
 
 func (cache *PlayerCache) GetAvailableCapacity() uint64 {
@@ -247,10 +251,6 @@ func (cache *PlayerCache) StructsLoadIncrement(amount uint64) {
 func (cache *PlayerCache) Discharge() {
 	ctxSDK := sdk.UnwrapSDKContext(cache.CC.ctx)
 	cache.CC.SetGridAttribute(cache.LastActionAttributeId, uint64(ctxSDK.BlockHeight()))
-}
-
-func (cache *PlayerCache) SetActiveAddress(address string) {
-	cache.ActiveAddress = address
 }
 
 func (cache *PlayerCache) SetPlanetId(planetId string) {
@@ -365,6 +365,15 @@ func (cache *PlayerCache) CanRevokeAddressBy(activePlayer *PlayerCache) error {
 
 func (cache *PlayerCache) CanBeAdministeredBy(activePlayer *PlayerCache) (err error) {
 	return cache.CC.PermissionCheck(cache, activePlayer, types.PermAdmin)
+}
+
+// CanUpdatePrimaryAddressBy gates the primary address swap on the caller holding
+// every right rather than just PermAdmin. SetPrimaryAddress grants PermAll to the
+// incoming address and the handler moves the balance and delegations with it, so
+// anything less would let a narrowly scoped delegate escalate itself -- the same
+// escalation CanRegisterAddressBy already prevents.
+func (cache *PlayerCache) CanUpdatePrimaryAddressBy(activePlayer *PlayerCache) error {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermAll)
 }
 
 func (cache *PlayerCache) CanTransferTokensBy(activePlayer *PlayerCache) (err error) {

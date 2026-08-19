@@ -32,7 +32,7 @@ func TestMsgAgreementDurationIncrease(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller: player.Id,
+		Controller:     player.Id,
 	}
 	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
@@ -149,4 +149,22 @@ func TestMsgAgreementDurationIncrease(t *testing.T) {
 			}
 		})
 	}
+
+	cc := k.NewCurrentContext(ctx)
+	agreementCache := cc.GetAgreement(agreement.Id)
+	endBefore := agreementCache.GetEndBlock()
+	require.Error(t, agreementCache.DurationIncrease(0))
+	require.Equal(t, endBefore, agreementCache.GetEndBlock())
+
+	stored, found := k.GetAgreement(ctx, agreement.Id)
+	require.True(t, found)
+	stored.EndBlock = ^uint64(0)
+	_, err = k.SetAgreement(ctx, stored)
+	require.NoError(t, err)
+
+	cc = k.NewCurrentContext(ctx)
+	agreementCache = cc.GetAgreement(agreement.Id)
+	require.Error(t, agreementCache.DurationIncrease(1))
+	require.Equal(t, ^uint64(0), agreementCache.GetEndBlock(),
+		"checked addition must reject instead of wrapping the agreement window")
 }

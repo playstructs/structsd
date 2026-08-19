@@ -59,20 +59,28 @@ func CmdStructMineCompute() *cobra.Command {
 
 			fmt.Printf("Loaded Struct (%s) for mining process \n", performingStructure.Id)
 
-			struct_attribute_block_start_params := &types.QueryGetStructAttributeRequest{
-				StructId:      argStructId,
-				AttributeType: "blockStartOreMine",
+			planet_params := &types.QueryGetPlanetRequest{
+				Id: performingStructure.LocationId,
 			}
 
-			mineStartBlock_res, mineStartBlock_err := queryClient.StructAttribute(context.Background(), struct_attribute_block_start_params)
-			if mineStartBlock_err != nil {
-				return mineStartBlock_err
+			planet_res, planet_err := queryClient.Planet(context.Background(), planet_params)
+			if planet_err != nil {
+				return planet_err
 			}
-			mineStartBlock := mineStartBlock_res.Attribute
+			planet := planet_res.Planet
+			planetAttributes := planet_res.PlanetAttributes
 
+			if planet.LocationListStart != "" {
+				return fmt.Errorf("planet (%s) is under raid: mining is paused until the raid ends", planet.Id)
+			}
+
+			if planetAttributes.OreMiningActiveQuantity == 0 {
+				return fmt.Errorf("planet (%s) has no active mining system", planet.Id)
+			}
+
+			mineStartBlock := planetAttributes.BlockStartOreMine
 			if mineStartBlock == 0 {
-				fmt.Printf("Struct (%s) has no Active mining system \n", performingStructure.Id)
-				return nil
+				return fmt.Errorf("planet (%s) mining clock is unset", planet.Id)
 			}
 
 			struct_type_params := &types.QueryGetStructTypeRequest{

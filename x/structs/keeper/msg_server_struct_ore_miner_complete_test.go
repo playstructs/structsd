@@ -51,8 +51,10 @@ func TestMsgStructOreMinerComplete(t *testing.T) {
 	testSetStructAttributeFlagAdd(k, sdkCtx, statusAttrId, uint64(types.StructStateBuilt))
 	testSetStructAttributeFlagAdd(k, sdkCtx, statusAttrId, uint64(types.StructStateOnline))
 
-	blockStartAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structObj.Id)
-	k.SetStructAttribute(sdkCtx, blockStartAttrId, uint64(1))
+	mineClockAttrId := keeperlib.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetBlockStartOreMine, planet.Id)
+	k.SetPlanetAttribute(sdkCtx, mineClockAttrId, uint64(1))
+	mineQtyAttrId := keeperlib.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_oreMiningActiveQuantity, planet.Id)
+	k.SetPlanetAttribute(sdkCtx, mineQtyAttrId, uint64(1))
 
 	t.Run("valid ore miner complete", func(t *testing.T) {
 		hashTemplate := structObj.Id + "MINE1NONCE%s"
@@ -66,6 +68,12 @@ func TestMsgStructOreMinerComplete(t *testing.T) {
 		})
 		require.NoError(t, err)
 		require.NotNil(t, resp)
+
+		// A successful extraction re-anchors the shared planet clock to the
+		// current height so the next round starts from zero age, and leaves
+		// the active-rig counter untouched.
+		require.Equal(t, uint64(sdkCtx.BlockHeight()), k.GetPlanetAttribute(sdkCtx, mineClockAttrId))
+		require.Equal(t, uint64(1), k.GetPlanetAttribute(sdkCtx, mineQtyAttrId))
 	})
 
 	t.Run("struct not found", func(t *testing.T) {

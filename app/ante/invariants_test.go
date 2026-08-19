@@ -2,6 +2,7 @@ package ante_test
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -96,7 +97,20 @@ func runThrottleOnce(
 	tx sdk.Tx,
 	phase string,
 ) error {
+	_, err := runThrottleWithAuth(tx, phase, nil)
+	return err
+}
+
+// runThrottleWithAuth is runThrottleOnce with a target-authorization policy and
+// the reserved key set returned alongside the outcome, so a property can check
+// what the decorator wrote and not only what it answered.
+func runThrottleWithAuth(
+	tx sdk.Tx,
+	phase string,
+	deny func(creator, targetId string) bool,
+) (map[string]bool, error) {
 	mk := freshKeeper()
+	mk.throttleAuthDenyFn = deny
 	dec := sante.NewThrottleDecorator(mk)
 	next, _ := identityHandler()
 
@@ -113,7 +127,7 @@ func runThrottleOnce(
 	}
 
 	_, err := dec.AnteHandle(ctx, tx, simulate, next)
-	return err
+	return mk.throttleKeys, err
 }
 
 // throttleSentinels enumerates every typed error the ThrottleDecorator is
@@ -178,5 +192,66 @@ func TestInvariant_ThrottleSameOutcomeAcrossPhases(t *testing.T) {
 			"ReCheckTx must match DeliverTx outcome")
 		require.True(rt, sameAdmissionOutcome(t, deliverErr, simErr),
 			"simulate must match DeliverTx outcome")
+	})
+}
+
+// denyOddTargets refuses authorization over half the generated id space. Which
+// half does not matter; what matters is that the answer depends only on the
+// message, so every phase is asking the same question.
+func denyOddTargets(_ string, targetId string) bool {
+	if targetId == "" {
+		return false
+	}
+	last := targetId[len(targetId)-1]
+	return (last-'0')%2 == 1
+}
+
+// TestInvariant_ThrottleReservationsSameAcrossPhases extends the admission
+// invariant to the writes. Gating the reservation on target authorization added
+// a second observable output, and it has to agree across phases for the same
+// reason the first one does: a node that reserves in CheckTx but not in
+// DeliverTx refuses at admission what consensus would have accepted, which is
+// how incident 2026-05 stranded transactions in the mempool.
+func TestInvariant_ThrottleReservationsSameAcrossPhases(t *testing.T) {
+	rapid.Check(t, func(rt *rapid.T) {
+		msgCount := rapid.IntRange(1, 4).Draw(rt, "msgCount")
+		msgs := make([]sdk.Msg, msgCount)
+		for i := 0; i < msgCount; i++ {
+			msgs[i] = genMsg(rt)
+		}
+		tx := mockTx{msgs: msgs}
+
+		deliverKeys, deliverErr := runThrottleWithAuth(tx, "deliverTx", denyOddTargets)
+
+		for _, phase := range []string{"checkTx", "reCheckTx", "simulate"} {
+			phaseKeys, phaseErr := runThrottleWithAuth(tx, phase, denyOddTargets)
+
+			require.True(rt, sameAdmissionOutcome(t, deliverErr, phaseErr),
+				"%s must match DeliverTx outcome", phase)
+			require.Equal(rt, deliverKeys, phaseKeys,
+				"%s reserved a different key set than DeliverTx", phase)
+		}
+	})
+}
+
+// An unauthorized signer reserves nothing, whatever else the transaction is
+// doing. The per-player charge key is exempt: it is derived from the signer's
+// own player index rather than anything the transaction names, so there is no
+// other player's key to poison.
+func TestInvariant_UnauthorizedTargetsAreNeverReserved(t *testing.T) {
+	rapid.Check(t, func(rt *rapid.T) {
+		msgCount := rapid.IntRange(1, 4).Draw(rt, "msgCount")
+		msgs := make([]sdk.Msg, msgCount)
+		for i := 0; i < msgCount; i++ {
+			msgs[i] = genMsg(rt)
+		}
+
+		denyAll := func(string, string) bool { return true }
+		keys, _ := runThrottleWithAuth(mockTx{msgs: msgs}, "deliverTx", denyAll)
+
+		for key := range keys {
+			require.True(rt, strings.HasPrefix(key, "charge/"),
+				"reserved %s for a target the signer is not authorized over", key)
+		}
 	})
 }

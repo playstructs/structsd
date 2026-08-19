@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
     "encoding/hex"
-    "math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
@@ -21,19 +20,15 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    activePlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
        return emptyResponse, err
     }
 
 
-    player, err := cc.GetPlayer(msg.PlayerId)
+    player, err := cc.GetExistingPlayer(msg.PlayerId)
     if err != nil {
        return emptyResponse, err
-    }
-
-    if player.CheckPlayer() != nil {
-        return emptyResponse, types.NewObjectNotFoundError("player", msg.PlayerId)
     }
 
 	// Is the address associated with an account yet
@@ -97,6 +92,22 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     primaryAcc, _   := sdk.AccAddressFromBech32(player.GetPrimaryAddress())
     newAcc, _   := sdk.AccAddressFromBech32(msg.Address)
 
+    // Move Reactor Infusions over.
+    //
+    // Reassigns the player's delegations onto the newly registered address; the
+    // source infusion is wound down under its previous owner and reclaimed, and
+    // the destination infusion is rebuilt for this player from live staking.
+    // Ahead of the coin sweep so that the staking rewards the transfer settles
+    // are swept along with everything else.
+    //
+    // Strict: the incoming address belongs to the player either way, so a
+    // refusal costs them nothing but a wait, and nobody else can create the
+    // condition that triggers it.
+    err = k.MoveDelegationsToAddress(ctx, cc, newAcc, player.GetPrimaryAddress(), DelegationTransferStrict)
+    if err != nil {
+        return emptyResponse, err
+    }
+
     // Get Balance
     balances := k.bankKeeper.SpendableCoins(ctx, newAcc)
 
@@ -105,16 +116,6 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     if err != nil {
         return emptyResponse, err
     }
-
-    // Move Reactor Infusions over
-    primaryDelegations, _ := k.stakingKeeper.GetDelegatorDelegations(ctx, newAcc, math.MaxUint16)
-    for _, delegation := range primaryDelegations {
-        k.stakingKeeper.RemoveDelegation(ctx, delegation)
-
-        delegation.DelegatorAddress = player.GetPrimaryAddress()
-        k.stakingKeeper.SetDelegation(ctx, delegation)
-    }
-
 
 	cc.CommitAll()
 	return &types.MsgAddressRegisterResponse{}, nil

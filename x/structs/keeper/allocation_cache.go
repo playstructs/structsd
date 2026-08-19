@@ -72,8 +72,7 @@ func (cache *AllocationCache) GetOwnerId() string {
 }
 
 func (cache *AllocationCache) GetOwner() *PlayerCache {
-	player, _ :=  cache.CC.GetPlayer(cache.GetAllocation().Controller)
-	return player
+	return cache.CC.GetPlayer(cache.GetAllocation().Controller)
 }
 
 func (cache *AllocationCache) GetSourceId() string {
@@ -323,6 +322,21 @@ func (cache *AllocationCache) Destroy() (error) {
         return types.NewAllocationError(cache.ID(), "unknown_allocation")
     }
 
+    // Settle any related Agreement before touching the grid, so a settlement that
+    // cannot pay out leaves the allocation whole instead of half torn down.
+    //
+    // An agreement only ever exists against a providerAgreement allocation, and it
+    // shares this allocation's index. An agreement already tearing down is the one
+    // that called us, so settling it here would pay it out a second time.
+    if cache.IsProviderAgreement() {
+        agreement := cache.CC.GetAgreement(GetObjectID(types.ObjectType_agreement, cache.GetAllocation().Index))
+        if !agreement.IsTearingDown() && agreement.LoadAgreement() {
+            if err := agreement.PrematureCloseByAllocation(); err != nil {
+                return err
+            }
+        }
+    }
+
     power := cache.GetPower()
 
     // Decrease the Load of the Source
@@ -347,19 +361,16 @@ func (cache *AllocationCache) Destroy() (error) {
         cache.CC.k.RemoveAllocationDestinationIndex(cache.CC.ctx, cache.GetAllocation().DestinationId, cache.ID())
     }
 
-    // Clear the AutoResize hook on the source
+    // Clear the AutoResize hook on the source. The index is keyed by source
+    // object id, not by allocation id: clearing it with cache.ID() deletes a key
+    // that was never written, leaving the real entry naming a destroyed
+    // allocation. SetSource then refuses every replacement on that source as an
+    // automated_conflict, and the infusion capacity path treats the hook as live.
     if cache.IsAutomated() {
-        cache.CC.k.ClearAutoResizeAllocationBySource(cache.CC.ctx, cache.ID())
+        cache.CC.k.ClearAutoResizeAllocationBySource(cache.CC.ctx, cache.GetAllocation().SourceObjectId)
     }
 
     cache.CC.k.RemoveAllocationSourceIndex(cache.CC.ctx, cache.GetAllocation().SourceObjectId, cache.ID())
-
-
-    // Check for a related Agreement and close it
-    agreement := cache.CC.GetAgreement(GetObjectID(types.ObjectType_agreement, cache.GetAllocation().Index))
-    if agreement.LoadAgreement() {
-        agreement.PrematureCloseByAllocation()
-    }
 
     cache.CC.ClearPermissionsForObject(cache.ID())
 

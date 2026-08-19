@@ -20,6 +20,11 @@ func (cc *CurrentContext) GetPlayerIndexFromAddress(address string) uint64 {
 	return playerIndex
 }
 
+// GenesisImportAddress stages a genesis address association for CommitAll.
+//
+// A malformed address is rejected upstream by GenesisState.Validate, and
+// SetPlayerIndexForAddress refuses to provision an auth account for one, so
+// there is nothing left for this to check.
 func (cc *CurrentContext) GenesisImportAddress(address string, playerIndex uint64) {
 	cc.addresses[address] = &AddressCache{
 		CC:          cc,

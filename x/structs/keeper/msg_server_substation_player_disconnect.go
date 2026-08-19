@@ -15,14 +15,14 @@ func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	callingPlayer, playerErr := cc.GetPlayerByAddress(msg.Creator)
+	callingPlayer, playerErr := cc.GetSigningPlayer(msg.Creator)
     if playerErr != nil {
         return emptyResponse, playerErr
     }
 
-	targetPlayer, _ := cc.GetPlayer(msg.PlayerId)
-    if targetPlayer.CheckPlayer() != nil {
-        return emptyResponse, targetPlayer.CheckPlayer()
+	targetPlayer, targetPlayerErr := cc.GetExistingPlayer(msg.PlayerId)
+    if targetPlayerErr != nil {
+        return emptyResponse, targetPlayerErr
     }
 
     substation := cc.GetSubstation(targetPlayer.GetSubstationId())

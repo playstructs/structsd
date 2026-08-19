@@ -15,7 +15,7 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    activePlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
         return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "fleet_move")
     }
@@ -37,16 +37,29 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
         return emptyResponse, types.NewObjectNotFoundError("planet", msg.DestinationLocationId)
     }
 
+	if fleet.GetLocationId() == msg.DestinationLocationId {
+		return &types.MsgFleetMoveResponse{Fleet: &fleet.Fleet}, nil
+	}
+
     // Is the Fleet able to move?
     readinessError := fleet.PlanetMoveReadinessCheck()
     if (readinessError != nil) {
         return emptyResponse, readinessError
     }
 
-    if fleet.GetLocationId() != msg.DestinationLocationId {
-        if fleet.GetPlanet().GetLocationListStart() == msg.FleetId {
-            _ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: msg.FleetId, PlanetId: fleet.GetLocationId(), Status: types.RaidStatus_attackerRetreated}})
+    // Foreign destinations only: capacity is 1 + locationListExtra.
+    if fleet.GetOwner().GetPlanetId() != destination.GetPlanetId() {
+        if destination.GetLocationListCount() >= destination.GetLocationListCapacity() {
+            return emptyResponse, types.NewFleetStateError(
+                fleet.GetFleetId(), "queue_full", "move",
+            ).WithPosition(destination.GetLocationListCount())
         }
+    }
+
+    // A moving fleet that heads its current planet's visitor queue is a raider
+    // abandoning the raid. (The same-destination no-op returned earlier.)
+    if fleet.GetPlanet().GetLocationListStart() == msg.FleetId {
+        _ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: msg.FleetId, PlanetId: fleet.GetLocationId(), Status: types.RaidStatus_attackerRetreated}})
     }
 
     fleet.SetLocationToPlanet(destination)

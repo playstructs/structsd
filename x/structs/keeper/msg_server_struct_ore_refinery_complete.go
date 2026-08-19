@@ -19,7 +19,7 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    callingPlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
        return emptyResponse, err
     }
@@ -44,11 +44,11 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
         return emptyResponse, refiningReadinessError
     }
 
-    activeOreRefiningSystemBlockString := strconv.FormatUint(structure.GetBlockStartOreRefine() , 10)
+    activeOreRefiningSystemBlockString := strconv.FormatUint(structure.GetPlanet().GetBlockStartOreRefine() , 10)
     hashInput := structure.StructId + "REFINE" + activeOreRefiningSystemBlockString + "NONCE" + msg.Nonce
 
     blockHeight := uint64(ctx.BlockHeight())
-    blockStart := structure.GetBlockStartOreRefine()
+    blockStart := structure.GetPlanet().GetBlockStartOreRefine()
     if blockHeight < blockStart {
         return emptyResponse, sdkerrors.Wrapf(types.ErrInvalidParameters, "block height %d precedes start block %d", blockHeight, blockStart)
     }

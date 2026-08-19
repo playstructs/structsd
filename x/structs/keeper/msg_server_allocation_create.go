@@ -2,8 +2,8 @@ package keeper
 
 import (
 	"context"
-	"structs/x/structs/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"structs/x/structs/types"
 )
 
 func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocationCreate) (*types.MsgAllocationCreateResponse, error) {
@@ -15,15 +15,18 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    callingPlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
        return emptyResponse, err
     }
 
     // If no controller set, then make it the Creator
-    if (msg.Controller == ""){
+	if msg.Controller == "" {
         msg.Controller = callingPlayer.GetPlayerId()
     }
+	if _, err := cc.GetExistingPlayer(msg.Controller); err != nil {
+		return emptyResponse, err
+	}
 
     sourceObject := cc.GetPermissionedObject(msg.SourceObjectId)
     if sourceObject == nil {

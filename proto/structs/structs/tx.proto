@@ -46,6 +46,10 @@ service Msg {
   rpc GuildBankMint                                 (MsgGuildBankMint                                 ) returns (MsgGuildBankMintResponse );
   rpc GuildBankRedeem                               (MsgGuildBankRedeem                               ) returns (MsgGuildBankRedeemResponse );
   rpc GuildBankConfiscateAndBurn                    (MsgGuildBankConfiscateAndBurn                    ) returns (MsgGuildBankConfiscateAndBurnResponse );
+  rpc GuildBankConvert                              (MsgGuildBankConvert                              ) returns (MsgGuildBankConvertResponse );
+  rpc GuildBankConvertToken                         (MsgGuildBankConvertToken                         ) returns (MsgGuildBankConvertTokenResponse );
+  rpc GuildUpdateBankConvertInFee                   (MsgGuildUpdateBankConvertInFee                   ) returns (MsgGuildUpdateResponse );
+  rpc GuildUpdateBankConvertOutFee                  (MsgGuildUpdateBankConvertOutFee                  ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateOwnerId                            (MsgGuildUpdateOwnerId                            ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateEntrySubstationId                  (MsgGuildUpdateEntrySubstationId                  ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateEndpoint                           (MsgGuildUpdateEndpoint                           ) returns (MsgGuildUpdateResponse );
@@ -106,6 +110,7 @@ service Msg {
   rpc ReactorDefuse                  (MsgReactorDefuse                 ) returns (MsgReactorDefuseResponse);
   rpc ReactorBeginMigration          (MsgReactorBeginMigration         ) returns (MsgReactorBeginMigrationResponse);
   rpc ReactorCancelDefusion          (MsgReactorCancelDefusion         ) returns (MsgReactorCancelDefusionResponse);
+  rpc ReactorRestart                 (MsgReactorRestart                ) returns (MsgReactorRestartResponse);
 
   rpc StructActivate                 (MsgStructActivate                ) returns (MsgStructStatusResponse                  );
   rpc StructDeactivate               (MsgStructDeactivate              ) returns (MsgStructStatusResponse                  );
@@ -264,6 +269,9 @@ message MsgGuildBankMint {
   string creator  = 1;
   uint64 amountAlpha = 2;
   uint64 amountToken = 3;
+  // Optional; defaults to the signer's own guild. Named explicitly by an owner
+  // who is not a member, which is what a guild transfer produces.
+  string guildId = 4;
 }
 
 message MsgGuildBankMintResponse { }
@@ -278,6 +286,9 @@ message MsgGuildBankRedeem {
     (amino.dont_omitempty)   = true,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+  // Required and nonzero. The transaction fails rather than burning tokens
+  // when fees or the collateral ratio would return less alpha.
+  uint64 minAmountAlpha = 3;
 }
 
 message MsgGuildBankRedeemResponse { }
@@ -288,12 +299,63 @@ message MsgGuildBankConfiscateAndBurn {
   string creator  = 1;
   string address = 2;
   uint64 amountToken = 3;
+  // Optional; defaults to the signer's own guild. Named explicitly by an owner
+  // who is not a member, which is what a guild transfer produces.
+  string guildId = 4;
 }
 
 message MsgGuildBankConfiscateAndBurnResponse { }
 
 
+// MsgGuildBankConvert converts ualpha into a guild's alpha-backed token at the
+// current collateral ratio (ratio-preserving: increases collateral and supply
+// proportionally). The guild's bankConvertInFee is retained in the collateral
+// pool. minAmountToken is required and nonzero; it guards against ratio or fee
+// movement earlier in the block.
+message MsgGuildBankConvert {
+  option (cosmos.msg.v1.signer) = "creator";
 
+  string creator        = 1;
+  string guildId        = 2;
+  uint64 amountAlpha    = 3;
+  uint64 minAmountToken = 4;
+}
+
+message MsgGuildBankConvertResponse { }
+
+
+// MsgGuildBankConvertToken converts one guild token into another in a single
+// atomic transaction: source token -> ualpha (source guild bankConvertOutFee)
+// -> target token (target guild bankConvertInFee). Both guilds retain their fee
+// in their own collateral pool. The source guild is identified by the
+// amountToken denom (uguild.{guildId}); guildId names the target. minAmountToken
+// is required and nonzero and guards the final target-token output.
+message MsgGuildBankConvertToken {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator        = 1;
+  cosmos.base.v1beta1.Coin amountToken = 2 [
+    (gogoproto.nullable)     = false,
+    (amino.dont_omitempty)   = true,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  string guildId        = 3;
+  uint64 minAmountToken = 4;
+}
+
+message MsgGuildBankConvertTokenResponse { }
+
+
+
+// MsgGuildCreate founds a guild, either by solving the chain-global charter
+// proof-of-work or by spending a reactor's one-time entitlement.
+//
+// The signer is the solver, not necessarily the owner. Work is bound to the
+// (solver, founder) pair so a pool searches disjoint spaces and nobody can be
+// robbed of credit or have the guild redirected. When founderPlayerId names
+// somebody else, the founder's consent is proved by an offline signature over a
+// preimage the chain rebuilds, collected before the grind starts so the solver
+// can broadcast the instant they win.
 message MsgGuildCreate {
   option (cosmos.msg.v1.signer) = "creator";
 
@@ -301,6 +363,19 @@ message MsgGuildCreate {
   string reactorId          = 2;
   string endpoint           = 3;
   string entrySubstationId  = 4;
+
+  string proof              = 5;
+  string nonce              = 6;
+
+  // founderPlayerId is who ends up owning the guild. Empty means the signer.
+  string founderPlayerId    = 7;
+
+  // address, proofPubKey and proofSignature carry the founder's consent and are
+  // all empty when the signer is the founder. The names satisfy the ante's
+  // pubKeyMessage interface; see OptionalSignatureMessages.
+  string address            = 8;
+  string proofPubKey        = 9;
+  string proofSignature     = 10;
 }
 
 message MsgGuildCreateResponse { string guildId = 1; }
@@ -345,6 +420,38 @@ message MsgGuildUpdatePrimaryReactor {
 }
 
 
+// MsgGuildUpdateBankConvertInFee sets the fee (LegacyDec, 0.0 inclusive to 1.0
+// exclusive) retained in
+// collateral when converting ualpha into this guild's token. Permission:
+// PermAdmin on the guild object.
+message MsgGuildUpdateBankConvertInFee {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string guildId            = 2;
+  string bankConvertInFee   = 3 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+// MsgGuildUpdateBankConvertOutFee sets the fee (LegacyDec, 0.0 inclusive to 1.0
+// exclusive) retained in
+// collateral when redeeming this guild's token for ualpha. Permission:
+// PermAdmin on the guild object.
+message MsgGuildUpdateBankConvertOutFee {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string guildId            = 2;
+  string bankConvertOutFee  = 3 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+}
+
 message MsgGuildUpdateJoinInfusionMinimum {
   option (cosmos.msg.v1.signer) = "creator";
 
@@ -375,6 +482,9 @@ message MsgGuildUpdateEntryRank {
 
   string creator       = 1;
   uint64 newEntryRank  = 2;
+  // Optional; defaults to the signer's own guild. Named explicitly by an owner
+  // who is not a member, which is what a guild transfer produces.
+  string guildId       = 3;
 }
 
 message MsgGuildUpdateResponse{}
@@ -638,6 +748,10 @@ message MsgPlayerUpdateGuildRank {
   string creator      = 1;
   string playerId     = 2;
   uint64 guildRank    = 3;
+  // Optional; defaults to the signer's own guild. Named explicitly by an owner
+  // who is not a member, which is what a guild transfer produces. The target
+  // must be a member of the named guild either way.
+  string guildId      = 4;
 }
 
 message MsgPlayerUpdateGuildRankResponse {}
@@ -753,6 +867,28 @@ message MsgReactorCancelDefusion {
 //
 // Since: cosmos-sdk 0.46
 message MsgReactorCancelDefusionResponse {}
+
+// MsgReactorRestart reconciles a reactor's infusions against live staking state.
+//
+// Energy is gated to zero while a validator is jailed. A routine unjail restores
+// it automatically when staking rebonds the validator, but an operator who
+// unjails while sitting below the active-set cutoff is never rebonded and so
+// never recovers on its own. This message is that recovery path.
+//
+// Intentionally permissionless: it only ever writes state derived from the
+// staking module, so it cannot grant energy that the validator is not owed. That
+// also makes it usable in the other direction, to force-gate a jailed reactor.
+message MsgReactorRestart {
+  option (cosmos.msg.v1.signer)      = "creator";
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string creator           = 1;
+  string validator_address = 2 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
+}
+
+// MsgReactorRestartResponse
+message MsgReactorRestartResponse {}
 
 
 message MsgStructStatusResponse {

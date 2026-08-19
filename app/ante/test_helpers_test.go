@@ -21,23 +21,41 @@ func newTestCtx() sdk.Context {
 
 // mockAnteKeeper implements StructsAnteKeeper for testing.
 type mockAnteKeeper struct {
-	playerIndexes    map[string]uint64
-	permissions      map[string]types.Permission
-	gridAttrs        map[string]uint64
-	msgCounts        map[string]uint64
-	throttleKeys     map[string]bool
-	hasTransientStore bool
+	playerIndexes map[string]uint64
+	permissions   map[string]types.Permission
+	gridAttrs     map[string]uint64
+	msgCounts     map[string]uint64
+	throttleKeys  map[string]bool
+	// throttleAuthDenied is a deny-list keyed by "<creator>|<targetId>", so the
+	// default is authorized and a test only has to name the pairs it wants
+	// refused. The real keeper answers from object ownership and delegation,
+	// which is covered against a live keeper in x/structs/keeper.
+	throttleAuthDenied map[string]bool
+	// throttleAuthDenyFn refuses a whole class of targets at once, for tests
+	// that generate the ids they are checking rather than naming them.
+	throttleAuthDenyFn func(creator, targetId string) bool
+	hasTransientStore  bool
+	// incrementOrder records the order IncrementPlayerMsgCount was called in,
+	// so a test can assert the cap loop iterates players deterministically.
+	incrementOrder []string
 }
 
 func newMockAnteKeeper() *mockAnteKeeper {
 	return &mockAnteKeeper{
-		playerIndexes:    make(map[string]uint64),
-		permissions:      make(map[string]types.Permission),
-		gridAttrs:        make(map[string]uint64),
-		msgCounts:        make(map[string]uint64),
-		throttleKeys:     make(map[string]bool),
-		hasTransientStore: true,
+		playerIndexes:      make(map[string]uint64),
+		permissions:        make(map[string]types.Permission),
+		gridAttrs:          make(map[string]uint64),
+		msgCounts:          make(map[string]uint64),
+		throttleKeys:       make(map[string]bool),
+		throttleAuthDenied: make(map[string]bool),
+		hasTransientStore:  true,
 	}
+}
+
+// denyThrottleTarget makes the keeper refuse creator's authorization over
+// targetId, the way a real keeper refuses somebody else's object.
+func (m *mockAnteKeeper) denyThrottleTarget(creator, targetId string) {
+	m.throttleAuthDenied[creator+"|"+targetId] = true
 }
 
 func (m *mockAnteKeeper) HasTransientStore() bool {
@@ -57,6 +75,7 @@ func (m *mockAnteKeeper) GetGridAttribute(_ context.Context, gridAttributeId str
 }
 
 func (m *mockAnteKeeper) IncrementPlayerMsgCount(_ context.Context, playerId string, delta uint64) uint64 {
+	m.incrementOrder = append(m.incrementOrder, playerId)
 	m.msgCounts[playerId] += delta
 	return m.msgCounts[playerId]
 }
@@ -71,6 +90,13 @@ func (m *mockAnteKeeper) HasThrottleKey(_ context.Context, throttleKey string) b
 
 func (m *mockAnteKeeper) SetThrottleKey(_ context.Context, throttleKey string) {
 	m.throttleKeys[throttleKey] = true
+}
+
+func (m *mockAnteKeeper) ThrottleTargetAuthorized(_ context.Context, creator string, _ types.ObjectType, targetId string, _ types.Permission) bool {
+	if m.throttleAuthDenyFn != nil && m.throttleAuthDenyFn(creator, targetId) {
+		return false
+	}
+	return !m.throttleAuthDenied[creator+"|"+targetId]
 }
 
 // mockTx implements sdk.Tx for testing.

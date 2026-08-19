@@ -93,13 +93,29 @@ func (cache *SubstationCache) GetLoad() (uint64) {
     return cache.CC.GetGridAttribute(cache.LoadAttributeId)
 }
 
+// GetAvailableCapacity reports the power this substation still has to give.
+//
+// Load is allowed to exceed capacity: an allocation feeding a substation can
+// shrink or vanish mid-block, and only GridCascade in the EndBlocker forces load
+// back under capacity — later still if it cannot shed enough and gives up. In
+// that window a plain capacity - load wraps to nearly 2^64, and the gates built
+// on this read it as unlimited headroom rather than none, so an over-subscribed
+// substation would sell power it does not have and deepen the brownout it is
+// already in. Clamping matches PlayerCache.GetAvailableCapacity and the
+// comparisons SetInitialPower and SetDynamicPower make before subtracting.
 func (cache *SubstationCache) GetAvailableCapacity() (uint64) {
-    return cache.GetCapacity() - cache.GetLoad()
+    capacity := cache.GetCapacity()
+    load := cache.GetLoad()
+
+    if load >= capacity {
+        return 0
+    }
+
+    return capacity - load
 }
 
 func (cache *SubstationCache) GetOwner() (*PlayerCache) {
-    player, _ := cache.CC.GetPlayer( cache.GetOwnerId() )
-    return player
+    return cache.CC.GetPlayer( cache.GetOwnerId() )
 }
 
 func (cache *SubstationCache) Delete(migrationSubstationId string) {

@@ -18,7 +18,7 @@ func (k msgServer) ReactorInfuse(goCtx context.Context, msg *types.MsgReactorInf
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    callingPlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
        return emptyResponse, err
     }

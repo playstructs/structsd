@@ -1,4 +1,10 @@
 version: 1
+build:
+  # Ignite discovers the chain binary by scanning for main packages, and there
+  # are two: this one and x/structs/types/internal/maketables, the generator for
+  # the pinned Unicode tables. Naming the real one keeps the generator from
+  # making the build ambiguous.
+  main: cmd/structsd
 accounts:
 - name: alice
   coins:
@@ -40,6 +46,20 @@ genesis:
       params:
         signed_blocks_window: "35000"
         min_signed_per_window: "0.05"
+    structs:
+      params:
+        # Dev-chain charter settings. At the production difficulty range a fresh
+        # chain cannot produce a guild for about three weeks, which is why these
+        # are params at all: tests/test_chain.sh founds several.
+        #
+        # 2 is the minimum range and collapses the whole decay curve into two
+        # blocks: maximally hard while the puzzle is younger than that, then one
+        # leading zero forever. Anything higher is unminable on a laptop for
+        # hundreds of blocks, since the curve only reaches difficulty 1 as the
+        # puzzle's age approaches the range. A reactor age of 5 blocks lets the
+        # genesis validator's reactor take the proof-free route almost at once.
+        guildCharterDifficultyRange: "2"
+        guildCharterReactorAge: "5"
     bank:
       denom_metadata:
       - "name": "alpha"

@@ -531,6 +531,7 @@ func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
 		PassiveWeaponry:        types.TechPassiveWeaponry_counterAttack,
 		CounterAttack:          1,
 		CounterAttackSameAmbit: 1,
+		CanDefend:              true,
 	}
 	k.SetStructType(sdkCtx, defType)
 
@@ -737,6 +738,7 @@ func TestMsgStructAttackBlockerSortedBeforeLethalCounter(t *testing.T) {
 		PassiveWeaponry:        types.TechPassiveWeaponry_counterAttack,
 		CounterAttack:          1,
 		CounterAttackSameAmbit: 1,
+		CanDefend:              true,
 	}
 	k.SetStructType(sdkCtx, tankType)
 
@@ -753,6 +755,7 @@ func TestMsgStructAttackBlockerSortedBeforeLethalCounter(t *testing.T) {
 		PassiveWeaponry:        types.TechPassiveWeaponry_counterAttack,
 		CounterAttack:          3,
 		CounterAttackSameAmbit: 3,
+		CanDefend:              true,
 	}
 	k.SetStructType(sdkCtx, counterType)
 

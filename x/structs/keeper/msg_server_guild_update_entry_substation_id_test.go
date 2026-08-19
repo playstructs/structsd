@@ -31,7 +31,7 @@ func TestMsgGuildUpdateEntrySubstationId(t *testing.T) {
 	reactor = k.AppendReactor(ctx, reactor)
 
 	// Create guild
-	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, player)
+	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, player, "")
 	player.GuildId = guild.Id
 	k.SetPlayer(ctx, player)
 

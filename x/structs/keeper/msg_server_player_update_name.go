@@ -14,14 +14,14 @@ func (k msgServer) PlayerUpdateName(goCtx context.Context, msg *types.MsgPlayerU
 
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+	activePlayer, err := cc.GetSigningPlayer(msg.Creator)
 	if err != nil {
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "player_update_name")
 	}
 
-	player, err := cc.GetPlayer(msg.PlayerId)
+	player, err := cc.GetExistingPlayer(msg.PlayerId)
 	if err != nil {
-		return emptyResponse, types.NewObjectNotFoundError("player", msg.PlayerId)
+		return emptyResponse, err
 	}
 
 	permissionErr := player.CanUpdateUGCBy(activePlayer)

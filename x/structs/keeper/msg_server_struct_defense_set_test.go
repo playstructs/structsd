@@ -40,9 +40,10 @@ func TestMsgStructDefenseSet(t *testing.T) {
 	structType := types.StructType{
 		Id:                 1,
 		Type:               "Defender",
-		Category:           types.ObjectType_planet,
+		Category:           types.ObjectType_fleet,
 		DefendChangeCharge: 10,
 		PossibleAmbit:      1 << uint64(types.Ambit_land),
+		CanDefend:          true,
 	}
 	k.SetStructType(sdkCtx, structType)
 
@@ -98,6 +99,38 @@ func TestMsgStructDefenseSet(t *testing.T) {
 		})
 		require.Error(t, err)
 	})
+
+	t.Run("struct type cannot defend", func(t *testing.T) {
+		nonDefenderType := types.StructType{
+			Id:                 2,
+			Type:               "NonDefender",
+			Category:           types.ObjectType_planet,
+			DefendChangeCharge: 10,
+			PossibleAmbit:      1 << uint64(types.Ambit_land),
+			CanDefend:          false,
+		}
+		k.SetStructType(sdkCtx, nonDefenderType)
+
+		nonDefenderStruct := testAppendStruct(k, sdkCtx, types.Struct{
+			Creator:      player.Creator,
+			Owner:        player.Id,
+			Type:         nonDefenderType.Id,
+			LocationId:   planet.Id,
+			LocationType: types.ObjectType_planet,
+		})
+		nonDefStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, nonDefenderStruct.Id)
+		testSetStructAttributeFlagAdd(k, sdkCtx, nonDefStatusAttrId, uint64(types.StructStateBuilt))
+		testSetStructAttributeFlagAdd(k, sdkCtx, nonDefStatusAttrId, uint64(types.StructStateOnline))
+
+		k.SetGridAttribute(sdkCtx, lastActionAttrId, uint64(0))
+		_, err := ms.StructDefenseSet(wctx, &types.MsgStructDefenseSet{
+			Creator:           player.Creator,
+			DefenderStructId:  nonDefenderStruct.Id,
+			ProtectedStructId: protectedStruct.Id,
+		})
+		require.Error(t, err)
+		require.ErrorIs(t, err, types.ErrStructCannotDefend)
+	})
 }
 
 // TestMsgStructDefenseSetCommandShipNotRequired verifies the v0.19.0 change
@@ -134,6 +167,7 @@ func TestMsgStructDefenseSetCommandShipNotRequired(t *testing.T) {
 		Category:           types.ObjectType_fleet,
 		DefendChangeCharge: 10,
 		PossibleAmbit:      1 << uint64(types.Ambit_space),
+		CanDefend:          true,
 	}
 	k.SetStructType(sdkCtx, fleetStructType)
 

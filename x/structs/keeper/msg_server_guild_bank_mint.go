@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	//sdkerrors "cosmossdk.io/errors"
-	"structs/x/structs/types"
 	"cosmossdk.io/math"
+	"structs/x/structs/types"
 )
 
 func (k msgServer) GuildBankMint(goCtx context.Context, msg *types.MsgGuildBankMint) (*types.MsgGuildBankMintResponse, error) {
@@ -14,20 +14,32 @@ func (k msgServer) GuildBankMint(goCtx context.Context, msg *types.MsgGuildBankM
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
-
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    activePlayer, lookupErr := cc.GetPlayerByAddress(msg.Creator)
+    activePlayer, lookupErr := cc.GetSigningPlayer(msg.Creator)
     if lookupErr != nil {
         return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_bank_mint")
     }
 
-    guild := cc.GetGuild(activePlayer.GetGuildId())
+	transferError := activePlayer.CanTransferTokensBy(activePlayer)
+	if transferError != nil {
+		return emptyResponse, transferError
+	}
+
+    guildId := msg.GuildId
+    if guildId == "" {
+        guildId = activePlayer.GetGuildId()
+    }
+
+    guild := cc.GetGuild(guildId)
+    if guild.CheckGuild() != nil {
+        return emptyResponse, types.NewObjectNotFoundError("guild", guildId)
+    }
 
     permissionError := guild.CanMintTokenBy(activePlayer)
-    if (permissionError != nil) {
+	if permissionError != nil {
         return emptyResponse, permissionError
     }
 

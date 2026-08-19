@@ -121,6 +121,7 @@ var (
 	ErrStructNoRefiningSystem = sdkerrors.Register(ModuleName, 1262, "struct has no refining system")
 	ErrStructNoStealthSystem = sdkerrors.Register(ModuleName, 1263, "struct has no stealth system")
 	ErrStructNoGenerationSystem = sdkerrors.Register(ModuleName, 1264, "struct has no generation system")
+	ErrStructCannotDefend    = sdkerrors.Register(ModuleName, 1265, "struct cannot defend")
 	ErrStructInfuse          = sdkerrors.Register(ModuleName, 1270, "struct fuel infusion failed")
 )
 
@@ -195,6 +196,8 @@ var (
 	ErrGuildMinimumNotMet         = sdkerrors.Register(ModuleName, 1507, "guild join minimum not met")
 	ErrInvalidGuildJoinBypassLevel = sdkerrors.Register(ModuleName, 1508, "invalid guild join bypass level")
 	ErrGuildNameTaken              = sdkerrors.Register(ModuleName, 1509, "guild name already taken")
+	ErrGuildBankDestination        = sdkerrors.Register(ModuleName, 1510, "guild bank token destination denied")
+	ErrGuildBankConfiscation       = sdkerrors.Register(ModuleName, 1511, "guild bank confiscation denied")
 )
 
 // -----------------------------------------------------------------------------
@@ -256,6 +259,7 @@ var (
 	ErrParameterBelowMinimum = sdkerrors.Register(ModuleName, 1711, "parameter below minimum")
 	ErrParameterAboveMaximum = sdkerrors.Register(ModuleName, 1712, "parameter above maximum")
 	ErrParameterExceedsCapacity = sdkerrors.Register(ModuleName, 1713, "parameter exceeds available capacity")
+	ErrAgreementSettlement   = sdkerrors.Register(ModuleName, 1720, "agreement settlement failed")
 )
 
 // -----------------------------------------------------------------------------
@@ -269,6 +273,7 @@ var (
 	ErrAddressProofMismatch = sdkerrors.Register(ModuleName, 1754, "address proof mismatch")
 	ErrAddressSignatureInvalid = sdkerrors.Register(ModuleName, 1755, "address signature invalid")
 	ErrAddressAlreadyRegistered = sdkerrors.Register(ModuleName, 1756, "address already registered")
+	ErrDelegationTransfer   = sdkerrors.Register(ModuleName, 1760, "delegation transfer failed")
 )
 
 // -----------------------------------------------------------------------------

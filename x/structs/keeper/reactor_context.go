@@ -38,10 +38,14 @@ func (cc *CurrentContext) GenesisImportReactorInfusions(reactor types.Reactor) {
 		return
 	}
 
-	validator, err := cc.k.stakingKeeper.GetValidator(cc.ctx, valAddr)
-	if err != nil {
+	validator, validatorErr := cc.k.stakingKeeper.GetValidator(cc.ctx, valAddr)
+	if validatorErr != nil {
 		return
 	}
+
+	// A jailed validator imports at a zero ratio, so a chain restarted while a
+	// validator sits in jail does not hand back energy the gate had removed.
+	ratio := reactorEnergyRatio(validator, validatorErr)
 
 	delegations, err := cc.k.stakingKeeper.GetValidatorDelegations(cc.ctx, valAddr)
 	if err != nil {
@@ -54,19 +58,15 @@ func (cc *CurrentContext) GenesisImportReactorInfusions(reactor types.Reactor) {
 			continue
 		}
 
-		player, err := cc.GetPlayerByIndex(playerIndex)
-		if err != nil {
-			continue
-		}
+		player := cc.GetPlayerByIndex(playerIndex)
 
 		infusion := cc.UpsertInfusion(
 			types.ObjectType_reactor, reactor.Id,
 			delegation.DelegatorAddress, player.GetPlayerId())
 
-		delegationShare := delegation.Shares.Quo(validator.DelegatorShares).Mul(
-			math.LegacyNewDecFromInt(validator.Tokens)).RoundInt()
+		delegationShare := delegationShareValue(delegation.Shares, validator)
 
-		infusion.SetRatio(types.ReactorFuelToEnergyConversion)
+		infusion.SetRatio(ratio)
 		infusion.SetFuelAndCommission(delegationShare.Uint64(), reactor.DefaultCommission)
 
 		delegatorAddr, err := sdk.AccAddressFromBech32(delegation.DelegatorAddress)

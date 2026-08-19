@@ -96,6 +96,10 @@ help:
 	@echo "  build-windows-amd64  Cross-compile for windows/amd64"
 	@echo "  clean                Remove build artifacts"
 	@echo ""
+	@echo "Unicode:"
+	@echo "  check_unicode        Compare this toolchain's Unicode version to the pinned one"
+	@echo "  unicode-tables       Regenerate the pinned tables (consensus-breaking)"
+	@echo ""
 	@echo "Proto:"
 	@echo "  proto-all            Format, lint, and generate all proto outputs"
 	@echo "  proto-gen            Generate Go protobuf files (gogo + pulsar)"
@@ -152,6 +156,35 @@ install: check_version go.sum
 
 clean:
 	rm -rf $(BUILDDIR)/
+
+###############################################################################
+###                            Unicode Tables                               ###
+###############################################################################
+
+# The chain's accepted character set for names and pfps is fixed by the
+# checked-in Unicode 15.0.0 tables in x/structs/types/unicode_tables.go, not by
+# the Unicode tables of whichever toolchain builds the binary. See AGENTS.md.
+#
+# Neither target is wired into build, and unicode-tables must not be run to make
+# a test pass: regenerating the tables changes which names the chain accepts and
+# is a consensus-breaking change requiring an upgrade handler.
+
+# Reports whether this toolchain still ships the pinned Unicode version.
+# A mismatch does not affect consensus -- the binary uses the checked-in tables
+# either way -- it only means TestPinnedTablesMatchToolchain can no longer
+# compare them against the standard library and silently skips.
+check_unicode:
+	@go run ./x/structs/types/internal/maketables -check
+
+# Regenerate the pinned tables. Only correct when deliberately moving the pinned
+# Unicode version, on a toolchain shipping the version being moved to.
+unicode-tables:
+	@cd x/structs/types && go generate ./...
+	@echo ""
+	@echo "WARNING: the pinned Unicode tables changed. This alters the character set"
+	@echo "the chain accepts for names and re-keys the guild name index. It needs an"
+	@echo "upgrade handler, a new digest in TestPinnedTablesChecksum, and a bump of"
+	@echo "PinnedUnicodeVersion in x/structs/types/unicode_pinned.go."
 
 ###############################################################################
 ###                          Cross-Compilation                              ###
@@ -346,4 +379,4 @@ endif
 ###                              Phony Targets                              ###
 ###############################################################################
 
-.PHONY: all build install clean check_version help go.sum build-all
+.PHONY: all build install clean check_version check_unicode unicode-tables help go.sum build-all

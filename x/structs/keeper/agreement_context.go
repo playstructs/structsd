@@ -77,11 +77,15 @@ func (cc *CurrentContext) AgreementExpirations() {
 	currentBlock := uint64(uctx.BlockHeight())
 
 	// Get List of Agreements
+	// This runs in the EndBlocker, so a failure on one agreement is logged and
+	// the rest still expire: aborting would strand every later agreement in the
+	// list with its provider load still counted, and there is no retry.
 	agreements := cc.k.GetAllAgreementIdByExpirationIndex(cc.ctx, currentBlock)
 	for _, agreementId := range agreements {
 		cc.k.logger.Info("Expired Agreement", "agreementId", agreementId)
 		agreement := cc.GetAgreement(agreementId)
-		agreement.GetProvider().Checkpoint()
-		agreement.Expire()
+		if err := agreement.Expire(); err != nil {
+			cc.k.logger.Error("Expired Agreement could not be settled", "agreementId", agreementId, "error", err)
+		}
 	}
 }

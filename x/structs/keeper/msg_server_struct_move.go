@@ -36,7 +36,7 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
     // indexer for UI requirements
     k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    callingPlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
        return emptyResponse, err
     }
@@ -47,6 +47,10 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
     permissionError := structure.CanBePlayedBy(callingPlayer)
     if (permissionError != nil) {
         return emptyResponse, permissionError
+    }
+
+    if structure.IsDestroyed() {
+        return emptyResponse, types.NewStructStateError(msg.StructId, "destroyed", "active", "move")
     }
 
     // Check Player Charge

@@ -36,7 +36,7 @@ func (k msgServer) GuildUpdatePrimaryReactor(goCtx context.Context, msg *types.M
 	// Indexer activity record (mirrors the other guild-update handlers).
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, err := cc.GetPlayerByAddress(msg.Creator)
+	player, err := cc.GetSigningPlayer(msg.Creator)
 	if err != nil {
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_update_primary_reactor")
 	}

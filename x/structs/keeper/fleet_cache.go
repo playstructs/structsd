@@ -50,8 +50,7 @@ func (cache *FleetCache) LoadFleet() (found bool) {
         fleet.Id = cache.FleetId
         fleet.Owner = cache.PlayerId
 
-        player, _ := cache.CC.GetPlayer(cache.PlayerId)
-        player.SetFleetId(cache.FleetId)
+        cache.CC.GetPlayer(cache.PlayerId).SetFleetId(cache.FleetId)
 
         cache.Fleet = fleet
         cache.Changed = true
@@ -83,8 +82,7 @@ func (cache *FleetCache) GetLocationListForward()   (string)        { return cac
 func (cache *FleetCache) GetLocationListBackward()  (string)        { return cache.GetFleet().LocationListBackward }
 
 func (cache *FleetCache) GetOwner()  (*PlayerCache)  {
-    player, _ := cache.CC.GetPlayer( cache.PlayerId )
-    return player
+    return cache.CC.GetPlayer( cache.PlayerId )
 }
 
 func (cache *FleetCache) GetCommandStruct() (*StructCache)  {
@@ -183,6 +181,10 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
             previousPlanet.SetLocationListStart(previousBackwardFleetId)
             if (previousBackwardFleetId != "") {
                 previousBackwardFleet.SetLocationListForward("")
+            } else {
+                // Sole visitor leaving: Start was cleared above; clear Last too
+                // so the planet does not keep a dangling pointer at this fleet.
+                previousPlanet.SetLocationListLast("")
             }
         // The back of the list
         } else if (previousBackwardFleetId == "") {
@@ -197,6 +199,7 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
 
         cache.SetLocationListForward("")
         cache.SetLocationListBackward("")
+        previousPlanet.DecrementLocationListCount()
     }
 
     // New destination isn't home - add it to the end of the list
@@ -211,6 +214,7 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
         }
 
         cache.GetPlanet().SetLocationListLast(cache.GetFleetId())
+        cache.GetPlanet().IncrementLocationListCount()
 
         cache.Fleet.Status = types.FleetStatus_away
     } else {

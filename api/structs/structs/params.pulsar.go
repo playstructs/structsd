@@ -15,12 +15,16 @@ import (
 )
 
 var (
-	md_Params protoreflect.MessageDescriptor
+	md_Params                             protoreflect.MessageDescriptor
+	fd_Params_guildCharterDifficultyRange protoreflect.FieldDescriptor
+	fd_Params_guildCharterReactorAge      protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_structs_structs_params_proto_init()
 	md_Params = File_structs_structs_params_proto.Messages().ByName("Params")
+	fd_Params_guildCharterDifficultyRange = md_Params.Fields().ByName("guildCharterDifficultyRange")
+	fd_Params_guildCharterReactorAge = md_Params.Fields().ByName("guildCharterReactorAge")
 }
 
 var _ protoreflect.Message = (*fastReflection_Params)(nil)
@@ -88,6 +92,18 @@ func (x *fastReflection_Params) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_Params) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.GuildCharterDifficultyRange != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.GuildCharterDifficultyRange)
+		if !f(fd_Params_guildCharterDifficultyRange, value) {
+			return
+		}
+	}
+	if x.GuildCharterReactorAge != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.GuildCharterReactorAge)
+		if !f(fd_Params_guildCharterReactorAge, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -103,6 +119,10 @@ func (x *fastReflection_Params) Range(f func(protoreflect.FieldDescriptor, proto
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_Params) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
+	case "structs.structs.Params.guildCharterDifficultyRange":
+		return x.GuildCharterDifficultyRange != uint64(0)
+	case "structs.structs.Params.guildCharterReactorAge":
+		return x.GuildCharterReactorAge != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Params"))
@@ -119,6 +139,10 @@ func (x *fastReflection_Params) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Params) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
+	case "structs.structs.Params.guildCharterDifficultyRange":
+		x.GuildCharterDifficultyRange = uint64(0)
+	case "structs.structs.Params.guildCharterReactorAge":
+		x.GuildCharterReactorAge = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Params"))
@@ -135,6 +159,12 @@ func (x *fastReflection_Params) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_Params) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
+	case "structs.structs.Params.guildCharterDifficultyRange":
+		value := x.GuildCharterDifficultyRange
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.Params.guildCharterReactorAge":
+		value := x.GuildCharterReactorAge
+		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Params"))
@@ -155,6 +185,10 @@ func (x *fastReflection_Params) Get(descriptor protoreflect.FieldDescriptor) pro
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Params) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
+	case "structs.structs.Params.guildCharterDifficultyRange":
+		x.GuildCharterDifficultyRange = value.Uint()
+	case "structs.structs.Params.guildCharterReactorAge":
+		x.GuildCharterReactorAge = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Params"))
@@ -175,6 +209,10 @@ func (x *fastReflection_Params) Set(fd protoreflect.FieldDescriptor, value proto
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Params) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "structs.structs.Params.guildCharterDifficultyRange":
+		panic(fmt.Errorf("field guildCharterDifficultyRange of message structs.structs.Params is not mutable"))
+	case "structs.structs.Params.guildCharterReactorAge":
+		panic(fmt.Errorf("field guildCharterReactorAge of message structs.structs.Params is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Params"))
@@ -188,6 +226,10 @@ func (x *fastReflection_Params) Mutable(fd protoreflect.FieldDescriptor) protore
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_Params) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "structs.structs.Params.guildCharterDifficultyRange":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.Params.guildCharterReactorAge":
+		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Params"))
@@ -257,6 +299,12 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
+		if x.GuildCharterDifficultyRange != 0 {
+			n += 1 + runtime.Sov(uint64(x.GuildCharterDifficultyRange))
+		}
+		if x.GuildCharterReactorAge != 0 {
+			n += 1 + runtime.Sov(uint64(x.GuildCharterReactorAge))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -285,6 +333,16 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.GuildCharterReactorAge != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.GuildCharterReactorAge))
+			i--
+			dAtA[i] = 0x10
+		}
+		if x.GuildCharterDifficultyRange != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.GuildCharterDifficultyRange))
+			i--
+			dAtA[i] = 0x8
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -335,6 +393,44 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Params: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuildCharterDifficultyRange", wireType)
+				}
+				x.GuildCharterDifficultyRange = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.GuildCharterDifficultyRange |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuildCharterReactorAge", wireType)
+				}
+				x.GuildCharterReactorAge = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.GuildCharterReactorAge |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -388,6 +484,15 @@ type Params struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	// guildCharterDifficultyRange is the block count at which the guild charter
+	// proof-of-work bottoms out at one leading zero. Must be at least 2:
+	// CalculateDifficulty divides by log10(range), so 1 divides by zero and 0
+	// yields negative infinity.
+	GuildCharterDifficultyRange uint64 `protobuf:"varint,1,opt,name=guildCharterDifficultyRange,proto3" json:"guildCharterDifficultyRange,omitempty"`
+	// guildCharterReactorAge is how many blocks after creation a reactor becomes
+	// eligible to found one guild without solving the puzzle.
+	GuildCharterReactorAge uint64 `protobuf:"varint,2,opt,name=guildCharterReactorAge,proto3" json:"guildCharterReactorAge,omitempty"`
 }
 
 func (x *Params) Reset() {
@@ -410,6 +515,20 @@ func (*Params) Descriptor() ([]byte, []int) {
 	return file_structs_structs_params_proto_rawDescGZIP(), []int{0}
 }
 
+func (x *Params) GetGuildCharterDifficultyRange() uint64 {
+	if x != nil {
+		return x.GuildCharterDifficultyRange
+	}
+	return 0
+}
+
+func (x *Params) GetGuildCharterReactorAge() uint64 {
+	if x != nil {
+		return x.GuildCharterReactorAge
+	}
+	return 0
+}
+
 var File_structs_structs_params_proto protoreflect.FileDescriptor
 
 var file_structs_structs_params_proto_rawDesc = []byte{
@@ -418,21 +537,28 @@ var file_structs_structs_params_proto_rawDesc = []byte{
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x1a,
 	0x11, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2f, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f,
-	0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x2b, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61,
-	0x6d, 0x73, 0x3a, 0x21, 0xe8, 0xa0, 0x1f, 0x01, 0x8a, 0xe7, 0xb0, 0x2a, 0x18, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2f, 0x78, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x50,
-	0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x50,
-	0x61, 0x72, 0x61, 0x6d, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f,
-	0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02,
-	0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65,
-	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xa5, 0x01, 0x0a, 0x06, 0x50, 0x61, 0x72,
+	0x61, 0x6d, 0x73, 0x12, 0x40, 0x0a, 0x1b, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x68, 0x61, 0x72,
+	0x74, 0x65, 0x72, 0x44, 0x69, 0x66, 0x66, 0x69, 0x63, 0x75, 0x6c, 0x74, 0x79, 0x52, 0x61, 0x6e,
+	0x67, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x1b, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x43,
+	0x68, 0x61, 0x72, 0x74, 0x65, 0x72, 0x44, 0x69, 0x66, 0x66, 0x69, 0x63, 0x75, 0x6c, 0x74, 0x79,
+	0x52, 0x61, 0x6e, 0x67, 0x65, 0x12, 0x36, 0x0a, 0x16, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x68,
+	0x61, 0x72, 0x74, 0x65, 0x72, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x41, 0x67, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x16, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x68, 0x61, 0x72,
+	0x74, 0x65, 0x72, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x41, 0x67, 0x65, 0x3a, 0x21, 0xe8,
+	0xa0, 0x1f, 0x01, 0x8a, 0xe7, 0xb0, 0x2a, 0x18, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
+	0x78, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73,
+	0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73,
+	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73,
+	0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa,
+	0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

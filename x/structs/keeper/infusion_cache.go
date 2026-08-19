@@ -36,7 +36,13 @@ func (cache *InfusionCache) Commit() {
         cache.Changed = false
     }
 
-    if cache.IsEmpty() {
+    // Only a live, still-present, now-empty record should be queued for
+    // reclamation. Without the guards a just-deleted infusion re-enqueues
+    // itself (its zero-value cache reads IsEmpty), and a phantom cache from a
+    // probe of a nonexistent id (disownInfusion, ReactorInfusionDelegationRemoved)
+    // enqueues a row that the destruction sweep can never clear, growing
+    // EndBlock work forever.
+    if !cache.Deleted && cache.CheckInfusion() == nil && cache.IsEmpty() {
         cache.CC.k.AppendInfusionDestructionQueue(cache.CC.ctx, cache.GetInfusionId())
     }
 }
@@ -87,14 +93,19 @@ func (cache *InfusionCache) GetFuel() uint64              { if !cache.InfusionLo
 func (cache *InfusionCache) GetDefusing() uint64          { if !cache.InfusionLoaded { cache.LoadInfusion() }; return cache.Infusion.Defusing }
 
 func (cache *InfusionCache) GetOwner() *PlayerCache {
-    player, _ := cache.CC.GetPlayer(cache.GetOwnerId())
-    return player
+    return cache.CC.GetPlayer(cache.GetOwnerId())
 }
 
+// IsEmpty reports whether nothing of value remains in the infusion, making it
+// safe to reclaim. Fuel is part of the test because Power alone can be zeroed
+// while the underlying stake is still live: a reactor whose validator is jailed
+// runs at a zero energy ratio, which drives Power to zero without touching the
+// delegation. Reclaiming on Power alone would delete that record and strand the
+// delegator's fuel.
 func (cache *InfusionCache) IsEmpty() bool {
     if !cache.InfusionLoaded { cache.LoadInfusion() }
 
-    return cache.Infusion.Power == 0 && cache.Infusion.Defusing == 0
+    return cache.Infusion.Fuel == 0 && cache.Infusion.Power == 0 && cache.Infusion.Defusing == 0
 }
 
 // =========================================================================
@@ -120,25 +131,54 @@ func (cache *InfusionCache) applyGridDeltas(oldFuel, oldDestCap, oldPlayerCap ui
         destAllocId, found := cache.CC.k.GetAutoResizeAllocationBySource(cache.CC.ctx, cache.DestinationId)
         if found {
             totalCap := cache.CC.GetGridAttribute(cache.DestinationCapacityAttributeId)
-            cache.CC.AutoResizeAllocation(destAllocId, totalCap)
-        } else if newDestCap < oldDestCap {
+            found = cache.CC.AutoResizeAllocation(destAllocId, totalCap)
+
+            // The hook named an allocation that is gone, so nothing is tracking
+            // this capacity. Drop the hook and treat it as absent, or a decrease
+            // silently skips the cascade below and leaves load unshed.
+            if !found {
+                cache.CC.k.logger.Error("Stale auto-resize hook on infusion destination", "destinationId", cache.DestinationId, "allocationId", destAllocId)
+                cache.CC.k.ClearAutoResizeAllocationBySource(cache.CC.ctx, cache.DestinationId)
+            }
+        }
+
+        if !found && newDestCap < oldDestCap {
             cache.CC.k.AppendGridCascadeQueue(cache.CC.ctx, cache.DestinationId)
         }
     }
 
     // Player capacity
-    if oldPlayerCap != newPlayerCap {
-        playerId := cache.GetOwnerId()
-        playerCapAttrId := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerId)
-        cache.CC.SetGridAttributeDelta(playerCapAttrId, oldPlayerCap, newPlayerCap)
+    cache.applyPlayerCapacityDelta(cache.GetOwnerId(), oldPlayerCap, newPlayerCap)
+}
 
-        playerAllocId, found := cache.CC.k.GetAutoResizeAllocationBySource(cache.CC.ctx, playerId)
-        if found {
-            totalCap := cache.CC.GetGridAttribute(playerCapAttrId)
-            cache.CC.AutoResizeAllocation(playerAllocId, totalCap)
-        } else if newPlayerCap < oldPlayerCap {
-            cache.CC.k.AppendGridCascadeQueue(cache.CC.ctx, playerId)
+// applyPlayerCapacityDelta moves one player's share of an infusion's power.
+//
+// Split out of applyGridDeltas because SetPlayerId needs the same work against
+// two different players, withdrawing from the outgoing owner and crediting the
+// incoming one. Keeping it in one place is what stops a re-home from skipping
+// the auto-resize hook and the cascade the losing player is owed.
+func (cache *InfusionCache) applyPlayerCapacityDelta(playerId string, oldPlayerCap uint64, newPlayerCap uint64) {
+    if oldPlayerCap == newPlayerCap {
+        return
+    }
+
+    playerCapAttrId := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerId)
+    cache.CC.SetGridAttributeDelta(playerCapAttrId, oldPlayerCap, newPlayerCap)
+
+    playerAllocId, found := cache.CC.k.GetAutoResizeAllocationBySource(cache.CC.ctx, playerId)
+    if found {
+        totalCap := cache.CC.GetGridAttribute(playerCapAttrId)
+        found = cache.CC.AutoResizeAllocation(playerAllocId, totalCap)
+
+        // See applyGridDeltas: a hook pointing at a destroyed allocation is no hook.
+        if !found {
+            cache.CC.k.logger.Error("Stale auto-resize hook on player", "playerId", playerId, "allocationId", playerAllocId)
+            cache.CC.k.ClearAutoResizeAllocationBySource(cache.CC.ctx, playerId)
         }
+    }
+
+    if !found && newPlayerCap < oldPlayerCap {
+        cache.CC.k.AppendGridCascadeQueue(cache.CC.ctx, playerId)
     }
 }
 
@@ -208,6 +248,44 @@ func (cache *InfusionCache) SetFuelAndCommission(fuel uint64, commission math.Le
     cache.Infusion.Recalculate()
 
     cache.applyGridDeltas(oldFuel, oldDestCap, oldPlayerCap)
+    cache.Changed = true
+}
+
+// SetPlayerId re-homes an infusion to the player that now owns its address, and
+// moves the capacity it contributes along with it.
+//
+// An address can change hands: AddressRevoke clears the address index and
+// AddressRegister will bind that address to a different player on a key proof.
+// The infusion is keyed by (destination, address) and survives all of that, so
+// without this its PlayerId stays pinned to whoever held the address first.
+// Whoever controls the address controls the stake behind the infusion, so the
+// capacity belongs to the current owner and the record has to follow the index.
+//
+// Ownership only affects the delegator's own share. The destination's fuel and
+// commission capacity are keyed by destination, not by player, so they are
+// deliberately untouched here.
+func (cache *InfusionCache) SetPlayerId(playerId string) {
+    if !cache.InfusionLoaded { cache.LoadInfusion() }
+
+    previousPlayerId := cache.Infusion.PlayerId
+    if previousPlayerId == playerId {
+        return
+    }
+
+    _, _, playerPower := cache.Infusion.GetPowerDistribution()
+
+    // Withdraw before rewriting the field, or the credit below lands on the
+    // player we were meant to take it from.
+    if previousPlayerId != "" {
+        cache.applyPlayerCapacityDelta(previousPlayerId, playerPower, 0)
+    }
+
+    cache.Infusion.PlayerId = playerId
+
+    if playerId != "" {
+        cache.applyPlayerCapacityDelta(playerId, 0, playerPower)
+    }
+
     cache.Changed = true
 }
 

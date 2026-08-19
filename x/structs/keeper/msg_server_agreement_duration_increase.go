@@ -15,11 +15,23 @@ func (k msgServer) AgreementDurationIncrease(goCtx context.Context, msg *types.M
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-    activePlayer, _ := cc.GetPlayerByAddress(msg.Creator)
+    activePlayer, lookupErr := cc.GetSigningPlayer(msg.Creator)
+    if lookupErr != nil {
+        return emptyResponse, lookupErr
+    }
 
     agreement := cc.GetAgreement(msg.AgreementId)
 
     permissionError := agreement.CanUpdate(activePlayer)
+    if (permissionError != nil) {
+        return emptyResponse, permissionError
+    }
+
+    // Extending the duration is paid for out of the player's primary address
+    // below, so it is a token spend and needs the bit that authorizes one.
+    // CanUpdate decides who may modify this agreement, nothing about whose money
+    // may move.
+    permissionError = activePlayer.CanTransferTokensBy(activePlayer)
     if (permissionError != nil) {
         return emptyResponse, permissionError
     }

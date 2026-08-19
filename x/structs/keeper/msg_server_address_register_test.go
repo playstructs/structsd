@@ -64,8 +64,7 @@ func TestMsgAddressRegister(t *testing.T) {
 				ProofSignature: hex.EncodeToString(signature),
 			},
 			expErr:    true,
-			expErrMsg: "Non-player account cannot associate",
-			skip:      true, // Skip - cache system validation order makes this hard to test
+			expErrMsg: "player (player-invalid-999999) not found",
 		},
 		{
 			name: "address already registered",
@@ -112,7 +111,10 @@ func TestMsgAddressRegister(t *testing.T) {
 			if tc.expErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
+				// The handler pairs its errors with a non-nil empty response, and
+				// MsgAddressRegisterResponse carries no fields, so the error is
+				// the whole assertion. A nil check stood here only because every
+				// error case was skipped.
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, resp)

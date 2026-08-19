@@ -355,6 +355,32 @@ func (e *StructCapabilityError) LogFields() []interface{} {
 
 func (e *StructCapabilityError) Unwrap() error { return ErrStructCapability }
 
+// StructCannotDefendError indicates a struct's type is not permitted to defend.
+type StructCannotDefendError struct {
+	StructId string
+}
+
+func NewStructCannotDefendError(structId string) *StructCannotDefendError {
+	return &StructCannotDefendError{
+		StructId: structId,
+	}
+}
+
+func (e *StructCannotDefendError) Error() string {
+	return fmt.Sprintf("struct (%s) cannot defend", e.StructId)
+}
+
+func (e *StructCannotDefendError) Code() uint32 { return 1265 }
+
+func (e *StructCannotDefendError) LogFields() []interface{} {
+	return []interface{}{
+		"error_type", "struct_cannot_defend",
+		"struct_id", e.StructId,
+	}
+}
+
+func (e *StructCannotDefendError) Unwrap() error { return ErrStructCannotDefend }
+
 // =============================================================================
 // 8. FleetCommandError
 // =============================================================================
@@ -824,6 +850,77 @@ func (e *AddressValidationError) LogFields() []interface{} {
 func (e *AddressValidationError) Unwrap() error { return ErrAddressValidation }
 
 // =============================================================================
+// 16b. DelegationTransferError
+// =============================================================================
+
+// DelegationTransferError indicates that a delegation could not be moved from
+// one of a player's addresses to another.
+//
+// Cosmos has no operation for handing a delegation to a different account, so
+// the move is assembled by hand and there are states it cannot be assembled
+// through: an in-flight redelegation or unbonding delegation carries queue rows
+// that no public keeper API can rekey, and a delegation with no distribution
+// starting info cannot be re-initialized at its destination.
+type DelegationTransferError struct {
+	FromAddress string
+	ToAddress   string
+	Validator   string
+	Count       int    // For "too_many_delegations"
+	Reason      string // "redelegation_in_flight", "defusing_in_flight", "missing_distribution_state", "too_many_delegations"
+}
+
+func NewDelegationTransferError(from, to, reason string) *DelegationTransferError {
+	return &DelegationTransferError{
+		FromAddress: from,
+		ToAddress:   to,
+		Reason:      reason,
+	}
+}
+
+func (e *DelegationTransferError) WithValidator(validator string) *DelegationTransferError {
+	e.Validator = validator
+	return e
+}
+
+func (e *DelegationTransferError) WithCount(count int) *DelegationTransferError {
+	e.Count = count
+	return e
+}
+
+func (e *DelegationTransferError) Error() string {
+	switch e.Reason {
+	case "redelegation_in_flight":
+		return fmt.Sprintf("address (%s) has a redelegation in flight to validator %s; its stake cannot move until that completes",
+			e.FromAddress, e.Validator)
+	case "defusing_in_flight":
+		return fmt.Sprintf("address (%s) is defusing from validator %s; its stake cannot move until that completes",
+			e.FromAddress, e.Validator)
+	case "missing_distribution_state":
+		return fmt.Sprintf("address (%s) has a delegation to validator %s with no reward accounting behind it",
+			e.FromAddress, e.Validator)
+	case "too_many_delegations":
+		return fmt.Sprintf("address (%s) holds %d delegations, too many to move in one operation", e.FromAddress, e.Count)
+	default:
+		return fmt.Sprintf("could not move delegations from %s to %s: %s", e.FromAddress, e.ToAddress, e.Reason)
+	}
+}
+
+func (e *DelegationTransferError) Code() uint32 { return 1760 }
+
+func (e *DelegationTransferError) LogFields() []interface{} {
+	return []interface{}{
+		"error_type", "delegation_transfer",
+		"from_address", e.FromAddress,
+		"to_address", e.ToAddress,
+		"validator", e.Validator,
+		"count", e.Count,
+		"reason", e.Reason,
+	}
+}
+
+func (e *DelegationTransferError) Unwrap() error { return ErrDelegationTransfer }
+
+// =============================================================================
 // 17. GuildMembershipError
 // =============================================================================
 
@@ -955,7 +1052,99 @@ func (e *GuildUpdateError) LogFields() []interface{} {
 func (e *GuildUpdateError) Unwrap() error { return ErrGuildUpdate }
 
 // =============================================================================
-// 19. AllocationError
+// 19. GuildBankDestinationError
+// =============================================================================
+
+// GuildBankDestinationError indicates that a clawback-enabled guild token was
+// sent to an account outside the game-controlled holder set.
+type GuildBankDestinationError struct {
+	Denom   string
+	Address string
+	Reason  string
+}
+
+func NewGuildBankDestinationError(denom, address, reason string) *GuildBankDestinationError {
+	return &GuildBankDestinationError{Denom: denom, Address: address, Reason: reason}
+}
+
+func (e *GuildBankDestinationError) Error() string {
+	return fmt.Sprintf("guild bank token (%s) cannot be sent to address (%s): %s", e.Denom, e.Address, e.Reason)
+}
+
+func (e *GuildBankDestinationError) Code() uint32 { return 1510 }
+
+func (e *GuildBankDestinationError) LogFields() []interface{} {
+	return []interface{}{
+		"error_type", "guild_bank_destination",
+		"denom", e.Denom,
+		"address", e.Address,
+		"reason", e.Reason,
+	}
+}
+
+func (e *GuildBankDestinationError) Unwrap() error { return ErrGuildBankDestination }
+
+// =============================================================================
+// 20. GuildBankConfiscationError
+// =============================================================================
+
+// GuildBankConfiscationError indicates that a burn would consume protocol
+// custody or collateral currently owed to agreement consumers.
+type GuildBankConfiscationError struct {
+	GuildId       string
+	Denom         string
+	Address       string
+	Requested     string
+	Confiscatable string
+	Protected     string
+	Reason        string
+}
+
+func NewGuildBankConfiscationError(guildId, denom, address, reason string) *GuildBankConfiscationError {
+	return &GuildBankConfiscationError{
+		GuildId: guildId,
+		Denom:   denom,
+		Address: address,
+		Reason:  reason,
+	}
+}
+
+func (e *GuildBankConfiscationError) WithAmounts(requested, confiscatable, protected string) *GuildBankConfiscationError {
+	e.Requested = requested
+	e.Confiscatable = confiscatable
+	e.Protected = protected
+	return e
+}
+
+func (e *GuildBankConfiscationError) Error() string {
+	if e.Requested != "" {
+		return fmt.Sprintf(
+			"guild (%s) cannot confiscate %s%s from address (%s): only %s is confiscatable and %s is protected",
+			e.GuildId, e.Requested, e.Denom, e.Address, e.Confiscatable, e.Protected,
+		)
+	}
+	return fmt.Sprintf("guild (%s) cannot confiscate %s from address (%s): %s", e.GuildId, e.Denom, e.Address, e.Reason)
+}
+
+func (e *GuildBankConfiscationError) Code() uint32 { return 1511 }
+
+func (e *GuildBankConfiscationError) LogFields() []interface{} {
+	return []interface{}{
+		"error_type", "guild_bank_confiscation",
+		"guild_id", e.GuildId,
+		"denom", e.Denom,
+		"address", e.Address,
+		"requested", e.Requested,
+		"confiscatable", e.Confiscatable,
+		"protected", e.Protected,
+		"reason", e.Reason,
+	}
+}
+
+func (e *GuildBankConfiscationError) Unwrap() error { return ErrGuildBankConfiscation }
+
+// =============================================================================
+// 21. AllocationError
 // =============================================================================
 
 // AllocationError indicates an allocation operation failure.
@@ -1045,7 +1234,7 @@ func (e *AllocationError) LogFields() []interface{} {
 func (e *AllocationError) Unwrap() error { return ErrAllocationCreate }
 
 // =============================================================================
-// 20. ReactorError
+// 22. ReactorError
 // =============================================================================
 
 // ReactorError indicates a reactor operation failure.
@@ -1145,7 +1334,7 @@ func (e *ReactorError) LogFields() []interface{} {
 func (e *ReactorError) Unwrap() error { return ErrReactor }
 
 // =============================================================================
-// 21. WorkFailureError
+// 23. WorkFailureError
 // =============================================================================
 
 // WorkFailureError indicates a proof-of-work verification failure.
@@ -1188,7 +1377,7 @@ func (e *WorkFailureError) LogFields() []interface{} {
 func (e *WorkFailureError) Unwrap() error { return ErrWorkFailure }
 
 // =============================================================================
-// 22. ProviderAccessError
+// 24. ProviderAccessError
 // =============================================================================
 
 // ProviderAccessError indicates a provider access denial.
@@ -1251,7 +1440,7 @@ func (e *ProviderAccessError) LogFields() []interface{} {
 func (e *ProviderAccessError) Unwrap() error { return ErrProviderAccess }
 
 // =============================================================================
-// 23. ParameterValidationError
+// 25. ParameterValidationError
 // =============================================================================
 
 // ParameterValidationError indicates a parameter validation failure.
@@ -1298,6 +1487,10 @@ func (e *ParameterValidationError) Error() string {
 	case "exceeds_available":
 		return fmt.Sprintf("desired %s (%d) is beyond what substation (%s) can support (%d)",
 			e.Parameter, e.Value, e.SubstationId, e.Maximum)
+	case "no_change":
+		return fmt.Sprintf("%s change of %d would do nothing", e.Parameter, e.Value)
+	case "duration_overflow":
+		return fmt.Sprintf("%s (%d) would rescale the remaining duration past the representable range", e.Parameter, e.Value)
 	default:
 		return fmt.Sprintf("parameter %s validation failed: %s", e.Parameter, e.Reason)
 	}
@@ -1321,7 +1514,78 @@ func (e *ParameterValidationError) LogFields() []interface{} {
 func (e *ParameterValidationError) Unwrap() error { return ErrParameterValidation }
 
 // =============================================================================
-// 24. PlanetStateError
+// 23a. AgreementSettlementError
+// =============================================================================
+
+// AgreementSettlementError indicates an agreement could not be settled: either
+// the payout destination is unusable, or a transfer the consumer is owed out of
+// the provider's collateral pool did not succeed. Consumer collateral is never
+// written off, so these are hard failures rather than warnings.
+type AgreementSettlementError struct {
+	AgreementId string
+	ProviderId  string // Optional
+	PlayerId    string // Optional
+	Address     string // Optional, the payout destination
+	Amount      string // Optional, the amount that could not be paid
+	Reason      string // "invalid_payout_address", "payout_failed"
+}
+
+func NewAgreementSettlementError(agreementId, reason string) *AgreementSettlementError {
+	return &AgreementSettlementError{
+		AgreementId: agreementId,
+		Reason:      reason,
+	}
+}
+
+func (e *AgreementSettlementError) WithProvider(providerId string) *AgreementSettlementError {
+	e.ProviderId = providerId
+	return e
+}
+
+func (e *AgreementSettlementError) WithPlayer(playerId string) *AgreementSettlementError {
+	e.PlayerId = playerId
+	return e
+}
+
+func (e *AgreementSettlementError) WithAddress(address string) *AgreementSettlementError {
+	e.Address = address
+	return e
+}
+
+func (e *AgreementSettlementError) WithAmount(amount string) *AgreementSettlementError {
+	e.Amount = amount
+	return e
+}
+
+func (e *AgreementSettlementError) Error() string {
+	switch e.Reason {
+	case "invalid_payout_address":
+		return fmt.Sprintf("agreement (%s) cannot be settled: payout address (%s) is not usable", e.AgreementId, e.Address)
+	case "payout_failed":
+		return fmt.Sprintf("agreement (%s) cannot be settled: collateral payout of %s failed", e.AgreementId, e.Amount)
+	default:
+		return fmt.Sprintf("agreement (%s) settlement failed: %s", e.AgreementId, e.Reason)
+	}
+}
+
+func (e *AgreementSettlementError) Code() uint32 { return 1720 }
+
+func (e *AgreementSettlementError) LogFields() []interface{} {
+	return []interface{}{
+		"error_type", "agreement_settlement",
+		"agreement_id", e.AgreementId,
+		"provider_id", e.ProviderId,
+		"player_id", e.PlayerId,
+		"address", e.Address,
+		"amount", e.Amount,
+		"reason", e.Reason,
+	}
+}
+
+func (e *AgreementSettlementError) Unwrap() error { return ErrAgreementSettlement }
+
+// =============================================================================
+// 26. PlanetStateError
 // =============================================================================
 
 // PlanetStateError indicates an invalid planet state for an operation.
@@ -1366,7 +1630,7 @@ func (e *PlanetStateError) LogFields() []interface{} {
 func (e *PlanetStateError) Unwrap() error { return ErrPlanetState }
 
 // =============================================================================
-// 25. FuelInfuseError
+// 27. FuelInfuseError
 // =============================================================================
 
 // FuelInfuseError indicates a fuel infusion failure.

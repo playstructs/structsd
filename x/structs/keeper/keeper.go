@@ -30,6 +30,11 @@ type (
 		bankKeeper    types.BankKeeper
 		stakingKeeper types.StakingKeeper
 		accountKeeper types.AccountKeeper
+
+		// Split in two because HasDelegatorStartingInfo lives on
+		// distribution's Keeper while the lifecycle calls live on its Hooks.
+		distributionKeeper types.DistributionKeeper
+		distributionHooks  types.DistributionHooks
 	}
 )
 
@@ -44,6 +49,8 @@ func NewKeeper(
 	bankKeeper types.BankKeeper,
 	stakingKeeper types.StakingKeeper,
 	accountKeeper types.AccountKeeper,
+	distributionKeeper types.DistributionKeeper,
+	distributionHooks types.DistributionHooks,
 ) Keeper {
 	if _, err := sdk.AccAddressFromBech32(authority); err != nil {
 		panic(fmt.Sprintf("invalid authority address: %s", authority))
@@ -60,6 +67,9 @@ func NewKeeper(
 		bankKeeper:    bankKeeper,
 		stakingKeeper: stakingKeeper,
 		accountKeeper: accountKeeper,
+
+		distributionKeeper: distributionKeeper,
+		distributionHooks:  distributionHooks,
 	}
 
 	if transientStoreService == nil {
@@ -131,4 +141,14 @@ func (k Keeper) StakingKeeper() types.StakingKeeper {
 // AccountKeeper returns the account keeper
 func (k Keeper) AccountKeeper() types.AccountKeeper {
 	return k.accountKeeper
+}
+
+// DistributionKeeper returns the distribution keeper
+func (k Keeper) DistributionKeeper() types.DistributionKeeper {
+	return k.distributionKeeper
+}
+
+// DistributionHooks returns the distribution staking hooks
+func (k Keeper) DistributionHooks() types.DistributionHooks {
+	return k.distributionHooks
 }

@@ -152,19 +152,40 @@ func (cc *CurrentContext) NewAllocation(
 }
 
 
+// DestroyMultipleAllocations tears down a batch of allocations, settling any
+// agreement behind each. A failure on one is logged and the rest still go: the
+// callers are grid teardown paths where stopping early would leave allocations
+// pointing at capacity that no longer exists.
 func (cc *CurrentContext) DestroyMultipleAllocations(allocationIds []string) {
     for _, allocationId := range allocationIds {
         allocation, found := cc.GetAllocation(allocationId)
         if found {
-            allocation.Destroy()
+            if err := allocation.Destroy(); err != nil {
+                cc.k.logger.Error("Allocation could not be destroyed", "allocationId", allocationId, "error", err)
+            }
         }
     }
 }
 
 
-func (cc *CurrentContext) AutoResizeAllocation(allocationId string, newPower uint64) {
+// AutoResizeAllocation resizes the automated allocation an auto-resize hook
+// names, and reports whether that allocation was there at all.
+//
+// The two failures are kept apart deliberately. A missing allocation means the
+// hook is stale and there is nothing tracking this source's capacity, so the
+// caller has to fall back to shedding load. A resize that fails is a different
+// thing entirely: the allocation exists and is still tracking, and treating that
+// as a stale hook would destroy allocations over a transient error. Only the
+// first returns found == false.
+func (cc *CurrentContext) AutoResizeAllocation(allocationId string, newPower uint64) (found bool) {
     allocation, found := cc.GetAllocation(allocationId)
-    if found {
-        allocation.SetPower(newPower)
+    if !found {
+        return false
     }
+
+    if _, err := allocation.SetPower(newPower); err != nil {
+        cc.k.logger.Error("Auto-resize could not set allocation power", "allocationId", allocationId, "newPower", newPower, "error", err)
+    }
+
+    return true
 }

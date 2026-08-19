@@ -159,7 +159,7 @@ func (k Keeper) AppendInfusionDestructionQueue(ctx context.Context, infusionId s
 
 	infusionDestructionQueueStore.Set([]byte(infusionId), bz)
 
-	k.logger.Info("Infusion Destruction Queue (Add)", "queueId", infusionId)
+	k.logger.Debug("Infusion Destruction Queue (Add)", "queueId", infusionId)
 
 	return err
 }

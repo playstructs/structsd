@@ -18,7 +18,7 @@ func (k msgServer) PermissionSetOnAddress(goCtx context.Context, msg *types.MsgP
 
     var err error
 
-    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    callingPlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
         return  emptyResponse, err
     }
@@ -28,12 +28,20 @@ func (k msgServer) PermissionSetOnAddress(goCtx context.Context, msg *types.MsgP
          return  emptyResponse, err
      }
 
-    permissionErr := targetPlayer.CanRegisterAddressBy(callingPlayer, types.Permission(msg.Permissions))
+    // This overwrites rather than adds, so the call destroys whatever the target
+    // address holds today as well as granting msg.Permissions. Require the
+    // caller to hold both. Checking only the incoming bits would let a narrow
+    // key rewrite a stronger address of its own player down to its own level --
+    // stripping PermAll off a primary address locks the player out of every
+    // asset operation permanently, since restoring it needs PermAll.
+    targetAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)
+    requiredPermissions := types.Permission(msg.Permissions) | cc.GetPermissions(targetAddressPermissionId)
+
+    permissionErr := targetPlayer.CanRegisterAddressBy(callingPlayer, requiredPermissions)
     if permissionErr != nil {
         return  emptyResponse, permissionErr
     }
 
-    targetAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)
     cc.SetPermissions(targetAddressPermissionId, types.Permission(msg.Permissions))
 
 	cc.CommitAll()

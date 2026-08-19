@@ -434,12 +434,17 @@ func (ac *AttackContext) ResolveDefenders(skipBlock bool) {
 	// block (the volley always goes to the first eligible blocker in iteration
 	// order). After the pass, gate on the attacker's survival before blocking.
 	//
-	// Capturing the blocker during the counter pass is safe because counters
-	// only damage the attacker — no defender's health, status, location, or
-	// ambit changes mid-pass — so the first ready, in-range, ambit-matching
-	// defender stays a valid blocker through the death gate. resolveBlock keeps
-	// its own live destroyed/online/ambit guards, so the captured candidate is
-	// re-validated before any damage is applied.
+	// Capturing the blocker during the counter pass is safe, but not because
+	// defenders are untouched: a counter sets the defender's CounterSpent flag,
+	// and a counter that destroys the attacker rebounds the attacker's
+	// post-destruction damage onto that defender, which can destroy it. The
+	// capture stays valid because defender harm only happens in the iteration
+	// that kills the attacker, after which the loop breaks and the death gate
+	// below returns before any block lands; CounterSpent has no bearing on block
+	// eligibility. When the attacker survives the whole pass, no defender's
+	// health, location, or ambit changed, so the first ready, in-range,
+	// ambit-matching defender is still valid — and resolveBlock re-validates
+	// destroyed/online/ambit before applying damage regardless.
 	//
 	// Interleaving counter-then-block per defender (the previous behavior) made
 	// this iteration-order dependent: a defender that sorts earlier in the list
@@ -466,6 +471,14 @@ func (ac *AttackContext) ResolveDefenders(skipBlock bool) {
 		// a target it is no longer co-located with.
 		if !defender.IsProtecting(ac.Target) {
 			ac.Attacker.CC.k.logger.Debug("Defender no longer in range of protected target", "defender", defender.GetStructId(), "target", ac.Target.GetStructId())
+			continue
+		}
+
+		// A struct type that cannot defend must never act as a defender, even
+		// if a stale registration survived (e.g. a planetary defender created
+		// before the canDefend rule and not yet pruned).
+		if defender.CanDefend() != nil {
+			ac.Attacker.CC.k.logger.Debug("Defender struct type cannot defend", "defender", defender.GetStructId())
 			continue
 		}
 

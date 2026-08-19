@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
+	keeperlib "structs/x/structs/keeper"
 	"structs/x/structs/types"
 )
 
@@ -31,7 +32,7 @@ func TestMsgGuildBankMint(t *testing.T) {
 	reactor = k.AppendReactor(ctx, reactor)
 
 	// Create guild
-	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, player)
+	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, player, "")
 	player.GuildId = guild.Id
 	k.SetPlayer(ctx, player)
 
@@ -105,4 +106,36 @@ func TestMsgGuildBankMint(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestGuildBankMintRequiresTokenTransferOnSigningKey(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+
+	primaryAcc := sdk.AccAddress("mintprimary123456789012345678901234")
+	player := testAppendPlayer(k, ctx, types.Player{
+		Creator:        primaryAcc.String(),
+		PrimaryAddress: primaryAcc.String(),
+	})
+	reactor := k.AppendReactor(ctx, types.Reactor{RawAddress: sdk.ValAddress(primaryAcc.Bytes()).Bytes()})
+	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, player, "")
+
+	player.GuildId = guild.Id
+	k.SetPlayer(ctx, player)
+
+	weakAcc := sdk.AccAddress("mintweak123456789012345678901234567")
+	require.NoError(t, k.SetPlayerIndexForAddress(ctx, weakAcc.String(), player.Index))
+	k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(weakAcc.String()), types.PermGuildTokenMint)
+
+	alpha := sdk.NewCoins(sdk.NewCoin("ualpha", math.NewInt(100)))
+	require.NoError(t, k.BankKeeper().MintCoins(ctx, types.ModuleName, alpha))
+	require.NoError(t, k.BankKeeper().SendCoinsFromModuleToAccount(ctx, types.ModuleName, primaryAcc, alpha))
+
+	_, err := ms.GuildBankMint(ctx, &types.MsgGuildBankMint{
+		Creator:     weakAcc.String(),
+		GuildId:     guild.Id,
+		AmountAlpha: 10,
+		AmountToken: 10,
+	})
+	requireDeniedOnSignerBit(t, err, weakAcc.String(), types.PermTokenTransfer)
+	require.Equal(t, math.NewInt(100), k.BankKeeper().SpendableCoin(ctx, primaryAcc, "ualpha").Amount)
 }

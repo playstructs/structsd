@@ -87,6 +87,12 @@ func (k Keeper) GetPlanetAttributesByObject(ctx context.Context, objectId string
         AdvancedOrbitalJammingStationQuantity:  k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_advancedOrbitalJammingStationQuantity, objectId)),
 
         BlockStartRaid:                         k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockStartRaid, objectId)),
+
+        BlockRaiderArrived:                     k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockRaiderArrived, objectId)),
+        BlockStartOreMine:                      k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetBlockStartOreMine, objectId)),
+        BlockStartOreRefine:                    k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetBlockStartOreRefine, objectId)),
+        OreMiningActiveQuantity:                k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_oreMiningActiveQuantity, objectId)),
+        OreRefiningActiveQuantity:              k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_oreRefiningActiveQuantity, objectId)),
   }
 }
 

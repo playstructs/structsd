@@ -31,6 +31,7 @@ func TestAddressQuery(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, req.Address, resp.Address)
 	require.Equal(t, uint64(0), resp.Permissions)
+	require.Empty(t, resp.PlayerId, "an unassociated address must not report player 1-0")
 
 	// Test existing address
 	testAddress := "structs1qmhyqk"
@@ -44,6 +45,12 @@ func TestAddressQuery(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, testAddress, resp.Address)
 	require.Equal(t, GetObjectID(types.ObjectType_player, testPlayerIndex), resp.PlayerId)
+
+	// Revoke clears the index; the query must again report no player, not 1-0.
+	keeper.RevokePlayerIndexForAddress(ctx, testAddress, testPlayerIndex)
+	resp, err = keeper.Address(ctx, req)
+	require.NoError(t, err)
+	require.Empty(t, resp.PlayerId)
 }
 
 func TestAddressAllQuery(t *testing.T) {

@@ -28,7 +28,7 @@ func (k msgServer) PermissionGuildRankSet(goCtx context.Context, msg *types.MsgP
 		return emptyResponse, types.NewParameterValidationError("rank", 0, "below_minimum").WithRange(1, 0)
 	}
 
-	player, err := cc.GetPlayerByAddress(msg.Creator)
+	player, err := cc.GetSigningPlayer(msg.Creator)
 	if err != nil {
 		return emptyResponse, err
 	}

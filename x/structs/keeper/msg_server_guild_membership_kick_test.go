@@ -40,6 +40,37 @@ func TestMsgGuildMembershipKick(t *testing.T) {
 		require.Equal(t, "", p.GuildId)
 	})
 
+	t.Run("kick clears a leftover membership application via the cache commit", func(t *testing.T) {
+		appMemberAcc := sdk.AccAddress("kick_app_member_pad0")
+		appMember := testAppendPlayer(k, ctx, types.Player{
+			Creator:        appMemberAcc.String(),
+			PrimaryAddress: appMemberAcc.String(),
+			GuildId:        gs.Guild.Id,
+			GuildRank:      50,
+		})
+
+		// Seed a stored application row for the member, the case the removed
+		// direct clear used to handle: the kick must still leave no row behind.
+		k.SetGuildMembershipApplication(ctx, types.GuildMembershipApplication{
+			GuildId:            gs.Guild.Id,
+			PlayerId:           appMember.Id,
+			JoinType:           types.GuildJoinType_request,
+			RegistrationStatus: types.RegistrationStatus_proposed,
+		})
+		_, found := k.GetGuildMembershipApplication(ctx, gs.Guild.Id, appMember.Id)
+		require.True(t, found, "precondition: an application row exists before the kick")
+
+		_, err := ms.GuildMembershipKick(wctx, &types.MsgGuildMembershipKick{
+			Creator:  gs.GuildOwner.Creator,
+			GuildId:  gs.Guild.Id,
+			PlayerId: appMember.Id,
+		})
+		require.NoError(t, err)
+
+		_, found = k.GetGuildMembershipApplication(ctx, gs.Guild.Id, appMember.Id)
+		require.False(t, found, "the kick must clear the application row through the cache commit")
+	})
+
 	t.Run("target not a member", func(t *testing.T) {
 		nonMemberAcc := sdk.AccAddress("nonmember_kickpad_01")
 		nonMember := types.Player{
@@ -112,6 +143,10 @@ func TestMsgGuildMembershipKick(t *testing.T) {
 			"expected error containing 'permission' or 'administrate', got: %s", errStr)
 	})
 
+	// A player id naming nobody is refused as missing, not as a non-member. The
+	// distinction matters: "not a member" was reached by reading a guild id off a
+	// zero-valued cache, so the kick got as far as comparing fields on a player
+	// who does not exist.
 	t.Run("target player not found", func(t *testing.T) {
 		_, err := ms.GuildMembershipKick(wctx, &types.MsgGuildMembershipKick{
 			Creator:  gs.GuildOwner.Creator,
@@ -119,7 +154,8 @@ func TestMsgGuildMembershipKick(t *testing.T) {
 			PlayerId: "1-999",
 		})
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "not a member")
+		require.ErrorIs(t, err, types.ErrObjectNotFound)
+		require.Contains(t, err.Error(), "1-999")
 	})
 
 	t.Run("unregistered creator", func(t *testing.T) {

@@ -26,4 +26,11 @@ message Reactor {
 
   string owner                      = 6;
 
+  // guildCharterEligibleHeight is the block from which this reactor may found
+  // one guild without solving the charter proof-of-work. Stored as a height
+  // rather than derived from an age so that lowering the param cannot
+  // retroactively unlock a wave of existing reactors, and so the check is one
+  // comparison with no subtraction to underflow.
+  uint64 guildCharterEligibleHeight = 7;
+
 }

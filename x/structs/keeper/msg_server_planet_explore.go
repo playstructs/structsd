@@ -16,13 +16,13 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+	callingPlayer, err := cc.GetSigningPlayer(msg.Creator)
 	if err != nil {
 		return emptyResponse, err
 	}
 
 	// Load the Player record
-	player, playerLookupErr := cc.GetPlayer(msg.PlayerId)
+	player, playerLookupErr := cc.GetExistingPlayer(msg.PlayerId)
 	if playerLookupErr != nil {
 		return emptyResponse, playerLookupErr
 	}

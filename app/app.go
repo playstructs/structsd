@@ -83,6 +83,7 @@ import (
 	v0_18_0 "structs/app/upgrades/v0_18_0"
 	v0_19_0 "structs/app/upgrades/v0_19_0"
 	v0_20_0 "structs/app/upgrades/v0_20_0"
+	v0_21_0 "structs/app/upgrades/v0_21_0"
 	"structs/docs"
 
 	upgradetypes "cosmossdk.io/x/upgrade/types"
@@ -283,6 +284,11 @@ func New(
 		panic(err)
 	}
 
+	// Guild tokens are clawback-enabled game assets. Keep them inside registered
+	// player accounts and the protocol pools whose accounting understands them;
+	// this also prevents ICS-20 from escrowing native guild tokens.
+	app.BankKeeper.AppendSendRestriction(app.StructsKeeper.GuildBankDenomSendRestriction)
+
 	// Below we could construct and set an application specific mempool and
 	// ABCI 1.0 PrepareProposal and ProcessProposal handlers. These defaults are
 	// already set in the SDK's BaseApp, this shows an example of how to override
@@ -398,6 +404,7 @@ func (app *App) RegisterUpgradeHandlers() {
 		AccountKeeper: app.AccountKeeper,
 		BankKeeper:    app.BankKeeper,
 		StakingKeeper: app.StakingKeeper,
+		DistrKeeper:   app.DistrKeeper,
 	}
 
 	upgradesList := []upgrades.Upgrade{
@@ -406,6 +413,7 @@ func (app *App) RegisterUpgradeHandlers() {
 		v0_18_0.NewUpgrade(),
 		v0_19_0.NewUpgrade(),
 		v0_20_0.NewUpgrade(),
+		v0_21_0.NewUpgrade(),
 	}
 
 	for _, upgrade := range upgradesList {

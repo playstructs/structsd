@@ -15,7 +15,10 @@ func (k msgServer) AgreementClose(goCtx context.Context, msg *types.MsgAgreement
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-    activePlayer, _ := cc.GetPlayerByAddress(msg.Creator)
+    activePlayer, lookupErr := cc.GetSigningPlayer(msg.Creator)
+    if lookupErr != nil {
+        return emptyResponse, lookupErr
+    }
 
     agreement := cc.GetAgreement(msg.AgreementId)
 
@@ -24,8 +27,7 @@ func (k msgServer) AgreementClose(goCtx context.Context, msg *types.MsgAgreement
         return emptyResponse, permissionError
     }
 
-    // Checkpoint
-    agreement.GetProvider().Checkpoint()
+    // PrematureCloseByConsumer checkpoints the provider itself
     errorParam := agreement.PrematureCloseByConsumer()
     if (errorParam != nil) {
         return emptyResponse, errorParam

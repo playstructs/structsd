@@ -3,46 +3,48 @@ package keeper
 import (
 	"context"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
-	"strings"
-
 )
 
 func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBankRedeem) (*types.MsgGuildBankRedeemResponse, error) {
-    emptyResponse := &types.MsgGuildBankRedeemResponse{}
+	emptyResponse := &types.MsgGuildBankRedeemResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
-
-    // Add an Active Address record to the
-    // indexer for UI requirements
+	// Add an Active Address record to the
+	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    activePlayer, lookupErr := cc.GetPlayerByAddress(msg.Creator)
-    if lookupErr != nil {
-        return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_bank_redeem")
-    }
+	activePlayer, lookupErr := cc.GetSigningPlayer(msg.Creator)
+	if lookupErr != nil {
+		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_bank_redeem")
+	}
 
-    permissionErr := activePlayer.CanTransferTokensBy(activePlayer)
-    if permissionErr != nil {
-        return emptyResponse, permissionErr
-    }
+	if msg.MinAmountAlpha == 0 {
+		return emptyResponse, types.NewParameterValidationError("minAmountAlpha", 0, "must_be_positive")
+	}
 
-    denomSlice := strings.Split(msg.AmountToken.Denom,".")
-    if len(denomSlice) != 2 {
-        return emptyResponse, types.NewParameterValidationError("denom", 0, "invalid_format")
-    }
+	permissionErr := activePlayer.CanTransferTokensBy(activePlayer)
+	if permissionErr != nil {
+		return emptyResponse, permissionErr
+	}
 
-    guild := cc.GetGuild(denomSlice[1])
-    if !guild.LoadGuild() {
-        return emptyResponse, types.NewObjectNotFoundError("guild", guild.GetGuildId())
-    }
+	guildId, denomErr := types.ParseGuildBankDenom(msg.AmountToken.Denom)
+	if denomErr != nil {
+		return emptyResponse, denomErr
+	}
 
-    err := guild.BankRedeem(msg.AmountToken.Amount, activePlayer);
-    if err != nil {
-        return emptyResponse, err
-    }
+	guild := cc.GetGuild(guildId)
+	if err := guild.CheckGuild(); err != nil {
+		return emptyResponse, err
+	}
+
+	_, err := guild.BankRedeem(msg.AmountToken.Amount, math.NewIntFromUint64(msg.MinAmountAlpha), activePlayer)
+	if err != nil {
+		return emptyResponse, err
+	}
 
 	cc.CommitAll()
 	return &types.MsgGuildBankRedeemResponse{}, nil

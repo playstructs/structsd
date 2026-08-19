@@ -14,7 +14,7 @@ import (
 )
 
 func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.MsgGuildMembershipJoinProxy) (*types.MsgGuildMembershipResponse, error) {
-    emptyResponse := &types.MsgGuildMembershipResponse{}
+	emptyResponse := &types.MsgGuildMembershipResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -23,7 +23,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 	// Look up requesting account
-	proxyPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+	proxyPlayer, err := cc.GetSigningPlayer(msg.Creator)
 	if err != nil {
 		return emptyResponse, err
 	}
@@ -39,8 +39,11 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 
 	decodedProofPubKey, decodeErr := hex.DecodeString(msg.ProofPubKey)
 	if decodeErr != nil {
-	    k.logger.Error("Guild Join Proxy Public Key", "decodingError", decodeErr)
-        return emptyResponse, decodeErr
+		k.logger.Error("Guild Join Proxy Public Key", "decodingError", decodeErr)
+		return emptyResponse, decodeErr
+	}
+	if len(decodedProofPubKey) != 33 {
+		return emptyResponse, types.NewAddressValidationError(msg.Address, "proof_public_key_invalid")
 	}
 
 	// Convert provided pub key into a bech32 string (i.e., an address)
@@ -78,22 +81,24 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	// Decode the Signature from Hex Encoding
 	decodedProofSignature, decodeErr := hex.DecodeString(msg.ProofSignature)
 	if decodeErr != nil {
-	    k.logger.Error("Guild Join Proxy Signature", "decodingError", decodeErr)
-        return emptyResponse, decodeErr
+		k.logger.Error("Guild Join Proxy Signature", "decodingError", decodeErr)
+		return emptyResponse, decodeErr
 	}
 
-	// Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all
+	if len(decodedProofSignature) < 64 || len(decodedProofSignature) > 65 {
+		return emptyResponse, types.NewAddressValidationError(msg.Address, "signature_invalid_length")
+	}
 	if !pubKey.VerifySignature([]byte(hashInput), decodedProofSignature[:64]) {
 		return emptyResponse, types.NewAddressValidationError(msg.Address, "signature_invalid")
 	}
 
-    guildPermissionErr := guild.CanAddMembersByProxy(proxyPlayer)
-    if guildPermissionErr != nil {
-    	return emptyResponse, guildPermissionErr
-    }
+	guildPermissionErr := guild.CanAddMembersByProxy(proxyPlayer)
+	if guildPermissionErr != nil {
+		return emptyResponse, guildPermissionErr
+	}
 
 	var substation *SubstationCache
-    substationSet := false
+	substationSet := false
 	/* Look up destination substation
 	 *
 	 * We're going to try and load up the substation override first
@@ -130,19 +135,9 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	player := cc.UpsertPlayer(msg.Address)
 
 	if player.GetGuildId() != "" {
-		// TODO new guild setting that dictates what to do when a player leaves
-		// If already in a guild, leave permissions as-is?
-		// Force disconnection of Substation?
-
-		// look up old guild
-		oldGuild := cc.GetGuild(player.GetGuildId())
-
-		// Let's only disconnect the player if it's the main substation for the guild
-		// Otherwise it might be there own substation and maybe they don't really want
-		// that fucked with. Could also throw a flag in the calling message to force this.
-		if player.GetSubstationId() != "" && player.GetSubstationId() == oldGuild.GetEntrySubstationId() {
-			player.DisconnectSubstation()
-		}
+		return emptyResponse, types.NewGuildMembershipError(
+			player.GetGuildId(), player.GetPlayerId(), "already_member",
+		)
 	}
 
 	// Add player to the guild

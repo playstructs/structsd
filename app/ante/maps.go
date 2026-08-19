@@ -29,6 +29,8 @@ var KnownStructsMessages = map[string]bool{
 	"/structs.structs.MsgAllocationUpdate":                               true,
 	"/structs.structs.MsgFleetMove":                                      true,
 	"/structs.structs.MsgGuildBankConfiscateAndBurn":                     true,
+	"/structs.structs.MsgGuildBankConvert":                               true,
+	"/structs.structs.MsgGuildBankConvertToken":                          true,
 	"/structs.structs.MsgGuildBankMint":                                  true,
 	"/structs.structs.MsgGuildBankRedeem":                                true,
 	"/structs.structs.MsgGuildCreate":                                    true,
@@ -43,6 +45,8 @@ var KnownStructsMessages = map[string]bool{
 	"/structs.structs.MsgGuildMembershipRequestApprove":                  true,
 	"/structs.structs.MsgGuildMembershipRequestDeny":                     true,
 	"/structs.structs.MsgGuildMembershipRequestRevoke":                   true,
+	"/structs.structs.MsgGuildUpdateBankConvertInFee":                    true,
+	"/structs.structs.MsgGuildUpdateBankConvertOutFee":                   true,
 	"/structs.structs.MsgGuildUpdateEndpoint":                            true,
 	"/structs.structs.MsgGuildUpdateEntryRank":                           true,
 	"/structs.structs.MsgGuildUpdateEntrySubstationId":                   true,
@@ -82,6 +86,7 @@ var KnownStructsMessages = map[string]bool{
 	"/structs.structs.MsgReactorCancelDefusion":                          true,
 	"/structs.structs.MsgReactorDefuse":                                  true,
 	"/structs.structs.MsgReactorInfuse":                                  true,
+	"/structs.structs.MsgReactorRestart":                                 true,
 	"/structs.structs.MsgStructActivate":                                 true,
 	"/structs.structs.MsgStructAttack":                                   true,
 	"/structs.structs.MsgStructBuildCancel":                              true,
@@ -138,7 +143,13 @@ var PermissionMap = map[string]types.Permission{
 
 	// Token operations
 	"/structs.structs.MsgGuildBankRedeem":      types.PermTokenTransfer,
+	"/structs.structs.MsgGuildBankConvert":     types.PermTokenTransfer,
+	"/structs.structs.MsgGuildBankConvertToken": types.PermTokenTransfer,
 	"/structs.structs.MsgPlayerSend":           types.PermTokenTransfer,
+	// Opening an agreement debits the player's primary address for the collateral.
+	// The access policy is dynamic and stays in the handler, but the spend bit is
+	// required under every policy, so it belongs here as the hard ceiling.
+	"/structs.structs.MsgAgreementOpen":        types.PermTokenTransfer,
 	"/structs.structs.MsgReactorInfuse":        types.PermTokenInfuse,
 	"/structs.structs.MsgReactorCancelDefusion": types.PermTokenInfuse,
 	"/structs.structs.MsgStructGeneratorInfuse": types.PermTokenInfuse,
@@ -147,7 +158,7 @@ var PermissionMap = map[string]types.Permission{
 
 	// Guild banking
 	"/structs.structs.MsgGuildBankConfiscateAndBurn": types.PermGuildTokenBurn,
-	"/structs.structs.MsgGuildBankMint":              types.PermGuildTokenMint,
+	"/structs.structs.MsgGuildBankMint":              types.PermGuildTokenMint | types.PermTokenTransfer,
 
 	// Guild settings
 	"/structs.structs.MsgGuildUpdateEndpoint":                            types.PermGuildEndpointUpdate,
@@ -166,14 +177,21 @@ var PermissionMap = map[string]types.Permission{
 	"/structs.structs.MsgAllocationTransfer":           types.PermAdmin,
 	"/structs.structs.MsgGuildUpdateOwnerId":           types.PermAdmin,
 	"/structs.structs.MsgGuildUpdatePrimaryReactor":    types.PermAdmin,
-	"/structs.structs.MsgPlayerUpdatePrimaryAddress":   types.PermAdmin,
+	"/structs.structs.MsgGuildUpdateBankConvertInFee":  types.PermAdmin,
+	"/structs.structs.MsgGuildUpdateBankConvertOutFee": types.PermAdmin,
 	"/structs.structs.MsgGuildUpdateEntryRank":        types.PermUpdate,
+
+	// Primary address swap grants PermAll to the incoming address and moves
+	// balances/delegations with it, so the caller must already hold every bit.
+	"/structs.structs.MsgPlayerUpdatePrimaryAddress": types.PermAll,
 
 	// Object updates
 	"/structs.structs.MsgAgreementCapacityDecrease":   types.PermUpdate,
 	"/structs.structs.MsgAgreementCapacityIncrease":   types.PermUpdate,
 	"/structs.structs.MsgAgreementClose":              types.PermUpdate,
-	"/structs.structs.MsgAgreementDurationIncrease":   types.PermUpdate,
+	// Extending a duration buys the extra blocks out of the player's primary
+	// address, so update rights on the agreement are not enough on their own.
+	"/structs.structs.MsgAgreementDurationIncrease":   types.PermUpdate | types.PermTokenTransfer,
 	"/structs.structs.MsgProviderUpdateAccessPolicy":  types.PermUpdate,
 	"/structs.structs.MsgProviderUpdateCapacityMaximum": types.PermUpdate,
 	"/structs.structs.MsgProviderUpdateCapacityMinimum": types.PermUpdate,
@@ -202,8 +220,13 @@ var PermissionMap = map[string]types.Permission{
 	// Provider
 	"/structs.structs.MsgProviderWithdrawBalance": types.PermProviderWithdraw,
 
-	// Reactor
-	"/structs.structs.MsgGuildCreate": types.PermReactorGuildCreate,
+	// Guild founding is gated by proof-of-work rather than by a permission, so
+	// the ante bit is only "may act at all". PermPlay rather than a new
+	// PermGuildCharter bit: a new bit would force a PermissionRegisterSize
+	// migration and a backfill into every existing PermGuildAll record. The
+	// handler still checks PermReactorGuildCreate before binding a reactor's own
+	// GuildId, which a single map value could not express alongside PermPlay.
+	"/structs.structs.MsgGuildCreate": types.PermPlay,
 }
 
 // DynamicPermissionMessages are messages where the required permission bits
@@ -222,7 +245,6 @@ var DynamicPermissionMessages = map[string]bool{
 	"/structs.structs.MsgPermissionSetOnAddress":                true,
 	"/structs.structs.MsgPermissionSetOnObject":                 true,
 	"/structs.structs.MsgPlayerUpdateGuildRank":                 true,
-	"/structs.structs.MsgAgreementOpen":                         true,
 	"/structs.structs.MsgGuildMembershipInvite":                 true,
 	"/structs.structs.MsgGuildMembershipInviteRevoke":           true,
 	"/structs.structs.MsgGuildMembershipKick":                   true,
@@ -237,6 +259,11 @@ var DynamicPermissionMessages = map[string]bool{
 	"/structs.structs.MsgSubstationUpdateName":                  true,
 	"/structs.structs.MsgSubstationUpdatePfp":                   true,
 	"/structs.structs.MsgPlanetUpdateName":                      true,
+
+	// MsgReactorRestart requires no permission at all. It only writes state
+	// derived from the staking module, so any player may reconcile any reactor;
+	// the ante-level player registration check is the whole gate.
+	"/structs.structs.MsgReactorRestart":                        true,
 }
 
 // ChargeMessages are messages that check charge (blockHeight - lastAction) in
@@ -280,6 +307,17 @@ var ProofMessages = map[string]func(sdk.Msg) string{
 		}
 		return ""
 	},
+	// Signer-scoped, unlike every other entry here. The charter puzzle is
+	// chain-global, so an object-global key would be one key for the whole
+	// chain — and because ThrottleDecorator reserves before the handler runs, a
+	// single bogus proof would then deny guild founding to everyone for that
+	// block. Scoping to the signer keeps the throttle a per-attacker cost.
+	"/structs.structs.MsgGuildCreate": func(msg sdk.Msg) string {
+		if m, ok := msg.(*types.MsgGuildCreate); ok {
+			return "guild/" + m.Creator
+		}
+		return ""
+	},
 }
 
 // SignatureMessages are messages with application-level secp256k1 proof
@@ -288,6 +326,21 @@ var ProofMessages = map[string]func(sdk.Msg) string{
 var SignatureMessages = map[string]bool{
 	"/structs.structs.MsgAddressRegister":          true,
 	"/structs.structs.MsgGuildMembershipJoinProxy": true,
+	"/structs.structs.MsgGuildCreate":              true,
+}
+
+// OptionalSignatureMessages are the subset of SignatureMessages whose proof is
+// only present in some uses, so an absent one is legitimate rather than
+// malformed. PubKeyDerivationDecorator skips a message listed here when the
+// pubkey and address are *both* empty, and applies the full check otherwise —
+// half-populated has to keep failing, or the pre-filter would be bypassable by
+// omitting one field.
+//
+// MsgGuildCreate carries a founder's consent signature only when somebody else
+// is founding their guild; a founder signing for themselves already signed the
+// transaction.
+var OptionalSignatureMessages = map[string]bool{
+	"/structs.structs.MsgGuildCreate": true,
 }
 
 // CreatorExtractors provides direct field access for messages that have
@@ -313,6 +366,12 @@ var CreatorExtractors = map[string]func(sdk.Msg) string{
 	},
 	"/structs.structs.MsgReactorCancelDefusion": func(msg sdk.Msg) string {
 		if m, ok := msg.(*types.MsgReactorCancelDefusion); ok {
+			return m.Creator
+		}
+		return ""
+	},
+	"/structs.structs.MsgReactorRestart": func(msg sdk.Msg) string {
+		if m, ok := msg.(*types.MsgReactorRestart); ok {
 			return m.Creator
 		}
 		return ""
@@ -348,6 +407,100 @@ var ThrottleKeyExtractors = map[string]func(sdk.Msg) string{
 	},
 }
 
+// ThrottleTarget names the object a throttled message acts on, together with
+// the permission its handler demands over that object.
+type ThrottleTarget struct {
+	Kind       types.ObjectType
+	TargetId   string
+	Permission types.Permission
+}
+
+// ThrottleTargetAuth mirrors each throttled handler's target-object check.
+// Unauthorized callers must not reserve object-global keys, and the permission
+// here must stay aligned with the handler's Can*By call.
+var ThrottleTargetAuth = map[string]func(sdk.Msg) (ThrottleTarget, bool){
+	// structure.GetOwner().CanBuildHashedBy(callingPlayer)
+	"/structs.structs.MsgStructBuildComplete": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgStructBuildComplete); ok {
+			return ThrottleTarget{types.ObjectType_struct, m.StructId, types.PermHashBuild}, true
+		}
+		return ThrottleTarget{}, false
+	},
+	// structure.GetOwner().CanMineHashedBy(callingPlayer)
+	"/structs.structs.MsgStructOreMinerComplete": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgStructOreMinerComplete); ok {
+			return ThrottleTarget{types.ObjectType_struct, m.StructId, types.PermHashMine}, true
+		}
+		return ThrottleTarget{}, false
+	},
+	// structure.GetOwner().CanRefineHashedBy(callingPlayer)
+	"/structs.structs.MsgStructOreRefineryComplete": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgStructOreRefineryComplete); ok {
+			return ThrottleTarget{types.ObjectType_struct, m.StructId, types.PermHashRefine}, true
+		}
+		return ThrottleTarget{}, false
+	},
+	// fleet.GetOwner().CanRaidHashedBy(callingPlayer)
+	"/structs.structs.MsgPlanetRaidComplete": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgPlanetRaidComplete); ok {
+			return ThrottleTarget{types.ObjectType_fleet, m.FleetId, types.PermHashRaid}, true
+		}
+		return ThrottleTarget{}, false
+	},
+	// fleet.GetOwner().CanBePlayedBy(activePlayer)
+	"/structs.structs.MsgFleetMove": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgFleetMove); ok {
+			return ThrottleTarget{types.ObjectType_fleet, m.FleetId, types.PermPlay}, true
+		}
+		return ThrottleTarget{}, false
+	},
+	// player.CanBePlayedBy(callingPlayer)
+	"/structs.structs.MsgPlanetExplore": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgPlanetExplore); ok {
+			return ThrottleTarget{types.ObjectType_player, m.PlayerId, types.PermPlay}, true
+		}
+		return ThrottleTarget{}, false
+	},
+	// player.CanRegisterAddressBy(activePlayer, types.Permission(msg.Permissions)).
+	// The bit is whatever the message asks to grant, so a registration that
+	// grants nothing authorizes against Permissionless, which PermissionCheck
+	// always denies — and denial here only skips the reservation.
+	"/structs.structs.MsgAddressRegister": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgAddressRegister); ok {
+			return ThrottleTarget{types.ObjectType_player, m.PlayerId, types.Permission(m.Permissions)}, true
+		}
+		return ThrottleTarget{}, false
+	},
+	// Signer-scoped; see SignerScopedThrottleMessages.
+	"/structs.structs.MsgGuildCreate": func(msg sdk.Msg) (ThrottleTarget, bool) {
+		if m, ok := msg.(*types.MsgGuildCreate); ok {
+			return ThrottleTarget{types.ObjectType_address, m.Creator, types.PermPlay}, true
+		}
+		return ThrottleTarget{}, false
+	},
+}
+
+// SignerScopedThrottleMessages are throttled messages whose key names the signer
+// rather than an object the transaction chooses.
+//
+// The whole reason ThrottleTargetAuth exists is that an object-global key can be
+// reserved for somebody else's object, parking their slot for the block. A
+// signer-scoped key cannot: it names only the signer, so the reservation costs
+// nobody else anything, and there is no third-party standing to mirror. The
+// authorization degenerates to "is the signer a registered player acting as
+// themselves", which is what ObjectType_address resolves to in
+// Keeper.ThrottleTargetAuthorized.
+//
+// This is deliberately a declared set rather than an inference, because the two
+// shapes need opposite things from the arch guards: an object-scoped entry must
+// mirror its handler's Can*By permission and name the id in its key, while a
+// signer-scoped one must name the creator and must NOT be confused for the
+// handler's own authorization. MsgGuildCreate's handler authorizes the founder,
+// who is not the signer at all.
+var SignerScopedThrottleMessages = map[string]bool{
+	"/structs.structs.MsgGuildCreate": true,
+}
+
 // FreeStakingMessages enumerates the x/staking message type URLs that receive
 // free gas treatment. These are the operations players must perform to
 // participate in the network — delegation is how they power gameplay.
@@ -373,15 +526,28 @@ func IsStakingMessage(typeURL string) bool {
 	return FreeStakingMessages[typeURL]
 }
 
+// PricedStructsMessages are Structs messages that pay ordinary gas rather than
+// riding the free-transaction path.
+//
+// MsgGuildCreate is here because it is a race: the throttle caps one attempt per
+// signer per block, but attempts that cost literally nothing invite flooding the
+// charter race from a spread of throwaway signers. A failed proof should cost
+// something.
+var PricedStructsMessages = map[string]bool{
+	"/structs.structs.MsgGuildCreate": true,
+	"/structs.structs.MsgReactorRestart": true,
+}
+
 // IsFreeTransaction returns true if all messages in the tx are Structs gameplay
-// messages (excluding MsgUpdateParams, which is a governance operation).
+// messages (excluding MsgUpdateParams, which is a governance operation, and the
+// PricedStructsMessages, which deliberately pay).
 func IsFreeTransaction(msgs []sdk.Msg) bool {
 	if len(msgs) == 0 {
 		return false
 	}
 	for _, msg := range msgs {
 		typeURL := sdk.MsgTypeURL(msg)
-		if !IsStructsMessage(typeURL) || typeURL == MsgUpdateParamsTypeURL {
+		if !IsStructsMessage(typeURL) || typeURL == MsgUpdateParamsTypeURL || PricedStructsMessages[typeURL] {
 			return false
 		}
 	}
@@ -406,6 +572,28 @@ func IsFreeStakingTransaction(msgs []sdk.Msg) bool {
 // (either pure-Structs or pure-staking).
 func IsAnyFreeTransaction(msgs []sdk.Msg) bool {
 	return IsFreeTransaction(msgs) || IsFreeStakingTransaction(msgs)
+}
+
+// ContainsGatedStructsMessage returns true if any message in the tx is a Structs
+// gameplay message, and is what decides whether the Structs ante checks run.
+//
+// Gating must follow the message, not the fee. IsFreeTransaction requires EVERY
+// message to be a Structs message, so a tx pairing one gameplay message with any
+// non-Structs message (a bank send, say) is not "free", and keying the Structs
+// decorators off free-ness let such a tx buy its way past the player
+// registration, permission, charge and throttle checks for the price of a normal
+// fee. Paying a fee is not authorization.
+//
+// MsgUpdateParams is excluded: it is signed by the governance authority rather
+// than a player, so there is no address to resolve or permission to check.
+func ContainsGatedStructsMessage(msgs []sdk.Msg) bool {
+	for _, msg := range msgs {
+		typeURL := sdk.MsgTypeURL(msg)
+		if IsStructsMessage(typeURL) && typeURL != MsgUpdateParamsTypeURL {
+			return true
+		}
+	}
+	return false
 }
 
 // StakingSignerExtractors provides direct field access for the signer address

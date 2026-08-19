@@ -15,7 +15,10 @@ func (k msgServer) AgreementCapacityDecrease(goCtx context.Context, msg *types.M
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-    activePlayer, _ := cc.GetPlayerByAddress(msg.Creator)
+    activePlayer, lookupErr := cc.GetSigningPlayer(msg.Creator)
+    if lookupErr != nil {
+        return emptyResponse, lookupErr
+    }
 
     agreement := cc.GetAgreement(msg.AgreementId)
 
@@ -24,13 +27,18 @@ func (k msgServer) AgreementCapacityDecrease(goCtx context.Context, msg *types.M
         return emptyResponse, permissionError
     }
 
-    // Checkpoint
-    agreement.GetProvider().Checkpoint()
+    // Checkpoint before the load changes, or the new load gets billed across the
+    // span the old one was serving.
+    if err := agreement.GetProvider().Checkpoint(); err != nil {
+        return emptyResponse, err
+    }
 
     // Decrease capacity
         // Decrease provider load
         // which increases duration
-    agreement.CapacityDecrease(msg.CapacityDecrease)
+    if err := agreement.CapacityDecrease(msg.CapacityDecrease); err != nil {
+        return emptyResponse, err
+    }
 
 	cc.CommitAll()
 	return &types.MsgAgreementResponse{}, nil

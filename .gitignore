@@ -12,6 +12,11 @@ structs.sh
 keeper.test
 coverage.txt
 tests/run_logs/
+tests/logs/
+tests/battle_logs/
+
+# Read-only checkouts of sibling repos, cloned for reference. See AGENTS.md.
+.references/
 
 # Stray home-dir tree created when a tool is run with a literal "~" path
 # (e.g. HOME=~ structsd init) instead of an expanded $HOME.

@@ -1,8 +1,11 @@
 package keeper_test
 
 import (
+	"encoding/hex"
+	"fmt"
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
@@ -81,4 +84,48 @@ func TestMsgGuildMembershipJoinProxy(t *testing.T) {
 		})
 		require.Error(t, err)
 	})
+
+	t.Run("short signature is rejected without panicking", func(t *testing.T) {
+		_, err := ms.GuildMembershipJoinProxy(wctx, &types.MsgGuildMembershipJoinProxy{
+			Creator:        gs.GuildOwner.Creator,
+			Address:        proxyTargetAddress,
+			ProofPubKey:    proxyPubKeyHex,
+			ProofSignature: "00",
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "signature_invalid_length")
+	})
+}
+
+func TestGuildMembershipJoinProxyRefusesExistingMember(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	gs := testCreateGuild(k, ctx)
+
+	privKey := secp256k1.GenPrivKey()
+	pubKey := privKey.PubKey().Bytes()
+	address := types.PubKeyToBech32(pubKey)
+	member := testAppendPlayer(k, ctx, types.Player{
+		Creator:        address,
+		PrimaryAddress: address,
+		GuildId:        "4-other",
+		GuildRank:      7,
+	})
+
+	hashInput := fmt.Sprintf("GUILD%sADDRESS%sNONCE%d", gs.Guild.Id, address, 0)
+	signature, err := privKey.Sign([]byte(hashInput))
+	require.NoError(t, err)
+
+	_, err = ms.GuildMembershipJoinProxy(ctx, &types.MsgGuildMembershipJoinProxy{
+		Creator:        gs.GuildOwner.Creator,
+		Address:        address,
+		ProofPubKey:    hex.EncodeToString(pubKey),
+		ProofSignature: hex.EncodeToString(signature),
+	})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "already a member")
+
+	after, found := k.GetPlayer(ctx, member.Id)
+	require.True(t, found)
+	require.Equal(t, "4-other", after.GuildId)
+	require.Equal(t, uint64(7), after.GuildRank)
 }

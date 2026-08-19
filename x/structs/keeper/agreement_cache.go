@@ -20,6 +20,13 @@ type AgreementCache struct {
     AgreementLoaded  bool
 	Agreement        types.Agreement
 
+	// TearingDown marks that settlement of this agreement has begun in this
+	// operation. Agreement teardown destroys the allocation and allocation
+	// teardown settles the agreement, so the two call each other. Because
+	// cc.agreements hands both legs the same cache, the second leg would
+	// otherwise pay out and decrement provider load all over again.
+	TearingDown bool
+
 	PreviousEndBlock uint64
 	EndBlockChanged bool
 
@@ -34,9 +41,7 @@ type AgreementCache struct {
 
 	CurrentBlock       uint64
 	CurrentBlockLoaded bool
-
 }
-
 
 func (cache *AgreementCache) Commit() {
     if cache.Changed {
@@ -52,7 +57,7 @@ func (cache *AgreementCache) Commit() {
     	    cache.CC.k.ClearAgreement(cache.CC.ctx, cache.AgreementId)
     	} else {
     		cache.CC.k.SetAgreement(cache.CC.ctx, cache.Agreement)
-    		if (cache.EndBlockChanged) {
+			if cache.EndBlockChanged {
     		    if cache.PreviousEndBlock > 0 {
                     cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.PreviousEndBlock, cache.GetAgreementId())
                 }
@@ -74,8 +79,6 @@ func (cache *AgreementCache) ID() string {
 	return cache.AgreementId
 }
 
-
-
 /* Separate Loading functions for each of the underlying containers */
 
 // Load the Agreement record
@@ -92,9 +95,26 @@ func (cache *AgreementCache) LoadCurrentBlock() bool {
 	return cache.CurrentBlockLoaded
 }
 
+// LoadDurationRemaining measures the unearned part of the agreement, which is
+// what the consumer's remaining collateral is priced from.
+//
+// It never measures from before the start block. No path opens an agreement in
+// the future today — AgreementOpen starts service in the opening block and the
+// capacity changes re-base to the current one — so the clamp is a guard rather
+// than a description of how agreements begin. It earns its place by bounding the
+// damage if that ever changes: collateral is only ever collected for
+// EndBlock - StartBlock, so pricing a settlement from an earlier height would
+// refund blocks nobody deposited, out of a pool shared with other agreements.
+// With LoadDurationPast it holds past + remaining == duration at every height,
+// which is the identity the collateral accounting rests on.
 func (cache *AgreementCache) LoadDurationRemaining() bool {
-	if cache.GetEndBlock() >= cache.GetCurrentBlock() {
-		cache.DurationRemaining = cache.GetEndBlock() - cache.GetCurrentBlock()
+	from := cache.GetCurrentBlock()
+	if from < cache.GetStartBlock() {
+		from = cache.GetStartBlock()
+	}
+
+	if cache.GetEndBlock() >= from {
+		cache.DurationRemaining = cache.GetEndBlock() - from
 	} else {
 		cache.DurationRemaining = 0
 	}
@@ -102,9 +122,20 @@ func (cache *AgreementCache) LoadDurationRemaining() bool {
 	return cache.DurationRemainingLoaded
 }
 
+// LoadDurationPast measures the served part of the agreement, which the provider
+// cancellation penalty is priced from. It stops at the end block: an agreement
+// settled after it ended has served its full duration and no more.
+//
+// Together with LoadDurationRemaining this keeps past + remaining == duration at
+// every height, which is the identity the collateral accounting rests on.
 func (cache *AgreementCache) LoadDurationPast() bool {
-	if cache.GetCurrentBlock() >= cache.GetStartBlock() {
-		cache.DurationPast = cache.GetCurrentBlock() - cache.GetStartBlock()
+	to := cache.GetCurrentBlock()
+	if to > cache.GetEndBlock() {
+		to = cache.GetEndBlock()
+	}
+
+	if to >= cache.GetStartBlock() {
+		cache.DurationPast = to - cache.GetStartBlock()
 	} else {
 		cache.DurationPast = 0
 	}
@@ -130,7 +161,6 @@ func (cache *AgreementCache) CanUpdate(activePlayer *PlayerCache) error {
 func (cache *AgreementCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
     return types.NewAllocationError(cache.ID(), "unacceptable_source")
 }
-
 
 /* Getters
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
@@ -159,8 +189,7 @@ func (cache *AgreementCache) GetOwnerId() string {
 	return cache.Agreement.Owner
 }
 func (cache *AgreementCache) GetOwner() *PlayerCache {
-    owner, _ := cache.CC.GetPlayer(cache.GetOwnerId())
-    return owner
+    return cache.CC.GetPlayer(cache.GetOwnerId())
 }
 
 // Get the Provider data
@@ -266,124 +295,323 @@ func (cache *AgreementCache) GetRemainingCollateralDec() math.LegacyDec {
 }
 
 /* Committing Setters */
+
+// consumerAccount resolves where this agreement's consumer is paid. The
+// PlayerCache accessor drops the bech32 error and hands back an empty address,
+// which SendCoins would reject with the error every payout used to discard, so
+// the collateral would vanish with the agreement. Resolve it explicitly instead.
+func (cache *AgreementCache) consumerAccount() (sdk.AccAddress, error) {
+	address := cache.GetOwner().GetPrimaryAddress()
+
+	account, err := sdk.AccAddressFromBech32(address)
+	if err != nil {
+		return nil, types.NewAgreementSettlementError(cache.GetAgreementId(), "invalid_payout_address").
+			WithProvider(cache.GetProviderId()).
+			WithPlayer(cache.GetOwnerId()).
+			WithAddress(address)
+	}
+
+	return account, nil
+}
+
+// payConsumer moves collateral the consumer is owed out of the provider's pool.
+// This is the consumer's own money and has first claim on the pool, so it is
+// paid in full or not at all.
+func (cache *AgreementCache) payConsumer(amount math.Int) error {
+	if !amount.IsPositive() {
+		return nil
+	}
+
+	account, err := cache.consumerAccount()
+	if err != nil {
+		return err
+	}
+
+	coins := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, amount))
+
+	if err := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetProvider().GetCollateralPoolLocation(), account, coins); err != nil {
+		return types.NewAgreementSettlementError(cache.GetAgreementId(), "payout_failed").
+			WithProvider(cache.GetProviderId()).
+			WithPlayer(cache.GetOwnerId()).
+			WithAddress(account.String()).
+			WithAmount(coins.String())
+	}
+
+	return nil
+}
+
+// providerCancellationPenaltyAmount is what the provider forfeits for the time
+// already served, based on the penalty rate they published.
+func (cache *AgreementCache) providerCancellationPenaltyAmount() math.Int {
+	rate := math.LegacyNewDecFromInt(cache.GetProvider().GetRate().Amount)
+	return cache.GetDurationPastDec().Mul(rate).Mul(cache.GetCapacityDec()).Mul(cache.GetProvider().GetProviderCancellationPenalty()).TruncateInt()
+}
+
+// PayoutVoidedProviderCancellationPenalty releases the cancellation penalty to
+// the provider, for the cases where they did not cancel and so keep it. This is
+// provider revenue and is subordinate to consumer collateral, so it is clamped
+// to what the pool can spare.
 func (cache *AgreementCache) PayoutVoidedProviderCancellationPenalty() {
-	rate := math.LegacyNewDecFromInt(cache.GetProvider().GetRate().Amount)
-	penalty := cache.GetDurationPastDec().Mul(rate).Mul(cache.GetCapacityDec()).Mul(cache.GetProvider().GetProviderCancellationPenalty()).TruncateInt()
-	penaltyCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penalty))
-
-	cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetProvider().GetEarningsPoolLocation(), penaltyCoin)
-
+	provider := cache.GetProvider()
+	provider.SweepRevenue(provider.GetEarningsPoolLocation(), cache.providerCancellationPenaltyAmount(), cache.GetAgreementId())
 }
 
-func (cache *AgreementCache) PayoutProviderCancellationPenalty() {
-	rate := math.LegacyNewDecFromInt(cache.GetProvider().GetRate().Amount)
-	penalty := cache.GetDurationPastDec().Mul(rate).Mul(cache.GetCapacityDec()).Mul(cache.GetProvider().GetProviderCancellationPenalty()).TruncateInt()
-	penaltyCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penalty))
-
-	cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetOwner().GetPrimaryAccount(), penaltyCoin)
-
+func (cache *AgreementCache) PayoutProviderCancellationPenalty() error {
+	return cache.payConsumer(cache.providerCancellationPenaltyAmount())
 }
 
-func (cache *AgreementCache) PayoutConsumerCancellationPenaltyAndReturnCollateral() {
+func (cache *AgreementCache) PayoutConsumerCancellationPenaltyAndReturnCollateral() error {
 	penalty := cache.GetRemainingCollateralDec().Mul(cache.GetProvider().GetConsumerCancellationPenalty()).TruncateInt()
-	penaltyCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penalty))
 
-	cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetProvider().GetEarningsPoolLocation(), penaltyCoin)
+	// The consumer gets what is left of their collateral first; the penalty they
+	// forfeit is provider revenue and only settles once they are whole.
+	if err := cache.payConsumer(cache.GetRemainingCollateral().Sub(penalty)); err != nil {
+		return err
+	}
 
-	remainingCollateral := cache.GetRemainingCollateral().Sub(penalty)
-	remainingCollateralCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, remainingCollateral))
+	provider := cache.GetProvider()
+	provider.SweepRevenue(provider.GetEarningsPoolLocation(), penalty, cache.GetAgreementId())
 
-	cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetOwner().GetPrimaryAccount(), remainingCollateralCoin)
-
+	return nil
 }
 
-func (cache *AgreementCache) ReturnRemainingCollateral() {
-	remainingCollateralCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, cache.GetRemainingCollateral()))
+func (cache *AgreementCache) ReturnRemainingCollateral() error {
+	return cache.payConsumer(cache.GetRemainingCollateral())
+}
 
-	cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetOwner().GetPrimaryAccount(), remainingCollateralCoin)
+// PayoutProviderCancellationPenaltyAndReturnCollateral pays the consumer the
+// provider's forfeited cancellation penalty together with the consumer's
+// remaining collateral in one transfer. Both are the consumer's first-claim
+// money paid from the same pool to the same account, so combining them makes
+// the payout all-or-nothing: on a pool too short to cover both, neither leg
+// settles and teardown fails cleanly. Paid separately, the penalty could commit
+// and the collateral abort, leaving the agreement alive to re-pay the penalty
+// on a later teardown (TearingDown is per-operation only).
+func (cache *AgreementCache) PayoutProviderCancellationPenaltyAndReturnCollateral() error {
+	return cache.payConsumer(cache.providerCancellationPenaltyAmount().Add(cache.GetRemainingCollateral()))
+}
+
+// beginTeardown claims the single settlement this agreement is entitled to in
+// this operation. A false return means settlement is already underway and the
+// caller is the reciprocal leg of it, so it must not pay out again.
+func (cache *AgreementCache) beginTeardown() bool {
+	if cache.TearingDown {
+		return false
+	}
+	cache.TearingDown = true
+	return true
+}
+
+// IsTearingDown reports whether settlement of this agreement has already begun.
+func (cache *AgreementCache) IsTearingDown() bool {
+	return cache.TearingDown
+}
+
+// destroyAllocation tears down the allocation backing this agreement. The
+// allocation's own Destroy would normally settle its agreement, but the
+// TearingDown flag set by beginTeardown stops it re-entering here.
+//
+// A missing allocation is already torn down, not an error. Expiry gets only one
+// attempt, so absence must not prevent the agreement's load and record cleanup.
+func (cache *AgreementCache) destroyAllocation() error {
+	allocation, found := cache.GetAllocation()
+	if !found {
+		return nil
+	}
+	if !allocation.LoadAllocation() {
+		return nil
+	}
+	return allocation.Destroy()
+}
+
+// removeAgreement drops the agreement and its indexes from the store.
+//
+// The removal is immediate because the rest of the operation must not see the
+// agreement any more: ProviderCache.Delete walks the provider index, and
+// AllocationCache.Destroy looks the agreement up out of the store.
+//
+// Deleted is set but Changed deliberately is not. RemoveAgreement already emits
+// the EventDelete, and EventDelete is a public API, so forcing Changed would
+// make Commit clear the agreement a second time and emit a duplicate. Leaving
+// Changed alone means Commit is a no-op in the normal case, and in the case that
+// motivates the flag — something mutated the agreement earlier in the operation,
+// which sets Changed itself — it takes the Deleted branch instead of writing the
+// agreement back, so a settled agreement can never be resurrected.
+func (cache *AgreementCache) removeAgreement() {
+	cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
+	cache.CC.k.RemoveAgreement(cache.CC.ctx, cache.GetAgreement())
+
+	cache.Deleted = true
+
+	cache.CC.ClearPermissionsForObject(cache.ID())
+}
+
+// checkpointProvider sweeps the revenue the provider has earned up to now. It
+// must run while this agreement still counts toward the provider's load and
+// before any load change, because Checkpoint bills the current load across the
+// whole span since the last checkpoint. Every teardown path calls it, rather
+// than trusting each caller to: the allocation-driven paths (grid brownout,
+// struct destruction, allocation delete) have no natural place to do so.
+func (cache *AgreementCache) checkpointProvider() error {
+	return cache.GetProvider().Checkpoint()
+}
+
+// assertConsumerPayable resolves the consumer's payout destination before
+// settlement touches anything.
+//
+// Teardown is not transactional. Half of these paths run in block hooks that
+// cannot abort, so an error raised partway through leaves the bank transfers and
+// load changes already made behind with no retry. Everything that can fail on
+// data alone is therefore checked up front, which leaves only a genuinely short
+// collateral pool able to fail late — the case the solvency invariant and the
+// shortfall event exist to surface.
+func (cache *AgreementCache) assertConsumerPayable() error {
+	_, err := cache.consumerAccount()
+	return err
 }
 
 func (cache *AgreementCache) PrematureCloseByProvider() error {
-	// Payout Cancellation Penalty
-	cache.PayoutProviderCancellationPenalty()
-	cache.ReturnRemainingCollateral()
+	if !cache.beginTeardown() {
+		return nil
+	}
 
-	// Destroy the Allocation
-	allocation, found := cache.GetAllocation()
-    if found {
-        allocation.Destroy()
-    }
+	if err := cache.assertConsumerPayable(); err != nil {
+		return err
+	}
+
+	// Destroy the Allocation. Nothing about allocation teardown touches provider
+	// load or the bank, so doing it before the settlement keeps every fallible
+	// step ahead of every mutation.
+	if err := cache.destroyAllocation(); err != nil {
+		return err
+	}
+
+	if err := cache.checkpointProvider(); err != nil {
+		return err
+	}
+
+	// Payout the cancellation penalty and remaining collateral together, so a
+	// short pool fails both legs rather than paying the penalty and stranding
+	// the collateral.
+	if err := cache.PayoutProviderCancellationPenaltyAndReturnCollateral(); err != nil {
+		return err
+	}
 
 	// Decrease the Load on the Provider
 	cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
 
 	// Destroy the Agreement
-	cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
-	cache.CC.k.RemoveAgreement(cache.CC.ctx, cache.GetAgreement())
-
-    cache.CC.ClearPermissionsForObject(cache.ID())
+	cache.removeAgreement()
 
 	return nil
 }
 
 func (cache *AgreementCache) PrematureCloseByConsumer() error {
+	if !cache.beginTeardown() {
+		return nil
+	}
 
-	cache.PayoutConsumerCancellationPenaltyAndReturnCollateral()
+	if err := cache.assertConsumerPayable(); err != nil {
+		return err
+	}
+
+	// Destroy the Allocation before settling, so a failure cannot leave the bank
+	// transfers half done. See PrematureCloseByProvider.
+	if err := cache.destroyAllocation(); err != nil {
+		return err
+	}
+
+	if err := cache.checkpointProvider(); err != nil {
+		return err
+	}
+
+	if err := cache.PayoutConsumerCancellationPenaltyAndReturnCollateral(); err != nil {
+		return err
+	}
+
+	// Decrease the Load on the Provider
+	cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
+
+	// Destroy the Agreement
+	cache.removeAgreement()
+
+	return nil
+
+}
+
+// PrematureCloseByAllocation settles an agreement whose allocation has already
+// been torn down. It must not destroy the allocation itself: AllocationCache.Destroy
+// is the only caller.
+//
+// This is the teardown that runs in block hooks — grid brownout, struct
+// destruction, batched allocation teardown — so it is the one that most needs its
+// fallible work done before it mutates anything.
+func (cache *AgreementCache) PrematureCloseByAllocation() error {
+	if !cache.beginTeardown() {
+		return nil
+	}
+
+	if err := cache.assertConsumerPayable(); err != nil {
+		return err
+	}
+
+	if err := cache.checkpointProvider(); err != nil {
+		return err
+	}
+
+	// Payout the cancellation penalty and remaining collateral together, so a
+	// short pool fails both legs rather than paying the penalty and stranding
+	// the collateral. This path runs in block hooks that cannot abort, so a
+	// surviving agreement here would re-pay the penalty on the next teardown.
+	if err := cache.PayoutProviderCancellationPenaltyAndReturnCollateral(); err != nil {
+		return err
+	}
+
+	// Decrease the Load on the Provider
+	cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
+
+	// Destroy the Agreement
+	cache.removeAgreement()
+
+	return nil
+
+}
+
+// Expire settles an agreement that ran its full term. The consumer is owed
+// nothing: they received the service they paid for, and the cancellation penalty
+// is the provider's because they did not cancel.
+//
+// This runs in the EndBlocker, where a caller can only log and move on, so the
+// allocation is destroyed first: it is the one step that can fail, and doing it
+// before the settlement means a failure cannot leave revenue swept and load
+// released against an agreement that is still in the store.
+func (cache *AgreementCache) Expire() error {
+	if !cache.beginTeardown() {
+		return nil
+	}
 
 	// Destroy the Allocation
-	allocation, found := cache.GetAllocation()
-    if found {
-        allocation.Destroy()
-    }
+	if err := cache.destroyAllocation(); err != nil {
+		return err
+	}
 
-	// Decrease the Load on the Provider
-	cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
+	// This guard is inert and has to stay that way: Checkpoint cannot fail, and
+	// the two statements below are the ones an expiry gets a single chance to
+	// perform. Returning here would not defer the teardown, it would cancel it,
+	// leaving the agreement holding capacity in the provider's load that every
+	// later checkpoint bills against other consumers' escrow. If Checkpoint ever
+	// becomes fallible, this call site has to stop propagating rather than start.
+	if err := cache.checkpointProvider(); err != nil {
+		return err
+	}
 
-	// Destroy the Agreement
-	cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
-	cache.CC.k.RemoveAgreement(cache.CC.ctx, cache.GetAgreement())
-
-    cache.CC.ClearPermissionsForObject(cache.ID())
-
-	return nil
-
-}
-
-func (cache *AgreementCache) PrematureCloseByAllocation() error {
-	cache.PayoutProviderCancellationPenalty()
-	cache.ReturnRemainingCollateral()
-
-	// Decrease the Load on the Provider
-	cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
-	cache.GetProvider().Commit()
-
-	// Destroy the Agreement
-	cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
-	cache.CC.k.RemoveAgreement(cache.CC.ctx, cache.GetAgreement())
-
-    cache.CC.ClearPermissionsForObject(cache.ID())
-
-	return nil
-
-}
-
-func (cache *AgreementCache) Expire() error {
 	cache.PayoutVoidedProviderCancellationPenalty()
 
 	// Decrease the Load on the Provider
 	cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
 
-	// Destroy the Allocation
-	allocation, found := cache.GetAllocation()
-    if found {
-        allocation.Destroy()
-    }
-
 	// Destroy the Agreement
-	cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
-	cache.CC.k.RemoveAgreement(cache.CC.ctx, cache.GetAgreement())
-
-    cache.CC.ClearPermissionsForObject(cache.ID())
+	cache.removeAgreement()
 
 	return nil
 
@@ -427,18 +655,57 @@ func (cache *AgreementCache) SetEndBlock(endBlock uint64) {
 	cache.Changed = true
 }
 
+// rescaledDuration re-prices the unearned span for a new capacity: the
+// collateral left over buys proportionally less time at a higher capacity and
+// more at a lower one.
+//
+// The multiply happens in math.Int because remaining * capacity overflows uint64
+// well inside the range a provider may publish — SetDurationRange puts no
+// ceiling on durationMaximum.
+func (cache *AgreementCache) rescaledDuration(newCapacity uint64) (uint64, error) {
+	scaled := math.NewIntFromUint64(cache.GetDurationRemaining()).
+		Mul(cache.GetCapacityInt()).
+		Quo(math.NewIntFromUint64(newCapacity))
+
+	if !scaled.IsUint64() {
+		return 0, types.NewParameterValidationError("capacity", newCapacity, "duration_overflow")
+	}
+
+	return scaled.Uint64(), nil
+}
+
 func (cache *AgreementCache) CapacityIncrease(amount uint64) error {
+	if amount == 0 {
+		return types.NewParameterValidationError("capacity", amount, "no_change")
+	}
+
 	if cache.GetProvider().GetSubstation().GetAvailableCapacity() < amount {
 		return types.NewParameterValidationError("capacity", amount, "exceeds_available").WithSubstation(cache.GetProvider().GetSubstationId()).WithRange(0, cache.GetProvider().GetSubstation().GetAvailableCapacity())
 	}
 
-	cache.PayoutVoidedProviderCancellationPenalty()
-
-	// new duration length
-	// remaining duration = end block - current block
-	// new duration = (remaining duration * old capacity) / new capacity .Truncate()
 	newCapacity := cache.GetCapacity() + amount
-	newDuration := (cache.GetDurationRemaining() * cache.GetCapacity()) / newCapacity
+	if newCapacity < cache.GetCapacity() {
+		return types.NewParameterValidationError("capacity", amount, "above_maximum").WithRange(cache.GetProvider().GetCapacityMinimum(), cache.GetProvider().GetCapacityMaximum())
+	}
+
+	// A capacity change must land inside the terms the provider published, the
+	// same range that gated the agreement being opened at all.
+	if err := cache.GetProvider().AgreementCapacityVerify(newCapacity); err != nil {
+		return err
+	}
+
+	newDuration, err := cache.rescaledDuration(newCapacity)
+	if err != nil {
+		return err
+	}
+	if err := cache.GetProvider().AgreementDurationVerify(newDuration); err != nil {
+		return err
+	}
+
+	// Everything that can fail is behind us. The penalty has to be priced before
+	// the mutations below, because SetStartBlock resets the elapsed span it is
+	// measured over and the capacity write changes the rate it is charged at.
+	cache.PayoutVoidedProviderCancellationPenalty()
 
 	cache.SetStartBlock(cache.GetCurrentBlock())
 	cache.SetEndBlock(cache.GetStartBlock() + newDuration)
@@ -446,7 +713,7 @@ func (cache *AgreementCache) CapacityIncrease(amount uint64) error {
 	// Provider Load Increase
 	cache.GetProvider().AgreementLoadIncrease(amount)
 
-	cache.Agreement.Capacity = cache.GetCapacity() + amount
+	cache.Agreement.Capacity = newCapacity
 
 	// Increase the Allocation
 	allocation, allocationFound := cache.GetAllocation()
@@ -461,11 +728,10 @@ func (cache *AgreementCache) CapacityIncrease(amount uint64) error {
 }
 
 func (cache *AgreementCache) CapacityDecrease(amount uint64) error {
-	cache.PayoutVoidedProviderCancellationPenalty()
+	if amount == 0 {
+		return types.NewParameterValidationError("capacity", amount, "no_change")
+	}
 
-	// new duration length
-	// remaining duration = end block - current block
-	// new duration = (remaining duration * old capacity) / new capacity .Truncate()
 	if cache.GetCapacity() < amount {
 		return types.NewParameterValidationError("capacity", amount, "below_minimum").WithRange(0, cache.GetCapacity())
 	}
@@ -475,15 +741,34 @@ func (cache *AgreementCache) CapacityDecrease(amount uint64) error {
 		return types.NewParameterValidationError("capacity", amount, "below_minimum").WithRange(0, cache.GetCapacity())
     }
 
-	newDuration := (cache.GetDurationRemaining() * cache.GetCapacity()) / newCapacity
+	// A capacity change must land inside the terms the provider published, the
+	// same range that gated the agreement being opened at all. Without this a
+	// decrease toward capacity 1 stretches the remaining span by the old
+	// capacity, far past the advertised duration maximum.
+	if err := cache.GetProvider().AgreementCapacityVerify(newCapacity); err != nil {
+		return err
+	}
+
+	newDuration, err := cache.rescaledDuration(newCapacity)
+	if err != nil {
+		return err
+	}
+	if err := cache.GetProvider().AgreementDurationVerify(newDuration); err != nil {
+		return err
+	}
+
+	// Everything that can fail is behind us. The penalty has to be priced before
+	// the mutations below, because SetStartBlock resets the elapsed span it is
+	// measured over and the capacity write changes the rate it is charged at.
+	cache.PayoutVoidedProviderCancellationPenalty()
 
 	cache.SetStartBlock(cache.GetCurrentBlock())
 	cache.SetEndBlock(cache.GetStartBlock() + newDuration)
 
-	// Provider Load Increase
+	// Provider Load Decrease
 	cache.GetProvider().AgreementLoadDecrease(amount)
 
-	cache.Agreement.Capacity = cache.GetCapacity() - amount
+	cache.Agreement.Capacity = newCapacity
 
 	// Decrease the Allocation
 	allocation, allocationFound := cache.GetAllocation()
@@ -497,14 +782,27 @@ func (cache *AgreementCache) CapacityDecrease(amount uint64) error {
 }
 
 func (cache *AgreementCache) DurationIncrease(amount uint64) error {
+	if amount == 0 {
+		return types.NewParameterValidationError("duration", amount, "no_change")
+	}
 
-	newDuration := (cache.GetEndBlock() - cache.GetStartBlock()) + amount
+	endBlock := cache.GetEndBlock()
+	startBlock := cache.GetStartBlock()
+	if endBlock < startBlock {
+		return types.NewParameterValidationError("duration", amount, "invalid_window")
+	}
+	newEndBlock := endBlock + amount
+	if newEndBlock < endBlock {
+		return types.NewParameterValidationError("duration", amount, "above_maximum")
+	}
+
+	newDuration := newEndBlock - startBlock
 	verifyError := cache.GetProvider().AgreementDurationVerify(newDuration)
 	if verifyError != nil {
 		return verifyError
 	}
 
-	cache.SetEndBlock(cache.GetEndBlock() + amount)
+	cache.SetEndBlock(newEndBlock)
 	cache.Changed = true
 
 	return nil

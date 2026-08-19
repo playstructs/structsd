@@ -21,7 +21,7 @@ func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStruc
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    callingPlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
        return emptyResponse, err
     }
@@ -37,6 +37,10 @@ func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStruc
 
     if !structure.LoadStruct(){
         return emptyResponse, types.NewObjectNotFoundError("struct", msg.DefenderStructId)
+    }
+
+    if structure.IsDestroyed() {
+        return emptyResponse, types.NewStructStateError(msg.DefenderStructId, "destroyed", "active", "defense_clear")
     }
 
     if structure.IsOffline() {

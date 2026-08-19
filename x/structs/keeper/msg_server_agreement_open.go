@@ -27,7 +27,7 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    activePlayer, err := cc.GetSigningPlayer(msg.Creator)
     if err != nil {
         return emptyResponse, err
     }
@@ -89,8 +89,15 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     allocationPermissionId := GetObjectPermissionIDBytes(allocation.ID(), activePlayer.ID())
     cc.SetPermissions(allocationPermissionId, types.PermAllocationConnection)
 
-    // Build the Agreement through context
-    startBlock := uint64(ctx.BlockHeight()) + 1
+    // Build the Agreement through context.
+    //
+    // Service starts in this block, not the next one, because the load increase
+    // below takes effect immediately and Checkpoint() bills aggregate load from
+    // the checkpoint block — which the Checkpoint above just set to this height.
+    // Starting a block later billed the provider for one block of service the
+    // consumer never received, leaving the collateral pool short by that much and
+    // tripping the provider-collateral-solvency invariant.
+    startBlock := uint64(ctx.BlockHeight())
     endBlock := startBlock + msg.Duration
 
     agreementRecord := types.CreateBaseAgreement(

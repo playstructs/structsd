@@ -3,6 +3,8 @@ package keeper
 import (
 	"context"
 	"encoding/binary"
+
+	"structs/x/structs/types"
 )
 
 const (
@@ -71,6 +73,11 @@ func (k Keeper) HasThrottleKey(ctx context.Context, throttleKey string) bool {
 
 // SetThrottleKey writes a throttle key to the transient store. The value is
 // a single byte (presence marker). Auto-clears at block boundary.
+//
+// The caller must have established that the signer is authorized to act on the
+// object the key names — see ThrottleTargetAuthorized. An ante write survives a
+// failed message, so an unauthorized reservation is not undone by the handler
+// rejecting it.
 func (k Keeper) SetThrottleKey(ctx context.Context, throttleKey string) {
 	// Defensive: unreachable since NewKeeper panics if transientStoreService is nil
 	if k.transientStoreService == nil {
@@ -78,4 +85,63 @@ func (k Keeper) SetThrottleKey(ctx context.Context, throttleKey string) {
 	}
 	tStore := k.transientStoreService.OpenTransientStore(ctx)
 	tStore.Set([]byte(anteThrottlePrefix+throttleKey), []byte{0x01})
+}
+
+// ThrottleTargetAuthorized reports whether creator may act on targetId under
+// perm, using the same owner PermissionCheck as the handler.
+//
+// This context is read-only and never committed. A false result skips the
+// reservation rather than rejecting because ante sees pre-transaction state,
+// while a later message may rely on an earlier message in the same transaction.
+func (k Keeper) ThrottleTargetAuthorized(ctx context.Context, creator string, kind types.ObjectType, targetId string, perm types.Permission) bool {
+	if creator == "" || targetId == "" {
+		return false
+	}
+
+	cc := k.NewCurrentContext(ctx)
+
+	signer, err := cc.GetSigningPlayer(creator)
+	if err != nil {
+		return false
+	}
+
+	var owner *PlayerCache
+
+	switch kind {
+	case types.ObjectType_player:
+		// A nonexistent player owns nothing, so PermissionCheck refuses it.
+		owner = cc.GetPlayer(targetId)
+
+	case types.ObjectType_struct:
+		structure := cc.GetStruct(targetId)
+		if !structure.LoadStruct() {
+			return false
+		}
+		owner = structure.GetOwner()
+
+	case types.ObjectType_fleet:
+		// The malformed-id path returns a zero FleetCache with a nil CC, so
+		// GetOwner would panic on it. The id here is caller-supplied.
+		fleet, fleetErr := cc.GetFleetById(targetId)
+		if fleetErr != nil {
+			return false
+		}
+		owner = fleet.GetOwner()
+
+	case types.ObjectType_address:
+		// Signer-scoped keys may target only the signing address itself.
+		if targetId != creator {
+			return false
+		}
+		owner = signer
+
+	default:
+		return false
+	}
+
+	if owner == nil {
+		return false
+	}
+
+	return cc.PermissionCheck(owner, signer, perm) == nil
 }

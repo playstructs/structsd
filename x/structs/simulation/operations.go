@@ -43,10 +43,7 @@ func SimulateMsgStructBuildInitiate(
 		}
 
 		// Ensure player has explored a planet (which creates the fleet) before building structs
-		playerCache, err := cc.GetPlayer(player.Id)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildInitiate{}), "failed to get player cache"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.Id)
 
 		// If player doesn't have a planet, they need to explore one first (which creates the fleet)
 		if !playerCache.HasPlanet() {
@@ -84,7 +81,7 @@ func SimulateMsgStructBuildInitiate(
 
 		// Execute the message using the message server
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err = msgServer.StructBuildInitiate(sdk.WrapSDKContext(ctx), msg)
+		_, err := msgServer.StructBuildInitiate(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -180,15 +177,21 @@ func SimulateMsgGuildCreate(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildCreate{}), "player not found"), nil, nil
 		}
 
-		// Check if player already has a guild
+		/* Membership alone does not block creation — the handler makes a plain
+		 * member leave and join the new guild. Only an owner is refused, so skip
+		 * exactly that case and let the leave-and-join path get fuzzed.
+		 */
 		if player.GuildId != "" {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildCreate{}), "player already in guild"), nil, nil
+			currentGuild, currentGuildFound := k.GetGuild(ctx, player.GuildId)
+			if currentGuildFound && currentGuild.Owner == player.Id {
+				return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildCreate{}), "player owns their guild"), nil, nil
+			}
 		}
 
 		// Check if player has a reactor (required for guild creation)
 		validatorAddress := sdk.ValAddress(simAccount.Address.Bytes())
 		reactorBytes, _ := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
-		_, reactorFound := k.GetReactorByBytes(ctx, reactorBytes)
+		reactor, reactorFound := k.GetReactorByBytes(ctx, reactorBytes)
 		if !reactorFound {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildCreate{}), "reactor not found"), nil, nil
 		}
@@ -210,10 +213,41 @@ func SimulateMsgGuildCreate(
 		// Generate random endpoint
 		endpoint := simtypes.RandStringOfLength(r, 10)
 
+		/* Solve the charter puzzle, and give up rather than grinding when the
+		 * anchor is too fresh. Only the solo path is simulated: the third-party
+		 * flow needs a founder's offline signature, which is a keyring operation
+		 * the simulation has no reason to model.
+		 */
+		difficulty := k.CharterDifficulty(ctx)
+		if difficulty > 2 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildCreate{}), "charter difficulty too high"), nil, nil
+		}
+
+		anchor := k.CharterAnchor(ctx)
+		age := k.CharterAge(ctx)
+		difficultyRange := k.GetParams(ctx).CharterDifficultyRange()
+
+		var proof, nonce string
+		for attempt := 0; attempt < 100000; attempt++ {
+			nonce = strconv.Itoa(attempt)
+			hashInput := types.GuildCharterWorkInput(chainID, player.Id, player.Id, anchor, nonce)
+			proof = types.HashBuild(hashInput)
+			if valid, _ := types.HashBuildAndCheckDifficulty(hashInput, proof, age, difficultyRange); valid {
+				break
+			}
+			proof = ""
+		}
+		if proof == "" {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildCreate{}), "could not find valid proof"), nil, nil
+		}
+
 		msg := &types.MsgGuildCreate{
 			Creator:           simAccount.Address.String(),
+			ReactorId:         reactor.Id,
 			Endpoint:          endpoint,
 			EntrySubstationId: entrySubstationId,
+			Proof:             proof,
+			Nonce:             nonce,
 		}
 
 		// Execute the message using the message server
@@ -244,7 +278,7 @@ func SimulateMsgGuildBankMint(
 		}
 
 		// Get player cache
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankMint{}), "player not found"), nil, nil
 		}
@@ -298,7 +332,7 @@ func SimulateMsgGuildBankRedeem(
 		}
 
 		// Get player cache
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankRedeem{}), "player not found"), nil, nil
 		}
@@ -323,7 +357,8 @@ func SimulateMsgGuildBankRedeem(
 		denom := "uguild." + guildId
 
 		msg := &types.MsgGuildBankRedeem{
-			Creator: simAccount.Address.String(),
+			Creator:        simAccount.Address.String(),
+			MinAmountAlpha: 1,
 			AmountToken: sdk.Coin{
 				Denom:  denom,
 				Amount: math.NewIntFromUint64(amountToken),
@@ -334,6 +369,97 @@ func SimulateMsgGuildBankRedeem(
 		msgServer := keeper.NewMsgServerImpl(k)
 		_, err = msgServer.GuildBankRedeem(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
+// SimulateMsgGuildBankConvert generates a MsgGuildBankConvert with random values
+func SimulateMsgGuildBankConvert(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		if account == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConvert{}), "account not found"), nil, nil
+		}
+
+		if _, err := cc.GetSigningPlayer(simAccount.Address.String()); err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConvert{}), "player not found"), nil, nil
+		}
+
+		guilds := k.GetAllGuild(ctx)
+		if len(guilds) == 0 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConvert{}), "no guilds found"), nil, nil
+		}
+		guildId := guilds[r.Intn(len(guilds))].Id
+
+		msg := &types.MsgGuildBankConvert{
+			Creator:        simAccount.Address.String(),
+			GuildId:        guildId,
+			AmountAlpha:    uint64(r.Int63n(100000) + 100),
+			MinAmountToken: 1,
+		}
+
+		msgServer := keeper.NewMsgServerImpl(k)
+		if _, err := msgServer.GuildBankConvert(sdk.WrapSDKContext(ctx), msg); err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
+// SimulateMsgGuildBankConvertToken generates a MsgGuildBankConvertToken with random values
+func SimulateMsgGuildBankConvertToken(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		if account == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConvertToken{}), "account not found"), nil, nil
+		}
+
+		if _, err := cc.GetSigningPlayer(simAccount.Address.String()); err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConvertToken{}), "player not found"), nil, nil
+		}
+
+		guilds := k.GetAllGuild(ctx)
+		if len(guilds) < 2 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConvertToken{}), "need two guilds"), nil, nil
+		}
+		sourceId := guilds[r.Intn(len(guilds))].Id
+		targetId := guilds[r.Intn(len(guilds))].Id
+		if sourceId == targetId {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConvertToken{}), "same guild"), nil, nil
+		}
+
+		msg := &types.MsgGuildBankConvertToken{
+			Creator: simAccount.Address.String(),
+			AmountToken: sdk.Coin{
+				Denom:  "uguild." + sourceId,
+				Amount: math.NewIntFromUint64(uint64(r.Int63n(100000) + 100)),
+			},
+			GuildId:        targetId,
+			MinAmountToken: 1,
+		}
+
+		msgServer := keeper.NewMsgServerImpl(k)
+		if _, err := msgServer.GuildBankConvertToken(sdk.WrapSDKContext(ctx), msg); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
 
@@ -358,7 +484,7 @@ func SimulateMsgGuildBankConfiscateAndBurn(
 		}
 
 		// Get player cache
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConfiscateAndBurn{}), "player not found"), nil, nil
 		}
@@ -488,13 +614,10 @@ func SimulateMsgPlayerSend(
 
 		// Get or create player for the sender
 		player := cc.UpsertPlayer(simAccount.Address.String())
-		playerCache, err := cc.GetPlayer(player.GetPlayerId())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerSend{}), "failed to get player cache"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.GetPlayerId())
 
 		// Check if sender has assets permission
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerSend{}), "player not found"), nil, nil
 		}
@@ -560,10 +683,7 @@ func SimulateMsgGuildMembershipRequest(
 
 		// Get or create player
 		player := cc.UpsertPlayer(simAccount.Address.String())
-		playerCache, err := cc.GetPlayer(player.GetPlayerId())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequest{}), "failed to get player cache"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.GetPlayerId())
 
 		// Get guilds, excluding the player's current guild (same-guild request would fail)
 		allGuilds := k.GetAllGuild(ctx)
@@ -588,7 +708,7 @@ func SimulateMsgGuildMembershipRequest(
 
 		// Execute the message using the message server
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err = msgServer.GuildMembershipRequest(sdk.WrapSDKContext(ctx), msg)
+		_, err := msgServer.GuildMembershipRequest(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -615,10 +735,7 @@ func SimulateMsgGuildMembershipJoin(
 
 		// Get or create player
 		player := cc.UpsertPlayer(simAccount.Address.String())
-		playerCache, err := cc.GetPlayer(player.GetPlayerId())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipJoin{}), "failed to get player cache"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.GetPlayerId())
 
 		// Get guilds, excluding the player's current guild (same-guild join would fail)
 		allGuilds := k.GetAllGuild(ctx)
@@ -643,7 +760,7 @@ func SimulateMsgGuildMembershipJoin(
 
 		// Execute the message using the message server
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err = msgServer.GuildMembershipJoin(sdk.WrapSDKContext(ctx), msg)
+		_, err := msgServer.GuildMembershipJoin(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -705,10 +822,7 @@ func SimulateMsgReactorInfuse(
 
 		// Get or create player
 		player := cc.UpsertPlayer(simAccount.Address.String())
-		playerCache, err := cc.GetPlayer(player.GetPlayerId())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorInfuse{}), "failed to get player cache"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.GetPlayerId())
 
 		// Check if player is in a guild
 		if playerCache.GetGuildId() == "" {
@@ -716,7 +830,7 @@ func SimulateMsgReactorInfuse(
 		}
 
 		// Check if player has assets permission
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorInfuse{}), "player not found"), nil, nil
 		}
@@ -796,10 +910,7 @@ func SimulateCommandShipBuildInitiate(
 
 		// Get or create player
 		player := cc.UpsertPlayer(simAccount.Address.String())
-		playerCache, err := cc.GetPlayer(player.GetPlayerId())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildInitiate{}), "failed to get player cache"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.GetPlayerId())
 
 		// Ensure player has explored a planet
 		if !playerCache.HasPlanet() {
@@ -840,7 +951,7 @@ func SimulateCommandShipBuildInitiate(
 
 		// Execute the message using the message server
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err = msgServer.StructBuildInitiate(sdk.WrapSDKContext(ctx), msg)
+		_, err := msgServer.StructBuildInitiate(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -899,7 +1010,7 @@ func SimulateCommandShipBuildComplete(
 
 		// Find a random account that can play this struct
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildComplete{}), "player not found"), nil, nil
 		}
@@ -1003,7 +1114,7 @@ func SimulateMsgAllocationCreate(
 		}
 
 		// Get player cache
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationCreate{}), "player not found"), nil, nil
 		}
@@ -1087,7 +1198,7 @@ func SimulateMsgSubstationCreate(
 		}
 
 		// Get player cache
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationCreate{}), "player not found"), nil, nil
 		}
@@ -1148,7 +1259,7 @@ func SimulateMsgProviderCreate(
 		}
 
 		// Get player cache
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderCreate{}), "player not found"), nil, nil
 		}
@@ -1241,7 +1352,7 @@ func SimulateMsgAgreementOpen(
 		}
 
 		// Get player cache
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementOpen{}), "player not found"), nil, nil
 		}
@@ -1336,7 +1447,7 @@ func SimulateMsgAgreementClose(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementClose{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementClose{}), "player not found"), nil, nil
 		}
@@ -1386,7 +1497,7 @@ func SimulateMsgAgreementCapacityIncrease(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementCapacityIncrease{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementCapacityIncrease{}), "player not found"), nil, nil
 		}
@@ -1451,7 +1562,7 @@ func SimulateMsgAgreementCapacityDecrease(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementCapacityDecrease{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementCapacityDecrease{}), "player not found"), nil, nil
 		}
@@ -1515,7 +1626,7 @@ func SimulateMsgAgreementDurationIncrease(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementDurationIncrease{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementDurationIncrease{}), "player not found"), nil, nil
 		}
@@ -1590,7 +1701,7 @@ func SimulateMsgAllocationDelete(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationDelete{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationDelete{}), "player not found"), nil, nil
 		}
@@ -1643,7 +1754,7 @@ func SimulateMsgAllocationUpdate(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationUpdate{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationUpdate{}), "player not found"), nil, nil
 		}
@@ -1752,10 +1863,7 @@ func SimulateMsgFleetMove(
 		}
 
 		player := cc.UpsertPlayer(simAccount.Address.String())
-		playerCache, err := cc.GetPlayer(player.GetPlayerId())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgFleetMove{}), "player not found"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.GetPlayerId())
 
 		if !playerCache.HasPlanet() {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgFleetMove{}), "player has no planet"), nil, nil
@@ -1782,7 +1890,7 @@ func SimulateMsgFleetMove(
 		}
 
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err = msgServer.FleetMove(sdk.WrapSDKContext(ctx), msg)
+		_, err := msgServer.FleetMove(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -1810,7 +1918,7 @@ func SimulateMsgStructBuildComplete(
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildComplete{}), "account not found"), nil, nil
 		}
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildComplete{}), "player not found"), nil, nil
 		}
@@ -1883,7 +1991,7 @@ func SimulateMsgStructBuildCancel(
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildCancel{}), "account not found"), nil, nil
 		}
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildCancel{}), "player not found"), nil, nil
 		}
@@ -1932,7 +2040,7 @@ func SimulateMsgStructActivate(
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructActivate{}), "account not found"), nil, nil
 		}
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructActivate{}), "player not found"), nil, nil
 		}
@@ -1981,7 +2089,7 @@ func SimulateMsgStructDeactivate(
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructDeactivate{}), "account not found"), nil, nil
 		}
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructDeactivate{}), "player not found"), nil, nil
 		}
@@ -2035,7 +2143,7 @@ func SimulateMsgProviderWithdrawBalance(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderWithdrawBalance{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderWithdrawBalance{}), "player not found"), nil, nil
 		}
@@ -2088,7 +2196,7 @@ func SimulateMsgProviderUpdateCapacityMinimum(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateCapacityMinimum{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateCapacityMinimum{}), "player not found"), nil, nil
 		}
@@ -2142,7 +2250,7 @@ func SimulateMsgProviderUpdateCapacityMaximum(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateCapacityMaximum{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateCapacityMaximum{}), "player not found"), nil, nil
 		}
@@ -2196,7 +2304,7 @@ func SimulateMsgProviderUpdateDurationMinimum(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateDurationMinimum{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateDurationMinimum{}), "player not found"), nil, nil
 		}
@@ -2250,7 +2358,7 @@ func SimulateMsgProviderUpdateDurationMaximum(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateDurationMaximum{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateDurationMaximum{}), "player not found"), nil, nil
 		}
@@ -2304,7 +2412,7 @@ func SimulateMsgProviderUpdateAccessPolicy(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateAccessPolicy{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateAccessPolicy{}), "player not found"), nil, nil
 		}
@@ -2362,7 +2470,7 @@ func SimulateMsgProviderDelete(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderDelete{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderDelete{}), "player not found"), nil, nil
 		}
@@ -2417,7 +2525,7 @@ func SimulateMsgSubstationAllocationConnect(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationAllocationConnect{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationAllocationConnect{}), "player not found"), nil, nil
 		}
@@ -2478,7 +2586,7 @@ func SimulateMsgSubstationAllocationDisconnect(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationAllocationDisconnect{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationAllocationDisconnect{}), "player not found"), nil, nil
 		}
@@ -2533,7 +2641,7 @@ func SimulateMsgSubstationPlayerConnect(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerConnect{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerConnect{}), "player not found"), nil, nil
 		}
@@ -2595,7 +2703,7 @@ func SimulateMsgSubstationPlayerDisconnect(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerDisconnect{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerDisconnect{}), "player not found"), nil, nil
 		}
@@ -2652,7 +2760,7 @@ func SimulateMsgSubstationPlayerMigrate(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerMigrate{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerMigrate{}), "player not found"), nil, nil
 		}
@@ -2729,7 +2837,7 @@ func SimulateMsgSubstationDelete(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationDelete{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationDelete{}), "player not found"), nil, nil
 		}
@@ -2795,7 +2903,7 @@ func SimulateMsgAddressRevoke(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAddressRevoke{}), "account not found"), nil, nil
 		}
 
-		revokerPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		revokerPlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAddressRevoke{}), "player not found"), nil, nil
 		}
@@ -2853,7 +2961,7 @@ func SimulateMsgPlayerUpdatePrimaryAddress(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerUpdatePrimaryAddress{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerUpdatePrimaryAddress{}), "player not found"), nil, nil
 		}
@@ -2936,10 +3044,7 @@ func SimulateMsgPlanetRaidComplete(
 		}
 
 		player := cc.UpsertPlayer(simAccount.Address.String())
-		playerCache, err := cc.GetPlayer(player.GetPlayerId())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlanetRaidComplete{}), "player not found"), nil, nil
-		}
+		playerCache := cc.GetPlayer(player.GetPlayerId())
 
 		if !playerCache.HasPlanet() {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlanetRaidComplete{}), "player has no planet"), nil, nil
@@ -2962,7 +3067,7 @@ func SimulateMsgPlanetRaidComplete(
 		}
 
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err = msgServer.PlanetRaidComplete(sdk.WrapSDKContext(ctx), msg)
+		_, err := msgServer.PlanetRaidComplete(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -2991,7 +3096,7 @@ func SimulateMsgReactorDefuse(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorDefuse{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorDefuse{}), "player not found"), nil, nil
 		}
@@ -3044,7 +3149,7 @@ func SimulateMsgReactorBeginMigration(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorBeginMigration{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorBeginMigration{}), "player not found"), nil, nil
 		}
@@ -3108,7 +3213,7 @@ func SimulateMsgReactorCancelDefusion(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorCancelDefusion{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		activePlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorCancelDefusion{}), "player not found"), nil, nil
 		}
@@ -3164,7 +3269,7 @@ func SimulateMsgGuildMembershipInvite(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInvite{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		callingPlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInvite{}), "player not found"), nil, nil
 		}
@@ -3219,7 +3324,7 @@ func SimulateMsgGuildMembershipInviteApprove(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteApprove{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		callingPlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteApprove{}), "player not found"), nil, nil
 		}
@@ -3268,7 +3373,7 @@ func SimulateMsgGuildMembershipInviteDeny(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteDeny{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		callingPlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteDeny{}), "player not found"), nil, nil
 		}
@@ -3312,7 +3417,7 @@ func SimulateMsgGuildMembershipInviteRevoke(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteRevoke{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		callingPlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteRevoke{}), "player not found"), nil, nil
 		}
@@ -3366,7 +3471,7 @@ func SimulateMsgGuildMembershipJoinProxy(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipJoinProxy{}), "account not found"), nil, nil
 		}
 
-		proxyPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		proxyPlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipJoinProxy{}), "player not found"), nil, nil
 		}
@@ -3428,7 +3533,7 @@ func SimulateMsgGuildMembershipKick(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipKick{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		callingPlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipKick{}), "player not found"), nil, nil
 		}
@@ -3482,7 +3587,7 @@ func SimulateMsgGuildMembershipRequestApprove(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequestApprove{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		callingPlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequestApprove{}), "player not found"), nil, nil
 		}
@@ -3531,7 +3636,7 @@ func SimulateMsgGuildMembershipRequestDeny(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequestDeny{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		callingPlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequestDeny{}), "player not found"), nil, nil
 		}
@@ -3575,7 +3680,7 @@ func SimulateMsgGuildMembershipRequestRevoke(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequestRevoke{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		callingPlayer, err := cc.GetSigningPlayer(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequestRevoke{}), "player not found"), nil, nil
 		}
@@ -3830,6 +3935,103 @@ func SimulateMsgGuildUpdateJoinInfusionMinimum(
 		msgServer := keeper.NewMsgServerImpl(k)
 		_, err := msgServer.GuildUpdateJoinInfusionMinimum(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
+// SimulateMsgGuildUpdateBankConvertInFee generates a MsgGuildUpdateBankConvertInFee with random values
+func SimulateMsgGuildUpdateBankConvertInFee(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		if ak.GetAccount(ctx, simAccount.Address) == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateBankConvertInFee{}), "account not found"), nil, nil
+		}
+
+		player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, simAccount.Address.String()))
+		if !playerFound {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateBankConvertInFee{}), "player not found"), nil, nil
+		}
+
+		validGuilds := make([]types.Guild, 0)
+		for _, guild := range k.GetAllGuild(ctx) {
+			if cc.PermissionHasOneOf(keeper.GetObjectPermissionIDBytes(guild.Id, player.Id), types.PermAdmin) {
+				validGuilds = append(validGuilds, guild)
+			}
+		}
+		if len(validGuilds) == 0 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateBankConvertInFee{}), "no updatable guilds"), nil, nil
+		}
+
+		guild := validGuilds[r.Intn(len(validGuilds))]
+		// Random fee in [0, 1].
+		fee := math.LegacyNewDecWithPrec(r.Int63n(101), 2)
+
+		msg := &types.MsgGuildUpdateBankConvertInFee{
+			Creator:          simAccount.Address.String(),
+			GuildId:          guild.Id,
+			BankConvertInFee: fee,
+		}
+
+		msgServer := keeper.NewMsgServerImpl(k)
+		if _, err := msgServer.GuildUpdateBankConvertInFee(sdk.WrapSDKContext(ctx), msg); err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
+// SimulateMsgGuildUpdateBankConvertOutFee generates a MsgGuildUpdateBankConvertOutFee with random values
+func SimulateMsgGuildUpdateBankConvertOutFee(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		if ak.GetAccount(ctx, simAccount.Address) == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateBankConvertOutFee{}), "account not found"), nil, nil
+		}
+
+		player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, simAccount.Address.String()))
+		if !playerFound {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateBankConvertOutFee{}), "player not found"), nil, nil
+		}
+
+		validGuilds := make([]types.Guild, 0)
+		for _, guild := range k.GetAllGuild(ctx) {
+			if cc.PermissionHasOneOf(keeper.GetObjectPermissionIDBytes(guild.Id, player.Id), types.PermAdmin) {
+				validGuilds = append(validGuilds, guild)
+			}
+		}
+		if len(validGuilds) == 0 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateBankConvertOutFee{}), "no updatable guilds"), nil, nil
+		}
+
+		guild := validGuilds[r.Intn(len(validGuilds))]
+		fee := math.LegacyNewDecWithPrec(r.Int63n(101), 2)
+
+		msg := &types.MsgGuildUpdateBankConvertOutFee{
+			Creator:           simAccount.Address.String(),
+			GuildId:           guild.Id,
+			BankConvertOutFee: fee,
+		}
+
+		msgServer := keeper.NewMsgServerImpl(k)
+		if _, err := msgServer.GuildUpdateBankConvertOutFee(sdk.WrapSDKContext(ctx), msg); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
 

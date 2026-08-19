@@ -19,6 +19,11 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     Short:          "Get the current Block Height",
                 },
 				{
+                    RpcMethod:      "GuildCharter",
+                    Use:            "guild-charter",
+                    Short:          "Get the anchor and current difficulty of the global guild charter puzzle",
+                },
+				{
                     RpcMethod:      "Address",
                     Use:            "address [address]",
                     Short:          "Show the details of a specific Address",
@@ -397,25 +402,38 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                 {
                     RpcMethod:      "GuildBankMint",
                     Use:            "guild-bank-mint [alpha amount] [token amount]",
-                    Short:          "Mint new Alpha-backed token for a guild",
+                    Short:          "Mint new Alpha-backed token for a guild (--guild-id to name a guild you own but are not in)",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountAlpha"},{ProtoField: "amountToken"}},
                 },
                 {
                     RpcMethod:      "GuildBankRedeem",
-                    Use:            "guild-bank-redeem [token]",
-                    Short:          "Redeem a Guild Token for the underlying Alpha asset",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountToken"}},
+                    Use:            "guild-bank-redeem [token] [min-amount-alpha]",
+                    Short:          "Redeem a Guild Token for the underlying Alpha asset (required slippage guard)",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountToken"},{ProtoField: "minAmountAlpha"}},
                 },
                 {
                     RpcMethod:      "GuildBankConfiscateAndBurn",
                     Use:            "guild-bank-confiscate-and-burn [token amount] [address]",
-                    Short:          "Confiscate a Guild Token from an address and burn it",
+                    Short:          "Confiscate a Guild Token from an address and burn it (--guild-id to name a guild you own but are not in)",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountToken"},{ProtoField: "address"}},
+                },
+                {
+                    RpcMethod:      "GuildBankConvert",
+                    Use:            "guild-bank-convert [guild id] [alpha amount] [min-amount-token]",
+                    Short:          "Convert Alpha into a Guild Token at the current collateral ratio (required slippage guard)",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "amountAlpha"},{ProtoField: "minAmountToken"}},
+                },
+                {
+                    RpcMethod:      "GuildBankConvertToken",
+                    Use:            "guild-bank-convert-token [source token] [target guild id] [min-amount-token]",
+                    Short:          "Convert one Guild Token into another via Alpha in a single transaction (required slippage guard)",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountToken"},{ProtoField: "guildId"},{ProtoField: "minAmountToken"}},
                 },
                 {
                     RpcMethod:      "GuildCreate",
                     Use:            "guild-create [reactor id] [endpoint] [substation id]",
-                    Short:          "Create a guild from an account with an associated Reactor",
+                    Short:          "Found a guild on a reactor's charter entitlement",
+                    Long:           "Found a guild without a proof, on the one-time entitlement of a reactor whose validator is bonded and past its eligibility height. To found a guild by proof of work instead, use guild-create-compute.",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "reactorId"},{ProtoField: "endpoint"},{ProtoField: "entrySubstationId"}},
                 },
                 {
@@ -503,6 +521,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "joinInfusionMinimum"}},
                  },
                  {
+                     RpcMethod:      "GuildUpdateBankConvertInFee",
+                     Use:            "guild-update-bank-convert-in-fee [guild id] [fee]",
+                     Short:          "Update the guild bank convert-in fee (0.0 inclusive, 1.0 exclusive)",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "bankConvertInFee"}},
+                 },
+                 {
+                     RpcMethod:      "GuildUpdateBankConvertOutFee",
+                     Use:            "guild-update-bank-convert-out-fee [guild id] [fee]",
+                     Short:          "Update the guild bank convert-out fee (0.0 inclusive, 1.0 exclusive)",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "bankConvertOutFee"}},
+                 },
+                 {
                      RpcMethod:      "GuildUpdateJoinInfusionMinimumBypassByRequest",
                      Use:            "guild-update-join-infusion-minimum-by-request [guild id] [join bypass level]",
                      Short:          "Update the minimum bypass level for requests Guild setting",
@@ -529,7 +559,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                  {
                      RpcMethod:      "GuildUpdateEntryRank",
                      Use:            "guild-update-entry-rank [new entry rank]",
-                     Short:          "Update the entry rank for your guild",
+                     Short:          "Update the entry rank for your guild (--guild-id to name a guild you own but are not in)",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "newEntryRank"}},
                  },
                  {
@@ -619,7 +649,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                  {
                      RpcMethod:      "PlayerUpdateGuildRank",
                      Use:            "player-update-guild-rank [player id] [guild rank]",
-                     Short:          "Update the guild rank of a player in your guild",
+                     Short:          "Update the guild rank of a player in your guild (--guild-id to name a guild you own but are not in)",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "guildRank"}},
                  },
                  {
@@ -717,6 +747,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     Use:            "reactor-cancel-defusion [player address] [reactor address] [amount] [creation height]",
                     Short:          "Place cooling Alpha back into the Reactor to resume generating energy",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "delegator_address"},{ProtoField: "validator_address"},{ProtoField: "amount"},{ProtoField: "creation_height"}},
+                 },
+                 {
+                    RpcMethod:      "ReactorRestart",
+                    Use:            "reactor-restart [reactor address]",
+                    Short:          "Resync a Reactor's energy output with its validator, restoring it after an unjail",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "validator_address"}},
                  },
                  {
                      RpcMethod:      "StructActivate",
