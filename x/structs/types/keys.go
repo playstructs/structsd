@@ -176,6 +176,13 @@ const (
 
 const (
 	AddressPlayerKey = "Address/player/"
+
+	// AddressNonceKey holds the registration-proof nonce for an address.
+	//
+	// Deliberately a separate row from AddressPlayerKey: AddressRevoke deletes
+	// the association, and the nonce has to outlive it or the proof that
+	// created the association becomes replayable the moment it is revoked.
+	AddressNonceKey = "Address/nonce/"
 )
 
 const (

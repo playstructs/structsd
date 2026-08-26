@@ -166,6 +166,14 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		cc.GenesisImportAddress(elem.Address, elem.PlayerIndex)
 	}
 
+	// Address registration-proof nonces. A separate list from AddressList
+	// because a revoked address keeps its nonce and loses its association, and
+	// that is the row a restored chain must not forget: dropping it resets the
+	// address to nonce 0 and makes its original proof replayable.
+	for _, elem := range genState.AddressNonceList {
+		cc.GenesisImportAddressNonce(elem.Address, elem.Nonce)
+	}
+
 	// Planets
 	for _, planet := range genState.PlanetList {
 		cc.GenesisImportPlanet(planet)
@@ -269,6 +277,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.PortId = k.GetPort(ctx)
 
 	genesis.AddressList = k.GetAllAddressExport(ctx)
+	genesis.AddressNonceList = k.GetAllAddressProofNonceExport(ctx)
 
 	genesis.AgreementList = k.GetAllAgreement(ctx)
 

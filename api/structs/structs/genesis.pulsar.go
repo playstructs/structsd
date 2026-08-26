@@ -1172,6 +1172,57 @@ func (x *_GenesisState_22_list) IsValid() bool {
 	return x.list != nil
 }
 
+var _ protoreflect.List = (*_GenesisState_37_list)(nil)
+
+type _GenesisState_37_list struct {
+	list *[]*AddressNonceRecord
+}
+
+func (x *_GenesisState_37_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_GenesisState_37_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_GenesisState_37_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*AddressNonceRecord)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_GenesisState_37_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*AddressNonceRecord)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_GenesisState_37_list) AppendMutable() protoreflect.Value {
+	v := new(AddressNonceRecord)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_GenesisState_37_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_GenesisState_37_list) NewElement() protoreflect.Value {
+	v := new(AddressNonceRecord)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_GenesisState_37_list) IsValid() bool {
+	return x.list != nil
+}
+
 var _ protoreflect.List = (*_GenesisState_23_list)(nil)
 
 type _GenesisState_23_list struct {
@@ -1259,6 +1310,7 @@ var (
 	fd_GenesisState_gridList                       protoreflect.FieldDescriptor
 	fd_GenesisState_gridCascadeQueue               protoreflect.FieldDescriptor
 	fd_GenesisState_addressList                    protoreflect.FieldDescriptor
+	fd_GenesisState_addressNonceList               protoreflect.FieldDescriptor
 	fd_GenesisState_fleetList                      protoreflect.FieldDescriptor
 )
 
@@ -1299,6 +1351,7 @@ func init() {
 	fd_GenesisState_gridList = md_GenesisState.Fields().ByName("gridList")
 	fd_GenesisState_gridCascadeQueue = md_GenesisState.Fields().ByName("gridCascadeQueue")
 	fd_GenesisState_addressList = md_GenesisState.Fields().ByName("addressList")
+	fd_GenesisState_addressNonceList = md_GenesisState.Fields().ByName("addressNonceList")
 	fd_GenesisState_fleetList = md_GenesisState.Fields().ByName("fleetList")
 }
 
@@ -1571,6 +1624,12 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 			return
 		}
 	}
+	if len(x.AddressNonceList) != 0 {
+		value := protoreflect.ValueOfList(&_GenesisState_37_list{list: &x.AddressNonceList})
+		if !f(fd_GenesisState_addressNonceList, value) {
+			return
+		}
+	}
 	if len(x.FleetList) != 0 {
 		value := protoreflect.ValueOfList(&_GenesisState_23_list{list: &x.FleetList})
 		if !f(fd_GenesisState_fleetList, value) {
@@ -1660,6 +1719,8 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 		return len(x.GridCascadeQueue) != 0
 	case "structs.structs.GenesisState.addressList":
 		return len(x.AddressList) != 0
+	case "structs.structs.GenesisState.addressNonceList":
+		return len(x.AddressNonceList) != 0
 	case "structs.structs.GenesisState.fleetList":
 		return len(x.FleetList) != 0
 	default:
@@ -1746,6 +1807,8 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 		x.GridCascadeQueue = nil
 	case "structs.structs.GenesisState.addressList":
 		x.AddressList = nil
+	case "structs.structs.GenesisState.addressNonceList":
+		x.AddressNonceList = nil
 	case "structs.structs.GenesisState.fleetList":
 		x.FleetList = nil
 	default:
@@ -1935,6 +1998,12 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 		}
 		listValue := &_GenesisState_22_list{list: &x.AddressList}
 		return protoreflect.ValueOfList(listValue)
+	case "structs.structs.GenesisState.addressNonceList":
+		if len(x.AddressNonceList) == 0 {
+			return protoreflect.ValueOfList(&_GenesisState_37_list{})
+		}
+		listValue := &_GenesisState_37_list{list: &x.AddressNonceList}
+		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.GenesisState.fleetList":
 		if len(x.FleetList) == 0 {
 			return protoreflect.ValueOfList(&_GenesisState_23_list{})
@@ -2075,6 +2144,10 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 		lv := value.List()
 		clv := lv.(*_GenesisState_22_list)
 		x.AddressList = *clv.list
+	case "structs.structs.GenesisState.addressNonceList":
+		lv := value.List()
+		clv := lv.(*_GenesisState_37_list)
+		x.AddressNonceList = *clv.list
 	case "structs.structs.GenesisState.fleetList":
 		lv := value.List()
 		clv := lv.(*_GenesisState_23_list)
@@ -2242,6 +2315,12 @@ func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) p
 		}
 		value := &_GenesisState_22_list{list: &x.AddressList}
 		return protoreflect.ValueOfList(value)
+	case "structs.structs.GenesisState.addressNonceList":
+		if x.AddressNonceList == nil {
+			x.AddressNonceList = []*AddressNonceRecord{}
+		}
+		value := &_GenesisState_37_list{list: &x.AddressNonceList}
+		return protoreflect.ValueOfList(value)
 	case "structs.structs.GenesisState.fleetList":
 		if x.FleetList == nil {
 			x.FleetList = []*Fleet{}
@@ -2373,6 +2452,9 @@ func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) 
 	case "structs.structs.GenesisState.addressList":
 		list := []*AddressRecord{}
 		return protoreflect.ValueOfList(&_GenesisState_22_list{list: &list})
+	case "structs.structs.GenesisState.addressNonceList":
+		list := []*AddressNonceRecord{}
+		return protoreflect.ValueOfList(&_GenesisState_37_list{list: &list})
 	case "structs.structs.GenesisState.fleetList":
 		list := []*Fleet{}
 		return protoreflect.ValueOfList(&_GenesisState_23_list{list: &list})
@@ -2618,6 +2700,12 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				n += 2 + l + runtime.Sov(uint64(l))
 			}
 		}
+		if len(x.AddressNonceList) > 0 {
+			for _, e := range x.AddressNonceList {
+				l = options.Size(e)
+				n += 2 + l + runtime.Sov(uint64(l))
+			}
+		}
 		if len(x.FleetList) > 0 {
 			for _, e := range x.FleetList {
 				l = options.Size(e)
@@ -2652,6 +2740,24 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.AddressNonceList) > 0 {
+			for iNdEx := len(x.AddressNonceList) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.AddressNonceList[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0x2
+				i--
+				dAtA[i] = 0xaa
+			}
 		}
 		if x.GuildCharterAnchor != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.GuildCharterAnchor))
@@ -4186,6 +4292,40 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
+			case 37:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AddressNonceList", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.AddressNonceList = append(x.AddressNonceList, &AddressNonceRecord{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.AddressNonceList[len(x.AddressNonceList)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
 			case 23:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field FleetList", wireType)
@@ -4314,6 +4454,7 @@ type GenesisState struct {
 	GridList                []*GridRecord                   `protobuf:"bytes,21,rep,name=gridList,proto3" json:"gridList,omitempty"`
 	GridCascadeQueue        []string                        `protobuf:"bytes,30,rep,name=gridCascadeQueue,proto3" json:"gridCascadeQueue,omitempty"`
 	AddressList             []*AddressRecord                `protobuf:"bytes,22,rep,name=addressList,proto3" json:"addressList,omitempty"`
+	AddressNonceList        []*AddressNonceRecord           `protobuf:"bytes,37,rep,name=addressNonceList,proto3" json:"addressNonceList,omitempty"`
 	FleetList               []*Fleet                        `protobuf:"bytes,23,rep,name=fleetList,proto3" json:"fleetList,omitempty"`
 }
 
@@ -4575,6 +4716,13 @@ func (x *GenesisState) GetAddressList() []*AddressRecord {
 	return nil
 }
 
+func (x *GenesisState) GetAddressNonceList() []*AddressNonceRecord {
+	if x != nil {
+		return x.AddressNonceList
+	}
+	return nil
+}
+
 func (x *GenesisState) GetFleetList() []*Fleet {
 	if x != nil {
 		return x.FleetList
@@ -4621,7 +4769,7 @@ var file_structs_structs_genesis_proto_rawDesc = []byte{
 	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xb7, 0x11, 0x0a, 0x0c, 0x47, 0x65, 0x6e,
+	0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x88, 0x12, 0x0a, 0x0c, 0x47, 0x65, 0x6e,
 	0x65, 0x73, 0x69, 0x73, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x3a, 0x0a, 0x06, 0x70, 0x61, 0x72,
 	0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x61, 0x72, 0x61,
@@ -4757,21 +4905,26 @@ var file_structs_structs_genesis_proto_rawDesc = []byte{
 	0x69, 0x73, 0x74, 0x18, 0x16, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72,
 	0x65, 0x73, 0x73, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x0b, 0x61, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x3a, 0x0a, 0x09, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x4c,
-	0x69, 0x73, 0x74, 0x18, 0x17, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x46, 0x6c, 0x65, 0x65,
-	0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x09, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x4c, 0x69,
-	0x73, 0x74, 0x42, 0xa2, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0c, 0x47, 0x65, 0x6e, 0x65,
-	0x73, 0x69, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d,
-	0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53,
-	0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x73, 0x73, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x4f, 0x0a, 0x10, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73,
+	0x73, 0x4e, 0x6f, 0x6e, 0x63, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x25, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x4e, 0x6f, 0x6e, 0x63, 0x65, 0x52,
+	0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x10, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x4e, 0x6f,
+	0x6e, 0x63, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x3a, 0x0a, 0x09, 0x66, 0x6c, 0x65, 0x65, 0x74,
+	0x4c, 0x69, 0x73, 0x74, 0x18, 0x17, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x46, 0x6c, 0x65,
+	0x65, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x09, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x4c,
+	0x69, 0x73, 0x74, 0x42, 0xa2, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0c, 0x47, 0x65, 0x6e,
+	0x65, 0x73, 0x69, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03,
+	0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
+	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a,
+	0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -4810,7 +4963,8 @@ var file_structs_structs_genesis_proto_goTypes = []interface{}{
 	(*GuildRankPermissionRecord)(nil),    // 19: structs.structs.GuildRankPermissionRecord
 	(*GridRecord)(nil),                   // 20: structs.structs.GridRecord
 	(*AddressRecord)(nil),                // 21: structs.structs.AddressRecord
-	(*Fleet)(nil),                        // 22: structs.structs.Fleet
+	(*AddressNonceRecord)(nil),           // 22: structs.structs.AddressNonceRecord
+	(*Fleet)(nil),                        // 23: structs.structs.Fleet
 }
 var file_structs_structs_genesis_proto_depIdxs = []int32{
 	1,  // 0: structs.structs.GenesisState.params:type_name -> structs.structs.Params
@@ -4834,12 +4988,13 @@ var file_structs_structs_genesis_proto_depIdxs = []int32{
 	19, // 18: structs.structs.GenesisState.guildRankPermissionList:type_name -> structs.structs.GuildRankPermissionRecord
 	20, // 19: structs.structs.GenesisState.gridList:type_name -> structs.structs.GridRecord
 	21, // 20: structs.structs.GenesisState.addressList:type_name -> structs.structs.AddressRecord
-	22, // 21: structs.structs.GenesisState.fleetList:type_name -> structs.structs.Fleet
-	22, // [22:22] is the sub-list for method output_type
-	22, // [22:22] is the sub-list for method input_type
-	22, // [22:22] is the sub-list for extension type_name
-	22, // [22:22] is the sub-list for extension extendee
-	0,  // [0:22] is the sub-list for field type_name
+	22, // 21: structs.structs.GenesisState.addressNonceList:type_name -> structs.structs.AddressNonceRecord
+	23, // 22: structs.structs.GenesisState.fleetList:type_name -> structs.structs.Fleet
+	23, // [23:23] is the sub-list for method output_type
+	23, // [23:23] is the sub-list for method input_type
+	23, // [23:23] is the sub-list for extension type_name
+	23, // [23:23] is the sub-list for extension extendee
+	0,  // [0:23] is the sub-list for field type_name
 }
 
 func init() { file_structs_structs_genesis_proto_init() }

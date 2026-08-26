@@ -73,6 +73,53 @@ func (k Keeper) SetPlayerIndexForAddress(ctx context.Context, address string, pl
 	return nil
 }
 
+// GetAddressProofNonce returns the registration-proof nonce for an address.
+// An address that has never registered has no row and starts at 0.
+func (k Keeper) GetAddressProofNonce(ctx context.Context, address string) uint64 {
+    store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AddressNonceKey))
+
+	bz := store.Get(types.KeyPrefix(address))
+	if bz == nil {
+		return 0
+	}
+
+	return binary.BigEndian.Uint64(bz)
+}
+
+// SetAddressProofNonce writes the registration-proof nonce for an address.
+func (k Keeper) SetAddressProofNonce(ctx context.Context, address string, nonce uint64) {
+    store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AddressNonceKey))
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, nonce)
+
+	store.Set(types.KeyPrefix(address), bz)
+}
+
+// GetAllAddressProofNonceExport returns every stored registration-proof nonce.
+//
+// Exported separately from GetAllAddressExport because the two stores hold
+// different sets: a revoked address keeps its nonce and loses its association,
+// and that is precisely the row a restored chain must not forget. Dropping it
+// would reset the address to nonce 0 and make its original proof live again.
+func (k Keeper) GetAllAddressProofNonceExport(ctx context.Context) (list []*types.AddressNonceRecord) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AddressNonceKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		list = append(list, &types.AddressNonceRecord{Address: string(iterator.Key()), Nonce: binary.BigEndian.Uint64(iterator.Value())})
+	}
+
+	return
+}
+
+// RevokePlayerIndexForAddress removes the address association.
+//
+// It deliberately leaves the AddressNonceKey row alone. The nonce is what makes
+// a registration proof single-use, and clearing it here would hand the proof
+// back its validity at exactly the moment the address stops being watched.
 func (k Keeper) RevokePlayerIndexForAddress(ctx context.Context, address string, playerIndex uint64)  {
     store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AddressPlayerKey))
 	store.Delete(types.KeyPrefix(address))

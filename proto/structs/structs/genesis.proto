@@ -83,6 +83,7 @@ message GenesisState {
   repeated  string              gridCascadeQueue = 30;
 
   repeated  AddressRecord       addressList     = 22;
+  repeated  AddressNonceRecord  addressNonceList = 37;
 
   repeated  Fleet               fleetList       = 23 [(gogoproto.nullable) = false];
 

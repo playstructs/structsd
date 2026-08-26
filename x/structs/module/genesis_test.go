@@ -206,3 +206,67 @@ func TestGenesis_MalformedAddressGetsNoAuthAccount(t *testing.T) {
 	require.Equal(t, uint64(1), k.GetPlayerIndexFromAddress(ctx, good),
 		"the valid address must still import")
 }
+
+// TestGenesis_AddressProofNoncesSurviveExportImport covers the half of the
+// replay fix that only a chain restore can break.
+//
+// The nonce is what makes an address registration proof single-use. It is
+// deliberately kept in its own store rather than on AddressRecord, because a
+// revoked address keeps its nonce and loses its association — so exporting only
+// the associations would silently reset exactly the addresses whose proofs are
+// still floating around, and every one of them would go live again on the
+// restored chain.
+func TestGenesis_AddressProofNoncesSurviveExportImport(t *testing.T) {
+	registered := sdk.AccAddress("registered_address_padding_1234").String()
+	revoked := sdk.AccAddress("revoked_address_padding_123456").String()
+
+	genesisState := types.GenesisState{
+		Params: types.DefaultParams(),
+		PortId: types.PortID,
+		AddressList: []*types.AddressRecord{
+			{Address: registered, PlayerIndex: 1},
+		},
+		AddressNonceList: []*types.AddressNonceRecord{
+			{Address: registered, Nonce: 3},
+			// No AddressRecord: this address was revoked, which is the case the
+			// separate list exists for.
+			{Address: revoked, Nonce: 7},
+		},
+	}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx, k, genesisState)
+
+	require.Equal(t, uint64(3), k.GetAddressProofNonce(ctx, registered))
+	require.Equal(t, uint64(7), k.GetAddressProofNonce(ctx, revoked),
+		"a revoked address keeps its nonce, so the import has to carry it")
+	require.Zero(t, k.GetPlayerIndexFromAddress(ctx, revoked),
+		"and must not resurrect the association that was revoked")
+
+	exported := structs.ExportGenesis(ctx, k)
+	require.Len(t, exported.AddressNonceList, 2)
+
+	roundTripped := make(map[string]uint64, len(exported.AddressNonceList))
+	for _, record := range exported.AddressNonceList {
+		roundTripped[record.Address] = record.Nonce
+	}
+	require.Equal(t, uint64(3), roundTripped[registered])
+	require.Equal(t, uint64(7), roundTripped[revoked])
+}
+
+func TestGenesis_ValidateRejectsDuplicateAddressNonce(t *testing.T) {
+	address := sdk.AccAddress("duplicate_address_padding_1234").String()
+
+	genesisState := types.GenesisState{
+		Params: types.DefaultParams(),
+		PortId: types.PortID,
+		AddressNonceList: []*types.AddressNonceRecord{
+			{Address: address, Nonce: 1},
+			{Address: address, Nonce: 0},
+		},
+	}
+
+	err := genesisState.Validate()
+	require.Error(t, err, "two nonces for one address leaves which one wins to map order")
+	require.Contains(t, err.Error(), address)
+}

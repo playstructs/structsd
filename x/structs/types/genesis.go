@@ -40,6 +40,23 @@ func (gs GenesisState) Validate() error {
 		}
 	}
 
+	// The nonce list is validated the same way and for a stronger reason: these
+	// rows are what make a registration proof single-use, so a malformed or
+	// duplicated entry is a replay window rather than a cosmetic problem.
+	seenAddressNonce := make(map[string]struct{}, len(gs.AddressNonceList))
+	for _, nonce := range gs.AddressNonceList {
+		if nonce == nil {
+			continue
+		}
+		if _, err := sdk.AccAddressFromBech32(nonce.Address); err != nil {
+			return NewAddressValidationError(nonce.Address, "invalid_format")
+		}
+		if _, duplicate := seenAddressNonce[nonce.Address]; duplicate {
+			return NewAddressValidationError(nonce.Address, "duplicate_nonce")
+		}
+		seenAddressNonce[nonce.Address] = struct{}{}
+	}
+
 	// GenesisImportGuild assigns the whole record onto the cache, so a genesis
 	// file is the one way a guild join bypass level reaches state without
 	// passing GuildCache.SetJoinInfusionMinimumBypassBy*. The readers deny an

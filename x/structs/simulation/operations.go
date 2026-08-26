@@ -559,7 +559,7 @@ func SimulateMsgAddressRegister(
 
 		// Generate proof signature (simplified for simulation - in real usage this would be cryptographic)
 		// For simulation, we'll use a simple approach: create a message hash and sign it
-		hashInput := fmt.Sprintf("PLAYER%sADDRESS%s", player.GetPlayerId(), newAccount.Address.String())
+		hashInput := types.AddressRegisterProofInput(sdk.UnwrapSDKContext(ctx).ChainID(), player.GetPlayerId(), newAccount.Address.String(), k.GetAddressProofNonce(ctx, newAccount.Address.String()))
 		hashBytes := []byte(hashInput)
 
 		// Sign with the new account's private key

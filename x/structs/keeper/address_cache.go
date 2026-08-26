@@ -1,6 +1,10 @@
 package keeper
 
 // addressCache holds an address -> playerIndex mapping with change tracking.
+//
+// The registration-proof nonce is tracked alongside it but with its own loaded
+// and changed flags, because the two rows have different lifetimes: revoking an
+// address deletes the association and keeps the nonce.
 type AddressCache struct {
 	CC          *CurrentContext
     Address     string
@@ -8,10 +12,14 @@ type AddressCache struct {
 	Loaded      bool
 	Changed     bool
 	Deleted     bool
+
+	ProofNonce        uint64
+	ProofNonceLoaded  bool
+	ProofNonceChanged bool
 }
 
 func (cache *AddressCache) IsChanged() bool {
-	return cache.Changed
+	return cache.Changed || cache.ProofNonceChanged
 }
 
 func (cache *AddressCache) ID() string {
@@ -35,5 +43,12 @@ func (cache *AddressCache) Commit() {
                 cache.CC.k.logger.Error("Auth account not provisioned for address", "address", cache.Address, "playerIndex", cache.PlayerIndex, "error", err)
             }
         }
+    }
+
+    // Written whether or not the association changed, and whether or not it was
+    // deleted above: the nonce outlives the association on purpose.
+    if cache.ProofNonceChanged {
+        cache.ProofNonceChanged = false
+        cache.CC.k.SetAddressProofNonce(cache.CC.ctx, cache.Address, cache.ProofNonce)
     }
 }

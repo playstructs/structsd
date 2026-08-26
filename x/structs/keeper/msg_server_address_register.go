@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
     "encoding/hex"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -60,8 +59,14 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     pubKey := crypto.PubKey{}
     pubKey.Key = decodedProofPubKey
 
-    // We rebuild the message manually here rather than trust the client to provide it
-    hashInput := fmt.Sprintf("PLAYER%sADDRESS%s", msg.PlayerId, msg.Address)
+    // We rebuild the message manually here rather than trust the client to provide it.
+    //
+    // The nonce is read from state rather than taken from the message so the
+    // proof can only ever be spent once: it is burned below, and a proof signed
+    // against a burned nonce no longer rebuilds. The chain id binds the proof to
+    // this chain. See types.AddressRegisterProofInput for why both are needed.
+    proofNonce := cc.GetAddressProofNonce(msg.Address)
+    hashInput := types.AddressRegisterProofInput(ctx.ChainID(), msg.PlayerId, msg.Address, proofNonce)
     k.logger.Info("Address Register", "hashInput", hashInput)
 
     // Decode the Signature from Hex Encoding
@@ -79,6 +84,12 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     if (!pubKey.VerifySignature([]byte(hashInput), decodedProofSignature[:64])) {
          return emptyResponse, types.NewAddressValidationError(msg.Address, "signature_invalid")
     }
+
+    // Burn the nonce this proof was signed against before anything is moved.
+    // AddressRevoke deletes the association but leaves this row, so it is the
+    // only thing that stops the same proof re-registering the address later and
+    // sweeping it again.
+    cc.IncrementAddressProofNonce(msg.Address)
 
 	// Add the address and player index to the keeper
     cc.SetPlayerIndexForAddress(msg.Address, player.GetIndex())

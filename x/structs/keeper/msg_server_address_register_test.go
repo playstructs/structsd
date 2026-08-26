@@ -28,8 +28,9 @@ func TestMsgAddressRegister(t *testing.T) {
 	pubKey := privKey.PubKey()
 	newAddress := sdk.AccAddress(pubKey.Address()).String()
 
-	// Create proof
-	hashInput := "PLAYER" + player.Id + "ADDRESS" + newAddress
+	// Create proof. The nonce is read from state so the proof is single-use, and
+	// the chain id binds it to this chain: see types.AddressRegisterProofInput.
+	hashInput := types.AddressRegisterProofInput(wctx.ChainID(), player.Id, newAddress, k.GetAddressProofNonce(ctx, newAddress))
 	signature, err := privKey.Sign([]byte(hashInput))
 	require.NoError(t, err)
 

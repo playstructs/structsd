@@ -349,6 +349,7 @@ message QueryAddressResponse {
   string address          = 1;
   string playerId         = 2;
   uint64 permissions      = 3;
+  uint64 proofNonce       = 4;
 }
 
 message QueryAllAddressResponse {

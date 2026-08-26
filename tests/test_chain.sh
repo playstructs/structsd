@@ -4152,18 +4152,46 @@ if run_phase 500; then
 
 section "PHASE 5: Address Register & Proxy Join"
 
-run_tx "Registering external address for Player 1" \
-    tx structs address-register \
-    "${PLAYER_1_ID}" \
-    structs12eufgpe24hnqndwh7hccxw36nhs47wt85hunjw \
-    02faf4ada9b17d17441861baa580f95b4e5852cd56f6555c4c1f1ac6d27f6b97f8 \
-    cbf4e9276a7f54ecea553779c1a589431e29327d894eef12edadf1e314030e5b3259db9f8f3a2b963f94ed13b7c66b94fa15cb5bf7df4bddd78bb64480093a8b00 \
-    127 --from alice
+# The proof is generated here rather than hardcoded. It binds the chain id, the
+# player id and the address's current registration nonce, so a literal captured
+# from one run is worthless on the next chain - and a stale one does not fail
+# loudly, it leaves this phase quietly registering nothing. tests/tools/addressproof
+# signs with the same builder the chain verifies with, so the two cannot drift.
+ADDRESS_PROOF_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CHAIN_ID=$(jq -r '.chain_id' ~/.structs/config/genesis.json 2>/dev/null || echo "")
+REGISTERED_EXT_ADDR=""
 
-# Verify address was registered
-ADDR_CHECK_JSON=$(query query structs address structs12eufgpe24hnqndwh7hccxw36nhs47wt85hunjw)
-REGISTERED_PLAYER=$(jqr "${ADDR_CHECK_JSON}" '.playerId')
-assert_not_empty "Registered address player ID" "${REGISTERED_PLAYER}"
+if [ -z "${CHAIN_ID}" ] || [ "${CHAIN_ID}" = "null" ]; then
+    ADDRESS_PROOF=""
+    info "Could not read chain_id from ~/.structs/config/genesis.json"
+else
+    ADDRESS_PROOF=$(cd "${ADDRESS_PROOF_REPO}" && go run ./tests/tools/addressproof \
+        -chain-id "${CHAIN_ID}" -player "${PLAYER_1_ID}" -nonce 0 2>&1) || ADDRESS_PROOF=""
+fi
+
+assert_not_empty "Address register proof generated" "${ADDRESS_PROOF}"
+
+if [ -n "${ADDRESS_PROOF}" ]; then
+    eval "${ADDRESS_PROOF}"
+    REGISTERED_EXT_ADDR="${ADDRESS}"
+    info "Generated address-register proof for ${REGISTERED_EXT_ADDR} on ${CHAIN_ID}"
+fi
+
+if [ -n "${REGISTERED_EXT_ADDR}" ]; then
+    run_tx "Registering external address for Player 1" \
+        tx structs address-register \
+        "${PLAYER_1_ID}" \
+        "${REGISTERED_EXT_ADDR}" \
+        "${PROOF_PUBKEY}" \
+        "${PROOF_SIGNATURE}" \
+        127 --from alice
+
+    # A hard assert: the proof was built for this chain and this player, so a
+    # mismatch here is a real regression rather than stale test data.
+    ADDR_CHECK_JSON=$(query query structs address "${REGISTERED_EXT_ADDR}")
+    REGISTERED_PLAYER=$(jqr "${ADDR_CHECK_JSON}" '.playerId')
+    assert_eq "Registered address belongs to Player 1" "${PLAYER_1_ID}" "${REGISTERED_PLAYER}"
+fi
 
 run_tx "Proxy joining guild for external address" \
     tx structs guild-membership-join-proxy \
@@ -4187,8 +4215,13 @@ if run_phase 550; then
 
 section "PHASE 5b: Address Revoke"
 
-# The address registered in Phase 5 for Player 1
-REGISTERED_EXT_ADDR="structs12eufgpe24hnqndwh7hccxw36nhs47wt85hunjw"
+# The address registered in Phase 5 for Player 1. Resolved at use time rather
+# than hardcoded, so this phase either tests the real registration or says why it
+# cannot - it must not quietly pass against an address nobody registered.
+if [ -z "${REGISTERED_EXT_ADDR:-}" ]; then
+    info "SKIP: Phase 5 did not run, so there is no registered address to revoke"
+    REGISTERED_EXT_ADDR=""
+fi
 
 # Query address-all for coverage
 info "Address query coverage:"
@@ -4211,9 +4244,10 @@ if [ "${ADDR_PLAYER}" = "${PLAYER_1_ID}" ]; then
     ADDR_JSON=$(query query structs address "${REGISTERED_EXT_ADDR}" 2>/dev/null || echo '{}')
     ADDR_PLAYER_AFTER=$(jqr "${ADDR_JSON}" '.playerId' '')
     assert_eq "Address revoked (no player)" "" "${ADDR_PLAYER_AFTER}"
+elif [ -z "${REGISTERED_EXT_ADDR}" ]; then
+    info "SKIP: no address from Phase 5 to revoke"
 else
-    info "SKIP: Address registration used static crypto data; address not properly associated (got '${ADDR_PLAYER}', expected '${PLAYER_1_ID}')"
-    info "Address revoke test skipped — crypto signatures may be chain-specific"
+    fail "Registered address ${REGISTERED_EXT_ADDR} should belong to ${PLAYER_1_ID} but reports '${ADDR_PLAYER}'"
 fi
 
 fi # phase 5b

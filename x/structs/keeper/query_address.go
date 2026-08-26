@@ -31,6 +31,10 @@ func (k Keeper) Address(goCtx context.Context, req *types.QueryGetAddressRequest
     permission.Address  = req.Address
     permission.PlayerId = playerIdFromAddressIndex(k.GetPlayerIndexFromAddress(ctx, permission.Address))
     permission.Permissions = permissionValue
+    // The client needs this to build the next registration proof, and needs it
+    // for addresses that are not currently associated, which is exactly the case
+    // a re-registration is.
+    permission.ProofNonce = k.GetAddressProofNonce(ctx, permission.Address)
 
 	return &permission, nil
 }
