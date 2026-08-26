@@ -124,6 +124,27 @@ package v0_22_0
 //     player who leaves by joining another guild still keeps a direct grant on
 //     the old one; the guild can withdraw it with PermissionRevokeOnObject.
 //
+//   - The guild join bypass level `member` no longer waives the signing key's own
+//     permission ceiling. PermissionCheck has two independent layers - the key
+//     that signed must hold the permission, and the player must have standing on
+//     the object - and the `member` tier is a statement about the second only.
+//     It was implemented by skipping PermissionCheck entirely, which dropped the
+//     first as well, so a member's delegated key that carried no
+//     PermGuildMembership could still approve, deny, invite and revoke.
+//
+//     The tier next door kept the ceiling: `permissioned` goes through
+//     PermissionCheck. The same restricted key therefore got two different
+//     answers depending on a guild setting that has nothing to do with it, and
+//     opening a guild's join policy silently un-scoped every delegated key its
+//     members held. Both CanInviteMembers and CanApproveMembershipRequest shared
+//     the helper and both are fixed.
+//
+//     The check is CurrentContext.SignerPermissionCheck, which is Layer 1 on its
+//     own. It cannot move to the ante: these messages are in
+//     DynamicPermissionMessages, and a message in both maps gets no ante check at
+//     all. Standing is still waived, so a member holding no grant on the guild
+//     object continues to act on membership exactly as the tier intends.
+//
 // This upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,

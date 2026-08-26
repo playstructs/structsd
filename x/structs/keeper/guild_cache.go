@@ -279,10 +279,19 @@ func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error)
 
 	// Members can invite, and so can the owner: they may staff a guild
 	// they hold without joining it.
+	//
+	// This tier waives the grant on the guild object, not the ceiling on the
+	// signing key. See SignerPermissionCheck: opening a guild's join policy is
+	// about who has standing, and must not silently un-scope every delegated key
+	// its members hold. The permissioned tier above keeps that ceiling through
+	// PermissionCheck, so skipping it here gave one key two different answers
+	// depending on a setting that has nothing to do with it.
 	case types.GuildJoinBypassLevel_member:
 		if cache.GetOwnerId() != activePlayer.ID() && activePlayer.GetGuildId() != cache.GetGuildId() {
 			err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_member")
+			break
 		}
+		err = cache.CC.SignerPermissionCheck(types.PermGuildMembership)
 
 	// Undeclared, or declared but without policy written for it yet
 	default:
@@ -303,10 +312,14 @@ func (cache *GuildCache) CanApproveMembershipRequest(activePlayer *PlayerCache) 
 
 	// Members can approve, and so can the owner: they may staff a guild
 	// they hold without joining it.
+	//
+	// The signing key still has to carry the bit; see CanInviteMembers above.
 	case types.GuildJoinBypassLevel_member:
 		if cache.GetOwnerId() != activePlayer.ID() && activePlayer.GetGuildId() != cache.GetGuildId() {
 			err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_member")
+			break
 		}
+		err = cache.CC.SignerPermissionCheck(types.PermGuildMembership)
 
 	// Undeclared, or declared but without policy written for it yet
 	default:

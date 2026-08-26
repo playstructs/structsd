@@ -213,6 +213,41 @@ func (cc *CurrentContext) GetPermissionedObject(objectId string) PermissionedObj
 	}
 }
 
+/* SignerPermissionCheck is PermissionCheck's Layer 1 standing alone: the key
+ * that signed must itself hold the permission, with no question of what standing
+ * its player has on any object.
+ *
+ * It exists for the policy tiers that deliberately waive the object-level grant.
+ * A guild at bypass level `member` says any member may act without holding a
+ * grant on the guild - but waiving the grant must not also waive the ceiling.
+ * The two are orthogonal: one is about a player's standing in the guild, the
+ * other about how far a particular key of that player may reach. Coupling them
+ * meant relaxing a guild's join policy silently un-scoped every delegated key
+ * its members hold, and the `permissioned` tier next door - which goes through
+ * PermissionCheck - kept the ceiling, so the same guild got two different
+ * answers about the same key depending on an unrelated setting.
+ */
+func (cc *CurrentContext) SignerPermissionCheck(permission types.Permission) error {
+	wanted := types.PermissionName(permission)
+
+	if permission == types.Permissionless {
+		return types.NewPermissionError("address", cc.signerAddress, "", "", uint64(permission), wanted)
+	}
+
+	// An empty signer means no address was ever authenticated for this
+	// operation, so there is nothing to check against and the only safe answer
+	// is no. Same reasoning as PermissionCheck.
+	if cc.signerAddress == "" {
+		return types.NewPermissionError("address", "", "", "", uint64(permission), wanted)
+	}
+
+	if !cc.PermissionHasAll(GetAddressPermissionIDBytes(cc.signerAddress), permission) {
+		return types.NewPermissionError("address", cc.signerAddress, "", "", uint64(permission), wanted)
+	}
+
+	return nil
+}
+
 func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlayer *PlayerCache, permission types.Permission) error {
 
 	// The Action carries the bit that was actually wanted rather than a fixed
