@@ -131,6 +131,34 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 		}
 	}
 
+	/* Onboarding an address nobody has registered is permissionless on purpose:
+	 * there is no player yet, so there is nobody whose authority could be
+	 * bypassed and the proof of key possession is the whole of the consent.
+	 *
+	 * An address already bound to a player is a different operation wearing the
+	 * same message. UpsertPlayer is an in-get rather than an insert, so it hands
+	 * back that entire existing player and the mutations below reach the shared
+	 * entity - guild, rank, substation connection, name, pfp. The direct join
+	 * path demands PermGuildMembership of the acting address before any of that,
+	 * and restricted secondary addresses exist precisely so a low-trust key can
+	 * play without being able to move the player between guilds. Treating key
+	 * possession as sufficient here let such a key do through the proxy exactly
+	 * what it is barred from doing directly.
+	 *
+	 * This mirrors PermissionCheck's Layer 1 rather than calling it: the acting
+	 * identity on the context is msg.Creator, the proxy, so a PermissionCheck
+	 * here would test the wrong address's bits. The address that signed the proof
+	 * is the one consenting, so it is the one that has to hold the bit.
+	 */
+	if cc.GetPlayerIndexFromAddress(msg.Address) > 0 {
+		if !cc.PermissionHasAll(GetAddressPermissionIDBytes(msg.Address), types.PermGuildMembership) {
+			return emptyResponse, types.NewPermissionError(
+				"address", msg.Address, "", "",
+				uint64(types.PermGuildMembership), types.PermissionName(types.PermGuildMembership),
+			)
+		}
+	}
+
 	// create new player
 	player := cc.UpsertPlayer(msg.Address)
 

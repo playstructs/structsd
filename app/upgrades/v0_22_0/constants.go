@@ -85,6 +85,26 @@ package v0_22_0
 //     infusion's reactor is elsewhere; demanding it of every join would break the
 //     ordinary case that moves nothing.
 //
+//   - GuildMembershipJoinProxy now demands PermGuildMembership of an address that
+//     is already registered to a player, while leaving genuinely unregistered
+//     addresses permissionless.
+//
+//     UpsertPlayer is an in-get rather than an insert, so for a registered
+//     address it returns that entire existing player and the handler goes on to
+//     set its guild, rank, substation connection and profile. The direct join
+//     path demands PermGuildMembership of the acting address before any of that,
+//     and restricted secondary addresses exist so a low-trust key can play
+//     without being able to move the player between guilds. Treating key
+//     possession as sufficient let such a key do through the proxy exactly what
+//     it is barred from doing directly.
+//
+//     The check mirrors PermissionCheck's Layer 1 rather than calling it: the
+//     acting identity on the context is the proxy (msg.Creator), so a
+//     PermissionCheck would test the wrong address's bits. The address that
+//     signed the proof is the one consenting, so it is the one that must hold
+//     the bit. A primary address holds PermAll, so ordinary players are
+//     unaffected.
+//
 // This upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,
