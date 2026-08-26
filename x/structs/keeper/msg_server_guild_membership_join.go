@@ -45,6 +45,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
     var infusionMigrationShares []math.LegacyDec
     var infusionMigrationReactor []sdk.ValAddress
     var infusionMigrationAmount []math.Int
+    var migrationAuthorized bool
 
     destinationReactor, destinationReactorFound := k.GetReactor(ctx, guildMembershipApplication.GetGuild().GetPrimaryReactorId())
     if (!destinationReactorFound) {
@@ -132,6 +133,33 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
                     [] confirm the total amount of infusions migrating will meet the minimum
 
                 */
+
+                /* Joining a guild is a membership operation; redelegating the
+                 * stake behind an infusion is a token operation, and the two are
+                 * separate bits on purpose. Reaching here means this join will
+                 * move somebody's delegation to the guild's validator, so it has
+                 * to demand what ReactorBeginMigration demands for the identical
+                 * staking call - PermTokenMigrate - and not settle for the
+                 * PermGuildMembership that got the caller this far.
+                 *
+                 * Without it, an associated address carrying only
+                 * PermGuildMembership could move its own player's stake, and a
+                 * player granted PermGuildMembership over somebody else could
+                 * move theirs: a forced validator change, a redelegation lock,
+                 * and slashing exposure the stake's owner never agreed to.
+                 *
+                 * Checked here rather than in PermissionMap because whether a
+                 * join migrates anything at all depends on runtime state, and
+                 * demanding the bit from every join would break the ordinary
+                 * case that moves nothing. Checked before ValidateUnbondAmount so
+                 * an unauthorized caller computes nothing.
+                 */
+                if !migrationAuthorized {
+                    if migrationPermissionErr := guildMembershipApplication.GetPlayer().CanMigrateTokensBy(callingPlayer); migrationPermissionErr != nil {
+                        return emptyResponse, migrationPermissionErr
+                    }
+                    migrationAuthorized = true
+                }
 
                 redelegateAmount := math.NewIntFromUint64(infusion.Fuel)
                 infusionMigrationAmount = append(infusionMigrationAmount, redelegateAmount)

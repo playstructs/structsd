@@ -66,6 +66,25 @@ package v0_22_0
 //     compared against a minimum and a wrap produces a small number, which is
 //     the direction that lets somebody in.
 //
+//   - GuildMembershipJoin now demands PermTokenMigrate before redelegating the
+//     stake behind an infusion whose reactor sits outside the destination guild.
+//     MsgGuildMembershipJoin names only its creator as a signer, so the infusion
+//     address never authorizes that move and the handler was the whole
+//     authorization - and it asked only for PermGuildMembership, which is a
+//     membership permission, not a token one. ReactorBeginMigration gates the
+//     identical staking call behind PermTokenMigrate.
+//
+//     Two callers gain nothing they should have had: an associated address
+//     carrying only PermGuildMembership could move its own player's stake, and a
+//     player granted PermGuildMembership over somebody else could move theirs.
+//     No coins leave the delegator address, but the stake changes validator,
+//     takes the redelegation lock and inherits the new validator's commission and
+//     slashing exposure.
+//
+//     The bit stays out of PermissionMap because a join only migrates when an
+//     infusion's reactor is elsewhere; demanding it of every join would break the
+//     ordinary case that moves nothing.
+//
 // This upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,

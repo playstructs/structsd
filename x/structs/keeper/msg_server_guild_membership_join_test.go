@@ -3,9 +3,13 @@ package keeper_test
 import (
 	"testing"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 
+	keepertest "structs/testutil/keeper"
+	keeperlib "structs/x/structs/keeper"
 	"structs/x/structs/types"
 )
 
@@ -176,6 +180,107 @@ func TestGuildMembershipJoinRejectsDuplicateInfusions(t *testing.T) {
 
 		_, err := ms.GuildMembershipJoin(wctx, &types.MsgGuildMembershipJoin{
 			Creator:    joiner.Creator,
+			GuildId:    gs.Guild.Id,
+			PlayerId:   joiner.Id,
+			InfusionId: []string{infusionId},
+		})
+		require.NoError(t, err)
+
+		p, playerFound := k.GetPlayer(ctx, joiner.Id)
+		require.True(t, playerFound)
+		require.Equal(t, gs.Guild.Id, p.GuildId)
+	})
+}
+
+/* TestGuildMembershipJoinMigrationRequiresTokenMigratePermission is the
+ * regression on a membership permission moving somebody's stake.
+ *
+ * When an infusion's reactor sits outside the destination guild, joining
+ * redelegates that stake to the guild's validator. MsgGuildMembershipJoin names
+ * only Creator as a signer, so the infusion's address never authorizes the move
+ * - the handler is the whole authorization, and it demanded only
+ * PermGuildMembership. ReactorBeginMigration gates the identical staking call
+ * behind PermTokenMigrate.
+ *
+ * PermissionCheck's Layer 1 tests the signing key's own bits before the owner
+ * shortcut, so the same check covers both shapes the report names: a restricted
+ * associated address moving its own player's stake, and a caller granted
+ * membership rights over somebody else moving theirs.
+ */
+func TestGuildMembershipJoinMigrationRequiresTokenMigratePermission(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	wctx := sdk.UnwrapSDKContext(ctx)
+
+	gs := testCreateGuild(k, ctx)
+
+	// A reactor in some other guild, so the join takes the migration branch.
+	outsideAcc := sdk.AccAddress("outside_reactor_pad1")
+	outsideValidator := sdk.ValAddress(outsideAcc.Bytes())
+	outsideReactor := testAppendReactor(k, ctx, types.Reactor{
+		RawAddress: outsideValidator.Bytes(),
+		Validator:  outsideValidator.String(),
+		GuildId:    "0-999",
+	})
+	testAddValidator(k, outsideValidator, math.NewInt(10_000))
+
+	guild, found := k.GetGuild(ctx, gs.Guild.Id)
+	require.True(t, found)
+	guild.JoinInfusionMinimum = 100
+	k.SetGuild(ctx, guild)
+
+	joinerAcc := sdk.AccAddress("migrate_join_pad0001")
+	joiner := types.Player{
+		Creator:        joinerAcc.String(),
+		PrimaryAddress: joinerAcc.String(),
+	}
+	joiner = testAppendPlayer(k, ctx, joiner)
+	require.NoError(t, k.SetPlayerIndexForAddress(ctx, joinerAcc.String(), joiner.Index))
+
+	testAppendInfusion(k, ctx, types.Infusion{
+		DestinationId:   outsideReactor.Id,
+		DestinationType: types.ObjectType_reactor,
+		Address:         joinerAcc.String(),
+		PlayerId:        joiner.Id,
+		Fuel:            500,
+	})
+	infusionId := outsideReactor.Id + "-" + joinerAcc.String()
+
+	// The stake behind the infusion has to actually exist for the redelegation
+	// to be validated; the mock fires no hooks, so this is the delegation the
+	// handler would find on a live chain.
+	mock := k.StakingKeeper().(*keepertest.MockStakingKeeper)
+	require.NoError(t, mock.SetDelegation(ctx, stakingtypes.Delegation{
+		DelegatorAddress: joinerAcc.String(),
+		ValidatorAddress: outsideValidator.String(),
+		Shares:           math.LegacyNewDecFromInt(math.NewInt(500)),
+	}))
+
+	// A secondary key of the joiner, deliberately holding membership rights and
+	// nothing that authorizes moving tokens.
+	limitedAcc := sdk.AccAddress("migrate_limited_pad1")
+	require.NoError(t, k.SetPlayerIndexForAddress(ctx, limitedAcc.String(), joiner.Index))
+	testPermissionAdd(k, ctx, keeperlib.GetAddressPermissionIDBytes(limitedAcc.String()), types.PermGuildMembership)
+
+	t.Run("membership permission alone cannot migrate the stake", func(t *testing.T) {
+		_, err := ms.GuildMembershipJoin(wctx, &types.MsgGuildMembershipJoin{
+			Creator:    limitedAcc.String(),
+			GuildId:    gs.Guild.Id,
+			PlayerId:   joiner.Id,
+			InfusionId: []string{infusionId},
+		})
+		require.Error(t, err, "a key without PermTokenMigrate must not redelegate this stake")
+		require.Contains(t, err.Error(), "permission")
+
+		p, playerFound := k.GetPlayer(ctx, joiner.Id)
+		require.True(t, playerFound)
+		require.Empty(t, p.GuildId, "and the join must not have gone through either")
+	})
+
+	t.Run("adding the token migrate bit is what unblocks it", func(t *testing.T) {
+		testPermissionAdd(k, ctx, keeperlib.GetAddressPermissionIDBytes(limitedAcc.String()), types.PermTokenMigrate)
+
+		_, err := ms.GuildMembershipJoin(wctx, &types.MsgGuildMembershipJoin{
+			Creator:    limitedAcc.String(),
 			GuildId:    gs.Guild.Id,
 			PlayerId:   joiner.Id,
 			InfusionId: []string{infusionId},
