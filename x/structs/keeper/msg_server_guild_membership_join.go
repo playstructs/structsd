@@ -67,7 +67,22 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
          * - The Destination Reactor is part of the Guild
          * - If the destination reactor is not part of the guild, we need to migrate the assets over.
          */
+        /* msg.InfusionId is an unconstrained repeated field, and nothing in this
+         * loop mutates the infusion it reads. The branch below for a reactor
+         * already inside the guild is pure accumulation, so naming one owned
+         * infusion N times counted its fuel N times and cleared a minimum the
+         * player never actually held. Reject the repeat rather than skipping it:
+         * a duplicate in the list is a malformed request, and quietly ignoring
+         * it would hide the client bug that produced it.
+         */
+        seenInfusions := make(map[string]struct{}, len(msg.InfusionId))
+
         for _, infusionId := range msg.InfusionId {
+
+            if _, duplicate := seenInfusions[infusionId]; duplicate {
+                return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "duplicate_infusion").WithInfusion(infusionId)
+            }
+            seenInfusions[infusionId] = struct{}{}
 
             infusion, infusionFound := k.GetInfusionByID(ctx, infusionId)
             if (!infusionFound) {
@@ -138,9 +153,17 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
                 infusionMigrationShares = append(infusionMigrationShares, shares)
                 infusionMigrationList = append(infusionMigrationList, infusion)
 
-                currentFuel = currentFuel + redelegateAmount.Uint64()
+                accumulatedFuel, fuelOverflow := addFuel(currentFuel, redelegateAmount.Uint64())
+                if fuelOverflow {
+                    return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "fuel_overflow").WithInfusion(infusionId)
+                }
+                currentFuel = accumulatedFuel
             } else {
-                currentFuel = currentFuel + infusion.Fuel
+                accumulatedFuel, fuelOverflow := addFuel(currentFuel, infusion.Fuel)
+                if fuelOverflow {
+                    return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "fuel_overflow").WithInfusion(infusionId)
+                }
+                currentFuel = accumulatedFuel
             }
 
         }
@@ -196,4 +219,17 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
 	cc.CommitAll()
 	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil
+}
+
+// addFuel sums infusion fuel, reporting a wrap rather than performing one.
+//
+// The total is compared against the guild's join minimum, so a wrap does not
+// merely produce a wrong number: it produces a small one, which is the direction
+// that lets somebody in.
+func addFuel(current uint64, addition uint64) (uint64, bool) {
+    total := current + addition
+    if total < current {
+        return 0, true
+    }
+    return total, false
 }

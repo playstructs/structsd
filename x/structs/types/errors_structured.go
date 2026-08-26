@@ -929,7 +929,7 @@ type GuildMembershipError struct {
 	GuildId         string
 	PlayerId        string
 	JoinType        string // "invite", "request", "proxy", "direct"
-	Reason          string // "wrong_type", "already_member", "not_allowed", "minimum_not_met", "not_member", "is_owner"
+	Reason          string // "wrong_type", "already_member", "not_allowed", "minimum_not_met", "not_member", "is_owner", "duplicate_infusion", "fuel_overflow"
 	InfusionId      string // For infusion-related errors (optional)
 	ReactorId       string // For reactor-related errors (optional)
 	MinimumRequired uint64 // For minimum not met (optional)
@@ -977,6 +977,10 @@ func (e *GuildMembershipError) Error() string {
 		return fmt.Sprintf("membership application is incorrect type for %s approval", e.JoinType)
 	case "minimum_not_met":
 		return "join infusion minimum not met"
+	case "duplicate_infusion":
+		return fmt.Sprintf("infusion (%s) listed more than once", e.InfusionId)
+	case "fuel_overflow":
+		return fmt.Sprintf("infusion fuel total overflows at infusion (%s)", e.InfusionId)
 	case "not_allowed":
 		return fmt.Sprintf("guild (%s) is not currently allowing %s", e.GuildId, e.JoinType)
 	default:

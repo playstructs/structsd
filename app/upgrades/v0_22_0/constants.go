@@ -55,6 +55,17 @@ package v0_22_0
 //     /structs/address/{address} query as proofNonce, and is correct for
 //     unassociated addresses too, which is the re-registration case.
 //
+//   - GuildMembershipJoin rejects a repeated infusion id instead of counting it
+//     twice. msg.InfusionId is an unconstrained repeated field, and the branch
+//     taken when an infusion's reactor already sits inside the destination guild
+//     only reads the record and adds its fuel - it mutates nothing, so nothing
+//     stopped the same infusion being named N times for N times its fuel.
+//     JoinInfusionMinimum is the sole economic gate on a direct join, so that
+//     bought entry to a guild for a fraction of the stake it advertises. Fuel
+//     accumulation is also checked for overflow now, because the total is
+//     compared against a minimum and a wrap produces a small number, which is
+//     the direction that lets somebody in.
+//
 // This upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,
