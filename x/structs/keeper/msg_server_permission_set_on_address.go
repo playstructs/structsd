@@ -42,6 +42,10 @@ func (k msgServer) PermissionSetOnAddress(goCtx context.Context, msg *types.MsgP
         return  emptyResponse, permissionErr
     }
 
+    if lockoutErr := requirePrimaryAddressKeepsFullAccess(targetPlayer, msg.Address, types.Permission(msg.Permissions)); lockoutErr != nil {
+        return emptyResponse, lockoutErr
+    }
+
     cc.SetPermissions(targetAddressPermissionId, types.Permission(msg.Permissions))
 
 	cc.CommitAll()

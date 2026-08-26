@@ -145,6 +145,21 @@ package v0_22_0
 //     all. Standing is still waived, so a member holding no grant on the guild
 //     object continues to act on membership exactly as the tier intends.
 //
+//   - PermissionSetOnAddress and PermissionRevokeOnAddress refuse a write that
+//     would leave a player's current primary address holding less than PermAll.
+//
+//     Authorizing the bits being destroyed (v0.21.0) closed the attack but not
+//     the footgun: a player's own PermAll key acting on its own primary address
+//     passes every check precisely because it still holds the rights it is about
+//     to destroy. The resulting state is unrecoverable rather than reduced -
+//     PlayerUpdatePrimaryAddress needs PermAll to rotate away, and a grant can
+//     only hand over bits the granting address itself holds, so a narrowed
+//     primary can neither restore itself nor authorize anything else to.
+//
+//     Nothing legitimate is blocked. A player who wants a narrow everyday key
+//     rotates the primary to the address they intend to keep whole first, then
+//     narrows the old one, which is untouched by the guard.
+//
 // This upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,

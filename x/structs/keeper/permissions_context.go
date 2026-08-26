@@ -213,6 +213,34 @@ func (cc *CurrentContext) GetPermissionedObject(objectId string) PermissionedObj
 	}
 }
 
+/* requirePrimaryAddressKeepsFullAccess refuses a permission write that would
+ * leave a player's current primary address holding less than PermAll.
+ *
+ * The primary address is the recovery address, and every route out of a
+ * downgrade runs back through it: PlayerUpdatePrimaryAddress needs PermAll to
+ * rotate to another key, and a grant can only hand over bits the granting
+ * address itself holds, so a primary below PermAll cannot restore itself and
+ * cannot authorize anything else to. The state is unrecoverable rather than
+ * merely reduced, and reaching it takes nothing more than the player's own
+ * PermAll key acting on itself - the authorization check passes precisely
+ * because they still have the rights they are about to destroy.
+ *
+ * This blocks nothing anyone wants. A player who wants a narrower everyday key
+ * rotates the primary to the address they intend to keep whole first, then
+ * downgrades the old one, which this leaves alone.
+ */
+func requirePrimaryAddressKeepsFullAccess(targetPlayer *PlayerCache, address string, resulting types.Permission) error {
+	if address != targetPlayer.GetPrimaryAddress() {
+		return nil
+	}
+
+	if resulting&types.PermAll == types.PermAll {
+		return nil
+	}
+
+	return types.NewAddressValidationError(address, "primary_full_access_required")
+}
+
 /* SignerPermissionCheck is PermissionCheck's Layer 1 standing alone: the key
  * that signed must itself hold the permission, with no question of what standing
  * its player has on any object.

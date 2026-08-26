@@ -799,7 +799,7 @@ type AddressValidationError struct {
 	Address          string
 	ExpectedPlayerId string
 	ActualPlayerId   string
-	Reason           string // "invalid_format", "not_registered", "wrong_player", "proof_mismatch", "signature_invalid", "already_registered"
+	Reason           string // "invalid_format", "not_registered", "wrong_player", "proof_mismatch", "signature_invalid", "already_registered", "primary_full_access_required"
 }
 
 func NewAddressValidationError(address, reason string) *AddressValidationError {
@@ -826,6 +826,8 @@ func (e *AddressValidationError) Error() string {
 			e.Address, e.ActualPlayerId, e.ExpectedPlayerId)
 	case "proof_mismatch":
 		return fmt.Sprintf("proof mismatch for address %s", e.Address)
+	case "primary_full_access_required":
+		return fmt.Sprintf("primary address (%s) must keep full access; rotate the primary address before narrowing this one", e.Address)
 	case "signature_invalid":
 		return "proof signature verification failure"
 	case "already_registered":
