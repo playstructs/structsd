@@ -30,7 +30,11 @@ func NewStakingThrottleDecorator(keeper StructsAnteKeeper) StakingThrottleDecora
 }
 
 func (d StakingThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
-	if !IsFreeStakingTx(ctx) {
+	// Throttling follows the message, not the fee: see ContainsStakingMessage.
+	// One staking operation per address per block is the rule on the free path,
+	// and keying this off free-ness meant a tx pairing a staking message with
+	// anything else reserved nothing and could be repeated without limit.
+	if !ContainsStakingMessage(tx.GetMsgs()) {
 		return next(ctx, tx, simulate)
 	}
 
@@ -39,6 +43,17 @@ func (d StakingThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 	seen := make(map[string]struct{}, len(tx.GetMsgs()))
 	for _, msg := range tx.GetMsgs() {
 		typeURL := sdk.MsgTypeURL(msg)
+
+		// A tx may pair staking with messages from other modules. Those are
+		// gated by their own modules; skip them rather than rejecting the tx.
+		if !IsStakingMessage(typeURL) {
+			continue
+		}
+
+		// Reaching here means FreeStakingMessages lists a type URL that
+		// StakingSignerExtractors does not, which is a maps.go inconsistency
+		// rather than anything a transaction can cause.
+		// TestStakingSignerExtractorsCoverFreeStakingMessages holds the pairing.
 		extractor, ok := StakingSignerExtractors[typeURL]
 		if !ok {
 			return ctx, observeReject(ctx, "StakingThrottleDecorator",

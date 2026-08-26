@@ -37,7 +37,13 @@ func NewCheckTxThrottleDecorator(addrCap uint64) CheckTxThrottleDecorator {
 }
 
 func (d CheckTxThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
-	if !IsFreeTx(ctx) {
+	// Admission follows the message, not the fee: see ContainsGatedStructsMessage.
+	// Keying this off free-ness let a tx pairing gameplay with any non-Structs
+	// message escape the per-address cap, and with a zero min gas price that
+	// costs nothing. A tx holding neither kind of message is somebody else's
+	// business and falls through untouched.
+	msgs := tx.GetMsgs()
+	if !ContainsGatedStructsMessage(msgs) && !ContainsStakingMessage(msgs) {
 		return next(ctx, tx, simulate)
 	}
 
@@ -52,18 +58,23 @@ func (d CheckTxThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 		return next(ctx, tx, simulate)
 	}
 
-	msgs := tx.GetMsgs()
-
 	addresses := make(map[string]bool)
 	for _, msg := range msgs {
 		typeURL := sdk.MsgTypeURL(msg)
 		var addr string
 		if extractor, ok := StakingSignerExtractors[typeURL]; ok {
 			addr = extractor(msg)
-		} else if cg, ok := msg.(creatorGetter); ok {
-			addr = cg.GetCreator()
-		} else if extractor, hasExtractor := CreatorExtractors[typeURL]; hasExtractor {
-			addr = extractor(msg)
+		} else if IsStructsMessage(typeURL) && typeURL != MsgUpdateParamsTypeURL {
+			// creatorGetter is a bare interface assertion, so it must be reached
+			// only for Structs messages. It was safe unguarded while this ran on
+			// pure-Structs txs; now that a mixed tx gets here, another module's
+			// message exposing GetCreator() would otherwise spend this address's
+			// quota. CreatorExtractors is keyed by Structs type URL already.
+			if cg, ok := msg.(creatorGetter); ok {
+				addr = cg.GetCreator()
+			} else if extractor, hasExtractor := CreatorExtractors[typeURL]; hasExtractor {
+				addr = extractor(msg)
+			}
 		}
 		if addr != "" {
 			addresses[addr] = true

@@ -596,6 +596,26 @@ func ContainsGatedStructsMessage(msgs []sdk.Msg) bool {
 	return false
 }
 
+// ContainsStakingMessage returns true if any message in the tx is a staking
+// message this module throttles, and is what decides whether the staking ante
+// checks run.
+//
+// Same reasoning as ContainsGatedStructsMessage, applied to the other half of
+// the ante. IsFreeStakingTransaction requires EVERY message to be a staking
+// message, so pairing one MsgDelegate with any other message (a bank send, say)
+// left the tx outside the per-address staking throttle entirely. The limit is
+// one staking operation per address per block on the free path, and gating it on
+// free-ness let a mixed tx take as many as it liked, each one firing the reactor
+// and grid hooks behind the delegation.
+func ContainsStakingMessage(msgs []sdk.Msg) bool {
+	for _, msg := range msgs {
+		if IsStakingMessage(sdk.MsgTypeURL(msg)) {
+			return true
+		}
+	}
+	return false
+}
+
 // StakingSignerExtractors provides direct field access for the signer address
 // of each free staking message type (goproto_getters = false on all of them).
 var StakingSignerExtractors = map[string]func(sdk.Msg) string{

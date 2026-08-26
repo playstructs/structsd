@@ -688,3 +688,23 @@ func handlerMessageType(fn *ast.FuncDecl) string {
 	}
 	return ""
 }
+
+// TestStakingSignerExtractorsCoverFreeStakingMessages pins the coupling between
+// the two staking maps.
+//
+// StakingThrottleDecorator skips a message that is not a staking message and
+// rejects one that is but has no signer extractor. That reject branch is a
+// maps.go consistency assertion, not something a transaction can reach, and this
+// is what keeps it that way: an entry added to one map and not the other would
+// otherwise either escape the throttle or reject a legitimate tx.
+func TestStakingSignerExtractorsCoverFreeStakingMessages(t *testing.T) {
+	for typeURL := range FreeStakingMessages {
+		_, ok := StakingSignerExtractors[typeURL]
+		require.True(t, ok, "%s is a free staking message with no signer extractor", typeURL)
+	}
+
+	for typeURL := range StakingSignerExtractors {
+		require.True(t, FreeStakingMessages[typeURL],
+			"%s has a signer extractor but is not a free staking message", typeURL)
+	}
+}
