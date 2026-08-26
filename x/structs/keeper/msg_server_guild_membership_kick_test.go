@@ -168,3 +168,86 @@ func TestMsgGuildMembershipKick(t *testing.T) {
 		require.Error(t, err)
 	})
 }
+
+/* TestGuildMembershipKickClearsDirectGuildPermissions is the regression on a
+ * dismissal that did not dismiss.
+ *
+ * Kick cleared the player's GuildId and rank and nothing else. PermissionCheck
+ * reads a direct object grant with no membership predicate - only the
+ * rank-derived branch is gated on being in a guild - so whatever the guild had
+ * granted the player directly survived the kick. PermAdmin on a guild is all
+ * GuildUpdateOwnerId requires, and it demands no membership either, so a
+ * dismissed administrator could take the guild.
+ *
+ * The ownership path is asserted alongside because that is the escalation that
+ * makes this worth a release rather than a tidy-up.
+ */
+func TestGuildMembershipKickClearsDirectGuildPermissions(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	wctx := sdk.UnwrapSDKContext(ctx)
+
+	gs := testCreateGuild(k, ctx)
+
+	adminAcc := sdk.AccAddress("kick_admin_addr_pad1")
+	admin := testAppendPlayer(k, ctx, types.Player{
+		Creator:        adminAcc.String(),
+		PrimaryAddress: adminAcc.String(),
+		GuildId:        gs.Guild.Id,
+		GuildRank:      2,
+	})
+
+	// The guild delegates administration, exactly as PermissionGrantOnObject would.
+	adminPermId := keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id, admin.Id)
+	k.SetPermissionsByBytes(ctx, adminPermId, types.PermAdmin|types.PermUpdate|types.PermGuildMembership)
+
+	_, err := ms.GuildMembershipKick(wctx, &types.MsgGuildMembershipKick{
+		Creator:  gs.GuildOwner.Creator,
+		GuildId:  gs.Guild.Id,
+		PlayerId: admin.Id,
+	})
+	require.NoError(t, err)
+
+	kicked, found := k.GetPlayer(ctx, admin.Id)
+	require.True(t, found)
+	require.Equal(t, "", kicked.GuildId, "the kick itself should have landed")
+
+	require.Equal(t, types.Permissionless, k.GetPermissionsByBytes(ctx, adminPermId),
+		"a kicked member must keep no direct grant on the guild that dismissed them")
+
+	// The escalation the grant enabled: PermAdmin is the whole of what
+	// GuildUpdateOwnerId asks for, and it never checks membership.
+	_, err = ms.GuildUpdateOwnerId(wctx, &types.MsgGuildUpdateOwnerId{
+		Creator: admin.Creator,
+		GuildId: gs.Guild.Id,
+		Owner:   admin.Id,
+	})
+	require.Error(t, err, "a dismissed administrator must not be able to seize the guild")
+
+	guild, guildFound := k.GetGuild(ctx, gs.Guild.Id)
+	require.True(t, guildFound)
+	require.Equal(t, gs.GuildOwner.Id, guild.Owner, "ownership must be untouched")
+}
+
+// The owner's row is how ownership is stored, and guilds are property: an owner
+// need not be a member. GetGuildMembershipKickCache refuses to kick them, so the
+// clearing above can never reach that row - this pins the refusal that makes it
+// safe.
+func TestGuildMembershipKickCannotReachTheOwnersGrants(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	wctx := sdk.UnwrapSDKContext(ctx)
+
+	gs := testCreateGuild(k, ctx)
+	ownerPermId := keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id, gs.GuildOwner.Id)
+	require.NotEqual(t, types.Permissionless, k.GetPermissionsByBytes(ctx, ownerPermId))
+
+	_, err := ms.GuildMembershipKick(wctx, &types.MsgGuildMembershipKick{
+		Creator:  gs.GuildOwner.Creator,
+		GuildId:  gs.Guild.Id,
+		PlayerId: gs.GuildOwner.Id,
+	})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "cannot_kick_owner")
+
+	require.NotEqual(t, types.Permissionless, k.GetPermissionsByBytes(ctx, ownerPermId),
+		"the owner's grants are their ownership and must survive")
+}

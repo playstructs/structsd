@@ -105,6 +105,25 @@ package v0_22_0
 //     the bit. A primary address holds PermAll, so ordinary players are
 //     unaffected.
 //
+//   - GuildMembershipKick now clears the kicked player's direct permission row on
+//     the guild. Kick previously cleared only GuildId and the rank, and
+//     PermissionCheck reads a direct object grant with no membership predicate -
+//     only the rank-derived branch is gated on being in a guild. So a dismissed
+//     administrator kept whatever the guild had granted them directly, and
+//     PermAdmin is the whole of what GuildUpdateOwnerId requires, which checks no
+//     membership either: the dismissal handed the guild over.
+//
+//     The whole row is cleared rather than one bit, because it is keyed
+//     (guild, player) and holds nothing but what that guild granted that player.
+//     The owner's row is left alone - SetOwner stores ownership as PermGuildAll,
+//     and ownership survives leaving because guilds are property and an owner
+//     need not be a member. The kick loader already refuses to kick the owner, so
+//     the exclusion is a backstop.
+//
+//     Scoped to kick, which is the guild explicitly withdrawing standing. A
+//     player who leaves by joining another guild still keeps a direct grant on
+//     the old one; the guild can withdraw it with PermissionRevokeOnObject.
+//
 // This upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,

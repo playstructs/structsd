@@ -279,6 +279,32 @@ func (cache *GuildMembershipApplicationCache) RevokeRequest() error {
 // authorization: CanKickMembers, plus a rank comparison for callers who
 // are members of this guild, plus refusing the owner.
 func (cache *GuildMembershipApplicationCache) Kick() error {
+	/* A kick is the guild withdrawing this player's standing, so the grants it
+	 * made them have to go with it. LeaveGuild only clears GuildId and resets
+	 * the rank, and PermissionCheck reads a direct object grant with no
+	 * membership predicate - only the rank-derived branch is gated on being in a
+	 * guild. So a kicked administrator kept whatever was granted to them
+	 * directly, and PermAdmin on a guild is enough for GuildUpdateOwnerId, which
+	 * requires no membership either. The dismissal handed the guild over.
+	 *
+	 * The whole row goes, not one bit. AllocationTransfer deliberately removes a
+	 * single bit because its row also carries the creator's rights over their own
+	 * allocation; this row is keyed (guild, player) and holds nothing but what
+	 * this guild granted this player, and after a kick none of it applies.
+	 *
+	 * The owner's row is the exception and is left alone: SetOwner stores
+	 * ownership as PermGuildAll, and ownership survives leaving - guilds are
+	 * property and an owner need not be a member. GetGuildMembershipKickCache
+	 * already refuses to kick the owner, so this is a backstop rather than the
+	 * guard, and it fails in the safe direction if a future path forgets.
+	 */
+	if cache.GetGuild().GetOwnerId() != cache.GetPlayer().GetPlayerId() {
+		cache.CC.SetPermissions(
+			GetObjectPermissionIDBytes(cache.GetGuild().GetGuildId(), cache.GetPlayer().GetPlayerId()),
+			types.Permissionless,
+		)
+	}
+
 	cache.GetPlayer().LeaveGuild()
 
 	substationPermissionCheck := cache.GetPlayer().GetSubstation().CanManageConnectionsBy(cache.CallingPlayer)
