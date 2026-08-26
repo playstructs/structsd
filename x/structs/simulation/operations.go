@@ -1001,7 +1001,7 @@ func SimulateCommandShipBuildComplete(
 
 		// Check current difficulty
 		currentAge := uint64(ctx.BlockHeight()) - structCache.GetBlockStartBuild()
-		difficulty := types.CalculateDifficulty(float64(currentAge), structCache.GetStructType().BuildDifficulty)
+		difficulty := types.CalculateDifficulty(currentAge, structCache.GetStructType().BuildDifficulty)
 
 		// Only complete if difficulty <= 2
 		if difficulty > 2 {
@@ -1940,7 +1940,7 @@ func SimulateMsgStructBuildComplete(
 
 		// Calculate proof of work if difficulty is low enough
 		currentAge := uint64(ctx.BlockHeight()) - structCache.GetBlockStartBuild()
-		difficulty := types.CalculateDifficulty(float64(currentAge), structCache.GetStructType().BuildDifficulty)
+		difficulty := types.CalculateDifficulty(currentAge, structCache.GetStructType().BuildDifficulty)
 
 		var proof string
 		var nonce string

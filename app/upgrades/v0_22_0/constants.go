@@ -160,6 +160,29 @@ package v0_22_0
 //     rotates the primary to the address they intend to keep whole first, then
 //     narrows the old one, which is untouched by the guard.
 //
+//   - Proof-of-work difficulty is computed in integers. It was
+//     "64 - int(math.Log10(age)/math.Log10(range)*63)",
+//     and math.Log10 is assembly on some architectures and portable Go on
+//     others; those disagree in the last bit, and the truncation to an integer
+//     turns that into a whole leading hexadecimal zero. Validators could require
+//     different proofs for the same block and the same object - one accepting a
+//     hash the other rejects, which is an app hash split rather than a wrong
+//     answer. The amd64/arm64 agreement that held was a coincidence of Go's
+//     implementation, not a guarantee.
+//
+//     CalculateDifficulty now takes uint64 and finds the same exponent by
+//     multiplication: e = max{k : range^k <= age^63}, which is the logarithm
+//     identity stated without a logarithm. It feeds every proof handler -
+//     struct build, ore mining, ore refining, planet raid and the guild charter.
+//
+//     GAME RULE CHANGE: the integer form is the exact floor, so it differs from
+//     the old float wherever 63*log_range(age) landed exactly on an integer and
+//     the float fell a hair short. Across the reachable space that is 13 points,
+//     all of them exact powers of the range's base (range 125 at ages 5 and 25,
+//     range 2187 at ages 3 and 243, and so on). At each, difficulty drops by one:
+//     the correct value, and the one s390x already computed. Everything else is
+//     unchanged.
+//
 // This upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,

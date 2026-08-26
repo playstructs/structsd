@@ -156,19 +156,19 @@ func TestCharterDifficultyCurve(t *testing.T) {
 	// blocks, bottoming out at one zero well beyond that. Asserted as a band
 	// rather than a point because the curve floors, so the exact age at which a
 	// level begins is not a round number of days.
-	threeWeeks := float64(21 * 24 * 60 * 60 / 6)
+	threeWeeks := uint64(21 * 24 * 60 * 60 / 6)
 	threeWeekDifficulty := types.CalculateDifficulty(threeWeeks, production)
 	require.GreaterOrEqual(t, threeWeekDifficulty, 10)
 	require.LessOrEqual(t, threeWeekDifficulty, 11)
 
-	require.Equal(t, 1, types.CalculateDifficulty(float64(production), production),
+	require.Equal(t, 1, types.CalculateDifficulty(production, production),
 		"the range is by definition the age at which the requirement bottoms out")
-	require.Equal(t, 1, types.CalculateDifficulty(float64(production)*10, production),
+	require.Equal(t, 1, types.CalculateDifficulty(production*10, production),
 		"past the range the requirement must clamp, not go negative")
 
 	// Monotonic, which is what makes waiting a strategy at all.
 	previous := 64
-	for age := float64(2); age < float64(production); age *= 1.5 {
+	for age := uint64(2); age < production; age = age * 3 / 2 {
 		current := types.CalculateDifficulty(age, production)
 		require.LessOrEqual(t, current, previous, "difficulty must never rise with age")
 		previous = current

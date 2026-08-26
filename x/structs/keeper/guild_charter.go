@@ -40,7 +40,7 @@ func (k Keeper) CharterAge(ctx context.Context) uint64 {
 // CharterDifficulty is the leading-zero requirement a charter proof must meet
 // right now.
 func (k Keeper) CharterDifficulty(ctx context.Context) int {
-	return types.CalculateDifficulty(float64(k.CharterAge(ctx)), k.GetParams(ctx).CharterDifficultyRange())
+	return types.CalculateDifficulty(k.CharterAge(ctx), k.GetParams(ctx).CharterDifficultyRange())
 }
 
 /* verifyGuildCharterConsent checks a founder's offline signature authorising
