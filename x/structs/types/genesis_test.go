@@ -28,6 +28,46 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: true,
 		},
 		{
+			// A provider's duration minimum is what stops a capacity resize from
+			// rescaling an agreement down to no duration at all, and
+			// GenesisImportProvider assigns the whole record, skipping the
+			// setter that floors it at 1.
+			desc: "provider with a zero duration minimum is invalid",
+			genState: &types.GenesisState{
+				PortId: types.PortID,
+				ProviderList: []types.Provider{{
+					Id:              "7-0",
+					DurationMinimum: 0,
+					DurationMaximum: 1000,
+				}},
+			},
+			valid: false,
+		},
+		{
+			desc: "provider with an inverted duration range is invalid",
+			genState: &types.GenesisState{
+				PortId: types.PortID,
+				ProviderList: []types.Provider{{
+					Id:              "7-0",
+					DurationMinimum: 500,
+					DurationMaximum: 100,
+				}},
+			},
+			valid: false,
+		},
+		{
+			desc: "provider with a sane duration range is valid",
+			genState: &types.GenesisState{
+				PortId: types.PortID,
+				ProviderList: []types.Provider{{
+					Id:              "7-0",
+					DurationMinimum: 1,
+					DurationMaximum: 1000,
+				}},
+			},
+			valid: true,
+		},
+		{
 			desc: "guild with entry rank zero is invalid",
 			genState: &types.GenesisState{
 				PortId: types.PortID,

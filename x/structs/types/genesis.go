@@ -84,6 +84,28 @@ func (gs GenesisState) Validate() error {
 		}
 	}
 
+	/* A provider's published duration range is a safety property, not only a
+	 * policy one, and a genesis file is the only way it reaches state unchecked:
+	 * GenesisImportProvider assigns the whole record onto the cache and so skips
+	 * SetDurationRange, which floors the minimum at 1.
+	 *
+	 * Zero matters because AgreementDurationVerify is what stops a capacity
+	 * resize from rescaling an agreement down to no duration at all. An agreement
+	 * whose EndBlock lands on the current block is live for the rest of that
+	 * block - AgreementExpirations runs in the EndBlocker, after every message -
+	 * so its raised capacity is usable while the collateral still covers the old
+	 * one. rescaledDuration refuses zero on its own account now, which is what
+	 * covers records already on disk; this is what stops new ones.
+	 */
+	for _, provider := range gs.ProviderList {
+		if provider.DurationMinimum == 0 {
+			return NewParameterValidationError("provider.durationMinimum", provider.DurationMinimum, "must_be_positive").WithProvider(provider.Id)
+		}
+		if provider.DurationMinimum > provider.DurationMaximum {
+			return NewParameterValidationError("provider.durationMinimum", provider.DurationMinimum, "exceeds_maximum").WithProvider(provider.Id).WithRange(0, provider.DurationMaximum)
+		}
+	}
+
 	// Both of these fields are authorization input on the approve paths — the
 	// join type decides which side's consent the application stands for, the
 	// status decides whether it is still live — and a genesis file is the only

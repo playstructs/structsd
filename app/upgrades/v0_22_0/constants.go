@@ -429,6 +429,28 @@ package v0_22_0
 //     restore, leaving those objects over-subscribed with nothing left to
 //     schedule them.
 //
+//   - A capacity resize that rescales an agreement to zero duration is refused,
+//     independently of the provider's published minimum.
+//
+//     The rescale trades duration for capacity and truncates, so a small,
+//     nearly-expired agreement grown by a large amount lands on a duration of
+//     zero, which sets EndBlock to the current block. That is not "already
+//     expired": AgreementExpirations runs in the EndBlocker, after every message
+//     in the block, and matches EndBlock == currentBlock exactly. The raised
+//     capacity, provider load and allocation power are therefore live for the
+//     rest of the block and usable by a later message in the same transaction,
+//     while the collateral still covers only the old capacity.
+//
+//     AgreementDurationVerify already caught this on any chain a transaction
+//     built, because every provider setter floors DurationMinimum at 1. That was
+//     a provider policy standing in for a safety property, and one whole-record
+//     write away from being absent: GenesisImportProvider assigns a Provider
+//     straight onto the cache and passes no setter. rescaledDuration now refuses
+//     zero on its own account, which covers a record already on disk, and
+//     GenesisState.Validate rejects a provider whose duration minimum is zero or
+//     whose range is inverted, which stops new ones. The pairing is the same one
+//     used for guild join bypass levels.
+//
 // This upgrade carries two state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

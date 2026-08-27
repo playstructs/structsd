@@ -242,6 +242,76 @@ func TestCapacityChange_RespectsPublishedDurationRange(t *testing.T) {
 	requireUntouched(t, f, agreement.Id, before)
 }
 
+/* TestCapacityChange_ZeroDurationResizeRejected is the regression on a resize
+ * that buys a block of amplified capacity for nothing.
+ *
+ * The rescale trades duration for capacity, and integer division truncates, so a
+ * small nearly-expired agreement grown by a large amount rescales to a duration
+ * of zero - which sets EndBlock to the current block. That is not "already
+ * expired": AgreementExpirations runs in the EndBlocker, after every message in
+ * the block, and matches EndBlock == currentBlock exactly. So the raised
+ * capacity, the raised provider load and the connected allocation's power are
+ * all live for the rest of the block and usable by a later message in the same
+ * transaction, while the collateral still only covers the old capacity.
+ *
+ * The provider here has a zero duration minimum, which no transaction can
+ * produce - every setter floors it at 1 - but GenesisImportProvider assigns a
+ * whole Provider record onto the cache and passes no setter at all. That is what
+ * makes this worth its own guard rather than leaving it to
+ * AgreementDurationVerify: a provider policy was standing in for a safety
+ * property, and one whole-record write removed it.
+ */
+func TestCapacityChange_ZeroDurationResizeRejected(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0.5", "0.25")
+
+	agreement, _ := f.openAgreement(t, 1, 50)
+
+	// Written the way genesis import writes it, skipping SetDurationRange.
+	tightenProvider(t, f, 1, 10000, 0, 100000)
+	advanceBlocks(f, 49)
+
+	before := snapshotPools(t, f, agreement.Id)
+
+	// One block of duration left at capacity 1 rescales to (1*1)/901 == 0.
+	err := increaseCapacity(f, agreement.Id, 900)
+	require.Error(t, err, "a resize that leaves no billable block must be refused")
+	require.ErrorContains(t, err, "duration")
+
+	requireUntouched(t, f, agreement.Id, before)
+
+	unchanged, found := f.k.GetAgreement(f.ctx, agreement.Id)
+	require.True(t, found)
+	require.Equal(t, uint64(1), unchanged.Capacity, "capacity must not have been raised")
+	require.Greater(t, unchanged.EndBlock, uint64(sdk.UnwrapSDKContext(f.ctx).BlockHeight()),
+		"the agreement must not have been pulled back to the current block")
+}
+
+/* TestCapacityChange_ExpiringAgreementCannotBeResized covers the same shape from
+ * the other side: an agreement with no remaining duration rescales to zero
+ * whatever the new capacity is, so neither direction may resize it. The provider
+ * here is an ordinary one, so this is the case a normal chain can reach - and it
+ * is held by the published duration minimum as well as by the zero guard, which
+ * is why removing the guard does not fail this test. It is here to pin the
+ * reachable case, not to be the regression.
+ */
+func TestCapacityChange_ExpiringAgreementCannotBeResized(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0.5", "0.25")
+
+	agreement, _ := f.openAgreement(t, 100, 50)
+	tightenProvider(t, f, 1, 10000, 1, 100000)
+	advanceBlocks(f, 50) // sitting on EndBlock; expiry has not run yet
+
+	before := snapshotPools(t, f, agreement.Id)
+
+	require.Error(t, increaseCapacity(f, agreement.Id, 100),
+		"an agreement with no unearned span left has nothing to rescale")
+	requireUntouched(t, f, agreement.Id, before)
+
+	require.Error(t, decreaseCapacity(f, agreement.Id, 50),
+		"the same holds for a decrease, which would also land EndBlock on this block")
+	requireUntouched(t, f, agreement.Id, before)
+}
+
 // TestCapacityChange_ValidDecreasePaysVoidedPenaltyOnce pins the accounting a
 // successful change performs, including that the penalty is a rolling forfeit
 // measured from the last reset rather than from the agreement's own start.

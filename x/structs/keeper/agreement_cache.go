@@ -662,6 +662,26 @@ func (cache *AgreementCache) SetEndBlock(endBlock uint64) {
 // The multiply happens in math.Int because remaining * capacity overflows uint64
 // well inside the range a provider may publish — SetDurationRange puts no
 // ceiling on durationMaximum.
+/* rescaledDuration re-prices the unearned span at the new capacity.
+ *
+ * Wide arithmetic, because the product of a duration and a capacity does not fit
+ * a uint64 and wrapping here would buy a short window at a large capacity.
+ *
+ * A rescaled duration of zero is refused outright rather than left to the
+ * provider's published minimum. The two are not the same check: an agreement
+ * whose EndBlock lands on the current block is fully live for the rest of that
+ * block - AgreementExpirations runs in the EndBlocker, after every message - so
+ * the capacity, the provider load and the connected allocation's power are all
+ * raised and usable, and only reaped once the block's transactions are done. The
+ * collateral was locked against the old capacity, so that window is free.
+ *
+ * AgreementDurationVerify happens to catch this today, because every setter
+ * floors DurationMinimum at 1. That is a provider policy standing in for a
+ * safety property, and it is exactly one whole-record write away from being
+ * absent: GenesisImportProvider assigns a Provider straight into the cache and
+ * skips SetDurationRange. Refusing zero here is independent of what any provider
+ * published, and covers a record already on disk.
+ */
 func (cache *AgreementCache) rescaledDuration(newCapacity uint64) (uint64, error) {
 	scaled := math.NewIntFromUint64(cache.GetDurationRemaining()).
 		Mul(cache.GetCapacityInt()).
@@ -671,7 +691,12 @@ func (cache *AgreementCache) rescaledDuration(newCapacity uint64) (uint64, error
 		return 0, types.NewParameterValidationError("capacity", newCapacity, "duration_overflow")
 	}
 
-	return scaled.Uint64(), nil
+	rescaled := scaled.Uint64()
+	if rescaled == 0 {
+		return 0, types.NewParameterValidationError("duration", rescaled, "below_minimum").WithRange(1, cache.GetProvider().GetDurationMaximum())
+	}
+
+	return rescaled, nil
 }
 
 func (cache *AgreementCache) CapacityIncrease(amount uint64) error {
