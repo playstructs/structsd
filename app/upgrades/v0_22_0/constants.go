@@ -451,6 +451,31 @@ package v0_22_0
 //     whose range is inverted, which stops new ones. The pairing is the same one
 //     used for guild join bypass levels.
 //
+//   - Genesis import restores a provider's checkpoint block, and stamps the
+//     genesis height on a provider that arrives without one.
+//
+//     checkpointBlock is a clock and is the one grid attribute the import cannot
+//     derive from the objects it rebuilds. Load and capacity are excluded from
+//     the grid import precisely because GenesisImportAgreement reconstructs them,
+//     so admitting them would double-count - but the checkpoint was excluded with
+//     them, and an unset grid attribute reads as zero.
+//
+//     Checkpoint() bills (currentBlock - checkpointBlock) * rate * aggregate
+//     load, so the first checkpoint after a restore billed the entire height of
+//     the chain against the full reconstructed load. SweepRevenue clamps to what
+//     the pool holds rather than failing, so the outcome was not an error: it was
+//     every consumer's collateral swept into the provider's earnings pool in one
+//     transaction, and that collateral is the escrow backing service not yet
+//     rendered. The provider-collateral-solvency invariant would have reported it
+//     only after the money moved.
+//
+//     A restored checkpoint may sit below the genesis height and is left alone -
+//     a restart at H+1 carrying a checkpoint of H owes exactly one block, and
+//     flooring it would forgive service already rendered. Only a provider with no
+//     checkpoint row at all is stamped, which says it is paid up to the moment
+//     the chain starts - the only reading consistent with the agreements it is
+//     starting with.
+//
 // This upgrade carries two state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

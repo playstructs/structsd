@@ -214,6 +214,41 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		cc.GenesisImportAgreement(agreement)
 	}
 
+	/* Every provider leaves this function with a checkpoint clock standing at or
+	 * after the genesis height.
+	 *
+	 * The exported value is restored by the grid import above and is the right
+	 * answer for a height-preserving restart. A file that carries no checkpoint
+	 * row - a hand-written genesis, or one exported before that attribute was
+	 * imported at all - would otherwise start the provider at zero, and the
+	 * first checkpoint would bill from block zero across the load these
+	 * agreements just rebuilt. Stamping the genesis height instead says the
+	 * provider has been paid up to the moment the chain starts, which is the
+	 * only reading consistent with the agreements it is starting with.
+	 */
+	genesisHeight := uint64(ctx.BlockHeight())
+	suppliedCheckpoints := make(map[string]bool, len(genState.ProviderList))
+	for _, attr := range genState.GridList {
+		attrTypeId, ok := parseAttributeTypeId(attr.AttributeId)
+		if !ok {
+			continue
+		}
+		if types.GridAttributeType(attrTypeId) == types.GridAttributeType_checkpointBlock {
+			suppliedCheckpoints[objectIdFromAttributeId(attr.AttributeId)] = true
+		}
+	}
+
+	for _, provider := range genState.ProviderList {
+		if suppliedCheckpoints[provider.Id] {
+			// The exported clock is the right answer and may legitimately sit
+			// below the genesis height: a restart at H+1 carrying a checkpoint of
+			// H owes exactly one block. Flooring it here would be the same bug in
+			// the other direction, silently forgiving service already rendered.
+			continue
+		}
+		cc.GetProvider(provider.Id).SetCheckpointBlock(genesisHeight)
+	}
+
 	// Reactor infusions (rebuild from staking delegations)
 	for _, reactor := range genState.ReactorList {
 		cc.GenesisImportReactorInfusions(reactor)
@@ -378,6 +413,22 @@ func isGenesisGridImportable(attributeId string) bool {
 	case types.GridAttributeType_ore:
 		objectId := objectIdFromAttributeId(attributeId)
 		return strings.HasPrefix(objectId, fmt.Sprintf("%d-", types.ObjectType_player))
+	case types.GridAttributeType_checkpointBlock:
+		/* A provider's checkpoint block is the one grid attribute that is not
+		 * derivable from the objects around it. Load and capacity are rebuilt by
+		 * the import itself, so admitting them would double-count; the checkpoint
+		 * is a clock, and nothing else on the export says where it stood.
+		 *
+		 * Losing it is not a cosmetic drift. Checkpoint() bills
+		 * (currentBlock - checkpointBlock) * rate * aggregate load, and an unset
+		 * attribute reads as zero, so the first checkpoint after a restore bills
+		 * the whole height of the chain against the full reconstructed load.
+		 * SweepRevenue clamps that to what the pool holds rather than failing, so
+		 * the visible outcome is every consumer's collateral swept into the
+		 * provider's earnings pool in one transaction.
+		 */
+		objectId := objectIdFromAttributeId(attributeId)
+		return strings.HasPrefix(objectId, fmt.Sprintf("%d-", types.ObjectType_provider))
 	default:
 		return false
 	}

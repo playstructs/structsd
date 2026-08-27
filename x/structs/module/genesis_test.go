@@ -270,3 +270,85 @@ func TestGenesis_ValidateRejectsDuplicateAddressNonce(t *testing.T) {
 	require.Error(t, err, "two nonces for one address leaves which one wins to map order")
 	require.Contains(t, err.Error(), address)
 }
+
+/* TestGenesis_RestoresProviderCheckpointBlock is the regression on a restart
+ * sweeping every consumer's collateral into the provider's earnings.
+ *
+ * checkpointBlock is a clock, and it is the one grid attribute the import cannot
+ * derive from the objects it is rebuilding. Load and capacity are excluded from
+ * the grid import precisely because GenesisImportAgreement reconstructs them, so
+ * admitting them would double-count - but excluding the checkpoint left it
+ * unset, and an unset grid attribute reads as zero.
+ *
+ * Checkpoint() then bills (currentBlock - 0) * rate * aggregate load. The
+ * collateral pool is shared across a provider's agreements and SweepRevenue
+ * clamps to what it holds rather than failing, so the first checkpoint after a
+ * restore empties it - and the money it takes is the escrow backing service
+ * those consumers have not received yet.
+ */
+func TestGenesis_RestoresProviderCheckpointBlock(t *testing.T) {
+	const providerId = "10-9"
+	const exportedCheckpoint = uint64(4_000_000)
+
+	genesisState := types.DefaultGenesis()
+	genesisState.ProviderList = []types.Provider{{Id: providerId, Index: 9}}
+	genesisState.GridList = []*types.GridRecord{{
+		AttributeId: keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, providerId),
+		Value:       exportedCheckpoint,
+	}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(int64(exportedCheckpoint) + 1)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	restored := k.GetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, providerId))
+	require.Equal(t, exportedCheckpoint, restored,
+		"the exported checkpoint must survive the import; zero here bills the whole chain height")
+}
+
+/* TestGenesis_StampsMissingProviderCheckpointBlock covers the file that carries
+ * no checkpoint row at all - a hand-written genesis, or one exported before the
+ * attribute was imported. Zero would mean "never paid", so the provider is
+ * stamped as paid up to the genesis height, which is the only reading
+ * consistent with the agreements it starts with.
+ */
+func TestGenesis_StampsMissingProviderCheckpointBlock(t *testing.T) {
+	const providerId = "10-9"
+
+	genesisState := types.DefaultGenesis()
+	genesisState.ProviderList = []types.Provider{{Id: providerId, Index: 9}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(1_234)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	stamped := k.GetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, providerId))
+	require.Equal(t, uint64(1_234), stamped,
+		"a provider with no exported checkpoint must start paid up, not from block zero")
+}
+
+// TestGenesis_ProviderCheckpointSurvivesRoundTrip is the property the two tests
+// above are really about: export then import must not move the clock.
+func TestGenesis_ProviderCheckpointSurvivesRoundTrip(t *testing.T) {
+	const providerId = "10-9"
+
+	genesisState := types.DefaultGenesis()
+	genesisState.ProviderList = []types.Provider{{Id: providerId, Index: 9}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(900_000)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	attributeId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, providerId)
+	first := k.GetGridAttribute(ctx, attributeId)
+	require.Equal(t, uint64(900_000), first)
+
+	exported := structs.ExportGenesis(ctx, k)
+
+	k2, ctx2 := keepertest.StructsKeeper(t)
+	ctx2 = ctx2.WithBlockHeight(900_001)
+	structs.InitGenesis(ctx2, k2, *exported)
+
+	require.Equal(t, first, k2.GetGridAttribute(ctx2, attributeId),
+		"a restart one block later must resume the clock, not restart it")
+}
