@@ -86,6 +86,16 @@ func TestGetPermissionsByObject(t *testing.T) {
 	keeper.SetPermissionsByBytes(ctx, permission1, types.Permission(0b0001))
 	keeper.SetPermissionsByBytes(ctx, permission2, types.Permission(0b0010))
 
+	// A grant on a different object must not come back. Permission keys are
+	// "objectId@playerId", so this is what makes the lookup a prefix scan rather
+	// than a filter over every permission on the chain.
+	other := keeperlib.GetObjectPermissionIDBytes("other-object", player1)
+	keeper.SetPermissionsByBytes(ctx, other, types.Permission(0b0100))
+
+	// Nor must an object whose id merely starts with this one.
+	sibling := keeperlib.GetObjectPermissionIDBytes(objectId+"-extra", player1)
+	keeper.SetPermissionsByBytes(ctx, sibling, types.Permission(0b1000))
+
 	// Get all permissions for the object
 	permissions := keeper.GetPermissionsByObject(ctx, objectId)
 	require.Len(t, permissions, 2)
@@ -105,42 +115,6 @@ func TestGetPermissionsByObject(t *testing.T) {
 	}
 	require.True(t, foundPlayer1)
 	require.True(t, foundPlayer2)
-}
-
-func TestGetPermissionsByPlayer(t *testing.T) {
-	keeper, ctx := keepertest.StructsKeeper(t)
-
-	// Test data
-	playerId := "test-player"
-	object1 := "object1"
-	object2 := "object2"
-
-	// Set permissions for the player on multiple objects
-	permission1 := keeperlib.GetObjectPermissionIDBytes(object1, playerId)
-	permission2 := keeperlib.GetObjectPermissionIDBytes(object2, playerId)
-
-	keeper.SetPermissionsByBytes(ctx, permission1, types.Permission(0b0001))
-	keeper.SetPermissionsByBytes(ctx, permission2, types.Permission(0b0010))
-
-	// Get all permissions for the player
-	permissions := keeper.GetPermissionsByPlayer(ctx, playerId)
-	require.Len(t, permissions, 2)
-
-	// Verify permissions
-	foundObject1 := false
-	foundObject2 := false
-	for _, p := range permissions {
-		if p.PermissionId == string(permission1) {
-			require.Equal(t, uint64(0b0001), p.Value)
-			foundObject1 = true
-		}
-		if p.PermissionId == string(permission2) {
-			require.Equal(t, uint64(0b0010), p.Value)
-			foundObject2 = true
-		}
-	}
-	require.True(t, foundObject1)
-	require.True(t, foundObject2)
 }
 
 func TestGetAllPermissionExport(t *testing.T) {

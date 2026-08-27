@@ -322,6 +322,32 @@ package v0_22_0
 //     is propagated too, since by then the coins are already in the module
 //     account.
 //
+//   - Deleting a substation disconnects an arriving providerAgreement allocation
+//     instead of destroying it.
+//
+//     Ending an agreement early has two prices. AgreementClose charges the
+//     consumer cancellation penalty; PrematureCloseByAllocation pays the
+//     provider one to the consumer, which is right when the provider walks away
+//     and a gift when the consumer does. Substation deletion destroyed every
+//     inbound allocation, and an agreement's allocation can arrive at a
+//     substation the consumer owns - so a consumer could choose the favourable
+//     price by deleting a substation rather than closing the agreement.
+//     AllocationDelete already refused to tear down a providerAgreement
+//     allocation directly; this was the same thing one level up.
+//
+//     The agreement now survives with no destination, exactly as it does between
+//     AgreementOpen and the first connect, and can only be ended through the two
+//     paths that price it.
+//
+//     Disconnect rather than refuse the deletion, because
+//     SubstationAllocationConnect asks for no rights on the destination: anyone
+//     may point an allocation at anyone's substation, so refusing would let a
+//     stranger's agreement pin a substation in place forever.
+//
+//     Outbound allocations are unchanged. An agreement is sourced from the
+//     provider's substation, so deleting that one is the provider ending service
+//     and the provider penalty it pays is the correct price.
+//
 // This upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,

@@ -27,6 +27,32 @@ and charge (usually via methods on the loaded objects), mutate, then `cc.CommitA
 neighbouring handler before writing a new one. Don't write to the KV store directly when a cache
 exists — caches deduplicate loads per operation and commit once.
 
+**Efficiency is a correctness concern here, because every read and write is metered.** This is a
+chain: a keeper read is a KV store read and somebody pays for it. On a transaction path that is
+gas, and for the free Structs messages it is a ceiling rather than a bill — `GasRouterDecorator`
+swaps in a 20M meter (`DefaultFreeGasCap`), so a handler that walks too much state does not charge
+the player more, it stops working. In a block hook there is no meter at all: `AgreementExpirations`,
+`GridCascade` and `ProcessInfusionMaturitySweep` run every block against an infinite one, so their
+cost is block time that every validator pays, and work there that a transaction can grow without
+bound is a halt rather than a slow query. Size a loop by asking what an attacker can put in it, not
+what a normal player would.
+
+**Answer a question about one object with an index, never by scanning every object.** The store
+layout already does this: `AllocationSourceKeyPrefix`, `AllocationDestinationKeyPrefix` and
+`SubstationPlayerKeyPrefix` are scoped prefixes, so iterating one costs what is attached to that
+object rather than what is on the chain — deleting a substation reaches its connected players, its
+outbound allocations and its inbound allocations through exactly those three, and never looks at a
+provider at all. Add a new index beside the write that populates it, and clear it under the same key
+it was written under. `GetAllX(ctx)` is a full store scan and belongs only where every row genuinely
+is the question: upgrade migrations, genesis import and export, `EventAllGenesis` (guarded to block
+1), and the registered invariants, which the crisis module runs on demand. The trap is that both
+spellings exist — `Keeper.GetAllPlayerBySubstation` iterates every player and filters, while
+`CurrentContext.GetAllPlayerBySubstation` reads the index, and only the second is on a live path.
+
+The caches are part of this rather than a convenience: `CurrentContext` deduplicates loads within an
+operation and writes once at `CommitAll`, so going around it to the store pays again for reads it
+already has, on top of breaking the commit-ordering rules below.
+
 **Load the signer with `cc.GetSigningPlayer(msg.Creator)`, and nothing else with it.** A player
 owns many addresses, each with its own permission bitfield, but `cc.players` is keyed by player
 id, so every address of a player resolves to one shared `PlayerCache`. The acting identity

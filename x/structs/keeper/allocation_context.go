@@ -156,6 +156,51 @@ func (cc *CurrentContext) NewAllocation(
 // agreement behind each. A failure on one is logged and the rest still go: the
 // callers are grid teardown paths where stopping early would leave allocations
 // pointing at capacity that no longer exists.
+/* DisconnectMultipleAgreementAllocations is DestroyMultipleAllocations for the
+ * allocations arriving at a substation being deleted.
+ *
+ * Destroying a providerAgreement allocation settles its agreement through
+ * PrematureCloseByAllocation, which pays the *provider* cancellation penalty to
+ * the consumer. That is the right policy when the provider walks away, and the
+ * wrong one when the consumer does - AgreementClose applies the consumer
+ * penalty. A consumer could pick the favourable one by pointing their agreement
+ * allocation at a substation they own and deleting the substation instead of
+ * closing the agreement.
+ *
+ * So an inbound agreement allocation is disconnected rather than destroyed. The
+ * agreement survives with nowhere to send its power, exactly as it does between
+ * AgreementOpen and the first connect, and the only ways to end it early remain
+ * the two that price it correctly.
+ *
+ * Disconnect rather than refuse the deletion, because SubstationAllocationConnect
+ * does not ask for rights on the destination: anyone may point an allocation at
+ * anyone's substation, so refusing would let a stranger's agreement pin a
+ * substation in place forever.
+ *
+ * Outbound allocations are unaffected. An agreement is sourced from the
+ * provider's substation, so deleting that one is the provider ending service,
+ * and the provider penalty it pays is the correct price.
+ */
+func (cc *CurrentContext) DisconnectMultipleAgreementAllocations(allocationIds []string) {
+    for _, allocationId := range allocationIds {
+        allocation, found := cc.GetAllocation(allocationId)
+        if !found {
+            continue
+        }
+
+        if allocation.IsProviderAgreement() {
+            if err := allocation.SetDestination(""); err != nil {
+                cc.k.logger.Error("Agreement allocation could not be disconnected", "allocationId", allocationId, "error", err)
+            }
+            continue
+        }
+
+        if err := allocation.Destroy(); err != nil {
+            cc.k.logger.Error("Allocation could not be destroyed", "allocationId", allocationId, "error", err)
+        }
+    }
+}
+
 func (cc *CurrentContext) DestroyMultipleAllocations(allocationIds []string) {
     for _, allocationId := range allocationIds {
         allocation, found := cc.GetAllocation(allocationId)

@@ -89,26 +89,6 @@ func (k Keeper) GetAllPlayer(ctx context.Context) (list []types.Player) {
 	return
 }
 
-// GetAllPlayer returns all player
-func (k Keeper) GetAllPlayerBySubstation(ctx context.Context, substationId string) (list []types.Player) {
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlayerKey))
-	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
-
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var val types.Player
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
-
-        if (val.SubstationId == substationId) {
-            list = append(list, val)
-		}
-	}
-
-	return
-}
-
-
 /*
     message PlayerInventory {
       cosmos.base.v1beta1.Coin rocks = 13

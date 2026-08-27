@@ -137,8 +137,13 @@ func (cache *SubstationCache) Delete(migrationSubstationId string) {
     allocationsOut := cache.CC.k.GetAllAllocationIdBySourceIndex(cache.CC.ctx, cache.GetSubstationId())
     cache.CC.DestroyMultipleAllocations(allocationsOut)
 
+    // Inbound is not symmetric with outbound: see
+    // DisconnectMultipleAgreementAllocations. Destroying an arriving agreement
+    // allocation settles its agreement at the provider's cancellation price,
+    // which is not what a consumer tearing down their own substation should get
+    // to choose.
     allocationsIn := cache.CC.k.GetAllAllocationIdByDestinationIndex(cache.CC.ctx, cache.GetSubstationId())
-    cache.CC.DestroyMultipleAllocations(allocationsIn)
+    cache.CC.DisconnectMultipleAgreementAllocations(allocationsIn)
 
 	// Clear out Grid attributes
 	cache.CC.ClearGridAttribute(cache.LoadAttributeId)

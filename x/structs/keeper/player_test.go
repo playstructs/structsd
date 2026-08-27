@@ -151,49 +151,57 @@ func TestPlayerUpsert(t *testing.T) {
 	require.Equal(t, player1.Index, player2.Index)
 }
 
+/* TestPlayerGetAllBySubstation covers finding the players connected to one
+ * substation, which is what SubstationCache.Delete walks before tearing one
+ * down.
+ *
+ * It goes through the index rather than a filter over every player. There used
+ * to be a keeper method of the same name that scanned the whole player store and
+ * compared SubstationId on each row; nothing called it but this test, and a
+ * full scan on a live path is a cost the chain pays forever for a question the
+ * store layout already answers. The connection itself is what maintains the
+ * index - MigrateSubstation writes the row and DisconnectSubstation removes it -
+ * so the setup connects players rather than stamping the field.
+ */
 func TestPlayerGetAllBySubstation(t *testing.T) {
 	k, ctx := keepertest.StructsKeeper(t)
 	ctxSDK := ctx
 
-	substationId := "substation-test"
+	const substationId = "4-1"
+	const otherSubstationId = "4-2"
 
-	player1 := types.Player{
-		Creator:        "cosmos1player1",
-		PrimaryAddress: "cosmos1player1",
-		SubstationId:   substationId,
+	connect := func(creator string, substation string) *keeperlib.PlayerCache {
+		cc := k.NewCurrentContext(ctxSDK)
+		player := cc.UpsertPlayer(creator)
+		player.MigrateSubstation(substation)
+		cc.CommitAll()
+		return player
 	}
-	player1 = testAppendPlayer(k, ctxSDK, player1)
 
-	player2 := types.Player{
-		Creator:        "cosmos1player2",
-		PrimaryAddress: "cosmos1player2",
-		SubstationId:   substationId,
+	player1 := connect("cosmos1player1", substationId)
+	player2 := connect("cosmos1player2", substationId)
+	player3 := connect("cosmos1player3", otherSubstationId)
+
+	cc := k.NewCurrentContext(ctxSDK)
+	connected := cc.GetAllPlayerBySubstation(substationId)
+	require.Len(t, connected, 2)
+
+	found := make(map[string]bool, len(connected))
+	for _, p := range connected {
+		found[p.GetPlayerId()] = true
 	}
-	player2 = testAppendPlayer(k, ctxSDK, player2)
+	require.True(t, found[player1.GetPlayerId()])
+	require.True(t, found[player2.GetPlayerId()])
+	require.False(t, found[player3.GetPlayerId()], "a player on another substation must not appear")
 
-	player3 := types.Player{
-		Creator:        "cosmos1player3",
-		PrimaryAddress: "cosmos1player3",
-		SubstationId:   "other-substation",
-	}
-	player3 = testAppendPlayer(k, ctxSDK, player3)
+	// Disconnecting clears the row, so the index tracks the connection rather
+	// than accumulating every player who was ever attached.
+	cc = k.NewCurrentContext(ctxSDK)
+	cc.GetPlayer(player1.GetPlayerId()).DisconnectSubstation()
+	cc.CommitAll()
 
-	// Get players by substation
-	players := k.GetAllPlayerBySubstation(ctxSDK, substationId)
-	require.Len(t, players, 2)
-
-	foundPlayer1 := false
-	foundPlayer2 := false
-	for _, p := range players {
-		if p.Id == player1.Id {
-			foundPlayer1 = true
-		}
-		if p.Id == player2.Id {
-			foundPlayer2 = true
-		}
-	}
-	require.True(t, foundPlayer1)
-	require.True(t, foundPlayer2)
+	cc = k.NewCurrentContext(ctxSDK)
+	require.Len(t, cc.GetAllPlayerBySubstation(substationId), 1)
 }
 
 func TestPlayerChargeGridAttributes(t *testing.T) {

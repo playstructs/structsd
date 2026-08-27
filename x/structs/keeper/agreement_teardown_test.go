@@ -991,3 +991,68 @@ func TestTeardown_ProviderDeleteDrainsAnIdleProvider(t *testing.T) {
 	_, found := f.k.GetProvider(sdk.UnwrapSDKContext(f.ctx), f.provider.Id)
 	require.False(t, found)
 }
+
+/* TestTeardown_SubstationDeleteCannotRepriceAConsumerCancellation is the
+ * regression on a consumer choosing which cancellation penalty applies to them.
+ *
+ * Ending an agreement early has two prices. AgreementClose charges the consumer
+ * cancellation penalty; PrematureCloseByAllocation pays the *provider* one to
+ * the consumer, which is the right policy when the provider walks away and a
+ * gift when the consumer does.
+ *
+ * Deleting a substation destroyed every allocation arriving at it, and an
+ * agreement's allocation can arrive at a substation the consumer owns - so the
+ * consumer could pick the favourable price by deleting a substation instead of
+ * closing the agreement. AllocationDelete already refused to tear down a
+ * providerAgreement allocation directly; this was the same thing one level up.
+ *
+ * Disconnecting rather than refusing the deletion matters:
+ * SubstationAllocationConnect asks for no rights on the destination, so anyone
+ * may point an allocation at anyone's substation, and refusing would let a
+ * stranger's agreement pin a substation in place forever.
+ */
+func TestTeardown_SubstationDeleteCannotRepriceAConsumerCancellation(t *testing.T) {
+	// A full provider cancellation penalty and no consumer penalty is the shape
+	// that makes the misclassification worth the most: closing properly costs
+	// the consumer their served time, the substation route refunds all of it.
+	f := setupTeardownFixture(t, 10, "1", "0")
+
+	const capacity, duration = 100, 50
+	agreement, collateral := f.openAgreement(t, capacity, duration)
+
+	// The consumer points the agreement's allocation at a substation of their
+	// own, then deletes it.
+	consumerSubstation, _, substationErr := testAppendSubstation(f.k, f.ctx, types.Allocation{
+		Id:             agreement.AllocationId,
+		SourceObjectId: f.provider.SubstationId,
+		Controller:     f.consumer.Id,
+		Type:           types.AllocationType_providerAgreement,
+	}, f.consumer)
+	require.NoError(t, substationErr)
+
+	_, err := f.ms.SubstationAllocationConnect(f.ctx, &types.MsgSubstationAllocationConnect{
+		Creator:       f.consumer.Creator,
+		AllocationId:  agreement.AllocationId,
+		DestinationId: consumerSubstation.Id,
+	})
+	require.NoError(t, err)
+
+	consumerBefore := f.balance(f.consumerAcc)
+
+	_, err = f.ms.SubstationDelete(f.ctx, &types.MsgSubstationDelete{
+		Creator:      f.consumer.Creator,
+		SubstationId: consumerSubstation.Id,
+	})
+	require.NoError(t, err, "deleting a substation is a legitimate act and must still work")
+
+	// The agreement is the thing that must survive: it can only be ended at a
+	// price, and this route sets none.
+	stored, stillThere := f.k.GetAgreement(f.ctx, agreement.Id)
+	require.True(t, stillThere, "a substation deletion must not settle the agreement")
+	_ = stored
+
+	require.Equal(t, consumerBefore, f.balance(f.consumerAcc),
+		"and must pay the consumer nothing")
+	require.Equal(t, collateral, f.balance(f.collateralAcc), "the collateral stays escrowed")
+	require.Equal(t, uint64(capacity), f.agreementLoad(), "the provider is still carrying the load")
+}

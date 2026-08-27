@@ -70,33 +70,28 @@ func (k Keeper) PermissionClearAll(ctx context.Context, permissionId []byte) {
 
 
 
+// GetPermissionsByObject returns every permission row held on an objectId.
+//
+// Permission keys are "objectId@playerId", so the object is the key prefix and
+// this costs what is granted on that object rather than what is granted on the
+// chain. It used to iterate every permission and compare the split key, which is
+// the same traversal ClearPermissionByObject does correctly one screen below.
+//
+// There is no by-player counterpart, and there cannot be a cheap one: the player
+// is the key *suffix*, so answering that question means either a full scan or a
+// second index. Add the index if the question is ever worth asking.
 func (k Keeper) GetPermissionsByObject(ctx context.Context, objectId string) (list []types.PermissionRecord) {
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PermissionKey))
-	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
-
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-        extractedId := strings.Split(string(iterator.Key()), "@")
-        if (extractedId[0] == objectId) {
-            list = append(list, types.PermissionRecord{PermissionId: string(iterator.Key()), Value: binary.BigEndian.Uint64(iterator.Value())})
-		}
+	if objectId == "" {
+		return
 	}
-	return
-}
 
-
-func (k Keeper) GetPermissionsByPlayer(ctx context.Context, playerId string) (list []types.PermissionRecord) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PermissionKey))
-	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	iterator := storetypes.KVStorePrefixIterator(store, []byte(objectId+"@"))
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-        extractedId := strings.Split(string(iterator.Key()), "@")
-        if (extractedId[1] == playerId) {
-            list = append(list, types.PermissionRecord{PermissionId: string(iterator.Key()), Value: binary.BigEndian.Uint64(iterator.Value())})
-		}
+		list = append(list, types.PermissionRecord{PermissionId: string(iterator.Key()), Value: binary.BigEndian.Uint64(iterator.Value())})
 	}
 	return
 }
