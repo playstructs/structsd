@@ -142,6 +142,31 @@ const (
  */
 const GridCascadeBlockBudget = 256
 
+/* AgreementExpirationBucketCap limits how many agreements may share one
+ * expiration height.
+ *
+ * AgreementExpirations processes the whole bucket for the current height inside
+ * the EndBlocker, which has no gas meter, and each entry checkpoints its
+ * provider, moves money, destroys an allocation and rewrites indexes. EndBlock
+ * is chosen by the consumer, so agreements opened across many earlier blocks can
+ * be aimed at one height.
+ *
+ * The bound goes on creating that work rather than on doing it, which is the
+ * opposite of how GridCascade is bounded, and the difference is forced. A
+ * cascade can be left half-finished and picked up next block. An expiry cannot:
+ * the index is read at exactly the current height, so an agreement not torn down
+ * on its one block is never revisited, and until it is, its capacity stays in
+ * the provider's aggregate load where Checkpoint() bills it against every other
+ * consumer's escrow. Deferring an expiry is not slower settlement, it is
+ * somebody else paying for it - see the rules in AGENTS.md and the
+ * agreement-expiry-liveness invariant.
+ *
+ * So a height fills up and the next agreement picks another. The cost of being
+ * wrong in this direction is a consumer shifting their duration by a block; the
+ * cost in the other direction is a halt.
+ */
+const AgreementExpirationBucketCap = 256
+
 const (
 	ReactorKey          = "Reactor/value/"
 	ReactorCountKey     = "Reactor/count/"

@@ -49,6 +49,17 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
         return emptyResponse, paramError
     }
 
+    // Every agreement expiring at one height is torn down in that block's
+    // EndBlocker, which has no gas meter, so a height holds only so many. The
+    // consumer picks the duration and therefore the height; a full one means
+    // choosing another. See AgreementExpirationBucketCap.
+    //
+    // Checked here with the rest of the parameter validation, ahead of the
+    // collateral transfer below, so a refusal never has to unwind a payment.
+    if !k.AgreementExpirationHeightHasRoomFor(ctx, uint64(ctx.BlockHeight()) + msg.Duration, "") {
+        return emptyResponse, types.NewParameterValidationError("duration", msg.Duration, "expiration_height_full").WithRange(0, types.AgreementExpirationBucketCap)
+    }
+
     // Does the activePlayer have enough for the collateral
     duration := math.NewIntFromUint64(msg.Duration)
     capacity := math.NewIntFromUint64(msg.Capacity)

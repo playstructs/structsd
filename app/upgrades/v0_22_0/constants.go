@@ -476,6 +476,36 @@ package v0_22_0
 //     the chain starts - the only reading consistent with the agreements it is
 //     starting with.
 //
+//   - At most AgreementExpirationBucketCap agreements may share one expiration
+//     height.
+//
+//     AgreementExpirations tears down every agreement indexed at the current
+//     height inside the EndBlocker, which has no gas meter, and each one
+//     checkpoints its provider, moves money, destroys an allocation and rewrites
+//     indexes. The consumer chooses the duration and therefore the height, so
+//     agreements opened across many earlier blocks could be aimed at one block.
+//
+//     The bound is on creating that work rather than on doing it, which is the
+//     opposite of how GridCascade is bounded in this same release, and the
+//     difference is forced rather than stylistic. A cascade can stop half way and
+//     resume next block. An expiry cannot: the index is read at exactly one
+//     height, so an agreement missed there is never revisited, and until it is
+//     its capacity stays in the provider's aggregate load where Checkpoint()
+//     bills it against every other consumer's escrow. Deferring an expiry is not
+//     slower settlement, it is somebody else paying for it - which is what the
+//     agreement-expiry-liveness invariant exists to catch.
+//
+//     GAME RULE CHANGE: AgreementOpen, AgreementDurationIncrease and both
+//     capacity changes can now be refused because the expiration height they
+//     would land on is full. The remedy is to shift the duration by a block. An
+//     agreement already indexed at a height keeps its slot, so a capacity change
+//     that re-bases back onto the same block is never refused for this.
+//
+//     There is no counter and no migration. The check counts the bucket and
+//     stops at the cap, so it costs at most cap+1 reads however large the bucket
+//     is, and a chain arriving with heights already past the cap simply accepts
+//     nothing new at those heights until they drain.
+//
 // This upgrade carries two state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

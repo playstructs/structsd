@@ -1497,6 +1497,8 @@ func (e *ParameterValidationError) Error() string {
 		return fmt.Sprintf("%s change of %d would do nothing", e.Parameter, e.Value)
 	case "duration_overflow":
 		return fmt.Sprintf("%s (%d) would rescale the remaining duration past the representable range", e.Parameter, e.Value)
+	case "expiration_height_full":
+		return fmt.Sprintf("too many agreements already expire at block %d (limit %d); choose a different %s", e.Value, e.Maximum, e.Parameter)
 	default:
 		return fmt.Sprintf("parameter %s validation failed: %s", e.Parameter, e.Reason)
 	}

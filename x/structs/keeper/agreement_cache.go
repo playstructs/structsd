@@ -682,6 +682,21 @@ func (cache *AgreementCache) SetEndBlock(endBlock uint64) {
  * skips SetDurationRange. Refusing zero here is independent of what any provider
  * published, and covers a record already on disk.
  */
+/* verifyExpirationHeight refuses an end block whose expiration bucket is full.
+ *
+ * Every path that moves an end block goes through here, because the bucket is
+ * what the EndBlocker has to process in one go and a move is indistinguishable
+ * from an open once it is indexed. See AgreementExpirationBucketCap.
+ */
+func (cache *AgreementCache) verifyExpirationHeight(endBlock uint64) error {
+	if cache.CC.k.AgreementExpirationHeightHasRoomFor(cache.CC.ctx, endBlock, cache.GetAgreementId()) {
+		return nil
+	}
+
+	return types.NewParameterValidationError("duration", endBlock, "expiration_height_full").
+		WithRange(0, types.AgreementExpirationBucketCap)
+}
+
 func (cache *AgreementCache) rescaledDuration(newCapacity uint64) (uint64, error) {
 	scaled := math.NewIntFromUint64(cache.GetDurationRemaining()).
 		Mul(cache.GetCapacityInt()).
@@ -724,6 +739,13 @@ func (cache *AgreementCache) CapacityIncrease(amount uint64) error {
 		return err
 	}
 	if err := cache.GetProvider().AgreementDurationVerify(newDuration); err != nil {
+		return err
+	}
+
+	// The rescale re-bases the window on this block, so the new end block is
+	// current + newDuration. Checked before the payout below, like everything
+	// else that can refuse the change.
+	if err := cache.verifyExpirationHeight(cache.GetCurrentBlock() + newDuration); err != nil {
 		return err
 	}
 
@@ -782,6 +804,13 @@ func (cache *AgreementCache) CapacityDecrease(amount uint64) error {
 		return err
 	}
 
+	// The rescale re-bases the window on this block, so the new end block is
+	// current + newDuration. Checked before the payout below, like everything
+	// else that can refuse the change.
+	if err := cache.verifyExpirationHeight(cache.GetCurrentBlock() + newDuration); err != nil {
+		return err
+	}
+
 	// Everything that can fail is behind us. The penalty has to be priced before
 	// the mutations below, because SetStartBlock resets the elapsed span it is
 	// measured over and the capacity write changes the rate it is charged at.
@@ -825,6 +854,10 @@ func (cache *AgreementCache) DurationIncrease(amount uint64) error {
 	verifyError := cache.GetProvider().AgreementDurationVerify(newDuration)
 	if verifyError != nil {
 		return verifyError
+	}
+
+	if err := cache.verifyExpirationHeight(newEndBlock); err != nil {
+		return err
 	}
 
 	cache.SetEndBlock(newEndBlock)
