@@ -69,13 +69,9 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 		applyAllowedAddrs = true
 	}
 
-	allowedAddrsMap := make(map[string]bool)
-
-	for _, addr := range jailAllowedAddrs {
-		if _, err := sdk.ValAddressFromBech32(addr); err != nil {
-			return fmt.Errorf("jail allowlist address %q: %w", addr, err)
-		}
-		allowedAddrsMap[addr] = true
+	allowedAddrsMap, err := buildJailAllowlist(jailAllowedAddrs)
+	if err != nil {
+		return err
 	}
 
 	/* Just to be safe, assert the invariants on current state. */
@@ -106,7 +102,7 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 	/* Handle fee distribution state. */
 
 	// withdraw all validator commission
-	err := app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
+	err = app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
 		valBz, err := app.StakingKeeper.ValidatorAddressCodec().StringToBytes(val.GetOperator())
 		if err != nil {
 			panic(err)
@@ -279,4 +275,32 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 	)
 
 	return nil
+}
+
+/* buildJailAllowlist turns the operator's --jail-allowed-addrs into a set the
+ * validator loop can look addresses up in.
+ *
+ * Keyed by the decoded address rather than by the text that arrived. Bech32 is
+ * case-insensitive: an all-uppercase address decodes fine and re-encodes
+ * lowercase, and the lookup is against addr.String() on an address rebuilt from
+ * validator-key bytes, which is always the canonical lowercase form. Keying by
+ * the raw text meant an uppercase entry validated, stored itself under a key
+ * nothing would ever match, and jailed the very validator it was written to
+ * protect - silently, because the entry was valid.
+ *
+ * One identity, more than one spelling; decide on the decoded value, never on
+ * the text.
+ */
+func buildJailAllowlist(jailAllowedAddrs []string) (map[string]bool, error) {
+	allowed := make(map[string]bool, len(jailAllowedAddrs))
+
+	for _, addr := range jailAllowedAddrs {
+		parsed, err := sdk.ValAddressFromBech32(addr)
+		if err != nil {
+			return nil, fmt.Errorf("jail allowlist address %q: %w", addr, err)
+		}
+		allowed[parsed.String()] = true
+	}
+
+	return allowed, nil
 }

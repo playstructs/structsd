@@ -973,6 +973,16 @@ package v0_22_0
 //     they are: a panic in a CLI export is loud and leaves a stack trace, which
 //     log.Fatal does not.
 //
+//     The jail allowlist is also keyed by the decoded address rather than by
+//     the text the operator typed. Bech32 is case-insensitive, so an
+//     all-uppercase address decodes fine and re-encodes lowercase, while the
+//     lookup is against an address rebuilt from validator-key bytes - always
+//     canonical lowercase. An uppercase entry therefore validated, stored itself
+//     under a key nothing would ever match, and jailed the very validator it was
+//     written to protect. Silently, because the entry was valid. Same shape as a
+//     non-canonical fleet id: one identity, more than one spelling, and the same
+//     answer - decide on the decoded value, never on the text.
+//
 //     Tooling only. Nothing here runs on a live chain.
 //
 // This upgrade carries three state migrations.
