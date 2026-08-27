@@ -200,3 +200,97 @@ func TestPermissionOnAddressCannotLockOutThePrimary(t *testing.T) {
 		require.Equal(t, types.PermPlay, k.GetPermissionsByBytes(ctx, primaryPermId))
 	})
 }
+
+/* TestPermissionSetOnAddressHoldsAcrossPlayers pins the capability model against
+ * an outsider rather than a weak key of the same player.
+ *
+ * The rule is that a permission write must be authorized for every bit it
+ * touches — the ones it grants and the ones it destroys. That is what stops a
+ * narrow delegate rewriting a stronger address down to its own level, and it has
+ * to hold when the delegate is a different player holding an object-level grant,
+ * not only when it is another key of the same one.
+ *
+ * The controls matter as much as the refusals here: an outsider with a grant is
+ * not forbidden from touching permissions, they are held to the bits they were
+ * actually given. A model that refused everything would pass the same negative
+ * assertions while breaking delegation entirely.
+ */
+func TestPermissionSetOnAddressHoldsAcrossPlayers(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	wctx := sdk.UnwrapSDKContext(ctx)
+
+	victimAcc := sdk.AccAddress("crossplayer_victim_pad01")
+	victim := testAppendPlayer(k, ctx, types.Player{
+		Creator:        victimAcc.String(),
+		PrimaryAddress: victimAcc.String(),
+	})
+
+	attackerAcc := sdk.AccAddress("crossplayer_attacker_p01")
+	attacker := testAppendPlayer(k, ctx, types.Player{
+		Creator:        attackerAcc.String(),
+		PrimaryAddress: attackerAcc.String(),
+	})
+
+	// The victim delegates play rights on themselves to the attacker, and
+	// nothing else. The attacker's own key holds PermAll, so the object grant is
+	// the only thing limiting them — which is what this isolates.
+	k.SetPermissionsByBytes(ctx,
+		keeperlib.GetObjectPermissionIDBytes(victim.Id, attacker.Id), types.PermPlay)
+
+	// Two more addresses of the victim: one strong, one already narrow.
+	strongAcc := sdk.AccAddress("crossplayer_strong_pad01")
+	_ = k.SetPlayerIndexForAddress(ctx, strongAcc.String(), victim.Index)
+	strongPermId := keeperlib.GetAddressPermissionIDBytes(strongAcc.String())
+	k.SetPermissionsByBytes(ctx, strongPermId, types.PermPlay|types.PermDelete)
+
+	narrowAcc := sdk.AccAddress("crossplayer_narrow_pad01")
+	_ = k.SetPlayerIndexForAddress(ctx, narrowAcc.String(), victim.Index)
+	narrowPermId := keeperlib.GetAddressPermissionIDBytes(narrowAcc.String())
+	k.SetPermissionsByBytes(ctx, narrowPermId, types.PermPlay)
+
+	t.Run("cannot destroy a bit the grant never included", func(t *testing.T) {
+		_, err := ms.PermissionSetOnAddress(wctx, &types.MsgPermissionSetOnAddress{
+			Creator:     attacker.Creator,
+			Address:     strongAcc.String(),
+			Permissions: uint64(types.PermPlay),
+		})
+		require.Error(t, err, "PermDelete is being destroyed and was never delegated")
+		require.Equal(t, types.PermPlay|types.PermDelete, k.GetPermissionsByBytes(ctx, strongPermId))
+	})
+
+	t.Run("cannot narrow the victim's primary", func(t *testing.T) {
+		primaryPermId := keeperlib.GetAddressPermissionIDBytes(victimAcc.String())
+		require.Equal(t, types.PermAll, k.GetPermissionsByBytes(ctx, primaryPermId))
+
+		_, err := ms.PermissionSetOnAddress(wctx, &types.MsgPermissionSetOnAddress{
+			Creator:     attacker.Creator,
+			Address:     victimAcc.String(),
+			Permissions: uint64(types.PermPlay),
+		})
+		require.Error(t, err)
+		require.Equal(t, types.PermAll, k.GetPermissionsByBytes(ctx, primaryPermId),
+			"the address every recovery route runs through must be untouched")
+	})
+
+	t.Run("cannot grant a bit the grant never included", func(t *testing.T) {
+		_, err := ms.PermissionSetOnAddress(wctx, &types.MsgPermissionSetOnAddress{
+			Creator:     attacker.Creator,
+			Address:     narrowAcc.String(),
+			Permissions: uint64(types.PermPlay | types.PermTokenTransfer),
+		})
+		require.Error(t, err, "a delegate may not confer what it was not given")
+		require.Equal(t, types.PermPlay, k.GetPermissionsByBytes(ctx, narrowPermId))
+	})
+
+	// The control: within the delegated bit the outsider may still act, so the
+	// refusals above are about the bits and not about being an outsider.
+	t.Run("may act within the delegated bit", func(t *testing.T) {
+		_, err := ms.PermissionSetOnAddress(wctx, &types.MsgPermissionSetOnAddress{
+			Creator:     attacker.Creator,
+			Address:     narrowAcc.String(),
+			Permissions: uint64(types.PermPlay),
+		})
+		require.NoError(t, err)
+		require.Equal(t, types.PermPlay, k.GetPermissionsByBytes(ctx, narrowPermId))
+	})
+}
