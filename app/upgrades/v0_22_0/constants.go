@@ -904,6 +904,29 @@ package v0_22_0
 //     the chain generates is anything else, so no client sending back what it was
 //     given is affected.
 //
+//   - Ante rejections during checkTx and reCheckTx are logged at DEBUG rather
+//     than ERROR. A deliverTx rejection stays at ERROR.
+//
+//     observeReject wrote one ERROR line carrying the error text for every
+//     rejection in every phase. A rejected transaction advances no sequence and
+//     consumes no throttle count, so the same correctly signed over-cap
+//     transaction can be replayed indefinitely - one line each, at no fee - and
+//     CometBFT's check_tx RPC bypasses the mempool cache that would otherwise
+//     deduplicate it. The volume of an operator's ERROR log was therefore set by
+//     whoever was sending to the node.
+//
+//     A deliverTx rejection is different in kind: it cannot be produced faster
+//     than blocks are, and it means a transaction got past admission and failed
+//     anyway, which is the case worth reading. That is where the line stays.
+//
+//     No signal is lost. The telemetry counter fires in every phase and already
+//     carries a phase label, so "reject rate by code" and anything alerting on
+//     it - including the incident-2026-05 watch on code 2020 - behaves exactly
+//     as before. What stops is one disk line per attempt.
+//
+//     This is node-local: no consensus state is involved, and logging is not
+//     part of the state machine.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs
