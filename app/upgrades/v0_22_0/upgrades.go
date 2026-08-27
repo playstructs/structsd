@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"structs/app/upgrades"
+	structstypes "structs/x/structs/types"
 )
 
 // CreateUpgradeHandler returns the v0.22.0 upgrade handler.
@@ -75,7 +76,25 @@ func MigrateInfusionFuelRounding(ctx context.Context, keepers *upgrades.Keepers)
 			continue
 		}
 
-		for _, before := range k.GetAllInfusionsByDestination(ctx, reactor.Id) {
+		/* Streamed rather than collected. The reconcile below writes, so the
+		 * addresses are read out first and the iterator closed before any of
+		 * them are touched - but only the addresses are held, not the decoded
+		 * infusions, so what this reactor costs is its delegator count in
+		 * strings rather than in records. An upgrade runs against live
+		 * cardinality with an infinite gas meter; the work is unavoidable, but
+		 * holding all of it at once is not, and exhausting memory during an
+		 * upgrade block is a worse failure than a slow one.
+		 */
+		type pendingInfusion struct {
+			Address string
+			Fuel    uint64
+		}
+		var infusions []pendingInfusion
+		k.IterateInfusionsByDestination(ctx, reactor.Id, func(infusion structstypes.Infusion) {
+			infusions = append(infusions, pendingInfusion{Address: infusion.Address, Fuel: infusion.Fuel})
+		})
+
+		for _, before := range infusions {
 			delegatorAddress, addrErr := sdk.AccAddressFromBech32(before.Address)
 			if addrErr != nil {
 				logger.Error("skipping infusion with unparsable delegator address",

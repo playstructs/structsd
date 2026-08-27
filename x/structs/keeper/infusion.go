@@ -97,6 +97,31 @@ func (k Keeper) GetAllStructInfusions(ctx context.Context, structId string) (lis
 	return k.GetAllInfusionsByDestination(ctx, structId)
 }
 
+/* IterateInfusionsByDestination hands each infusion for a destination to cb
+ * without building a slice of them.
+ *
+ * GetAllInfusionsByDestination below decodes and retains every row before the
+ * caller sees the first one, so its memory cost is the destination's whole
+ * infusion set. That is fine for a query answering a bounded question and wrong
+ * for an upgrade migration, which runs against live cardinality at a coordinated
+ * height with an infinite gas meter: the work is unavoidable there, but holding
+ * all of it at once is not, and running out of memory during an upgrade block is
+ * a worse failure than a slow one.
+ *
+ * cb must not write to this prefix; the iterator is open while it runs.
+ */
+func (k Keeper) IterateInfusionsByDestination(ctx context.Context, objectId string, cb func(types.Infusion)) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), InfusionKeyPrefix(objectId))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Infusion
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		cb(val)
+	}
+}
+
 // GetAllInfusionsByDestination returns all infusion relating to a struct
 func (k Keeper) GetAllInfusionsByDestination(ctx context.Context, objectId string) (list []types.Infusion) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), InfusionKeyPrefix(objectId))

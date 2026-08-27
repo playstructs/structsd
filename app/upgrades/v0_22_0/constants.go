@@ -827,6 +827,14 @@ package v0_22_0
 // slot, and a struct defends one target at a time, so leaving it would keep that
 // struct's real assignment blocked.
 //
+// MigrateInfusionFuelRounding streams each reactor's infusions rather than
+// collecting them. An upgrade's work is unavoidable - it runs at a coordinated
+// height with an infinite gas meter against live cardinality - but holding a
+// reactor's whole delegator set in decoded records at once is not, and running
+// out of memory in an upgrade block is a worse failure than a slow one, since
+// the block is retried from the same state. Only the addresses are held, because
+// the reconcile writes and the iterator has to be closed before it runs.
+//
 // MigrateInfusionFuelRounding recomputes every reactor infusion against the
 // corrected conversion. Without it the fix would only reach an infusion the next
 // time staking touched that delegation, and a delegation nobody moves is never
