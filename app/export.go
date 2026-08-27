@@ -3,7 +3,6 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	storetypes "cosmossdk.io/store/types"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -25,7 +24,9 @@ func (app *App) ExportAppStateAndValidators(forZeroHeight bool, jailAllowedAddrs
 	height := app.LastBlockHeight() + 1
 	if forZeroHeight {
 		height = 0
-		app.prepForZeroHeightGenesis(ctx, jailAllowedAddrs)
+		if err := app.prepForZeroHeightGenesis(ctx, jailAllowedAddrs); err != nil {
+			return servertypes.ExportedApp{}, err
+		}
 	}
 
 	genState, err := app.ModuleManager.ExportGenesisForModules(ctx, app.appCodec, modulesToExport)
@@ -51,7 +52,16 @@ func (app *App) ExportAppStateAndValidators(forZeroHeight bool, jailAllowedAddrs
 // NOTE zero height genesis is a temporary feature which will be deprecated
 //
 //	in favor of export at a block height
-func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) {
+/* prepForZeroHeightGenesis rewrites height-dependent state for a restart at
+ * block zero, and reports why it could not rather than killing the process.
+ *
+ * The failures here are an operator's, mid-migration: a malformed allowlist
+ * address, a validator that cannot be re-indexed. log.Fatal exits immediately
+ * with no unwinding and no exported genesis, which turns a fixable input error
+ * into chain-wide downtime while somebody works out what happened. Returning
+ * lets ExportAppStateAndValidators, which already returns an error, say so.
+ */
+func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) error {
 	applyAllowedAddrs := false
 
 	// check if there is a allowed address list
@@ -62,9 +72,8 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 	allowedAddrsMap := make(map[string]bool)
 
 	for _, addr := range jailAllowedAddrs {
-		_, err := sdk.ValAddressFromBech32(addr)
-		if err != nil {
-			log.Fatal(err)
+		if _, err := sdk.ValAddressFromBech32(addr); err != nil {
+			return fmt.Errorf("jail allowlist address %q: %w", addr, err)
 		}
 		allowedAddrsMap[addr] = true
 	}
@@ -90,7 +99,7 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 	 */
 	structsCC := app.StructsKeeper.NewCurrentContext(ctx)
 	if err := structsCC.RebaseAgreementsForZeroHeightGenesis(); err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("rebasing agreements for a zero-height export: %w", err)
 	}
 	structsCC.CommitAll()
 
@@ -225,21 +234,36 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 
 		validator.UnbondingHeight = 0
 		if applyAllowedAddrs && !allowedAddrsMap[addr.String()] {
+			/* Take the validator out of the power index before flagging it.
+			 *
+			 * SetValidator writes only the validator record; the power index is
+			 * a separate structure maintained by SetValidatorByPowerIndex and
+			 * DeleteValidatorByPowerIndex. Setting Jailed without touching it
+			 * left a jailed validator sitting in the power store, and
+			 * ApplyAndReturnValidatorSetUpdates below walks that store and
+			 * refuses outright - "should never retrieve a jailed validator from
+			 * the power store". Excluding any active validator inside
+			 * MaxValidators therefore killed the export rather than producing
+			 * one.
+			 */
+			if err := app.StakingKeeper.DeleteValidatorByPowerIndex(ctx, validator); err != nil {
+				return fmt.Errorf("removing jailed validator %s from the power index: %w", addr, err)
+			}
 			validator.Jailed = true
 		}
 
-		app.StakingKeeper.SetValidator(ctx, validator)
+		if err := app.StakingKeeper.SetValidator(ctx, validator); err != nil {
+			return fmt.Errorf("storing validator %s: %w", addr, err)
+		}
 		counter++
 	}
 
 	if err := iter.Close(); err != nil {
-		app.Logger().Error("error while closing the key-value store reverse prefix iterator: ", err)
-		return
+		return fmt.Errorf("closing the validator reverse prefix iterator: %w", err)
 	}
 
-	_, err = app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
-	if err != nil {
-		log.Fatal(err)
+	if _, err = app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx); err != nil {
+		return fmt.Errorf("applying validator set updates: %w", err)
 	}
 
 	/* Handle slashing state. */
@@ -254,4 +278,5 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 		},
 	)
 
+	return nil
 }

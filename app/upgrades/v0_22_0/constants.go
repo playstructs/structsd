@@ -951,6 +951,30 @@ package v0_22_0
 //     gives: both run on transactions that already passed fresh CheckTx, so
 //     counting them again would evict transactions legitimately admitted.
 //
+//   - A zero-height export with a jail allowlist no longer kills the exporter.
+//
+//     Excluding a validator set its Jailed field and stored the record. The
+//     staking power index is a separate structure with its own setter and
+//     deleter, so that left a jailed validator in the power store, and
+//     ApplyAndReturnValidatorSetUpdates walks it and refuses - "should never
+//     retrieve a jailed validator from the power store". The error went to
+//     log.Fatal, which exits without unwinding, so excluding any active
+//     validator inside MaxValidators produced no genesis at all. That is the
+//     worst moment for it: a planned migration, the chain already stopped, and
+//     nothing to show for the export but an exit code.
+//
+//     prepForZeroHeightGenesis now removes the power-index entry first, checks
+//     the errors it was discarding, and returns them rather than calling
+//     log.Fatal - including the one this release added for the agreement rebase.
+//     ExportAppStateAndValidators already returns an error, so it just
+//     propagates.
+//
+//     The SDK-boilerplate panics further down the same function are left as
+//     they are: a panic in a CLI export is loud and leaves a stack trace, which
+//     log.Fatal does not.
+//
+//     Tooling only. Nothing here runs on a live chain.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs
