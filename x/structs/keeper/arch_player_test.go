@@ -92,11 +92,27 @@ func TestArch_HandlersResolveMessagePlayerIdsThroughGetExistingPlayer(t *testing
 
 			resolvesMessagePlayer := false
 			passesMessageController := false
+			passesMessageKeyTarget := false
 			ast.Inspect(fn.Body, func(n ast.Node) bool {
 				call, ok := n.(*ast.CallExpr)
 				if !ok {
 					return true
 				}
+				// GetObjectPermissionIDBytes is a plain function, not a method,
+				// so it never appears as a SelectorExpr. Checking that shape
+				// alone is what let the permission-on-object handlers through in
+				// the first place.
+				if fnIdent, isPlain := call.Fun.(*ast.Ident); isPlain {
+					if fnIdent.Name == "GetObjectPermissionIDBytes" && len(call.Args) == 2 {
+						target := call.Args[1]
+						id, isIdent := target.(*ast.Ident)
+						if rootsAtMsg(target) || isIdent && tainted[id.Name] {
+							passesMessageKeyTarget = true
+						}
+					}
+					return true
+				}
+
 				sel, ok := call.Fun.(*ast.SelectorExpr)
 				if !ok {
 					return true
@@ -149,6 +165,11 @@ func TestArch_HandlersResolveMessagePlayerIdsThroughGetExistingPlayer(t *testing
 				failures = append(failures, name+": "+fn.Name.Name+
 					" passes a message-supplied controller to cc.NewAllocation without GetExistingPlayer")
 			}
+
+			if passesMessageKeyTarget && !resolvesMessagePlayer {
+				failures = append(failures, name+": "+fn.Name.Name+
+					" builds a permission key from a message-supplied player id without GetExistingPlayer")
+			}
 		}
 	}
 
@@ -160,8 +181,8 @@ func TestArch_HandlersResolveMessagePlayerIdsThroughGetExistingPlayer(t *testing
 		strings.Join(failures, "\n  - "))
 
 	// Without a floor the scan could stop matching handlers and pass while
-	// checking nothing. Twelve handlers take a player id from a message today.
-	require.GreaterOrEqual(t, checkedLoaders, 10,
+	// checking nothing. Fifteen handlers take a player id from a message today.
+	require.GreaterOrEqual(t, checkedLoaders, 13,
 		"expected the handlers that resolve a message-supplied player id; the source scan is probably broken")
 }
 

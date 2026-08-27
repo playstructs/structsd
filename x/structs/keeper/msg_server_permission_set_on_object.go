@@ -33,6 +33,20 @@ func (k msgServer) PermissionSetOnObject(goCtx context.Context, msg *types.MsgPe
     // existing grant on the object as well as writing msg.Permissions. Require
     // the caller to hold both, otherwise a narrowly granted player could strip
     // a broader grant off someone else.
+    /* The target is a player id chosen by the transaction, and it becomes half
+     * of a KV key. Resolve it, or any string at all is storable: the object
+     * check above says nothing about the target, and PermissionCheck's owner
+     * shortcut passes an owner acting on their own object whatever they name.
+     *
+     * This is the phantom-cache rule reached by a different road. The other
+     * handlers hand a message id to cc.GetPlayer, which allocates a cache and
+     * cannot say whether the player is real; these never resolved it at all and
+     * fed it straight into the key.
+     */
+    if _, targetErr := cc.GetExistingPlayer(msg.PlayerId); targetErr != nil {
+        return emptyResponse, targetErr
+    }
+
     targetPlayerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, msg.PlayerId)
     requiredPermissions := types.Permission(msg.Permissions) | cc.GetPermissions(targetPlayerPermissionId)
 

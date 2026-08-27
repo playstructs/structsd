@@ -46,13 +46,22 @@ func (cc *CurrentContext) GenesisImportPermission(permissionId []byte, value typ
 	}
 }
 
+/* SetPermissions writes a permission record, or removes it when nothing is left.
+ *
+ * A missing key already reads as Permissionless, so a stored zero says exactly
+ * what an absent row says while costing eight bytes of consensus state forever.
+ * Writing one is therefore never right, and it was the shape that made a
+ * no-op revoke a way to grow the store: the value did not change, the cache was
+ * marked Changed anyway, and Commit put zeroes on disk under a key nobody had
+ * written.
+ */
 func (cc *CurrentContext) SetPermissions(permissionId []byte, value types.Permission) {
 	cc.permissions[string(permissionId)] = &PermissionsCache{
 		CC:           cc,
 		PermissionId: permissionId,
 		Value:        value,
 		Loaded:       true,
-		Deleted:      false,
+		Deleted:      value == types.Permissionless,
 		Changed:      true,
 	}
 }
@@ -92,9 +101,22 @@ func (cc *CurrentContext) PermissionAdd(permissionId []byte, flag types.Permissi
 	return newFlags
 }
 
+/* PermissionRemove clears bits from a permission record.
+ *
+ * A revoke that removes nothing writes nothing. The bits being cleared are
+ * chosen by the transaction and so is the record they are cleared from, so
+ * without this a caller could name a record that does not exist, revoke a bit it
+ * never had, and have the result persisted - a permanent row per message, at no
+ * fee, saying nothing.
+ */
 func (cc *CurrentContext) PermissionRemove(permissionId []byte, flag types.Permission) types.Permission {
 	currentFlags := cc.GetPermissions(permissionId)
 	newFlags := currentFlags &^ flag
+
+	if newFlags == currentFlags {
+		return newFlags
+	}
+
 	cc.SetPermissions(permissionId, newFlags)
 	return newFlags
 }

@@ -678,6 +678,36 @@ package v0_22_0
 //     import rebuilds every reactor's infusions from staking through
 //     GenesisImportReactorInfusions, which is a full reconciliation by itself.
 //
+//   - The permission-on-object handlers resolve their target player, and a
+//     permission record that goes to zero is removed rather than stored.
+//
+//     PermissionGrantOnObject, PermissionSetOnObject and PermissionRevokeOnObject
+//     fed msg.PlayerId straight into GetObjectPermissionIDBytes, which is half of
+//     a KV key. Nothing resolved it: the object check speaks to the object, and
+//     PermissionCheck's owner shortcut passes an owner acting on their own object
+//     whatever target they name. Any string at all was therefore storable.
+//
+//     Revoke was the sharpest of the three because it needs no real permission to
+//     write anything: a bit the target never held is removed to zero, and zero
+//     was committed as eight bytes rather than as an absence. Structs messages
+//     are free, so that was forty permanent rows per player per block under
+//     attacker-chosen keys, revoking nothing.
+//
+//     Both halves are fixed. The handlers now resolve through
+//     cc.GetExistingPlayer, and SetPermissions treats Permissionless as a delete
+//     while PermissionRemove writes nothing when the bits were already absent -
+//     a missing key already reads as Permissionless, so a stored zero says
+//     exactly what an absent row says and costs state forever.
+//
+//     This is the phantom-cache rule reached by a road that has no getter on it,
+//     which is why TestArch_HandlersResolveMessagePlayerIdsThroughGetExistingPlayer
+//     did not catch it: the test looked for a message id reaching cc.GetPlayer,
+//     and these handlers never resolved the id at all. It now also fails a
+//     handler that builds a permission key from a message-supplied player id
+//     without resolving it. Note the detector only matched method calls, and
+//     GetObjectPermissionIDBytes is a plain function - that shape blindness was
+//     the whole of the gap.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs
