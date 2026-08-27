@@ -505,3 +505,104 @@ func TestGenesis_PendingStructSweepRoundTrips(t *testing.T) {
 	require.Greater(t, restored[0].SweepHeight, int64(1),
 		"and must be reachable from the restarted chain's own clock, not the old one")
 }
+
+/* TestGenesis_PendingBuildKeepsItsReservation is the regression on a build
+ * reservation lost across an import.
+ *
+ * InitiateStruct charges BuildDraw against the owner's load the moment a build
+ * starts, and only StructBuildComplete or DestroyAndCommit gives it back. The
+ * import rebuilds a player's load from scratch - GenesisImportPlayer resets it to
+ * PlayerPassiveDraw, and structsLoad is deliberately excluded from the grid
+ * import because it is derived - so an unbuilt struct has to put its own
+ * reservation back or it simply is not there.
+ *
+ * Under-counting is only half of it. StructBuildComplete decrements BuildDraw
+ * unconditionally when the build finishes, and SetGridAttributeDecrement clamps
+ * at zero, so completing an imported build would eat the player's passive draw
+ * and the load of their other structs.
+ */
+func genesisWithStruct(t *testing.T, status uint64) (*types.GenesisState, types.StructType, string) {
+	t.Helper()
+
+	var commandShip types.StructType
+	for _, structType := range types.CreateStructTypeGenesis() {
+		if structType.Id == 1 {
+			commandShip = structType
+		}
+	}
+	require.NotZero(t, commandShip.BuildDraw, "fixture sanity: the type under test must reserve load")
+
+	const playerId = "1-1"
+	const structId = "6-1"
+
+	genesisState := types.DefaultGenesis()
+	genesisState.PlayerList = []types.Player{{Id: playerId, Index: 1}}
+	genesisState.StructList = []types.Struct{{
+		Id:    structId,
+		Owner: playerId,
+		Type:  commandShip.Id,
+		Index: 1,
+	}}
+	genesisState.StructAttributeList = []*types.StructAttributeRecord{{
+		AttributeId: keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structId),
+		Value:       status,
+	}}
+
+	return genesisState, commandShip, playerId
+}
+
+func TestGenesis_PendingBuildKeepsItsReservation(t *testing.T) {
+	// Materialized but not built and not online: an ordinary build in flight.
+	genesisState, commandShip, playerId := genesisWithStruct(t, uint64(types.StructStateMaterialized))
+
+	k, ctx := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	load := k.GetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, playerId))
+	require.Equal(t, uint64(types.PlayerPassiveDraw)+commandShip.BuildDraw, load,
+		"a pending build must carry its BuildDraw reservation across the import")
+}
+
+// A built, offline struct has already released its BuildDraw and holds no
+// PassiveDraw, so it must add nothing. This is what stops the fix above from
+// being a blanket increment.
+func TestGenesis_BuiltOfflineStructReservesNothing(t *testing.T) {
+	genesisState, _, playerId := genesisWithStruct(t,
+		uint64(types.StructStateMaterialized)|uint64(types.StructStateBuilt))
+
+	k, ctx := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	load := k.GetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, playerId))
+	require.Equal(t, uint64(types.PlayerPassiveDraw), load,
+		"a built offline struct holds neither a build reservation nor passive draw")
+}
+
+// A built, online struct holds PassiveDraw and no build reservation.
+func TestGenesis_BuiltOnlineStructHoldsPassiveDrawOnly(t *testing.T) {
+	genesisState, commandShip, playerId := genesisWithStruct(t,
+		uint64(types.StructStateMaterialized)|uint64(types.StructStateBuilt)|uint64(types.StructStateOnline))
+
+	k, ctx := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	load := k.GetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, playerId))
+	require.Equal(t, uint64(types.PlayerPassiveDraw)+commandShip.PassiveDraw, load,
+		"a built online struct holds its passive draw and nothing else")
+}
+
+/* TestGenesis_DestroyedPendingBuildReservesNothing covers the branch that
+ * returns before any of this. Destruction already released the reservation, so
+ * restoring it would invent load for rubble.
+ */
+func TestGenesis_DestroyedPendingBuildReservesNothing(t *testing.T) {
+	genesisState, _, playerId := genesisWithStruct(t,
+		uint64(types.StructStateMaterialized)|uint64(types.StructStateDestroyed))
+
+	k, ctx := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	load := k.GetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, playerId))
+	require.Equal(t, uint64(types.PlayerPassiveDraw), load,
+		"a destroyed struct already released its reservation")
+}

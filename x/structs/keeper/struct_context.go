@@ -69,6 +69,26 @@ func (cc *CurrentContext) GenesisImportStruct(
 		} else {
 			cc.SetStructAttribute(cache.BlockStartBuildAttributeId, 0)
 		}
+
+		/* Restore the build reservation.
+		 *
+		 * InitiateStruct charges BuildDraw against the owner's load the moment a
+		 * build starts, and only StructBuildComplete or DestroyAndCommit gives it
+		 * back. The import rebuilds a player's load from scratch -
+		 * GenesisImportPlayer resets it to PlayerPassiveDraw and structsLoad is
+		 * deliberately not importable, because it is derived - so an unbuilt
+		 * struct has to put its own reservation back or the load simply is not
+		 * there.
+		 *
+		 * Missing it is not only under-counting. StructBuildComplete decrements
+		 * BuildDraw unconditionally when the build finishes, and the decrement
+		 * clamps at zero, so completing an imported build would eat load
+		 * belonging to the player's passive draw and their other structs.
+		 *
+		 * A destroyed struct never reaches here: the branch above returns first,
+		 * which is right, because destruction already released this.
+		 */
+		cache.GetOwner().StructsLoadIncrement(structType.BuildDraw)
 	}
 
 	if isOnline {

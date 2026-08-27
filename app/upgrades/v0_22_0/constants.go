@@ -832,6 +832,26 @@ package v0_22_0
 //     struct is rubble and contributes nothing, so when it is collected does not
 //     matter, only that it is.
 //
+//   - Genesis import restores the BuildDraw reservation held by a pending build.
+//
+//     InitiateStruct charges BuildDraw against the owner's load the moment a
+//     build starts, and only StructBuildComplete or DestroyAndCommit gives it
+//     back. The import rebuilds a player's load from nothing -
+//     GenesisImportPlayer resets it to PlayerPassiveDraw, and structsLoad is
+//     deliberately excluded from the grid import because it is derived - and
+//     GenesisImportStruct added load only through GoOnline, which a build in
+//     flight never reaches. The reservation simply was not there afterwards.
+//
+//     Under-counting is only half of it. StructBuildComplete decrements
+//     BuildDraw unconditionally when the build finishes, and
+//     SetGridAttributeDecrement clamps at zero, so completing an imported build
+//     would take that load out of the player's passive draw and their other
+//     structs instead - leaving them running more than their power supports.
+//
+//     Scoped to unbuilt structs. A built one has already released the
+//     reservation, and a destroyed one returns from the branch above before
+//     reaching this, which is right: destruction released it too.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs
