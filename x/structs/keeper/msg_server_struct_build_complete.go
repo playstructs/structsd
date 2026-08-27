@@ -76,6 +76,25 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 		return emptyResponse, types.NewWorkFailureError("build", structure.GetStructId(), hashInput)
 	}
 
+	/* A finished build starts at the type's full health.
+	 *
+	 * Health is stamped once, at InitiateStruct, from whatever MaxHealth the
+	 * type carried then, and nothing writes it again except damage. A build in
+	 * flight cannot be damaged - CanAttack refuses an unbuilt target outright -
+	 * so for every ordinary build this is the value already there and this line
+	 * changes nothing.
+	 *
+	 * It matters when the type's MaxHealth changed while the build was in
+	 * flight. v0.18.0 raised planetary maxima from 3 to 6/8/10 and rebased only
+	 * structs that were already built, so anything mid-build at that height
+	 * completed at 3 against a maximum of 6 and stayed there for good. Stamping
+	 * at completion instead of trusting the materialisation-time value closes
+	 * that for any future change to a type, with no migration: an affected
+	 * struct has to complete before it can be attacked, and completing is what
+	 * corrects it.
+	 */
+	cc.SetStructAttribute(structure.HealthAttributeId, structure.GetStructType().MaxHealth)
+
 	structure.StatusAddBuilt()
 	structure.GoOnline()
 

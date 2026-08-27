@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"strconv"
 	"testing"
 
 	"cosmossdk.io/math"
@@ -499,4 +500,104 @@ func TestStructDestroyedGuards_HandlersRejectDestroyed(t *testing.T) {
 		require.Equal(t, balanceBefore, f.k.BankKeeper().SpendableCoins(f.ctx, playerAcc),
 			"coins moved into a generator queued for deletion")
 	})
+}
+
+/* TestStructBuildComplete_StampsFullHealth is the regression on a build that
+ * finishes under-health.
+ *
+ * Health is written once, at InitiateStruct, from whatever MaxHealth the type
+ * carried at that moment, and nothing writes it again except damage. A build in
+ * flight cannot be damaged - CanAttack refuses an unbuilt target outright - so
+ * the value at completion is exactly the value stamped at materialisation.
+ *
+ * That is fine until the type changes underneath it. v0.18.0 raised planetary
+ * maxima from 3 to 6/8/10 and rebased only structs that were already built, so
+ * anything mid-build at that height completed at 3 against a maximum of 6 and
+ * stayed there permanently: nothing heals a struct.
+ *
+ * Stamping at completion closes the class without a migration - an affected
+ * struct has to complete before it can be attacked, and completing corrects it -
+ * and is a no-op for every ordinary build, which the second test pins.
+ */
+func TestStructBuildComplete_StampsFullHealth(t *testing.T) {
+	f := setupDestroyedStructFixture(t)
+	structure := f.appendStruct(false)
+
+	healthAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, structure.Id)
+
+	// The state a pre-v0.18.0 build carried into the upgrade: stamped under the
+	// old maximum, with the type since raised.
+	stale := f.defenseType.MaxHealth - 1
+	require.NotZero(t, stale, "fixture sanity: the type must have room to be under-health")
+	f.k.SetStructAttribute(f.ctx, healthAttr, stale)
+
+	f.completeBuild(t, structure.Id)
+
+	require.Equal(t, f.defenseType.MaxHealth, f.k.GetStructAttribute(f.ctx, healthAttr),
+		"a completed build must start at the type's full health, not at whatever the maximum was when it began")
+}
+
+// The ordinary build is untouched: an unbuilt struct cannot be damaged, so its
+// health already equals the type maximum and the stamp changes nothing.
+func TestStructBuildComplete_FullHealthStampIsANoOp(t *testing.T) {
+	f := setupDestroyedStructFixture(t)
+	structure := f.appendStruct(false)
+
+	healthAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, structure.Id)
+	require.Equal(t, f.defenseType.MaxHealth, f.k.GetStructAttribute(f.ctx, healthAttr),
+		"fixture sanity: a fresh build already carries full health")
+
+	f.completeBuild(t, structure.Id)
+
+	require.Equal(t, f.defenseType.MaxHealth, f.k.GetStructAttribute(f.ctx, healthAttr))
+}
+
+// The premise the fix rests on: a build in flight is not a valid target, so its
+// health cannot have been reduced by damage before completion.
+func TestStructBuildComplete_UnbuiltStructCannotBeAttacked(t *testing.T) {
+	f := setupDestroyedStructFixture(t)
+	attacker := f.appendStruct(true)
+	target := f.appendStruct(false)
+
+	cc := f.k.NewCurrentContext(f.ctx)
+	err := cc.GetStruct(attacker.Id).CanAttack(cc.GetStruct(target.Id), types.TechWeaponSystem_primaryWeapon)
+	require.Error(t, err, "an unbuilt struct must not be attackable")
+	require.Contains(t, err.Error(), "unbuilt")
+}
+
+/* completeBuild drives a real StructBuildComplete, mining the proof the handler
+ * demands. The age is enormous, so CalculateDifficulty is at its floor and one
+ * leading zero is enough.
+ */
+func (f *destroyedStructFixture) completeBuild(t *testing.T, structId string) {
+	t.Helper()
+
+	blockStart := f.k.GetStructAttribute(f.ctx,
+		keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structId))
+
+	/* Make the puzzle mineable inside a test.
+	 *
+	 * CalculateDifficulty returns its maximum for a difficulty range of 0 or 1 -
+	 * a range with no curve pins the requirement at the top - and the fixture's
+	 * type leaves BuildDifficulty unset. Give it a real range, and a tall block
+	 * so the build is ancient enough for the curve to be at its floor.
+	 */
+	structType := f.defenseType
+	structType.BuildDifficulty = 2
+	f.k.SetStructType(f.ctx, structType)
+
+	tallCtx := f.ctx.WithBlockHeight(1_000_000_000)
+	require.Equal(t, 1, types.CalculateDifficulty(uint64(tallCtx.BlockHeight())-blockStart, structType.BuildDifficulty),
+		"fixture sanity: the puzzle must be at its floor or this cannot be mined here")
+
+	hashTemplate := structId + "BUILD" + strconv.FormatUint(blockStart, 10) + "NONCE%s"
+	nonce, proof := testFindProof(hashTemplate, 1)
+
+	_, err := f.ms.StructBuildComplete(tallCtx, &types.MsgStructBuildComplete{
+		Creator:  f.player.Creator,
+		StructId: structId,
+		Nonce:    nonce,
+		Proof:    proof,
+	})
+	require.NoError(t, err)
 }

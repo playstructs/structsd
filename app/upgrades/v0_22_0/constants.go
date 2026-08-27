@@ -985,6 +985,32 @@ package v0_22_0
 //
 //     Tooling only. Nothing here runs on a live chain.
 //
+//   - A completed build is stamped with its type's full health.
+//
+//     Health is written once, at InitiateStruct, from whatever MaxHealth the
+//     type carried then, and nothing writes it again except damage.
+//     StructBuildComplete added Built and called GoOnline without touching it.
+//
+//     That is invisible until a type changes underneath a build in flight.
+//     v0.18.0 raised planetary maxima from 3 to 6/8/10 and rebased only structs
+//     that were already Built, so anything mid-build at that height completed at
+//     3 against a maximum of 6 and stayed there: nothing heals a struct.
+//
+//     Stamping at completion closes the class for any future change to a type,
+//     and needs no migration - an affected struct has to complete before it can
+//     be attacked, and completing is what corrects it. It is a no-op for every
+//     ordinary build, because a build in flight cannot be damaged: CanAttack
+//     refuses an unbuilt target outright, so health at completion is exactly
+//     what was stamped at materialisation.
+//
+//     NOT retro-repaired, deliberately. A planetary struct that already
+//     completed under-health is indistinguishable from one that completed whole
+//     and was later damaged - both are Built with health below maximum - so a
+//     corrective migration would heal genuinely damaged structs. The v0.18.0
+//     handler is also deliberately untouched: editing a shipped upgrade changes
+//     what a node replaying from genesis computes, which is an app-hash
+//     divergence against the live chain.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs
