@@ -606,3 +606,59 @@ func TestGenesis_DestroyedPendingBuildReservesNothing(t *testing.T) {
 	require.Equal(t, uint64(types.PlayerPassiveDraw), load,
 		"a destroyed struct already released its reservation")
 }
+
+/* TestGenesis_PendingBuildClockRestartsAtGenesisHeight is the regression on a
+ * build proof arriving pre-solved.
+ *
+ * BlockStartBuild is the age a build proof is priced from: StructBuildComplete
+ * computes currentHeight - BlockStartBuild and CalculateDifficulty falls with
+ * that age, clamping at 1. Importing zero therefore did not mean "no progress",
+ * it meant "as old as the chain" - so on a height-preserving restart of a mature
+ * chain every build in flight arrived with its puzzle already decayed to the
+ * minimum. Nothing downstream refuses a zero start; the raid path has such a
+ * guard, this one does not.
+ */
+func TestGenesis_PendingBuildClockRestartsAtGenesisHeight(t *testing.T) {
+	genesisState, _, _ := genesisWithStruct(t, uint64(types.StructStateMaterialized))
+
+	const genesisHeight = 5_000_000
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(genesisHeight)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	start := k.GetStructAttribute(ctx,
+		keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, "6-1"))
+	require.Equal(t, uint64(genesisHeight), start,
+		"an unfinished build must restart its clock at the genesis height, not at block zero")
+}
+
+/* TestGenesis_PendingBuildProofIsNotPreSolved states the consequence in the
+ * terms that matter, so the assertion above cannot be satisfied by a value that
+ * happens to differ from zero while still being ancient.
+ */
+func TestGenesis_PendingBuildProofIsNotPreSolved(t *testing.T) {
+	genesisState, commandShip, _ := genesisWithStruct(t, uint64(types.StructStateMaterialized))
+
+	const genesisHeight = 5_000_000
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(genesisHeight)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	start := k.GetStructAttribute(ctx,
+		keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, "6-1"))
+
+	// The age StructBuildComplete would compute in the genesis block itself.
+	age := uint64(genesisHeight) - start
+	difficulty := types.CalculateDifficulty(age, commandShip.BuildDifficulty)
+
+	// What the old behaviour produced, for contrast: a start of zero makes the
+	// build as old as the chain, and the puzzle collapses to its floor.
+	preFix := types.CalculateDifficulty(uint64(genesisHeight), commandShip.BuildDifficulty)
+	require.Equal(t, 1, preFix,
+		"fixture sanity: a zero start on a chain this tall really does clamp the puzzle to its minimum")
+
+	require.Greater(t, difficulty, preFix,
+		"an imported build must still owe real work; it arrived with its proof already cheap")
+}

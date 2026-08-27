@@ -852,6 +852,31 @@ package v0_22_0
 //     reservation, and a destroyed one returns from the branch above before
 //     reaching this, which is right: destruction released it too.
 //
+//   - An unfinished build restarts its proof clock at the genesis height rather
+//     than at block zero.
+//
+//     BlockStartBuild is the age a build proof is priced from:
+//     StructBuildComplete computes currentHeight - BlockStartBuild and
+//     CalculateDifficulty falls with that age, clamping at 1. Importing zero did
+//     not mean "no progress", it meant "as old as the chain" - so on a
+//     height-preserving restart of a mature chain, every build in flight arrived
+//     with its puzzle already collapsed to the minimum. Nothing downstream
+//     refuses a zero start; the raid path carries such a guard and this one does
+//     not.
+//
+//     The genesis height is the only value safe in both directions. Carrying the
+//     exported start would be more faithful on a height-preserving restart and
+//     unusable after a zero-height one, where it sits ahead of the new height and
+//     StructBuildComplete refuses the proof permanently. Resetting costs the
+//     builder their accumulated age, which asks for more work rather than less.
+//
+//     GAME RULE CHANGE: a build in flight across a genesis import loses its
+//     accumulated age and starts its proof clock again.
+//
+//     This is the same if/else as the BuildDraw fix above, and the online arm
+//     already stamped the genesis height. Only the offline one wrote zero, so the
+//     two have collapsed into one.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

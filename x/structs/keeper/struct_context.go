@@ -63,12 +63,29 @@ func (cc *CurrentContext) GenesisImportStruct(
 	isBuilt := importedStatus&uint64(types.StructStateBuilt) != 0
 
 	if !isBuilt {
-		if isOnline {
-			ctxSDK := sdk.UnwrapSDKContext(cc.ctx)
-			cc.SetStructAttribute(cache.BlockStartBuildAttributeId, uint64(ctxSDK.BlockHeight()))
-		} else {
-			cc.SetStructAttribute(cache.BlockStartBuildAttributeId, 0)
-		}
+		/* An unfinished build restarts its clock at the genesis height.
+		 *
+		 * BlockStartBuild is the age the build proof is priced from:
+		 * StructBuildComplete computes currentHeight - BlockStartBuild and
+		 * CalculateDifficulty falls with that age, clamping at 1. Storing zero
+		 * therefore did not mean "no progress", it meant "as old as the chain" -
+		 * so on a height-preserving restart of a mature chain, every build in
+		 * flight arrived with its puzzle already decayed to the minimum. Unlike
+		 * the raid clock, nothing downstream refuses a zero start.
+		 *
+		 * The genesis height is the only value that is safe in both directions.
+		 * Carrying the exported start would be more faithful on a
+		 * height-preserving restart and unusable after a zero-height one, where
+		 * it sits ahead of the new height and StructBuildComplete refuses the
+		 * proof outright - permanently, since nothing moves it. Resetting costs
+		 * the builder their accumulated age, which is the direction that asks for
+		 * more work rather than less.
+		 *
+		 * This is what the online case already did; only the offline one wrote
+		 * zero, which is why the two arms have collapsed into one.
+		 */
+		ctxSDK := sdk.UnwrapSDKContext(cc.ctx)
+		cc.SetStructAttribute(cache.BlockStartBuildAttributeId, uint64(ctxSDK.BlockHeight()))
 
 		/* Restore the build reservation.
 		 *
