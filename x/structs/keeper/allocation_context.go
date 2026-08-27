@@ -5,8 +5,28 @@ import (
 )
 
 // GetAllocation returns an Allocation by ID, caching the result.
+/* GetAllocation returns the cache for an allocation and whether it exists.
+ *
+ * A destroyed allocation does not exist, even though its cache is still sitting
+ * in the map and its record is still in the store: Destroy defers both removals
+ * to CommitAll. Reporting it as found hands the caller a live-looking handle to
+ * something already torn down, and every mutator on it re-applies deltas that
+ * were applied once - Destroy never zeroes the power attribute, so a second
+ * Destroy decrements the source's load by the full power again, eating the load
+ * of whichever allocations survived and manufacturing headroom the source does
+ * not have.
+ *
+ * Every caller reads this boolean as existence and none checks Deleted, which is
+ * the same shape as the phantom PlayerCache: a context getter is a cache
+ * allocator and says nothing about whether the object is real. Teardown callers
+ * want "already gone" to be a skip rather than a second attempt, and handlers
+ * want it to be a rejection - which is what they get.
+ */
 func (cc *CurrentContext) GetAllocation(allocationId string) (*AllocationCache, bool) {
 	if cache, exists := cc.allocations[allocationId]; exists {
+		if cache.Deleted {
+			return cache, false
+		}
 		return cache, true
 	}
 

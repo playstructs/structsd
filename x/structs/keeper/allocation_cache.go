@@ -244,6 +244,15 @@ func (cache *AllocationCache) SetInitialPower(newPower uint64) (uint64, error) {
 
 
 func (cache *AllocationCache) SetPower(newPower uint64) (uint64, error) {
+    // A destroyed allocation contributes nothing, and its power attribute still
+    // holds the value it had when it was torn down, so a delta computed from it
+    // would move the source and destination by an amount Destroy already
+    // removed. Callers reaching here with a deleted cache are holding a stale
+    // pointer; GetAllocation no longer hands one out.
+    if cache.Deleted {
+        return 0, types.NewAllocationError(cache.ID(), "unknown_allocation")
+    }
+
     previousPower := cache.GetPower()
     destinationId := cache.GetAllocation().DestinationId
 
@@ -317,6 +326,16 @@ func (cache *AllocationCache) SetDestination(objectId string) (error) {
 }
 
 func (cache *AllocationCache) Destroy() (error) {
+
+    // Destroying twice is a no-op, not a second teardown. The record survives in
+    // the store until CommitAll, so LoadAllocation below would succeed on a
+    // second pass, and the power attribute is never zeroed - so the grid deltas
+    // would come off again, taking the load of whatever allocations are still
+    // sharing this source. Already gone is not a failure, so this returns nil
+    // and lets the teardown paths that call it in a loop carry on.
+    if cache.Deleted {
+        return nil
+    }
 
     if !cache.LoadAllocation() {
         return types.NewAllocationError(cache.ID(), "unknown_allocation")

@@ -551,6 +551,35 @@ package v0_22_0
 //     is recomputed from params by RestampReactorCharterEligibility, and
 //     CharterAge clamps an anchor ahead of the height to zero.
 //
+//   - A destroyed allocation is no longer returned as a live cache hit, and
+//     destroying one twice is a no-op.
+//
+//     Destroy defers both removals to CommitAll, so the cache stays in
+//     cc.allocations and the record stays in the store. GetAllocation's cache-hit
+//     path returned that cache with found=true, and every caller reads the
+//     boolean as existence - the same shape as the phantom PlayerCache, where a
+//     context getter is a cache allocator and says nothing about whether the
+//     object is real.
+//
+//     What made it damaging is that Destroy never zeroes the power attribute,
+//     and GetPower reads the grid. A second Destroy therefore saw the original
+//     power and took it off the source's load again - load that belongs to
+//     whichever allocations are still sharing that source. Measured on a source
+//     carrying 250 with 100 destroyed: the correct 150 became 50, so the source
+//     advertised 100 of headroom it did not have, which is the direction that
+//     oversubscribes a grid rather than the direction that wastes it. SetPower
+//     on the same stale cache drove it to 40.
+//
+//     Fixed at the getter, which is what stops callers acquiring a stale handle,
+//     and again at Destroy and SetPower, which is what covers a handle acquired
+//     before the destroy. The auto-resize path already separated "allocation
+//     missing" from "resize failed"; a destroyed allocation now correctly reads
+//     as the first, so a stale hook sheds load instead of resizing rubble.
+//
+//     The specific chain reported against this - a stale auto-resize index
+//     naming a destroyed allocation - was closed in v0.21.0 by keying that
+//     index clear off the source object id. This is the primitive underneath it.
+//
 // This upgrade carries two state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs
