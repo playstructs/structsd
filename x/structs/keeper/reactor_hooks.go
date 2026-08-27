@@ -26,6 +26,25 @@ func delegationShareValue(shares math.LegacyDec, validator stakingtypes.Validato
  * against an explicit token pool. The slashing path needs this because it
  * projects the post-slash pool rather than reading the stored one.
  *
+ * The arithmetic is Validator.TokensFromShares spelled out: multiply the shares
+ * by the pool first, divide by the share total last, then truncate. Both halves
+ * of that matter and neither is style.
+ *
+ * Truncate, never round. Fuel is written per delegation, and rounding each one
+ * independently lets a sum exceed the stake behind it: after a 1% slash a
+ * 50-share delegation is worth exactly 49.5, and LegacyDec.RoundInt is banker's
+ * rounding, so every such shard rounds back to 50. Split a million across twenty
+ * thousand addresses and the slash is undone in full - a million Fuel, and
+ * therefore a million of grid capacity, standing on 990,000 tokens. Nothing sums
+ * Fuel against validator.Tokens to notice. Truncation cannot do that: each shard
+ * is at most its true value, so the total is at most the stake, and the residue
+ * is dust nobody is credited for rather than capacity nobody staked for.
+ *
+ * Multiply first for the same reason in miniature. Dividing first rounds the
+ * ratio to LegacyDec's 18 places before it ever meets the pool, so the error
+ * scales with the pool; the SDK orders it the other way and this has to agree
+ * with the SDK, because that is what the stake is actually worth.
+ *
  * Returns zero rather than dividing when the validator holds no shares, both
  * because LegacyDec.Quo panics on a zero divisor and because a share-less
  * validator backs no value. The nil checks cover the zero-value Validator that
@@ -36,7 +55,17 @@ func delegationShareValueAgainst(shares math.LegacyDec, delegatorShares math.Leg
 		return math.ZeroInt()
 	}
 
-	return shares.Quo(delegatorShares).Mul(tokens).RoundInt()
+	value := shares.Mul(tokens).Quo(delegatorShares).TruncateInt()
+
+	// Every caller writes this into a uint64 Fuel field, and math.Int.Uint64
+	// panics rather than wrapping. A pool that large cannot exist behind a
+	// uint64-denominated supply, but these run inside staking hooks that have no
+	// way to refuse, so answer with the value that mints nothing.
+	if value.IsNegative() || !value.IsUint64() {
+		return math.ZeroInt()
+	}
+
+	return value
 }
 
 /* commissionMatches reports whether an infusion already carries the commission

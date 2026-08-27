@@ -348,7 +348,31 @@ package v0_22_0
 //     provider's substation, so deleting that one is the provider ending service
 //     and the provider penalty it pays is the correct price.
 //
-// This upgrade is binary-only. There is no state migration: no persisted state
+//   - Reactor infusion fuel is converted from delegation shares by truncating
+//     against a multiply-first quotient, matching Validator.TokensFromShares,
+//     instead of rounding a divide-first one.
+//
+//     Fuel is written per delegation and LegacyDec.RoundInt is banker's
+//     rounding, so a shard worth exactly x.5 rounded up. After a 1% slash a
+//     50-share delegation is worth exactly 49.5, so splitting a million across
+//     twenty thousand addresses returned every shard to 50 and left a million
+//     Fuel - and a million of grid capacity - standing on 990,000 tokens.
+//     Nothing sums Fuel against validator.Tokens, so nothing noticed. Truncation
+//     bounds each shard by its true value, so the total is bounded by the stake
+//     and the residue is dust nobody is credited for.
+//
+//     Dividing before multiplying rounded the ratio to LegacyDec's 18 places
+//     before it met the pool, so that error scaled with the validator. The SDK
+//     orders it the other way and this now agrees with the SDK, which is the
+//     only answer that is actually what the stake is worth.
+//
+// This upgrade carries one state migration, MigrateInfusionFuelRounding, which
+// recomputes every reactor infusion against the corrected conversion. Without it
+// the fix would only reach an infusion the next time staking touched that
+// delegation, and a delegation nobody moves is never touched. Capacity moves
+// down where it moves at all, and the grid cascade that follows sheds the
+// allocations that were only ever powered by rounding. Everything else in this
+// upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,
 // because the sign-byte change invalidates every previously issued proof

@@ -5,6 +5,7 @@ import (
 
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"structs/app/upgrades"
@@ -12,18 +13,87 @@ import (
 
 // CreateUpgradeHandler returns the v0.22.0 upgrade handler.
 //
-// v0.22.0 is a binary-only ante gating fix (described in constants.go) and
-// carries no state migration. The handler runs the standard module migrations
-// and nothing else; RunMigrations is still invoked for consistency with the SDK
-// module set even though the structs module registers no per-version migrations.
+// Most of v0.22.0 is binary-only (described in constants.go). The one piece of
+// stored state it has to repair is reactor infusion fuel, which was computed
+// with a per-delegation rounding that let a sharded stake outlive a slash.
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
 	keepers *upgrades.Keepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		if err := MigrateInfusionFuelRounding(ctx, keepers); err != nil {
+			return nil, err
+		}
+
 		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
+}
+
+/* MigrateInfusionFuelRounding recomputes every reactor infusion's fuel against
+ * the truncating conversion.
+ *
+ * Fuel was rounded per delegation, so a shard worth exactly x.5 rounded up, and
+ * a stake split finely enough kept its whole pre-slash fuel - and the grid
+ * capacity standing on it - after being slashed. Fixing the arithmetic only
+ * corrects an infusion the next time staking touches that delegation, and a
+ * delegation nobody moves is never touched, so the inflated capacity would sit
+ * there indefinitely. This walks them once.
+ *
+ * ReconcileInfusionForDelegation reads the live delegation and writes what it
+ * finds, so it needs no notion of what the old number was; an infusion whose
+ * delegation is gone is zeroed by the same path. Capacity moves down where it
+ * moves at all, and the grid cascade that follows is the point rather than a
+ * side effect - it sheds the allocations that were only ever powered by
+ * rounding.
+ */
+func MigrateInfusionFuelRounding(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateInfusionFuelRounding")
+
+	k := keepers.StructsKeeper
+
+	var visited, changed int
+	var fuelReleased uint64
+
+	for _, reactor := range k.GetAllReactor(ctx) {
+		validatorAddress, err := sdk.ValAddressFromBech32(reactor.Validator)
+		if err != nil {
+			logger.Error("skipping reactor with unparsable validator address",
+				"reactorId", reactor.Id, "validator", reactor.Validator, "error", err)
+			continue
+		}
+
+		for _, before := range k.GetAllInfusionsByDestination(ctx, reactor.Id) {
+			delegatorAddress, addrErr := sdk.AccAddressFromBech32(before.Address)
+			if addrErr != nil {
+				logger.Error("skipping infusion with unparsable delegator address",
+					"reactorId", reactor.Id, "address", before.Address, "error", addrErr)
+				continue
+			}
+
+			visited++
+
+			// Load-never-create: a delegator address that is no longer
+			// registered must not have a player invented for it here.
+			k.ReconcileExistingInfusionForDelegation(ctx, delegatorAddress, validatorAddress)
+
+			after, found := k.GetInfusion(ctx, reactor.Id, before.Address)
+			if !found || after.Fuel == before.Fuel {
+				continue
+			}
+
+			changed++
+			if before.Fuel > after.Fuel {
+				fuelReleased += before.Fuel - after.Fuel
+			}
+		}
+	}
+
+	logger.Info("reactor infusion fuel recomputed against the truncating conversion",
+		"infusionsVisited", visited, "infusionsChanged", changed, "fuelReleased", fuelReleased)
+
+	return nil
 }
 
 func NewUpgrade() upgrades.Upgrade {
