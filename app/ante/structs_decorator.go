@@ -3,6 +3,7 @@ package ante
 import (
 	"fmt"
 	"sort"
+	"sync"
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,16 +18,79 @@ type creatorGetter interface {
 	GetCreator() string
 }
 
+/* checkTxPlayerCounter is the admission-side mirror of the per-player message
+ * cap, and is deliberately not the same counter.
+ *
+ * The authoritative cap lives in the transient store and is only touched in
+ * DeliverTx, for the reasons in the SKIP_RATIONALE below. That left admission
+ * bounded per *address* by CheckTxThrottleDecorator while the cap it is
+ * predicting is per *player*, and address associations only converge on a player
+ * inside this decorator - so a player with several registered addresses could
+ * fill the mempool with transactions that the delivery cap was always going to
+ * refuse. Structs transactions are free, so those transactions cost their sender
+ * nothing and cost the block its bytes.
+ *
+ * This map is node-local, in memory, and reset when the height moves: it never
+ * touches consensus state, so it cannot double-count the authoritative counter
+ * or make one node's block differ from another's. Nodes may admit slightly
+ * differently, which is already true of the address throttle beside it.
+ */
+type checkTxPlayerCounter struct {
+	mu         sync.Mutex
+	lastHeight int64
+	counts     map[string]uint64
+}
+
 type StructsDecorator struct {
 	keeper       StructsAnteKeeper
 	playerMsgCap uint64
+	checkTx      *checkTxPlayerCounter
 }
 
 func NewStructsDecorator(keeper StructsAnteKeeper, playerMsgCap uint64) StructsDecorator {
 	if playerMsgCap == 0 {
 		playerMsgCap = DefaultPlayerMsgCap
 	}
-	return StructsDecorator{keeper: keeper, playerMsgCap: playerMsgCap}
+	return StructsDecorator{
+		keeper:       keeper,
+		playerMsgCap: playerMsgCap,
+		checkTx:      &checkTxPlayerCounter{counts: make(map[string]uint64)},
+	}
+}
+
+/* admitCheckTx applies the same cap at admission, against the node-local count.
+ *
+ * Fresh CheckTx only. ReCheckTx and DeliverTx run on transactions that already
+ * passed here, so counting them again would charge the quota twice, and
+ * simulate is a wallet-side estimate rather than admission - the same three
+ * reasons CheckTxThrottleDecorator gives for its own counter.
+ */
+func (d StructsDecorator) admitCheckTx(ctx sdk.Context, playerMsgCounts map[string]uint64) error {
+	d.checkTx.mu.Lock()
+	defer d.checkTx.mu.Unlock()
+
+	height := ctx.BlockHeight()
+	if height != d.checkTx.lastHeight {
+		d.checkTx.counts = make(map[string]uint64)
+		d.checkTx.lastHeight = height
+	}
+
+	playerIds := make([]string, 0, len(playerMsgCounts))
+	for playerId := range playerMsgCounts {
+		playerIds = append(playerIds, playerId)
+	}
+	sort.Strings(playerIds)
+
+	for _, playerId := range playerIds {
+		newTotal := d.checkTx.counts[playerId] + playerMsgCounts[playerId]
+		if newTotal > d.playerMsgCap {
+			return observeReject(ctx, "StructsDecorator",
+				errorsmod.Wrapf(ErrPlayerMsgCapExceeded, "player %s: %d/%d at admission", playerId, newTotal, d.playerMsgCap))
+		}
+		d.checkTx.counts[playerId] = newTotal
+	}
+
+	return nil
 }
 
 func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
@@ -123,6 +187,16 @@ func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, 
 		}
 
 		playerMsgCounts[playerId]++
+	}
+
+	// Fresh CheckTx gets the same cap applied against a node-local count. See
+	// checkTxPlayerCounter: this is admission, not the authoritative counter,
+	// and keeping them separate is what avoids the double-count the rationale
+	// below describes.
+	if ctx.IsCheckTx() && !ctx.IsReCheckTx() && !simulate {
+		if err := d.admitCheckTx(ctx, playerMsgCounts); err != nil {
+			return ctx, err
+		}
 	}
 
 	// SKIP_RATIONALE: the per-player-per-block message cap aggregates across

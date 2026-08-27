@@ -927,6 +927,30 @@ package v0_22_0
 //     This is node-local: no consensus state is involved, and logging is not
 //     part of the state machine.
 //
+//   - The per-player message cap is now applied at admission as well as at
+//     delivery, against a separate node-local count.
+//
+//     The authoritative counter lives in the transient store and is touched only
+//     in DeliverTx, because counting a transaction at CheckTx and again when it
+//     is delivered would charge the quota twice. That left admission bounded per
+//     *address* by CheckTxThrottleDecorator while the cap it is predicting is per
+//     *player*, and address associations only converge on a player inside
+//     StructsDecorator. A player with several registered addresses could
+//     therefore fill the mempool with transactions the delivery cap was always
+//     going to refuse - free to send, since Structs transactions pay nothing,
+//     and paid for in block bytes and validator time.
+//
+//     The admission count is a plain in-memory map reset when the height moves,
+//     the same shape CheckTxThrottleDecorator already uses for addresses. It
+//     never touches the transient store, so it cannot double-charge the
+//     authoritative counter or make one node's block differ from another's;
+//     nodes may admit slightly differently, which is already true of the address
+//     throttle beside it.
+//
+//     ReCheckTx and simulate are excluded for the same reasons that decorator
+//     gives: both run on transactions that already passed fresh CheckTx, so
+//     counting them again would evict transactions legitimately admitted.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs
