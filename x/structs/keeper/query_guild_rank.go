@@ -32,7 +32,7 @@ func (k Keeper) GuildRankPermissionByObject(goCtx context.Context, req *types.Qu
 	prefixStore := prefix.NewStore(store, objectPrefix)
 
 	var records []*types.GuildRankPermissionRecord
-	pageRes, err := query.Paginate(prefixStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(prefixStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		// Accept any value whose length is a multiple of 8, decoding as many
 		// slots as are present and treating missing trailing slots as zero
 		// (rank 0 = no record). This matches ReadGuildRankRegister semantics

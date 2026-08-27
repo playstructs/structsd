@@ -25,7 +25,7 @@ func (k Keeper) ProviderAll(goCtx context.Context, req *types.QueryAllProviderRe
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	providerStore := prefix.NewStore(store, types.KeyPrefix(types.ProviderKey))
 
-	pageRes, err := query.Paginate(providerStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(providerStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var provider types.Provider
 		if err := k.cdc.Unmarshal(value, &provider); err != nil {
 			return err
@@ -84,7 +84,7 @@ func (k Keeper) ProviderCollateralAddressAll(goCtx context.Context, req *types.Q
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	providerStore := prefix.NewStore(store, types.KeyPrefix(types.ProviderKey))
 
-	pageRes, err := query.Paginate(providerStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(providerStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var provider types.Provider
 		if err := k.cdc.Unmarshal(value, &provider); err != nil {
 			return err
@@ -131,7 +131,7 @@ func (k Keeper) ProviderEarningsAddressAll(goCtx context.Context, req *types.Que
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	providerStore := prefix.NewStore(store, types.KeyPrefix(types.ProviderKey))
 
-	pageRes, err := query.Paginate(providerStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(providerStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var provider types.Provider
 		if err := k.cdc.Unmarshal(value, &provider); err != nil {
 			return err

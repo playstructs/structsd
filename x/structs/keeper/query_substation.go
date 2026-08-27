@@ -28,7 +28,7 @@ func (k Keeper) SubstationAll(goCtx context.Context, req *types.QueryAllSubstati
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	substationStore := prefix.NewStore(store, types.KeyPrefix(types.SubstationKey))
 
-	pageRes, err := query.Paginate(substationStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(substationStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var substation types.Substation
 		if err := k.cdc.Unmarshal(value, &substation); err != nil {
 			return err

@@ -781,6 +781,36 @@ package v0_22_0
 //     attacker can no longer mint a row per arbitrary string, only one per
 //     registered player.
 //
+//   - Query pagination is bounded, and CountTotal is refused.
+//
+//     The query endpoints take no authorization and passed req.Pagination
+//     straight to query.Paginate. Limit is a uint64 and is not capped, so one
+//     request could ask a node to decode and retain an entire collection;
+//     Offset+Limit is added without an overflow check; and a request with no
+//     Limit switched CountTotal on, which walks the whole prefix after the page
+//     has been collected.
+//
+//     Limit is now capped at QueryPageLimitMaximum and CountTotal is forced off
+//     at all thirty query.Paginate sites, through one helper, with
+//     TestArch_PaginatedQueriesAreBounded holding new queries to it.
+//
+//     CountTotal is the half that actually bounds the work - it scans the prefix
+//     however small the page - so capping the page alone would not have been
+//     enough. Refusing it means pagination responses report total as 0.
+//
+//     PUBLIC API CHANGE: total is now always 0. This is not a new contract so
+//     much as the universal case of an existing one - the SDK already ignores
+//     count_total whenever a key is set, so every client paginating by next_key
+//     saw 0 already - but a client reading it will see a change. The set stays
+//     fully reachable by following next_key. GRASS and structs-pg should be
+//     checked for any use of pagination.total.
+//
+//     This bounds the node serving the query rather than consensus. No chain
+//     state is involved; what it protects is a node exposing its query
+//     endpoints against whatever its largest collection happens to be. Setting a
+//     non-zero QueryGasLimit in app.toml is worthwhile alongside this, since it
+//     also covers the SDK's own modules, which have the identical shape.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

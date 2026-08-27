@@ -123,7 +123,11 @@ func TestPermissionByObjectQuery(t *testing.T) {
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.PermissionByObject(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, 2, int(resp.Pagination.Total))
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
 		require.Len(t, resp.PermissionRecords, 2)
 	})
 
@@ -183,7 +187,11 @@ func TestPermissionByPlayerQuery(t *testing.T) {
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.PermissionByPlayer(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, 2, int(resp.Pagination.Total))
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
 		require.Len(t, resp.PermissionRecords, 2)
 	})
 
@@ -254,7 +262,11 @@ func TestPermissionAllQuery(t *testing.T) {
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.PermissionAll(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, len(permissions), int(resp.Pagination.Total))
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
 		require.Len(t, resp.PermissionRecords, len(permissions))
 	})
 

@@ -47,7 +47,7 @@ func (k Keeper) GridAll(goCtx context.Context, req *types.QueryAllGridRequest) (
  	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
  	gridStore := prefix.NewStore(store, types.KeyPrefix(types.GridAttributeKey))
 
- 	pageRes, err := query.Paginate(gridStore, req.Pagination, func(key []byte, value []byte) error {
+ 	pageRes, err := query.Paginate(gridStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 
         grids = append(grids, &types.GridRecord{AttributeId: string(key), Value: binary.BigEndian.Uint64(value)})
 

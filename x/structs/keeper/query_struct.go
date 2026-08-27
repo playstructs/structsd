@@ -25,7 +25,7 @@ func (k Keeper) StructAll(goCtx context.Context, req *types.QueryAllStructReques
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	structureStore := prefix.NewStore(store, types.KeyPrefix(types.StructKey))
 
-	pageRes, err := query.Paginate(structureStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(structureStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var structure types.Struct
 		if err := k.cdc.Unmarshal(value, &structure); err != nil {
 			return err
@@ -92,7 +92,7 @@ func (k Keeper) StructAttributeAll(goCtx context.Context, req *types.QueryAllStr
  	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
  	gridStore := prefix.NewStore(store, types.KeyPrefix(types.StructAttributeKey))
 
- 	pageRes, err := query.Paginate(gridStore, req.Pagination, func(key []byte, value []byte) error {
+ 	pageRes, err := query.Paginate(gridStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 
         structAttributes = append(structAttributes, &types.StructAttributeRecord{AttributeId: string(key), Value: binary.BigEndian.Uint64(value)})
 

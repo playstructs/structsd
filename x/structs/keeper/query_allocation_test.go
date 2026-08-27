@@ -73,7 +73,7 @@ func TestQueryAllocationAll(t *testing.T) {
 
 	resp, err = keeper.AllocationAll(wctx, request(nil, 0, 0, true))
 	require.NoError(t, err)
-	require.GreaterOrEqual(t, int(resp.Pagination.Total), 5)
+	require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
 
 	_, err = keeper.AllocationAll(wctx, nil)
 	require.Error(t, err)

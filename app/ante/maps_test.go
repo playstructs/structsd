@@ -1,6 +1,7 @@
 package ante
 
 import (
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -795,4 +796,54 @@ func TestArch_DischargingHandlersAreChargeMessages(t *testing.T) {
 	require.Empty(t, stale,
 		"these are declared charge messages but no handler discharges for them, so the ante spends a player's block slot for nothing: %s",
 		strings.Join(stale, ", "))
+}
+
+/* TestArch_PaginatedQueriesAreBounded keeps a new query from being added with
+ * the request's own pagination.
+ *
+ * query.Paginate takes the request at its word: an uncapped uint64 Limit can ask
+ * a node to decode and retain an entire collection, and a request with no Limit
+ * turns CountTotal on, which walks the whole prefix however small the page. The
+ * endpoints take no authorization, so the bound has to be in the handler.
+ *
+ * Lives here rather than in the keeper package because it is the same kind of
+ * check as the maps coverage above - a rule about a whole family of handlers
+ * that no single one of them can enforce.
+ */
+func TestArch_PaginatedQueriesAreBounded(t *testing.T) {
+	keeperDir := filepath.Join("..", "..", "x", "structs", "keeper")
+	entries, err := os.ReadDir(keeperDir)
+	require.NoError(t, err)
+
+	var unbounded []string
+	checked := 0
+
+	for _, e := range entries {
+		name := e.Name()
+		if !strings.HasPrefix(name, "query_") || !strings.HasSuffix(name, ".go") ||
+			strings.HasSuffix(name, "_test.go") {
+			continue
+		}
+
+		raw, err := os.ReadFile(filepath.Join(keeperDir, name))
+		require.NoError(t, err)
+
+		for i, line := range strings.Split(string(raw), "\n") {
+			if !strings.Contains(line, "query.Paginate(") {
+				continue
+			}
+			checked++
+			if !strings.Contains(line, "boundedPagination(") {
+				unbounded = append(unbounded, fmt.Sprintf("%s:%d", name, i+1))
+			}
+		}
+	}
+
+	require.GreaterOrEqual(t, checked, 25,
+		"expected to find the paginated query handlers; the source scan is probably broken")
+
+	sort.Strings(unbounded)
+	require.Empty(t, unbounded,
+		"these queries pass the caller's pagination straight to query.Paginate, so a single request can ask the node for an entire collection: %s",
+		strings.Join(unbounded, ", "))
 }

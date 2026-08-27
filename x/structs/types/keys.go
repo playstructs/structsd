@@ -227,6 +227,25 @@ const PermissionCleanupQueue = "Permission/cleanupQueue/"
  */
 const PermissionCleanupBudget = 256
 
+/* QueryPageLimitDefault and QueryPageLimitMaximum bound a single query response.
+ *
+ * The query endpoints take no authorization and their pagination came straight
+ * from the request: an uncapped uint64 Limit could ask a node to decode and
+ * retain an entire collection, and a request with no Limit turned CountTotal on,
+ * which walks the whole prefix regardless of page size.
+ *
+ * These bound the node serving the query rather than consensus - no chain state
+ * is involved - but the endpoints are public and unauthenticated, so a node that
+ * exposes them is exposing whatever the largest collection happens to be.
+ *
+ * The maximum is deliberately generous. It exists to stop "give me everything",
+ * not to force small pages on honest clients; anything larger follows next_key.
+ */
+const (
+	QueryPageLimitDefault = 100
+	QueryPageLimitMaximum = 1000
+)
+
 const (
 	ReactorKey          = "Reactor/value/"
 	ReactorCountKey     = "Reactor/count/"

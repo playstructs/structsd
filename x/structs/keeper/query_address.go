@@ -64,7 +64,7 @@ func (k Keeper) AddressAll(goCtx context.Context, req *types.QueryAllAddressRequ
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	addressPlayerStore := prefix.NewStore(store, types.KeyPrefix(types.AddressPlayerKey))
 
-	pageRes, err := query.Paginate(addressPlayerStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(addressPlayerStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var permission types.QueryAddressResponse
 
         permission.Address = string(key)
@@ -97,7 +97,7 @@ func (k Keeper) AddressAllByPlayer(goCtx context.Context, req *types.QueryAllAdd
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	addressPlayerStore := prefix.NewStore(store, types.KeyPrefix(types.AddressPlayerKey))
 
-	pageRes, err := query.Paginate(addressPlayerStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(addressPlayerStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var permission types.QueryAddressResponse
 
 

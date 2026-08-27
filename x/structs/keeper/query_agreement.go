@@ -24,7 +24,7 @@ func (k Keeper) AgreementAll(goCtx context.Context, req *types.QueryAllAgreement
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	agreementStore := prefix.NewStore(store, types.KeyPrefix(types.AgreementKey))
 
-	pageRes, err := query.Paginate(agreementStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(agreementStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var agreement types.Agreement
 		if err := k.cdc.Unmarshal(value, &agreement); err != nil {
 			return err
@@ -66,7 +66,7 @@ func (k Keeper) AgreementAllByProvider(goCtx context.Context, req *types.QueryAl
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	agreementStore := prefix.NewStore(store, AgreementProviderKeyPrefix(req.ProviderId))
 
-	pageRes, err := query.Paginate(agreementStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(agreementStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		agreement, found := k.GetAgreement(ctx, string(key))
 
         if found {

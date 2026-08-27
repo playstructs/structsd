@@ -28,7 +28,7 @@ func (k Keeper) PlayerAll(goCtx context.Context, req *types.QueryAllPlayerReques
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	playerStore := prefix.NewStore(store, types.KeyPrefix(types.PlayerKey))
 
-	pageRes, err := query.Paginate(playerStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(playerStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var player types.Player
 		if err := k.cdc.Unmarshal(value, &player); err != nil {
 			return err

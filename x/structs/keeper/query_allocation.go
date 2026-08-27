@@ -24,7 +24,7 @@ func (k Keeper) AllocationAll(goCtx context.Context, req *types.QueryAllAllocati
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	allocationStore := prefix.NewStore(store, types.KeyPrefix(types.AllocationKey))
 
-	pageRes, err := query.Paginate(allocationStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(allocationStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var allocation types.Allocation
 		if err := k.cdc.Unmarshal(value, &allocation); err != nil {
 			return err
@@ -67,7 +67,7 @@ func (k Keeper) AllocationAllBySource(goCtx context.Context, req *types.QueryAll
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	allocationStore := prefix.NewStore(store, AllocationSourceKeyPrefix(req.SourceId))
 
-	pageRes, err := query.Paginate(allocationStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(allocationStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		allocation, found := k.GetAllocation(ctx, string(key))
 
         if found {
@@ -97,7 +97,7 @@ func (k Keeper) AllocationAllByDestination(goCtx context.Context, req *types.Que
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	allocationStore := prefix.NewStore(store, AllocationDestinationKeyPrefix(req.DestinationId))
 
-	pageRes, err := query.Paginate(allocationStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(allocationStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		allocation, found := k.GetAllocation(ctx, string(key))
 
         if found {

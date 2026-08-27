@@ -24,7 +24,7 @@ func (k Keeper) FleetAll(goCtx context.Context, req *types.QueryAllFleetRequest)
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	fleetStore := prefix.NewStore(store, types.KeyPrefix(types.FleetKey))
 
-	pageRes, err := query.Paginate(fleetStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(fleetStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var fleet types.Fleet
 		if err := k.cdc.Unmarshal(value, &fleet); err != nil {
 			return err

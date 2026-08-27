@@ -24,7 +24,7 @@ func (k Keeper) PlanetAll(goCtx context.Context, req *types.QueryAllPlanetReques
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	planetStore := prefix.NewStore(store, types.KeyPrefix(types.PlanetKey))
 
-	pageRes, err := query.Paginate(planetStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(planetStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var planet types.Planet
 		if err := k.cdc.Unmarshal(value, &planet); err != nil {
 			return err
@@ -70,7 +70,7 @@ func (k Keeper) PlanetAllByPlayer(goCtx context.Context, req *types.QueryAllPlan
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	planetStore := prefix.NewStore(store, types.KeyPrefix(types.PlanetKey))
 
-	pageRes, err := query.Paginate(planetStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(planetStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var planet types.Planet
 		if err := k.cdc.Unmarshal(value, &planet); err != nil {
 			return err
@@ -114,7 +114,7 @@ func (k Keeper) PlanetAttributeAll(goCtx context.Context, req *types.QueryAllPla
  	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
  	gridStore := prefix.NewStore(store, types.KeyPrefix(types.PlanetAttributeKey))
 
- 	pageRes, err := query.Paginate(gridStore, req.Pagination, func(key []byte, value []byte) error {
+ 	pageRes, err := query.Paginate(gridStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 
         planetAttributes = append(planetAttributes, &types.PlanetAttributeRecord{AttributeId: string(key), Value: binary.BigEndian.Uint64(value)})
 

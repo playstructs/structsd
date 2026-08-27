@@ -29,7 +29,7 @@ func (k Keeper) GuildAll(goCtx context.Context, req *types.QueryAllGuildRequest)
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	guildStore := prefix.NewStore(store, types.KeyPrefix(types.GuildKey))
 
-	pageRes, err := query.Paginate(guildStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(guildStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var guild types.Guild
 		if err := k.cdc.Unmarshal(value, &guild); err != nil {
 			return err
@@ -90,7 +90,7 @@ func (k Keeper) GuildMembershipApplicationAll(goCtx context.Context, req *types.
     store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	guildMembershipApplicationStore := prefix.NewStore(store, types.KeyPrefix(types.GuildMembershipApplicationKey))
 
-	pageRes, err := query.Paginate(guildMembershipApplicationStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(guildMembershipApplicationStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var guildMembershipApplication types.GuildMembershipApplication
 
        	if err := k.cdc.Unmarshal(value, &guildMembershipApplication); err != nil {
@@ -133,7 +133,7 @@ func (k Keeper) GuildBankCollateralAddressAll(goCtx context.Context, req *types.
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	guildStore := prefix.NewStore(store, types.KeyPrefix(types.GuildKey))
 
-	pageRes, err := query.Paginate(guildStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(guildStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var guild types.Guild
 		if err := k.cdc.Unmarshal(value, &guild); err != nil {
 			return err

@@ -116,7 +116,11 @@ func TestPlanetAllQuery(t *testing.T) {
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.PlanetAll(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, len(planets), int(resp.Pagination.Total))
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
 		require.Len(t, resp.Planet, len(planets))
 	})
 
@@ -171,7 +175,11 @@ func TestPlanetAllByPlayerQuery(t *testing.T) {
 		resp, err := keeper.PlanetAllByPlayer(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
 		// Pagination.Total counts all planets (not just filtered), since filtering is done in-memory
-		require.Equal(t, 3, int(resp.Pagination.Total))
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
 		require.Len(t, resp.Planet, 2)
 	})
 
@@ -292,7 +300,11 @@ func TestPlanetAttributeAllQuery(t *testing.T) {
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.PlanetAttributeAll(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, len(attributes), int(resp.Pagination.Total))
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
 		require.Len(t, resp.PlanetAttributeRecords, len(attributes))
 	})
 

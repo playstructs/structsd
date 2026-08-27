@@ -24,7 +24,7 @@ func (k Keeper) InfusionAll(goCtx context.Context, req *types.QueryAllInfusionRe
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	infusionStore := prefix.NewStore(store, types.KeyPrefix(types.InfusionKey))
 
-	pageRes, err := query.Paginate(infusionStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(infusionStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var infusion types.Infusion
 		if err := k.cdc.Unmarshal(value, &infusion); err != nil {
 			return err
@@ -68,7 +68,7 @@ func (k Keeper) InfusionAllByDestination(goCtx context.Context, req *types.Query
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	infusionStore := prefix.NewStore(store,  InfusionKeyPrefix(req.DestinationId))
 
-	pageRes, err := query.Paginate(infusionStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(infusionStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
 		var infusion types.Infusion
 		if err := k.cdc.Unmarshal(value, &infusion); err != nil {
 			return err
