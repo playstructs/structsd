@@ -952,3 +952,42 @@ func TestAgreementDuration_IdentityHoldsBeforeServiceStarts(t *testing.T) {
 			height, cache.GetRemainingCollateral(), collateral)
 	}
 }
+
+/* TestTeardown_ProviderDeleteDrainsAnIdleProvider covers the ordinary way a
+ * provider leaves: no agreements open, but earnings from ones that already
+ * closed still sitting in the pool.
+ *
+ * TestTeardown_ProviderDeleteDrainsBothPools always has an agreement to settle,
+ * so the drain runs after a loop that has already touched the provider. This is
+ * the path where that loop does nothing at all, and it is the one an operator
+ * actually takes when winding a provider down. Both pool addresses are derived
+ * from the provider id, so anything the delete leaves behind is unreachable the
+ * moment the record is gone - there is no later withdrawal, because
+ * WithdrawBalanceAndCommit cannot load a provider that no longer exists.
+ */
+func TestTeardown_ProviderDeleteDrainsAnIdleProvider(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0", "0")
+
+	const earnings, collateralRemainder = 4200, 11
+	f.fund(t, f.earningsAcc, earnings)
+	f.fund(t, f.collateralAcc, collateralRemainder)
+
+	require.Zero(t, f.agreementLoad(), "precondition: this provider has nothing open")
+
+	ownerBefore := f.balance(f.ownerAcc)
+
+	_, err := f.ms.ProviderDelete(f.ctx, &types.MsgProviderDelete{
+		Creator:    f.provider.Creator,
+		ProviderId: f.provider.Id,
+	})
+	require.NoError(t, err)
+
+	require.Equal(t, math.ZeroInt(), f.balance(f.earningsAcc),
+		"unwithdrawn earnings must leave with the provider, not outlive it")
+	require.Equal(t, math.ZeroInt(), f.balance(f.collateralAcc))
+	require.Equal(t, ownerBefore.AddRaw(earnings+collateralRemainder), f.balance(f.ownerAcc))
+
+	// And the record really is gone, so there would have been no second chance.
+	_, found := f.k.GetProvider(sdk.UnwrapSDKContext(f.ctx), f.provider.Id)
+	require.False(t, found)
+}
