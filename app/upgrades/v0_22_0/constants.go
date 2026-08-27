@@ -624,6 +624,27 @@ package v0_22_0
 //     GenesisState.Validate. One function rather than two spellings, because the
 //     property that matters is that a file which validates also imports.
 //
+//   - Grid attribute addition saturates at MaxUint64 instead of wrapping.
+//
+//     SetGridAttributeIncrement and the addition inside SetGridAttributeDelta
+//     were the only arithmetic here without a guard; both siblings already
+//     clamped their subtraction, which made these the odd ones out rather than a
+//     considered choice. Capacity, load, stored ore and the replay nonces are
+//     all treated as monotonic by their callers, so rolling over to a small
+//     number destroys accounted value, understates committed load, and in the
+//     nonce case resets replay protection.
+//
+//     Saturating rather than returning an error is deliberate: genesis import,
+//     staking hooks and the block hooks have nowhere to put a rejection, and an
+//     error every caller has to drop is a worse contract than a bound none can
+//     exceed. The clamp logs, so a saturated attribute is diagnosable.
+//
+//     NOT reachable today, and the fix does not pretend otherwise. The only
+//     compounding path is a cycle of allocations feeding each other, and that
+//     was measured growing linearly rather than exponentially - roughly 10^17
+//     rounds from a realistic seed. That cycle mints capacity and is a real bug,
+//     tracked separately; this is only the backstop under it.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

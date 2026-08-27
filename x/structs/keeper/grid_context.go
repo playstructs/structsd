@@ -1,7 +1,9 @@
 package keeper
 
 import (
+    "math"
     "strings"
+
     "structs/x/structs/types"
 )
 
@@ -44,10 +46,41 @@ func (cc *CurrentContext) ClearGridAttribute(gridAttributeId string) {
 	}
 }
 
-// SetGridAttributeIncrement increments a grid attribute
+/* SetGridAttributeIncrement adds to a grid attribute, saturating at MaxUint64.
+ *
+ * The addition was unguarded while both of its siblings guarded their
+ * subtraction, which made it the odd one out rather than a considered choice.
+ * Wrapping is the worst of the three outcomes available here: a capacity or a
+ * stored-ore balance that rolls over to a small number destroys accounted value
+ * and understates committed load, and every caller treats these attributes as
+ * monotonic.
+ *
+ * Saturating rather than returning an error is deliberate. Most callers cannot
+ * refuse - genesis import, staking hooks and the block hooks have nowhere to
+ * put a rejection - and an error they would have to drop is a worse contract
+ * than a bound they cannot exceed. The log is what makes it diagnosable; a
+ * saturated attribute is corrupt state either way, and the point of the clamp is
+ * that it is corrupt in a bounded, deterministic direction instead of a
+ * wrapped one.
+ *
+ * Reaching the bound is not currently possible: the only compounding path is a
+ * cycle of allocations feeding each other, which grows linearly rather than
+ * exponentially. That cycle is its own bug and is tracked separately - this is
+ * the backstop, not the fix for it.
+ */
 func (cc *CurrentContext) SetGridAttributeIncrement(gridAttributeId string, delta uint64) uint64 {
 	current := cc.GetGridAttribute(gridAttributeId)
+
 	newValue := current + delta
+	if newValue < current {
+		cc.k.logger.Error("Grid attribute increment saturated",
+			"gridAttributeId", gridAttributeId,
+			"current", current,
+			"delta", delta,
+		)
+		newValue = math.MaxUint64
+	}
+
 	cc.SetGridAttribute(gridAttributeId, newValue)
 	return newValue
 }
@@ -72,7 +105,19 @@ func (cc *CurrentContext) SetGridAttributeDelta(gridAttributeId string, oldAmoun
 	if oldAmount < currentAmount {
 		resetAmount = currentAmount - oldAmount
 	}
+
+	// The subtraction above was guarded and this addition was not, which is the
+	// same gap SetGridAttributeIncrement carried. Saturate for the same reasons.
 	amount := resetAmount + newAmount
+	if amount < resetAmount {
+		cc.k.logger.Error("Grid attribute delta saturated",
+			"gridAttributeId", gridAttributeId,
+			"current", currentAmount,
+			"oldAmount", oldAmount,
+			"newAmount", newAmount,
+		)
+		amount = math.MaxUint64
+	}
 
     cc.SetGridAttribute(gridAttributeId, amount)
 
