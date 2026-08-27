@@ -352,3 +352,53 @@ func TestGenesis_ProviderCheckpointSurvivesRoundTrip(t *testing.T) {
 	require.Equal(t, first, k2.GetGridAttribute(ctx2, attributeId),
 		"a restart one block later must resume the clock, not restart it")
 }
+
+/* TestGenesis_RejectsUnexpirableAgreement is the import-side backstop on the
+ * zero-height rebase.
+ *
+ * AgreementExpirations reads the expiration index at exactly the current height,
+ * so an agreement whose end block already precedes the genesis height is never
+ * visited - it holds capacity in its provider's load forever while Checkpoint()
+ * bills that capacity against other consumers' escrow. Refusing the file beats
+ * starting a chain that is already breaking agreement-expiry-liveness.
+ *
+ * The case this catches in practice is a zero-height export started with an
+ * initial_height the rebase did not expect.
+ */
+func TestGenesis_RejectsUnexpirableAgreement(t *testing.T) {
+	genesisState := types.DefaultGenesis()
+	genesisState.ProviderList = []types.Provider{{Id: "10-9", Index: 9, DurationMinimum: 1, DurationMaximum: 1000}}
+	genesisState.AgreementList = []types.Agreement{{
+		Id:         "11-1",
+		ProviderId: "10-9",
+		StartBlock: 0,
+		EndBlock:   30,
+		Capacity:   1,
+	}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(100)
+
+	require.Panics(t, func() { structs.InitGenesis(ctx, k, *genesisState) },
+		"an agreement that ended before the genesis height can never expire")
+}
+
+// TestGenesis_AcceptsAgreementEndingOnTheGenesisBlock is the boundary: equal is
+// fine, that agreement expires on the first block.
+func TestGenesis_AcceptsAgreementEndingOnTheGenesisBlock(t *testing.T) {
+	genesisState := types.DefaultGenesis()
+	genesisState.ProviderList = []types.Provider{{Id: "10-9", Index: 9, DurationMinimum: 1, DurationMaximum: 1000}}
+	genesisState.AgreementList = []types.Agreement{{
+		Id:         "11-1",
+		ProviderId: "10-9",
+		StartBlock: 0,
+		EndBlock:   100,
+		Capacity:   1,
+	}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(100)
+
+	require.NotPanics(t, func() { structs.InitGenesis(ctx, k, *genesisState) })
+	require.Contains(t, k.GetAllAgreementIdByExpirationIndex(ctx, 100), "11-1")
+}

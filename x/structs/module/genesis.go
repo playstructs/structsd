@@ -209,8 +209,28 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		cc.GenesisImportAllocation(allocation, importedPower)
 	}
 
-	// Agreements
+	genesisHeightForAgreements := uint64(ctx.BlockHeight())
+
+	/* Agreements.
+	 *
+	 * An agreement whose end block already precedes the genesis height can never
+	 * expire: AgreementExpirations reads the index at exactly the current height,
+	 * so a row written in the past is never visited, and the agreement holds
+	 * capacity in its provider's load which Checkpoint() keeps billing against
+	 * other consumers' escrow. Refusing the file beats starting a chain that is
+	 * already breaking agreement-expiry-liveness.
+	 *
+	 * Equal to the genesis height is fine - that agreement expires on the first
+	 * block. This is the check that catches a zero-height export started with an
+	 * initial_height the rebase did not expect.
+	 */
 	for _, agreement := range genState.AgreementList {
+		if agreement.EndBlock < genesisHeightForAgreements {
+			panic(fmt.Sprintf(
+				"agreement %s ends at block %d, before the genesis height %d, and could never expire",
+				agreement.Id, agreement.EndBlock, genesisHeightForAgreements,
+			))
+		}
 		cc.GenesisImportAgreement(agreement)
 	}
 

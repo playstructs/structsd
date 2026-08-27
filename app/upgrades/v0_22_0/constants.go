@@ -506,6 +506,39 @@ package v0_22_0
 //     is, and a chain arriving with heights already past the cap simply accepts
 //     nothing new at those heights until they drain.
 //
+//   - A zero-height export rebases every agreement onto the new chain's clock,
+//     and an import refuses an agreement that could never expire.
+//
+//     StartBlock and EndBlock are absolute heights on the agreement record, so an
+//     export carries them through untouched. That is correct for a
+//     height-preserving restart and a gift on a zero-height one: an agreement
+//     exported at height H with E-H blocks left was re-indexed to expire at E on
+//     a chain restarting near 1, supplying capacity for roughly the whole age of
+//     the old chain that nobody posted collateral for.
+//
+//     prepForZeroHeightGenesis now checkpoints every provider against the old
+//     clock - settling the span actually served while that clock still means
+//     something - then rewrites each agreement to StartBlock 0 and EndBlock
+//     equal to its remaining duration, and rebases the provider checkpoints to
+//     match. The two clocks have to move together or Checkpoint() bills a span
+//     the agreements no longer claim.
+//
+//     An agreement with nothing left gets one block rather than zero: an expiry
+//     gets exactly one attempt, and a row indexed at a height the chain never
+//     reaches would hold capacity in the provider's load forever.
+//
+//     InitGenesis panics on an agreement whose end block precedes the genesis
+//     height, which is the same condition seen from the other side and catches a
+//     zero-height export started at an initial_height the rebase did not expect.
+//     Equal to the genesis height is fine; that agreement expires on the first
+//     block.
+//
+//     Agreements and provider checkpoints are the only absolute heights that
+//     survive a structs import. Planet and struct block clocks are exported but
+//     never read back, grid lastAction is filtered out, the reactor charter stamp
+//     is recomputed from params by RestampReactorCharterEligibility, and
+//     CharterAge clamps an anchor ahead of the height to zero.
+//
 // This upgrade carries two state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

@@ -72,6 +72,28 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 	/* Just to be safe, assert the invariants on current state. */
 	app.CrisisKeeper.AssertInvariants(ctx)
 
+	/* Handle Structs agreement state.
+	 *
+	 * An agreement's window is a pair of absolute heights stored on the record,
+	 * so it survives the export unchanged - correct for a height-preserving
+	 * restart and wrong for this one. An agreement exported at height H with
+	 * E-H blocks left would be re-indexed to expire at E on a chain restarting
+	 * near 1, supplying capacity for roughly the whole age of the old chain that
+	 * nobody posted collateral for.
+	 *
+	 * Runs before the staking work below because it settles providers against
+	 * the old clock, and that has to happen while the old clock still means
+	 * something. Structs holds no other absolute height that survives an import:
+	 * planet and struct block clocks are exported but never read back, grid
+	 * lastAction is filtered out, the reactor charter stamp is recomputed from
+	 * params, and CharterAge clamps an anchor ahead of the height to zero.
+	 */
+	structsCC := app.StructsKeeper.NewCurrentContext(ctx)
+	if err := structsCC.RebaseAgreementsForZeroHeightGenesis(); err != nil {
+		log.Fatal(err)
+	}
+	structsCC.CommitAll()
+
 	/* Handle fee distribution state. */
 
 	// withdraw all validator commission
