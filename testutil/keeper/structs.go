@@ -85,14 +85,46 @@ type MockBankKeeper struct {
 	balances map[string]sdk.Coins
 	metadata map[string]banktypes.Metadata
 	supply   map[string]math.Int // Track supply per denom
+
+	// blockedAddrs and disabledDenoms mirror the two policies the real bank
+	// applies in its MsgServer rather than in SendCoins. Empty by default, so a
+	// test only has to name what it wants refused.
+	blockedAddrs   map[string]bool
+	disabledDenoms map[string]bool
 }
 
 func NewMockBankKeeper() *MockBankKeeper {
 	return &MockBankKeeper{
-		balances: make(map[string]sdk.Coins),
-		metadata: make(map[string]banktypes.Metadata),
-		supply:   make(map[string]math.Int),
+		balances:       make(map[string]sdk.Coins),
+		metadata:       make(map[string]banktypes.Metadata),
+		supply:         make(map[string]math.Int),
+		blockedAddrs:   make(map[string]bool),
+		disabledDenoms: make(map[string]bool),
 	}
+}
+
+// BlockAddress marks an address as one the app declared unreachable, the way
+// BlockedModuleAccountsOverride does for the staking pools and fee collector.
+func (m *MockBankKeeper) BlockAddress(addr sdk.AccAddress) {
+	m.blockedAddrs[addr.String()] = true
+}
+
+// DisableSendDenom marks a denom as send-disabled, the way governance does.
+func (m *MockBankKeeper) DisableSendDenom(denom string) {
+	m.disabledDenoms[denom] = true
+}
+
+func (m *MockBankKeeper) BlockedAddr(addr sdk.AccAddress) bool {
+	return m.blockedAddrs[addr.String()]
+}
+
+func (m *MockBankKeeper) IsSendEnabledCoins(_ context.Context, coins ...sdk.Coin) error {
+	for _, coin := range coins {
+		if m.disabledDenoms[coin.Denom] {
+			return fmt.Errorf("send transactions are disabled for denom %s", coin.Denom)
+		}
+	}
+	return nil
 }
 
 // MockBankState is a deep copy of everything MockBankKeeper tracks.

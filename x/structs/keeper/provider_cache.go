@@ -263,7 +263,9 @@ func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) 
 
 func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) (error) {
 
-    destinationAcc, errParam := sdk.AccAddressFromBech32(destinationAddress)
+    // A withdrawal names where the money goes, so the destination is
+    // transaction-chosen and gets the same treatment as PlayerSend's recipient.
+    destinationAcc, errParam := cache.CC.k.resolveExternalRecipient(destinationAddress)
     if errParam != nil {
         return errParam
     }

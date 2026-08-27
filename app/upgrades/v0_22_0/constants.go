@@ -212,6 +212,30 @@ package v0_22_0
 //     fleet to its owner's current planet, which is active by construction, and
 //     refusing those would strand fleets rather than protect anyone.
 //
+//   - PlayerSend and ProviderWithdrawBalance apply the bank's own recipient and
+//     denom policy before moving coins.
+//
+//     BaseSendKeeper.SendCoins is not the bank's policy layer: it validates the
+//     coin structure, applies any registered send restriction, and moves
+//     balances. The blocked-address set and the per-denom send-enabled flags
+//     live in the bank's MsgServer, which a module calling SendCoins directly
+//     never goes through. So the app could declare the fee collector, the
+//     distribution account and both staking pools unreachable and these handlers
+//     reached them anyway, and governance could freeze a denom and they still
+//     moved it.
+//
+//     The staking pools are the sharp end. Coins arriving there with no matching
+//     delegation leave the pool balance disagreeing with staking's recorded
+//     tokens, which surfaces as a panic on the next export-and-restart rather
+//     than as a failed transaction.
+//
+//     These are the only two destinations in the module a transaction chooses.
+//     Every other SendCoins sends to an address the module derived itself - a
+//     provider pool, a guild bank, a player's own primary address - and those
+//     are neither blocked nor attacker-chosen. PlayerSend additionally rejects a
+//     malformed recipient rather than discarding the parse error and sending to
+//     the empty address, and rejects a non-positive amount.
+//
 // This upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,

@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
+	keepertest "structs/testutil/keeper"
 	keeperlib "structs/x/structs/keeper"
 	"structs/x/structs/types"
 )
@@ -32,7 +33,7 @@ func TestMsgProviderWithdrawBalance(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller: player.Id,
+		Controller:     player.Id,
 	}
 	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
@@ -120,4 +121,63 @@ func TestMsgProviderWithdrawBalance(t *testing.T) {
 			}
 		})
 	}
+}
+
+/* TestProviderWithdrawBalanceRejectsBlockedDestination is the second
+ * transaction-chosen recipient in this module.
+ *
+ * PlayerSend gets most of the attention because the recipient is the point of
+ * the message, but a withdrawal names where the money goes too, and it reached
+ * SendCoins the same way: straight past the blocked-address set, which lives in
+ * the bank's MsgServer rather than in SendCoins itself. Both now resolve the
+ * destination through resolveExternalRecipient.
+ */
+func TestProviderWithdrawBalanceRejectsBlockedDestination(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	wctx := sdk.UnwrapSDKContext(ctx)
+
+	ownerAcc := sdk.AccAddress("withdraw_blocked_owner_pad_00001")
+	owner := testAppendPlayer(k, ctx, types.Player{
+		Creator:        ownerAcc.String(),
+		PrimaryAddress: ownerAcc.String(),
+	})
+
+	sourceObjectId := "withdraw-blocked-source"
+	k.SetGridAttribute(ctx,
+		keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceObjectId), 1000)
+
+	allocation, err := testAppendAllocation(k, ctx, types.Allocation{
+		SourceObjectId: sourceObjectId,
+		Type:           types.AllocationType_static,
+		Controller:     owner.Id,
+	}, 100)
+	require.NoError(t, err)
+
+	substation, _, err := testAppendSubstation(k, ctx, allocation, owner)
+	require.NoError(t, err)
+
+	provider := testAppendProvider(k, ctx, types.Provider{
+		Owner:                       owner.Id,
+		Creator:                     owner.Creator,
+		SubstationId:                substation.Id,
+		Rate:                        sdk.NewCoin("token", math.NewInt(100)),
+		AccessPolicy:                types.ProviderAccessPolicy_openMarket,
+		CapacityMinimum:             100,
+		CapacityMaximum:             1000,
+		DurationMinimum:             1,
+		DurationMaximum:             10,
+		ProviderCancellationPenalty: math.LegacyNewDec(1),
+		ConsumerCancellationPenalty: math.LegacyNewDec(1),
+	})
+
+	blocked := sdk.AccAddress("withdraw_blocked_pool_pad_000001")
+	k.BankKeeper().(*keepertest.MockBankKeeper).BlockAddress(blocked)
+
+	_, err = ms.ProviderWithdrawBalance(wctx, &types.MsgProviderWithdrawBalance{
+		Creator:            owner.Creator,
+		ProviderId:         provider.Id,
+		DestinationAddress: blocked.String(),
+	})
+	require.Error(t, err, "a withdrawal must not reach an account the app declared unreachable")
+	require.Contains(t, err.Error(), "blocked_recipient")
 }

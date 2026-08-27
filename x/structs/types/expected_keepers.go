@@ -111,6 +111,13 @@ type BankKeeper interface {
 	SpendableCoins(context.Context, sdk.AccAddress) sdk.Coins
 	SpendableCoin(context.Context, sdk.AccAddress, string) sdk.Coin
 	SendCoins(context.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) error
+	// IsSendEnabledCoins and BlockedAddr are the two policies the bank's own
+	// MsgServer applies before SendCoins and that SendCoins itself does not:
+	// a governance send-disable on a denom, and the module accounts the app
+	// declared unreachable. Any handler that moves coins to a destination a
+	// message chose has to ask them itself.
+	IsSendEnabledCoins(context.Context, ...sdk.Coin) error
+	BlockedAddr(sdk.AccAddress) bool
 	SendCoinsFromModuleToModule(context.Context, string, string, sdk.Coins) error
 	SendCoinsFromAccountToModule(context.Context, sdk.AccAddress, string, sdk.Coins) error
 	SendCoinsFromModuleToAccount(context.Context, string, sdk.AccAddress, sdk.Coins) error
