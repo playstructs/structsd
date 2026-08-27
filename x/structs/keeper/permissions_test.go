@@ -252,7 +252,7 @@ func TestClearPermissionGuildRankByObject(t *testing.T) {
 	reg1 := keeper.ReadGuildRankRegister(ctx, objectId, guild1)
 	require.Equal(t, uint64(3), reg1[0])
 
-	keeper.ClearPermissionGuildRankByObject(ctx, objectId)
+	keeper.ClearPermissionGuildRankByObject(ctx, objectId, types.PermissionCleanupBudget)
 
 	// After clear, registers are gone
 	reg1 = keeper.ReadGuildRankRegister(ctx, objectId, guild1)
@@ -261,5 +261,5 @@ func TestClearPermissionGuildRankByObject(t *testing.T) {
 	require.Equal(t, uint64(0), reg2[1])
 
 	// Clear on nonexistent object is a no-op
-	keeper.ClearPermissionGuildRankByObject(ctx, "nonexistent")
+	keeper.ClearPermissionGuildRankByObject(ctx, "nonexistent", types.PermissionCleanupBudget)
 }

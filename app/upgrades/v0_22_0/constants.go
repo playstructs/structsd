@@ -750,6 +750,37 @@ package v0_22_0
 //     free to seed a new substation again. The rule is about being connected,
 //     not about having been used.
 //
+//   - Permission cleanup after an object is destroyed is bounded per block, with
+//     the remainder carried in PermissionCleanupQueue.
+//
+//     Destroying an object clears every permission granted on it, and the count
+//     of those is chosen by whoever owns the object. Agreement expiry reaches
+//     that cleanup from the EndBlocker, which has no gas meter, and the expiry
+//     height is chosen by the consumer when they open the agreement - so the
+//     cost of one block was whatever had been granted before it, materialised at
+//     once as key copies, returned strings and retained events. The guild-rank
+//     register clear had the same shape and emits up to PermissionBitCount
+//     events per row.
+//
+//     Deferring is safe here in a way it is not for an agreement expiry, and the
+//     difference is worth stating: a permission is only ever consulted after its
+//     object has been loaded, and a destroyed object cannot be. Rows left behind
+//     grant nothing and nothing accrues while they wait, so this is garbage
+//     collection rather than settlement and needs no cursor - deletion is
+//     destructive, so the next pass re-reads the prefix and finds what is left.
+//
+//     The cache is evicted by prefix rather than by the list of rows actually
+//     deleted. A cache entry marked Changed is written back at CommitAll, so a
+//     permission *created* in the same operation that destroys the object -
+//     present in the cache, absent from the store, therefore absent from that
+//     list - survived the clear and was written back afterwards. On an object
+//     small enough not to be queued nothing ever came back for it.
+//
+//     Note this bound is what remains of the reported issue after the
+//     permission-on-object handlers began resolving their target player: an
+//     attacker can no longer mint a row per arbitrary string, only one per
+//     registered player.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

@@ -65,6 +65,17 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 	 */
 	k.ProcessReactorSlashReconcileQueue(ctx)
 
+	/* Finish removing permissions granted on objects that have been destroyed.
+	 *
+	 * The row count is chosen by whoever owned the object, and an agreement's
+	 * expiry height is chosen by the consumer who opened it, so doing all of it
+	 * at destruction time put an attacker-sized amount of work in one block. The
+	 * remainder is inert - a permission is only consulted after its object has
+	 * been loaded, and a destroyed object cannot be - so this is collection, not
+	 * settlement, and it can take as many blocks as it needs.
+	 */
+	k.ProcessPermissionCleanupQueue(ctx)
+
 	k.logger.Debug("End Block Complete")
 
 	return []abci.ValidatorUpdate{}, nil

@@ -112,8 +112,17 @@ func (k Keeper) GetAllPermissionExport(ctx context.Context) (list []*types.Permi
 
 // ClearPermissionByObject deletes all permission entries for the given objectId
 // (all keys objectId@*). Uses prefix iteration so cost is O(players with permissions on this object).
-func (k Keeper) ClearPermissionByObject(ctx context.Context, objectId string) (list []string) {
-	if objectId == "" {
+/* ClearPermissionByObject removes up to limit permission rows for an object and
+ * reports whether any remain.
+ *
+ * The count is chosen by whoever owns the object - one row per player granted -
+ * and agreement expiry reaches this from the EndBlocker, where nothing bounds
+ * it. Rows left for a later pass are inert: a permission is only consulted after
+ * its object has been loaded, and a destroyed object cannot be. So this is
+ * garbage collection, and deferring it costs nothing but the rows sitting there.
+ */
+func (k Keeper) ClearPermissionByObject(ctx context.Context, objectId string, limit int) (list []string, more bool) {
+	if objectId == "" || limit <= 0 {
 		return
 	}
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PermissionKey))
@@ -122,6 +131,10 @@ func (k Keeper) ClearPermissionByObject(ctx context.Context, objectId string) (l
 
 	var keysToDelete [][]byte
 	for ; iterator.Valid(); iterator.Next() {
+		if len(keysToDelete) >= limit {
+			more = true
+			break
+		}
 		keysToDelete = append(keysToDelete, append([]byte(nil), iterator.Key()...))
 	}
 	iterator.Close()
@@ -222,8 +235,11 @@ func (k Keeper) SetGuildRankPermissionStoreOnly(ctx context.Context, objectId st
 }
 
 // ClearPermissionGuildRankByObject deletes all guild rank registers for the given objectId.
-func (k Keeper) ClearPermissionGuildRankByObject(ctx context.Context, objectId string) {
-	if objectId == "" {
+// ClearPermissionGuildRankByObject removes up to limit guild-rank register rows
+// for an object and reports whether any remain. Each row can emit up to
+// PermissionBitCount events, which makes it the more expensive half per row.
+func (k Keeper) ClearPermissionGuildRankByObject(ctx context.Context, objectId string, limit int) (more bool) {
+	if objectId == "" || limit <= 0 {
 		return
 	}
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PermissionGuildRank))
@@ -238,6 +254,10 @@ func (k Keeper) ClearPermissionGuildRankByObject(ctx context.Context, objectId s
 	var entries []entry
 
 	for ; iterator.Valid(); iterator.Next() {
+		if len(entries) >= limit {
+			more = true
+			break
+		}
 		kCopy := append([]byte(nil), iterator.Key()...)
 		guildId := strings.TrimPrefix(string(kCopy), string(prefixBytes))
 		var reg [types.PermissionBitCount]uint64
@@ -271,6 +291,8 @@ func (k Keeper) ClearPermissionGuildRankByObject(ctx context.Context, objectId s
 			}
 		}
 	}
+
+	return
 }
 
 // GetAllGuildRankPermissionExport iterates all guild rank registers for genesis export.

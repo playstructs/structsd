@@ -200,6 +200,33 @@ const ReactorSlashReconcileQueue = "Reactor/slashReconcileQueue/"
  */
 const ReactorSlashReconcileBudget = 128
 
+/* PermissionCleanupQueue holds objects whose permission rows are still being
+ * removed after the object itself was destroyed.
+ *
+ * Deleting an object clears every permission granted on it, and the number of
+ * those is chosen by whoever owns the object - one row per player granted.
+ * Agreement expiry reaches that cleanup from the EndBlocker, which has no gas
+ * meter, so the cost of one expiry was whatever had been granted before it.
+ *
+ * The queue needs no cursor: deletion is destructive, so the next pass simply
+ * re-reads the object's prefix and finds what is left. An object is queued only
+ * while rows remain.
+ */
+const PermissionCleanupQueue = "Permission/cleanupQueue/"
+
+/* PermissionCleanupBudget caps permission rows removed per object per pass.
+ *
+ * Rows left behind are inert, which is what makes deferring this safe in a way
+ * that deferring an agreement expiry is not: a permission is only ever consulted
+ * after its object has been loaded, and the object is gone. Nothing accrues
+ * while the remainder waits, so this is garbage collection rather than
+ * settlement.
+ *
+ * The budget covers the guild-rank register rows as well, which carry up to
+ * PermissionBitCount events each and so are the more expensive half per row.
+ */
+const PermissionCleanupBudget = 256
+
 const (
 	ReactorKey          = "Reactor/value/"
 	ReactorCountKey     = "Reactor/count/"

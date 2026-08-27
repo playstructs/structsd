@@ -77,14 +77,35 @@ func (cc *CurrentContext) ClearPermissions(permissionId []byte) {
 	}
 }
 
+/* ClearPermissionsForObject removes what a destroyed object had granted, up to
+ * one pass' worth, and queues the object if anything is left.
+ *
+ * The row count is chosen by whoever owned the object, and agreement expiry
+ * reaches this from the EndBlocker where nothing bounds it. What the pass does
+ * not reach stays on disk and inert - a permission is only consulted once its
+ * object has been loaded, and a destroyed object cannot be - so the remainder is
+ * garbage rather than authority, and the queue collects it over later blocks.
+ *
+ * The cache is evicted by prefix rather than from the list of rows actually
+ * deleted. That is not an optimisation: a cache entry still marked Changed would
+ * be written back at CommitAll, so eviction has to cover everything for this
+ * object whether this pass deleted its row or not.
+ */
 func (cc *CurrentContext) ClearPermissionsForObject(objectId string) {
-	deletedKeys := cc.k.ClearPermissionByObject(cc.ctx, objectId)
-
-	for _, deleted := range deletedKeys {
-		delete(cc.permissions, deleted)
+	if objectId == "" {
+		return
 	}
 
-	cc.k.ClearPermissionGuildRankByObject(cc.ctx, objectId)
+	_, morePermissions := cc.k.ClearPermissionByObject(cc.ctx, objectId, types.PermissionCleanupBudget)
+
+	permissionPrefix := objectId + "@"
+	for id := range cc.permissions {
+		if strings.HasPrefix(id, permissionPrefix) {
+			delete(cc.permissions, id)
+		}
+	}
+
+	moreGuildRanks := cc.k.ClearPermissionGuildRankByObject(cc.ctx, objectId, types.PermissionCleanupBudget)
 
 	pfx := objectId + "/"
 	for id := range cc.guildRankRegisters {
@@ -92,6 +113,13 @@ func (cc *CurrentContext) ClearPermissionsForObject(objectId string) {
 			delete(cc.guildRankRegisters, id)
 		}
 	}
+
+	if morePermissions || moreGuildRanks {
+		cc.k.EnqueuePermissionCleanup(cc.ctx, objectId)
+		return
+	}
+
+	cc.k.ClearPermissionCleanup(cc.ctx, objectId)
 }
 
 func (cc *CurrentContext) PermissionAdd(permissionId []byte, flag types.Permission) types.Permission {
