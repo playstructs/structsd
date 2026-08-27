@@ -366,18 +366,40 @@ package v0_22_0
 //     orders it the other way and this now agrees with the SDK, which is the
 //     only answer that is actually what the stake is worth.
 //
+//   - A recovery message sent from a player's primary address no longer spends
+//     the shared per-player message quota.
+//
+//     The quota is keyed by player, so every address of a player draws on one
+//     budget, and StructsDecorator charges it in the ante - before any handler
+//     runs, and therefore whether or not the message succeeds. The SDK commits
+//     the ante cache and discards only the message cache, so a delegated key
+//     could spend the whole block's budget on messages that all fail.
+//
+//     That is griefing everywhere except one place, where it is a trap: the
+//     lockout covered MsgAddressRevoke, so the key doing the griefing blocked
+//     the one message that would remove it. The rule it broke is already stated
+//     for delegation transfers - a revoke is the response to a compromised key,
+//     so anything that key can sustain must not be able to block it.
+//
+//     RecoveryMessages holds the exempt set, MsgAddressRevoke and
+//     MsgPlayerUpdatePrimaryAddress, and the exemption is the primary address
+//     rather than the message type: a delegate naming a recovery message gets
+//     no exemption at all. Both already demand PermDelete or PermAll at the
+//     ante and neither carries a throttle key, which is what makes them safe to
+//     exempt. This does not stop a bad key exhausting the quota. It stops that
+//     from being unrecoverable.
+//
 // This upgrade carries one state migration, MigrateInfusionFuelRounding, which
 // recomputes every reactor infusion against the corrected conversion. Without it
 // the fix would only reach an infusion the next time staking touched that
 // delegation, and a delegation nobody moves is never touched. Capacity moves
 // down where it moves at all, and the grid cascade that follows sheds the
-// allocations that were only ever powered by rounding. Everything else in this
-// upgrade is binary-only. There is no state migration: no persisted state
-// is read or written by this upgrade and there are no store-key changes. The
-// address nonce store starts empty and every address correctly begins at 0,
-// because the sign-byte change invalidates every previously issued proof
-// regardless. It
-// exists so validators adopt the new ante behaviour at a coordinated height —
-// nodes running a mix of the old and new binaries would accept different
-// transactions and diverge.
+// allocations that were only ever powered by rounding.
+//
+// Everything else in this upgrade is binary-only, and there are no store-key
+// changes. The address nonce store starts empty and every address correctly
+// begins at 0, because the sign-byte change invalidates every previously issued
+// proof regardless. The upgrade exists so validators adopt the new ante and
+// handler behaviour at a coordinated height - nodes running a mix of the old and
+// new binaries would accept different transactions and diverge.
 const UpgradeName = "v0.22.0"

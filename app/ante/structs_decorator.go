@@ -107,6 +107,21 @@ func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, 
 			}
 		}
 
+		/* A recovery message from the player's own primary address does not spend
+		 * the shared quota. See RecoveryMessages: the quota is per player and
+		 * charged here in the ante, so a delegated key can exhaust it on messages
+		 * that fail, and without this the message it blocks is the one that would
+		 * evict it.
+		 *
+		 * Not counting is the whole exemption. A player whose only messages are
+		 * recovery ones never enters playerMsgCounts, so the loop below neither
+		 * increments nor compares for them - which is what lets a revoke through
+		 * a quota that is already full.
+		 */
+		if RecoveryMessages[typeURL] && d.keeper.IsPlayerPrimaryAddress(ctx, playerId, creator) {
+			continue
+		}
+
 		playerMsgCounts[playerId]++
 	}
 

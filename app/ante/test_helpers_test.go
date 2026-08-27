@@ -35,6 +35,10 @@ type mockAnteKeeper struct {
 	// that generate the ids they are checking rather than naming them.
 	throttleAuthDenyFn func(creator, targetId string) bool
 	hasTransientStore  bool
+	// primaryAddresses maps playerId -> that player's primary address, for the
+	// recovery-message quota exemption. Empty means no address is primary, so a
+	// test only has to name the one it cares about.
+	primaryAddresses map[string]string
 	// incrementOrder records the order IncrementPlayerMsgCount was called in,
 	// so a test can assert the cap loop iterates players deterministically.
 	incrementOrder []string
@@ -48,6 +52,7 @@ func newMockAnteKeeper() *mockAnteKeeper {
 		msgCounts:          make(map[string]uint64),
 		throttleKeys:       make(map[string]bool),
 		throttleAuthDenied: make(map[string]bool),
+		primaryAddresses:   make(map[string]string),
 		hasTransientStore:  true,
 	}
 }
@@ -72,6 +77,15 @@ func (m *mockAnteKeeper) GetPermissionsByBytes(_ context.Context, permissionId [
 
 func (m *mockAnteKeeper) GetGridAttribute(_ context.Context, gridAttributeId string) uint64 {
 	return m.gridAttrs[gridAttributeId]
+}
+
+// setPrimaryAddress makes address the primary one for playerId.
+func (m *mockAnteKeeper) setPrimaryAddress(playerId string, address string) {
+	m.primaryAddresses[playerId] = address
+}
+
+func (m *mockAnteKeeper) IsPlayerPrimaryAddress(_ context.Context, playerId string, address string) bool {
+	return address != "" && m.primaryAddresses[playerId] == address
 }
 
 func (m *mockAnteKeeper) IncrementPlayerMsgCount(_ context.Context, playerId string, delta uint64) uint64 {

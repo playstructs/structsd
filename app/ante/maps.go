@@ -596,6 +596,32 @@ func ContainsGatedStructsMessage(msgs []sdk.Msg) bool {
 	return false
 }
 
+/* RecoveryMessages are the messages a player uses to take a key away from
+ * somebody, and they do not spend the shared per-player message quota when the
+ * player's own primary address sends them.
+ *
+ * The quota is keyed by player, so every address of a player draws on one
+ * budget, and StructsDecorator charges it in the ante - before any handler runs
+ * and therefore whether or not the message succeeds. A delegated key can spend
+ * the whole block's budget on messages that fail, which locks the owner out for
+ * that block. That is griefing everywhere except here, where it is a trap: the
+ * lockout covers AddressRevoke, so the key doing the griefing blocks the one
+ * message that would evict it. The repository already states the rule this
+ * breaks, for delegation transfers - a revoke is the response to a compromised
+ * key, so anything that key can sustain must not be able to block it.
+ *
+ * The exemption is deliberately narrow on both axes. Only these two messages,
+ * and only from the primary address, which is the recovery identity and is not
+ * the address a griefer holds. Both already demand a strong bit at the ante -
+ * PermDelete and PermAll - so this opens no free channel: a key that could spam
+ * them unmetered could already do far worse. It does not stop a bad key
+ * exhausting the quota; it stops that from being unrecoverable.
+ */
+var RecoveryMessages = map[string]bool{
+	"/structs.structs.MsgAddressRevoke":              true,
+	"/structs.structs.MsgPlayerUpdatePrimaryAddress": true,
+}
+
 // ContainsStakingMessage returns true if any message in the tx is a staking
 // message this module throttles, and is what decides whether the staking ante
 // checks run.

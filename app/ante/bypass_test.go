@@ -301,3 +301,117 @@ func TestContainsStakingMessage(t *testing.T) {
 	require.True(t, sante.ContainsStakingMessage([]sdk.Msg{stakingMsg}))
 	require.True(t, sante.ContainsStakingMessage([]sdk.Msg{bankMsg, stakingMsg}))
 }
+
+/* TestStructsDecorator_RecoveryMessagesSurviveAnExhaustedQuota is the regression
+ * on a delegated key blocking its own eviction.
+ *
+ * The per-player message quota is keyed by player, so every address of a player
+ * draws on one budget, and it is charged here in the ante — before any handler
+ * runs, and therefore whether or not the message succeeds. The SDK commits the
+ * ante cache and discards only the message cache, so forty messages that all
+ * fail still spend the whole block's budget.
+ *
+ * That is griefing everywhere except one place, where it is a trap: the lockout
+ * covers AddressRevoke, so the key doing the griefing blocks the one message
+ * that would remove it. The rule this breaks is already written down for
+ * delegation transfers — a revoke is the response to a compromised key, so
+ * anything that key can sustain must not be able to block it.
+ */
+func TestStructsDecorator_RecoveryMessagesSurviveAnExhaustedQuota(t *testing.T) {
+	const playerId = "1-1"
+	const primary = "structs1primary"
+	const delegate = "structs1delegate"
+
+	newDecorator := func() (sante.StructsDecorator, *mockAnteKeeper) {
+		mk := newMockAnteKeeper()
+		mk.playerIndexes[primary] = 1
+		mk.playerIndexes[delegate] = 1
+		mk.setPrimaryAddress(playerId, primary)
+		mk.permissions[fmt.Sprintf("%d-%s@0", types.ObjectType_address, primary)] = types.PermAll
+		mk.permissions[fmt.Sprintf("%d-%s@0", types.ObjectType_address, delegate)] = types.PermAll
+		return sante.NewStructsDecorator(mk, 2), mk
+	}
+
+	// The quota is only charged in DeliverTx.
+	deliverCtx := func() sdk.Context { return newTestCtx() }
+
+	exhaust := func(t *testing.T, dec sante.StructsDecorator) {
+		t.Helper()
+		next, _ := identityHandler()
+		tx := mockTx{msgs: []sdk.Msg{
+			&types.MsgPlayerUpdateName{Creator: delegate},
+			&types.MsgPlayerUpdateName{Creator: delegate},
+		}}
+		_, err := dec.AnteHandle(deliverCtx(), tx, false, next)
+		require.NoError(t, err, "the delegate's own messages are within the cap")
+	}
+
+	t.Run("an ordinary message is capped once the delegate has spent the quota", func(t *testing.T) {
+		dec, _ := newDecorator()
+		exhaust(t, dec)
+
+		next, called := identityHandler()
+		tx := mockTx{msgs: []sdk.Msg{&types.MsgPlayerUpdateName{Creator: primary}}}
+
+		_, err := dec.AnteHandle(deliverCtx(), tx, false, next)
+		require.Error(t, err, "the quota is shared, which is the behaviour being preserved")
+		require.True(t, sante.ErrPlayerMsgCapExceeded.Is(err))
+		require.False(t, *called)
+	})
+
+	t.Run("a revoke from the primary address still gets through", func(t *testing.T) {
+		dec, _ := newDecorator()
+		exhaust(t, dec)
+
+		next, called := identityHandler()
+		tx := mockTx{msgs: []sdk.Msg{&types.MsgAddressRevoke{Creator: primary, Address: delegate}}}
+
+		_, err := dec.AnteHandle(deliverCtx(), tx, false, next)
+		require.NoError(t, err, "the key being revoked must not be able to block the revoke")
+		require.True(t, *called)
+	})
+
+	t.Run("so does a primary-address rotation", func(t *testing.T) {
+		dec, _ := newDecorator()
+		exhaust(t, dec)
+
+		next, called := identityHandler()
+		tx := mockTx{msgs: []sdk.Msg{
+			&types.MsgPlayerUpdatePrimaryAddress{Creator: primary, PrimaryAddress: "structs1replacement"},
+		}}
+
+		_, err := dec.AnteHandle(deliverCtx(), tx, false, next)
+		require.NoError(t, err)
+		require.True(t, *called)
+	})
+
+	// The exemption is the primary address, not the message type: a delegate
+	// cannot mint itself unlimited free messages by naming a recovery one.
+	t.Run("a delegate gets no exemption from a recovery message", func(t *testing.T) {
+		dec, _ := newDecorator()
+		exhaust(t, dec)
+
+		next, called := identityHandler()
+		tx := mockTx{msgs: []sdk.Msg{&types.MsgAddressRevoke{Creator: delegate, Address: primary}}}
+
+		_, err := dec.AnteHandle(deliverCtx(), tx, false, next)
+		require.Error(t, err, "only the recovery identity is exempt")
+		require.True(t, sante.ErrPlayerMsgCapExceeded.Is(err))
+		require.False(t, *called)
+	})
+
+	// And the exemption does not itself become a free channel: recovery messages
+	// from the primary spend nothing, so they cannot exhaust the quota either.
+	t.Run("recovery messages spend nothing", func(t *testing.T) {
+		dec, mk := newDecorator()
+
+		for i := 0; i < 10; i++ {
+			next, _ := identityHandler()
+			tx := mockTx{msgs: []sdk.Msg{&types.MsgAddressRevoke{Creator: primary, Address: delegate}}}
+			_, err := dec.AnteHandle(deliverCtx(), tx, false, next)
+			require.NoError(t, err)
+		}
+
+		require.Zero(t, mk.msgCounts[playerId], "no recovery message may touch the counter")
+	})
+}
