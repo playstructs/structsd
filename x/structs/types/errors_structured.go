@@ -560,6 +560,8 @@ func (e *StructLocationError) Error() string {
 		return "struct type cannot exist outside a planet"
 	case "immovable":
 		return fmt.Sprintf("struct type (%d) is not movable and cannot change ambit", e.StructType)
+	case "self_defense":
+		return fmt.Sprintf("struct (%s) cannot be assigned as its own defender", e.StructId)
 	default:
 		return fmt.Sprintf("struct type (%d) cannot exist in this location: %s", e.StructType, e.Reason)
 	}

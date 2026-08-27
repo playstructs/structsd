@@ -460,6 +460,25 @@ func (ac *AttackContext) ResolveDefenders(skipBlock bool) {
 
 		defender = ac.Attacker.CC.GetStruct(defender.GetStructId())
 
+		/* Neither combatant defends in this pass.
+		 *
+		 * The target's counter belongs to ResolveTargetCounter, which the caller
+		 * runs after ResolveAttackDamage: a target counters only once it has
+		 * survived the volley. A self-registered target would be picked up here
+		 * instead - GetStruct returns the same cache instance, so it is
+		 * literally ac.Target - and its counter would land before the shots,
+		 * voiding the whole volley if it killed the attacker. The registration
+		 * is refused now, but this is the guard that covers rows already on disk
+		 * and anything that writes one later.
+		 *
+		 * The attacker is skipped for the same structural reason rather than a
+		 * game one: it would be countering itself.
+		 */
+		if defender.GetStructId() == ac.Target.GetStructId() || defender.GetStructId() == ac.Attacker.GetStructId() {
+			ac.Attacker.CC.k.logger.Debug("Skipping combatant registered as a defender", "defender", defender.GetStructId(), "target", ac.Target.GetStructId())
+			continue
+		}
+
 		if defender.ReadinessCheck() != nil {
 			continue
 		}

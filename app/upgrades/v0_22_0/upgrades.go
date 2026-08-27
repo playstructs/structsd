@@ -33,6 +33,10 @@ func CreateUpgradeHandler(
 			return nil, err
 		}
 
+		if err := MigrateSelfDefenseRegistrations(ctx, keepers); err != nil {
+			return nil, err
+		}
+
 		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
 }
@@ -132,5 +136,44 @@ func MigrateGridCascadeQueue(ctx context.Context, keepers *upgrades.Keepers) err
 	}
 
 	logger.Info("grid cascade queue re-keyed", "entries", migrated)
+	return nil
+}
+
+/* MigrateSelfDefenseRegistrations clears any struct registered as its own
+ * defender.
+ *
+ * StructDefenseSet never compared the two ids, and IsProtecting compares
+ * locations - a struct is trivially co-located with itself - so the pairing was
+ * accepted. The consequence is in the resolution order: StructAttack runs
+ * defender counters, then the volley, then the target's own counter, and a
+ * self-registered target is picked up in the first pass. Its counter therefore
+ * landed before the volley that provoked it, and a counter that destroyed the
+ * attacker voided the whole volley, so the target took nothing. The documented
+ * rule is that a target counters only after surviving the shots.
+ *
+ * ResolveDefenders now skips either combatant, so an unmigrated row is already
+ * inert. This removes it anyway: the row is also a live registration slot -
+ * SetStructDefender lets a struct protect only one target at a time - so leaving
+ * it in place would keep that struct's real defensive assignment blocked.
+ */
+func MigrateSelfDefenseRegistrations(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateSelfDefenseRegistrations")
+
+	k := keepers.StructsKeeper
+
+	var cleared int
+	for _, defender := range k.GetAllStructDefenderExport(ctx) {
+		if defender == nil || defender.DefendingStructId != defender.ProtectedStructId {
+			continue
+		}
+
+		k.ClearStructDefender(ctx, defender.ProtectedStructId, defender.DefendingStructId)
+		cleared++
+
+		logger.Info("cleared self-defense registration", "structId", defender.DefendingStructId)
+	}
+
+	logger.Info("self-defense registrations cleared", "count", cleared)
 	return nil
 }

@@ -72,6 +72,22 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
     }
 
 
+    /* A struct cannot defend itself.
+     *
+     * IsProtecting below compares locations, and a struct is trivially
+     * co-located with itself, so nothing else here would refuse it. The damage
+     * is in the ordering: StructAttack resolves defender counters, then the
+     * volley, then the target's own counter. A target registered as its own
+     * defender is picked up in the first pass, so its counter lands before the
+     * volley that provoked it - and if that counter destroys the attacker, the
+     * volley is voided entirely and the target takes nothing. That inverts the
+     * documented sequence, in which a target counters only after surviving the
+     * shots.
+     */
+    if msg.DefenderStructId == msg.ProtectedStructId {
+        return emptyResponse, types.NewStructLocationError(structure.GetStructType().Id, "", "self_defense").WithStruct(structure.GetStructId()).WithLocation("struct", msg.ProtectedStructId)
+    }
+
     //load target
     protectedStructure := cc.GetStruct(msg.ProtectedStructId)
     if !protectedStructure.LoadStruct() {

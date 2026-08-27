@@ -580,7 +580,32 @@ package v0_22_0
 //     naming a destroyed allocation - was closed in v0.21.0 by keying that
 //     index clear off the source object id. This is the primitive underneath it.
 //
-// This upgrade carries two state migrations.
+//   - A struct can no longer be assigned as its own defender, and any existing
+//     self-registration is cleared.
+//
+//     StructDefenseSet never compared the two ids, and IsProtecting compares
+//     locations - a struct is trivially co-located with itself - so nothing
+//     refused the pairing. The damage is in the resolution order: StructAttack
+//     runs defender counters, then the volley, then the target's own counter, so
+//     a target counters only after surviving the shots. A self-registered target
+//     was picked up in the defender pass instead - GetStruct returns one cache
+//     instance per id, so the "defender" is literally the target - and its
+//     counter landed before the volley. A counter that destroyed the attacker
+//     then voided the volley outright and the target took nothing at all.
+//     CounterSpent lives on the per-transaction cache, so it worked on every
+//     attack.
+//
+//     GAME RULE: this restores the documented sequence rather than changing it.
+//     structs.ai already describes defender counters, then the volley, then the
+//     target's counter, and describes a defender as co-located with the struct
+//     it protects. Worth clarifying upstream that self-assignment is refused
+//     outright, which the doc only implies.
+//
+//     Refused at registration, and skipped again in ResolveDefenders, which is
+//     what covers rows already on disk. The attacker is skipped there too, for a
+//     structural reason rather than a game one: it would be countering itself.
+//
+// This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs
 // first, before anything else in the upgrade can enqueue: the re-key reads every
@@ -589,6 +614,12 @@ package v0_22_0
 // sequence the moment the two shapes coexist. Legacy rows carry no ordering of
 // their own and are re-appended sorted, which is the order the old cascade
 // processed them in.
+//
+// MigrateSelfDefenseRegistrations clears any struct registered as its own
+// defender. The runtime guard already makes such a row inert, so this is not
+// what closes the exploit; it matters because the row is also a registration
+// slot, and a struct defends one target at a time, so leaving it would keep that
+// struct's real assignment blocked.
 //
 // MigrateInfusionFuelRounding recomputes every reactor infusion against the
 // corrected conversion. Without it the fix would only reach an infusion the next
