@@ -708,6 +708,26 @@ package v0_22_0
 //     GetObjectPermissionIDBytes is a plain function - that shape blindness was
 //     the whole of the gap.
 //
+//   - MsgStructTrash is registered in ChargeMessages.
+//
+//     Trashing a struct costs the same charge as building it, and the handler
+//     both checks the owner's charge and calls Discharge(). The ante reads the
+//     map rather than the handler, so with no entry it applied neither the
+//     charge floor in StructsDecorator nor the per-transaction duplicate check
+//     in ThrottleDecorator. CheckTx does not run handlers, so a transaction
+//     carrying the same trash twice was admitted and then failed in delivery
+//     once the first message had destroyed the struct - free to submit, a pure
+//     Structs transaction paying no fee, and rolled back only after the block
+//     had paid to execute it.
+//
+//     Nine handlers call Discharge(); the map listed eight. That is the shape a
+//     missing maps.go entry always has - it fails silently rather than erroring -
+//     so TestArch_DischargingHandlersAreChargeMessages now walks the handler
+//     sources and requires the two sets to match in both directions. An entry
+//     with no discharge behind it is a defect too: it spends the player's block
+//     slot for nothing, and the two ante checks then disagree about whether the
+//     slot was used.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

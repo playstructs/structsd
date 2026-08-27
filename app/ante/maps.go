@@ -278,6 +278,13 @@ var ChargeMessages = map[string]bool{
 	"/structs.structs.MsgStructMove":             true,
 	"/structs.structs.MsgStructStealthActivate":  true,
 	"/structs.structs.MsgStructStealthDeactivate": true,
+	// Trashing a struct costs the same charge as building it, so the handler
+	// checks the owner's charge and calls Discharge(). Without an entry here the
+	// ante skipped both the charge floor and the per-transaction duplicate
+	// check, so a transaction carrying the same trash twice was admitted and
+	// then failed in delivery - free to submit, and rolled back after the block
+	// had already paid to execute it.
+	"/structs.structs.MsgStructTrash":            true,
 }
 
 // ProofMessages are PoW messages that get per-object throttling via transient

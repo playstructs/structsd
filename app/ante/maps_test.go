@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -707,4 +708,91 @@ func TestStakingSignerExtractorsCoverFreeStakingMessages(t *testing.T) {
 		require.True(t, FreeStakingMessages[typeURL],
 			"%s has a signer extractor but is not a free staking message", typeURL)
 	}
+}
+
+/* TestArch_DischargingHandlersAreChargeMessages keeps ChargeMessages and the
+ * handlers that actually spend a charge from drifting apart.
+ *
+ * A charge action costs the player their one discharge per block, and the ante
+ * enforces two things on the strength of this map: StructsDecorator refuses a
+ * player who has already discharged this block, and ThrottleDecorator refuses a
+ * second charge message in the same transaction. Both read the map, neither
+ * reads the handler.
+ *
+ * So a handler that discharges without an entry here is admitted by CheckTx and
+ * then fails in delivery, which is the worst of both: free to submit, because a
+ * pure Structs transaction pays no fee, and rolled back only after the block has
+ * paid to execute it. MsgStructTrash was missing for exactly that reason.
+ *
+ * The reverse is a defect too. An entry with no discharge behind it spends the
+ * player's block slot for nothing, and StructActivate's own comment records that
+ * the two ante checks then disagree about whether the slot was used.
+ */
+func TestArch_DischargingHandlersAreChargeMessages(t *testing.T) {
+	keeperDir := filepath.Join("..", "..", "x", "structs", "keeper")
+	entries, err := os.ReadDir(keeperDir)
+	require.NoError(t, err)
+
+	fset := token.NewFileSet()
+	discharging := map[string]bool{}
+
+	for _, e := range entries {
+		name := e.Name()
+		if !strings.HasPrefix(name, "msg_server_") || !strings.HasSuffix(name, ".go") ||
+			strings.HasSuffix(name, "_test.go") {
+			continue
+		}
+
+		file, err := parser.ParseFile(fset, filepath.Join(keeperDir, name), nil, 0)
+		require.NoError(t, err)
+
+		for _, decl := range file.Decls {
+			fn, ok := decl.(*ast.FuncDecl)
+			if !ok || fn.Recv == nil || fn.Body == nil {
+				continue
+			}
+
+			msgName := handlerMessageType(fn)
+			if msgName == "" {
+				continue
+			}
+
+			ast.Inspect(fn.Body, func(n ast.Node) bool {
+				sel, ok := n.(*ast.SelectorExpr)
+				if !ok {
+					return true
+				}
+				if sel.Sel.Name == "Discharge" {
+					discharging[msgName] = true
+				}
+				return true
+			})
+		}
+	}
+
+	require.GreaterOrEqual(t, len(discharging), 8,
+		"expected to find the charge-consuming handlers; the source scan is probably broken")
+
+	var missing []string
+	for msgName := range discharging {
+		if !ChargeMessages["/structs.structs."+msgName] {
+			missing = append(missing, msgName)
+		}
+	}
+	sort.Strings(missing)
+	require.Empty(t, missing,
+		"these handlers call Discharge() but are not in ChargeMessages, so the ante applies neither the charge floor nor the per-transaction duplicate check to them: %s",
+		strings.Join(missing, ", "))
+
+	var stale []string
+	for typeURL := range ChargeMessages {
+		msgName := strings.TrimPrefix(typeURL, "/structs.structs.")
+		if !discharging[msgName] {
+			stale = append(stale, msgName)
+		}
+	}
+	sort.Strings(stale)
+	require.Empty(t, stale,
+		"these are declared charge messages but no handler discharges for them, so the ante spends a player's block slot for nothing: %s",
+		strings.Join(stale, ", "))
 }
