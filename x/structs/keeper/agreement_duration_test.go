@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
+	keeperlib "structs/x/structs/keeper"
 	"structs/x/structs/types"
 )
 
@@ -141,4 +142,84 @@ func TestDurationIncrease_ValidExtensionMovesTheIndex(t *testing.T) {
 	requireExpirationIntact(t, f, agreement.Id, oldEnd+25)
 	require.NotContains(t, f.k.GetAllAgreementIdByExpirationIndex(f.ctx, oldEnd), agreement.Id,
 		"the stale index row must be cleared, or the agreement expires early")
+}
+
+/* Regression suite for an agreement whose end block rolls over.
+ *
+ * A provider publishes its own duration maximum and nothing bounds it, so a
+ * duration large enough to wrap startBlock + duration reaches the handler. The
+ * result is not a far-future agreement: it is one whose end block lands in the
+ * past. AgreementExpirations reads the expiration index at exactly the current
+ * height, so that agreement is never revisited - it keeps its capacity in the
+ * provider's load and Checkpoint() goes on billing it against the shared
+ * collateral pool, out of other consumers' escrow.
+ *
+ * Note what bounds this in practice, because it is why the arithmetic is
+ * hardening rather than a live theft: the collateral is the same
+ * multiplication, duration * capacity * rate, so a wrapping duration is
+ * unaffordable for any nonzero rate. It is only reachable on a provider whose
+ * rate is zero - which SetRate permits - and there the deposit is zero too. So
+ * an end-to-end test with a paying provider cannot be built; the affordability
+ * check refuses it first, for a different reason.
+ */
+
+// endBlockFor is the arithmetic all three end-block paths share - AgreementOpen,
+// CapacityIncrease and CapacityDecrease - so it is tested directly rather than
+// through three fixtures that each refuse a huge duration for their own
+// unrelated reasons.
+func TestEndBlockFor_RefusesAWrap(t *testing.T) {
+	start := uint64(1_000)
+
+	end, err := keeperlib.EndBlockForTest(start, 50)
+	require.NoError(t, err)
+	require.Equal(t, uint64(1_050), end, "an ordinary window must be untouched")
+
+	end, err = keeperlib.EndBlockForTest(start, math.MaxUint64-start)
+	require.NoError(t, err, "landing exactly on the top is not a wrap")
+	require.Equal(t, uint64(math.MaxUint64), end)
+
+	_, err = keeperlib.EndBlockForTest(start, math.MaxUint64-start+1)
+	require.Error(t, err, "one past the top must be refused, not rolled into the past")
+
+	_, err = keeperlib.EndBlockForTest(start, math.MaxUint64)
+	require.Error(t, err)
+}
+
+/* TestAgreementOpen_RejectsWrappingDuration is the end-to-end case, on the only
+ * provider it is reachable on: one with a zero rate, where the collateral
+ * multiplication cannot refuse it first.
+ */
+func TestAgreementOpen_RejectsWrappingDuration(t *testing.T) {
+	f := setupTeardownFixture(t, 0, "0.5", "0.25")
+
+	// A provider that advertises the whole range, which nothing forbids.
+	tightenProvider(t, f, 1, 10000, 1, math.MaxUint64)
+	advanceBlocks(f, 100)
+
+	before := f.k.GetAllAgreementIdByProviderIndex(f.ctx, f.provider.Id)
+
+	height := uint64(sdk.UnwrapSDKContext(f.ctx).BlockHeight())
+	_, err := f.ms.AgreementOpen(f.ctx, &types.MsgAgreementOpen{
+		Creator:    f.consumer.Creator,
+		ProviderId: f.provider.Id,
+		Capacity:   1,
+		Duration:   math.MaxUint64 - height + 1,
+	})
+	require.Error(t, err, "a duration that rolls the end block over must be refused")
+	require.ErrorContains(t, err, "duration")
+
+	require.Equal(t, len(before), len(f.k.GetAllAgreementIdByProviderIndex(f.ctx, f.provider.Id)),
+		"a refused open must not have created an agreement")
+}
+
+// An ordinary duration is untouched by the check.
+func TestAgreementOpen_NormalDurationUnaffected(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0.5", "0.25")
+	tightenProvider(t, f, 1, 10000, 1, 1000000)
+
+	agreement, _ := f.openAgreement(t, 100, 50)
+	stored, found := f.k.GetAgreement(f.ctx, agreement.Id)
+	require.True(t, found)
+	require.Greater(t, stored.EndBlock, stored.StartBlock,
+		"an ordinary agreement's window must still move forwards")
 }

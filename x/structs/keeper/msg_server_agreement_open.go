@@ -56,7 +56,21 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     //
     // Checked here with the rest of the parameter validation, ahead of the
     // collateral transfer below, so a refusal never has to unwind a payment.
-    if !k.AgreementExpirationHeightHasRoomFor(ctx, uint64(ctx.BlockHeight()) + msg.Duration, "") {
+    //
+    // The end block is computed first, and checked. A provider publishes its own
+    // duration maximum and nothing bounds that, so a duration large enough to
+    // roll the addition over gets this far - and a rolled-over end block is not
+    // a far-future agreement, it is one indexed at a height the chain has
+    // already passed. AgreementExpirations reads the index at exactly the
+    // current height, so that agreement never expires, keeps its capacity in the
+    // provider's load, and goes on being billed. Ahead of the transfer for the
+    // same reason as the bucket check.
+    endBlock, endBlockErr := endBlockFor(uint64(ctx.BlockHeight()), msg.Duration)
+    if endBlockErr != nil {
+        return emptyResponse, endBlockErr
+    }
+
+    if !k.AgreementExpirationHeightHasRoomFor(ctx, endBlock, "") {
         return emptyResponse, types.NewParameterValidationError("duration", msg.Duration, "expiration_height_full").WithRange(0, types.AgreementExpirationBucketCap)
     }
 
@@ -112,7 +126,6 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     // consumer never received, leaving the collateral pool short by that much and
     // tripping the provider-collateral-solvency invariant.
     startBlock := uint64(ctx.BlockHeight())
-    endBlock := startBlock + msg.Duration
 
     agreementRecord := types.CreateBaseAgreement(
         msg.Creator,

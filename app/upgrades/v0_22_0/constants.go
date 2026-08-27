@@ -1011,6 +1011,33 @@ package v0_22_0
 //     what a node replaying from genesis computes, which is an app-hash
 //     divergence against the live chain.
 //
+//   - An agreement's end block is computed with checked addition, in all three
+//     places one is computed.
+//
+//     A provider publishes its own duration maximum and nothing bounds it, so a
+//     duration large enough to roll startBlock + duration over reached
+//     AgreementOpen, and the same held for the end block both capacity paths
+//     derive. A rolled-over end block is not a far-future agreement: it lands in
+//     the past, AgreementExpirations reads the index at exactly the current
+//     height, and that agreement is never revisited - it keeps its capacity in
+//     the provider's load and Checkpoint() goes on billing it against the shared
+//     collateral pool, out of other consumers' escrow.
+//
+//     endBlockFor is the shared arithmetic, and AgreementOpen checks it ahead of
+//     the collateral transfer for the same reason the expiration-bucket check
+//     sits there: a refusal should never have to unwind a payment.
+//     DurationIncrease was already checked this way earlier in this release, so
+//     all four end-block paths now agree.
+//
+//     No protocol maximum duration was added. The invariant that matters is that
+//     the window moves forwards, which the addition states exactly; a constant
+//     would be a game rule with no defensible value. What bounds this in practice
+//     is that the collateral is the same multiplication - duration * capacity *
+//     rate - so a wrapping duration is unaffordable at any nonzero rate and only
+//     reachable on a zero-rate provider, where the deposit is zero as well. That
+//     makes it hardening rather than a live theft, and the residual it removes is
+//     a permanently non-expiring agreement pinning capacity.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

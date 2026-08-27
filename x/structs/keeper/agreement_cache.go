@@ -662,6 +662,31 @@ func (cache *AgreementCache) SetEndBlock(endBlock uint64) {
 // The multiply happens in math.Int because remaining * capacity overflows uint64
 // well inside the range a provider may publish — SetDurationRange puts no
 // ceiling on durationMaximum.
+/* endBlockFor adds a duration to a start height and refuses a wrap.
+ *
+ * An agreement's end block is where its whole lifecycle hangs: the expiration
+ * index is keyed by it, and AgreementExpirations reads that index at exactly the
+ * current height. An addition that rolls over does not produce a far-future
+ * agreement, it produces one whose end block is in the past - indexed at a
+ * height the chain has already passed and will never revisit, so it never
+ * expires, keeps its capacity in the provider's load, and goes on being billed.
+ *
+ * A provider publishes its own duration maximum and nothing bounds that, so the
+ * duration reaching here is only ever as sane as whoever set the range. Checking
+ * the addition states the invariant that actually matters - the window must move
+ * forwards - without inventing a protocol-wide maximum that would be a game rule
+ * rather than an arithmetic one.
+ */
+func endBlockFor(startBlock uint64, duration uint64) (uint64, error) {
+	endBlock := startBlock + duration
+
+	if endBlock < startBlock {
+		return 0, types.NewParameterValidationError("duration", duration, "above_maximum")
+	}
+
+	return endBlock, nil
+}
+
 /* rescaledDuration re-prices the unearned span at the new capacity.
  *
  * Wide arithmetic, because the product of a duration and a capacity does not fit
@@ -745,7 +770,12 @@ func (cache *AgreementCache) CapacityIncrease(amount uint64) error {
 	// The rescale re-bases the window on this block, so the new end block is
 	// current + newDuration. Checked before the payout below, like everything
 	// else that can refuse the change.
-	if err := cache.verifyExpirationHeight(cache.GetCurrentBlock() + newDuration); err != nil {
+	newEndBlock, err := endBlockFor(cache.GetCurrentBlock(), newDuration)
+	if err != nil {
+		return err
+	}
+
+	if err := cache.verifyExpirationHeight(newEndBlock); err != nil {
 		return err
 	}
 
@@ -755,7 +785,7 @@ func (cache *AgreementCache) CapacityIncrease(amount uint64) error {
 	cache.PayoutVoidedProviderCancellationPenalty()
 
 	cache.SetStartBlock(cache.GetCurrentBlock())
-	cache.SetEndBlock(cache.GetStartBlock() + newDuration)
+	cache.SetEndBlock(newEndBlock)
 
 	// Provider Load Increase
 	cache.GetProvider().AgreementLoadIncrease(amount)
@@ -807,7 +837,12 @@ func (cache *AgreementCache) CapacityDecrease(amount uint64) error {
 	// The rescale re-bases the window on this block, so the new end block is
 	// current + newDuration. Checked before the payout below, like everything
 	// else that can refuse the change.
-	if err := cache.verifyExpirationHeight(cache.GetCurrentBlock() + newDuration); err != nil {
+	newEndBlock, err := endBlockFor(cache.GetCurrentBlock(), newDuration)
+	if err != nil {
+		return err
+	}
+
+	if err := cache.verifyExpirationHeight(newEndBlock); err != nil {
 		return err
 	}
 
@@ -817,7 +852,7 @@ func (cache *AgreementCache) CapacityDecrease(amount uint64) error {
 	cache.PayoutVoidedProviderCancellationPenalty()
 
 	cache.SetStartBlock(cache.GetCurrentBlock())
-	cache.SetEndBlock(cache.GetStartBlock() + newDuration)
+	cache.SetEndBlock(newEndBlock)
 
 	// Provider Load Decrease
 	cache.GetProvider().AgreementLoadDecrease(amount)
@@ -864,4 +899,12 @@ func (cache *AgreementCache) DurationIncrease(amount uint64) error {
 	cache.Changed = true
 
 	return nil
+}
+
+// EndBlockForTest exposes the shared end-block arithmetic. It is the one piece
+// common to AgreementOpen, CapacityIncrease and CapacityDecrease, and testing it
+// through any of them is unreliable: each refuses a huge duration for its own
+// unrelated reason before the addition is reached.
+func EndBlockForTest(startBlock uint64, duration uint64) (uint64, error) {
+	return endBlockFor(startBlock, duration)
 }
