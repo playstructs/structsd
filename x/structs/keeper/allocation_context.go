@@ -68,6 +68,39 @@ func (cc *CurrentContext) GenesisImportAllocation(allocation types.Allocation, i
 	cc.UpdateSubstationConnectionCapacity(allocation.DestinationId)
 }
 
+/* GetAllocationsBySourceUpTo loads at most limit allocations for a source, and
+ * reports whether the source has more.
+ *
+ * GetAllAllocationBySource below materializes every allocation on a source: one
+ * index read, one store read and one retained cache object each, all before the
+ * caller can decide it has seen enough. That is fine on a transaction path,
+ * where gas bounds it, and not fine in the EndBlocker, where nothing does - a
+ * source can be fragmented into as many one-power allocations as its capacity
+ * allows, and GridCascade would load the whole set to shed a handful of them.
+ *
+ * The limit bounds the iteration rather than the result, so a source carrying
+ * stale index rows costs the same as one that does not. `more` is what lets the
+ * caller tell "this source is done" from "I stopped early", which are opposite
+ * conclusions: the first means the load cannot be shed, the second means come
+ * back next block.
+ */
+func (cc *CurrentContext) GetAllocationsBySourceUpTo(objectId string, limit int) (allocations []*AllocationCache, more bool) {
+	if limit <= 0 {
+		return nil, cc.k.SourceHasAllocations(cc.ctx, objectId)
+	}
+
+	allocationList, more := cc.k.GetAllocationIdsBySourceIndexUpTo(cc.ctx, objectId, limit)
+
+	for _, allocationId := range allocationList {
+		allocation, allocationFound := cc.GetAllocation(allocationId)
+		if allocationFound {
+			allocations = append(allocations, allocation)
+		}
+	}
+
+	return allocations, more
+}
+
 func (cc *CurrentContext) GetAllAllocationBySource(objectId string) (allocations []*AllocationCache) {
     allocationList := cc.k.GetAllAllocationIdBySourceIndex(cc.ctx, objectId)
 

@@ -403,6 +403,18 @@ package v0_22_0
 //     charging only for destroys would bound the shedding and leave the walk
 //     unbounded. What the budget does not reach stays queued for the next block.
 //
+//     It also bounds the reads. Capping the destroys said nothing about how many
+//     allocations were loaded to find them: GetAllAllocationBySource
+//     materialized every allocation on a source - an index read, a store read
+//     and a retained cache object each - before the loop could decide it had had
+//     enough. A source's fan-out is attacker-sized in the same way its depth is,
+//     capacity being splittable into one-power allocations, so a single wide
+//     source put the unbounded work back exactly where the budget had removed
+//     it. GetAllocationsBySourceUpTo bounds the iteration and reports whether
+//     more remain, which is what lets the loop tell "this source cannot be
+//     brought under capacity" - the Grid Queue problem warn - from "I stopped
+//     early", which requeues.
+//
 //     FIFO is the other half and is a security property, not tidiness. Ordering
 //     by object id sorts lexicographically, so an attacker could hold a
 //     substation whose id sorts late out of the queue indefinitely by keeping

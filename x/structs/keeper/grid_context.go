@@ -162,7 +162,12 @@ func (cc *CurrentContext) GridCascade() {
 				continue
 			}
 
-			allocationList := cc.GetAllAllocationBySource(objectId)
+			// Only as many allocations as this block could possibly shed. The
+			// source's fan-out is attacker-sized - capacity can be split into
+			// one-power allocations - and loading the whole set to destroy a
+			// handful of them puts the unbounded work back in the EndBlocker
+			// that the budget was supposed to take out of it.
+			allocationList, moreAllocations := cc.GetAllocationsBySourceUpTo(objectId, budget)
 			allocationPointer := 0
 
 			loadAttributeId := GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)
@@ -170,6 +175,18 @@ func (cc *CurrentContext) GridCascade() {
 
 			for cc.GetGridAttribute(loadAttributeId) > cc.GetGridAttribute(capacityAttributeId) {
 				if allocationPointer >= len(allocationList) {
+					if moreAllocations {
+						// Not out of allocations, out of the batch. Requeue so
+						// the rest are shed next block; this is the same
+						// deferral as running out of budget below, reached by
+						// the other road.
+						if err := cc.k.AppendGridCascadeQueue(cc.ctx, objectId); err != nil {
+							cc.k.logger.Error("Grid Queue (requeue failed)", "objectId", objectId, "error", err)
+						}
+						break
+					}
+
+					// Genuinely nothing left to shed and still over capacity.
 					// Something is probably wrong here...
 					cc.k.logger.Warn("Grid Queue problem", "objectId", objectId)
 					break

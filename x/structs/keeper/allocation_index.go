@@ -41,6 +41,38 @@ func (k Keeper) RemoveAllocationSourceIndex(ctx context.Context, sourceId string
 }
 
 
+// GetAllocationIdsBySourceIndexUpTo reads at most limit allocation ids for a
+// source and reports whether the index holds more. The bound is on the
+// iteration, so a source with a large index costs the same as a small one.
+func (k Keeper) GetAllocationIdsBySourceIndexUpTo(ctx context.Context, sourceId string, limit int) (list []string, more bool) {
+	if limit <= 0 {
+		return nil, k.SourceHasAllocations(ctx, sourceId)
+	}
+
+	sourceIndexStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AllocationSourceKeyPrefix(sourceId))
+	iterator := storetypes.KVStorePrefixIterator(sourceIndexStore, []byte{})
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		if len(list) >= limit {
+			return list, true
+		}
+		list = append(list, string(iterator.Key()))
+	}
+
+	return list, false
+}
+
+// SourceHasAllocations reports whether a source has any allocation at all,
+// reading one index row rather than the whole prefix.
+func (k Keeper) SourceHasAllocations(ctx context.Context, sourceId string) bool {
+	sourceIndexStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AllocationSourceKeyPrefix(sourceId))
+	iterator := storetypes.KVStorePrefixIterator(sourceIndexStore, []byte{})
+	defer iterator.Close()
+
+	return iterator.Valid()
+}
+
 func (k Keeper) GetAllAllocationIdBySourceIndex(ctx context.Context, sourceId string) (list []string) {
 	sourceIndexStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AllocationSourceKeyPrefix(sourceId))
 	iterator := storetypes.KVStorePrefixIterator(sourceIndexStore, []byte{})

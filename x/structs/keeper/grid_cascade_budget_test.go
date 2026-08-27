@@ -3,6 +3,8 @@ package keeper_test
 import (
 	"testing"
 
+	storetypes "cosmossdk.io/store/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
@@ -187,6 +189,191 @@ func TestGridCascade_ShortChainStillCompletesInOneBlock(t *testing.T) {
 
 	require.Zero(t, chain.cascadeBlock(t), "a small cascade must finish in the block it starts")
 	require.Zero(t, chain.liveAllocations(t))
+}
+
+/* buildFanOut gives one source many one-power allocations, which is the other
+ * shape a cascade can be made expensive in: not a long chain, a wide one.
+ */
+func buildFanOut(t *testing.T, allocations int) *cascadeChain {
+	t.Helper()
+
+	k, _, goCtx := setupMsgServer(t)
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	ownerAcc := sdk.AccAddress("cascadefanout1234567890123456789012")
+	owner := testAppendPlayer(k, ctx, types.Player{
+		Creator:        ownerAcc.String(),
+		PrimaryAddress: ownerAcc.String(),
+	})
+
+	// One unit of capacity per allocation: nothing here needs more than the
+	// source can actually supply.
+	k.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, owner.Id), uint64(allocations))
+
+	chain := &cascadeChain{k: k, ctx: ctx, owner: owner}
+
+	for i := 0; i < allocations; i++ {
+		cc := k.NewCurrentContext(ctx)
+		ownerCache := cc.GetPlayer(owner.Id)
+
+		allocation, err := cc.NewAllocation(
+			types.AllocationType_dynamic,
+			owner.Id,
+			"",
+			owner.Creator,
+			owner.Id,
+			1,
+		)
+		require.NoError(t, err, "allocation %d", i)
+
+		substation, err := cc.NewSubstation(owner.Creator, ownerCache, allocation)
+		require.NoError(t, err, "substation %d", i)
+		cc.CommitAll()
+
+		chain.substationIds = append(chain.substationIds, substation.ID())
+	}
+
+	return chain
+}
+
+// cascadeBlockGas runs one cascade block against a metered context and reports
+// what it cost. Gas is the observable that separates "shed 256 allocations" from
+// "loaded 100k allocations and then shed 256": the budget already bounds the
+// destroys, so only the reads distinguish the two.
+func (c *cascadeChain) cascadeBlockGas(t *testing.T) uint64 {
+	t.Helper()
+
+	metered := c.ctx.WithGasMeter(storetypes.NewInfiniteGasMeter())
+	cc := c.k.NewCurrentContext(sdk.UnwrapSDKContext(metered))
+
+	before := metered.GasMeter().GasConsumed()
+	cc.GridCascade()
+	cc.CommitAll()
+
+	return metered.GasMeter().GasConsumed() - before
+}
+
+// collapseSource cuts a source to zero capacity and queues it, so everything on
+// it has to be shed.
+func (c *cascadeChain) collapseSource(t *testing.T) {
+	t.Helper()
+
+	c.k.SetGridAttribute(c.ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, c.owner.Id), 0)
+	require.NoError(t, c.k.AppendGridCascadeQueue(c.ctx, c.owner.Id))
+}
+
+/* TestAllocationSourceIndex_BoundedRead pins the primitive the cascade leans on.
+ *
+ * The limit bounds the iteration rather than the result, and `more` is what lets
+ * a caller tell "this source is done" from "I stopped early" - opposite
+ * conclusions, since the first means the load cannot be shed and the second
+ * means come back next block.
+ */
+func TestAllocationSourceIndex_BoundedRead(t *testing.T) {
+	const fanOut = 12
+	chain := buildFanOut(t, fanOut)
+
+	require.True(t, chain.k.SourceHasAllocations(chain.ctx, chain.owner.Id))
+
+	partial, more := chain.k.GetAllocationIdsBySourceIndexUpTo(chain.ctx, chain.owner.Id, 5)
+	require.Len(t, partial, 5, "the read must stop at the limit")
+	require.True(t, more, "a truncated read must say so")
+
+	exact, more := chain.k.GetAllocationIdsBySourceIndexUpTo(chain.ctx, chain.owner.Id, fanOut)
+	require.Len(t, exact, fanOut)
+	require.False(t, more, "reading exactly the whole index is not truncation")
+
+	over, more := chain.k.GetAllocationIdsBySourceIndexUpTo(chain.ctx, chain.owner.Id, fanOut+50)
+	require.Len(t, over, fanOut)
+	require.False(t, more)
+
+	// A zero limit still has to answer the "is there more" question, and does it
+	// with one index row rather than the whole prefix.
+	none, more := chain.k.GetAllocationIdsBySourceIndexUpTo(chain.ctx, chain.owner.Id, 0)
+	require.Empty(t, none)
+	require.True(t, more)
+}
+
+func TestAllocationSourceIndex_EmptySource(t *testing.T) {
+	chain := buildFanOut(t, 0)
+
+	require.False(t, chain.k.SourceHasAllocations(chain.ctx, chain.owner.Id))
+
+	ids, more := chain.k.GetAllocationIdsBySourceIndexUpTo(chain.ctx, chain.owner.Id, 10)
+	require.Empty(t, ids)
+	require.False(t, more)
+}
+
+/* TestGridCascade_WideSourceLoadsOnlyWhatItCanShed is the fan-out regression.
+ *
+ * The budget bounds how many allocations a block *destroys*. It said nothing
+ * about how many it *loads*: GetAllAllocationBySource materializes every
+ * allocation on a source - an index read, a store read and a retained cache
+ * object each - before the loop can decide it has had enough. A source
+ * fragmented into one-power allocations therefore put unbounded work straight
+ * back into the EndBlocker that the budget was meant to take it out of.
+ *
+ * Measured in gas rather than asserted on a count, because the count is
+ * internal to the CurrentContext. The destroys are identical in both arms - the
+ * budget caps them - so any growth with fan-out is reads, which is exactly the
+ * quantity under test. With the bound the two arms come out within a fraction of
+ * a percent; without it the wide arm climbs with the width of the source.
+ */
+func TestGridCascade_WideSourceLoadsOnlyWhatItCanShed(t *testing.T) {
+	narrow := buildFanOut(t, types.GridCascadeBlockBudget+10)
+	narrow.collapseSource(t)
+	narrowGas := narrow.cascadeBlockGas(t)
+
+	wide := buildFanOut(t, types.GridCascadeBlockBudget*8)
+	wide.collapseSource(t)
+	wideGas := wide.cascadeBlockGas(t)
+
+	require.Less(t, wideGas, narrowGas*5/4,
+		"an eightfold wider source cost materially more to cascade, so the block is still loading the whole set: narrow=%d wide=%d",
+		narrowGas, wideGas)
+}
+
+/* TestGridCascade_WideSourceStillFinishes is the other half. A bounded load must
+ * defer the rest, not drop it: the source stays queued until everything on it is
+ * shed.
+ */
+func TestGridCascade_WideSourceStillFinishes(t *testing.T) {
+	fanOut := types.GridCascadeBlockBudget + 60
+	chain := buildFanOut(t, fanOut)
+	chain.collapseSource(t)
+
+	before := chain.liveAllocations(t)
+	remaining := chain.cascadeBlock(t)
+	destroyed := before - chain.liveAllocations(t)
+
+	require.LessOrEqual(t, destroyed, types.GridCascadeBlockBudget,
+		"one block destroyed more than the budget allows")
+	require.Greater(t, remaining, 0,
+		"a source wider than the budget must be requeued, not abandoned")
+
+	blocks := 1
+	for chain.cascadeBlock(t) != 0 {
+		blocks++
+		require.Less(t, blocks, 100, "the fan-out cascade is not converging")
+	}
+	require.Zero(t, chain.liveAllocations(t))
+}
+
+/* TestGridCascade_TruncatedBatchIsRequeuedNotReportedAsStuck separates the two
+ * ways the inner loop runs out of allocations. Reaching the end of a truncated
+ * batch means come back next block; reaching the end of a complete one means the
+ * source cannot be brought under capacity and is the "Grid Queue problem" warn.
+ * Confusing them either abandons work or cries wolf every block.
+ */
+func TestGridCascade_TruncatedBatchIsRequeuedNotReportedAsStuck(t *testing.T) {
+	chain := buildFanOut(t, types.GridCascadeBlockBudget+10)
+
+	chain.k.SetGridAttribute(chain.ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, chain.owner.Id), 0)
+	require.NoError(t, chain.k.AppendGridCascadeQueue(chain.ctx, chain.owner.Id))
+
+	require.NotZero(t, chain.cascadeBlock(t),
+		"the source must still be queued after a truncated batch")
+	require.Contains(t, chain.k.GetGridCascadeQueue(chain.ctx, false), chain.owner.Id)
 }
 
 /* TestGridCascadeQueue_IsFIFONotSorted is the anti-starvation property.
