@@ -384,80 +384,41 @@ func (k Keeper) ReactorInfusionUnbonding(ctx context.Context, unbondingId uint64
  * is slashed. Since slashing reduces the validator's tokens (but not delegation shares),
  * the value of each delegation share decreases proportionally.
  */
+/* ReactorUpdateInfusionsFromSlashing queues a reactor for reconciliation.
+ *
+ * It used to reconcile every active delegation to the validator right here.
+ * BeforeValidatorSlashed runs in BeginBlock against an infinite gas meter, and
+ * the delegator set is unbounded and chosen by the delegators, so the cost of
+ * one slash block was whatever they had built up - each entry costing a
+ * delegation read, an unbonding-delegation read and a grid rewrite. The SDK's
+ * own unbounded work during Slash covers unbonding delegations and
+ * redelegations, a window-limited set; this walked the full active one.
+ *
+ * A slash leaves delegation shares untouched, so AfterDelegationModified never
+ * fires for it and this hook is the module's only signal that one happened.
+ * Reconciliation therefore cannot be dropped, only deferred: the queue carries
+ * it into the EndBlocker, a bounded number of infusions at a time.
+ *
+ * Nothing about the slash is captured here. The hook fires before staking
+ * applies it - which is why the old code derived the post-slash token figure by
+ * hand - and by the time the queue runs, live staking state is already the
+ * answer.
+ *
+ * The window this opens is real and worth naming: an infusion not yet reached
+ * still carries its pre-slash fuel and the grid capacity standing on it. It is
+ * bounded by the slash fraction and drains at ReactorSlashReconcileBudget per
+ * block.
+ */
 func (k Keeper) ReactorUpdateInfusionsFromSlashing(ctx context.Context, validatorAddress sdk.ValAddress, slashFraction math.LegacyDec) {
-	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
-
-	/* Does this Reactor exist? */
 	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
 	if !reactorBytesFound {
 		return
 	}
-	reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
 
-	/* Get the current validator state (before slashing) */
-	validator, validatorErr := k.stakingKeeper.GetValidator(ctx, validatorAddress)
-	if validatorErr != nil {
-		k.logger.Error("Failed to get validator in ReactorUpdateInfusionsFromSlashing", "validator", validatorAddress.String(), "error", validatorErr)
+	reactor, reactorFound := k.GetReactorByBytes(ctx, reactorBytes)
+	if !reactorFound {
 		return
 	}
 
-	/* BeforeValidatorSlashed fires before x/slashing calls Jail, so the ratio
-	 * derived here is legitimately the pre-jail one and will be non-zero even
-	 * for an infraction that is about to jail. Do not "correct" this: the jail
-	 * is caught later in the same block by AfterValidatorBeginUnbonding during
-	 * staking's EndBlock.
-	 *
-	 * This hook is also not jail coverage in its own right. Staking skips it
-	 * entirely when the slash burns nothing (see x/staking/keeper/slash.go,
-	 * the tokensToBurn.IsZero early return), so a downtime jail under a zero
-	 * slash fraction never reaches this code at all.
-	 */
-	ratio := reactorEnergyRatio(validator, validatorErr)
-
-	/* Calculate what the validator's tokens will be after slashing
-	 * fraction is the percentage to slash (e.g., 0.05 = 5%)
-	 * tokensAfterSlash = tokens * (1 - fraction)
-	 */
-	tokensAfterSlash := math.LegacyNewDecFromInt(validator.Tokens).Mul(math.LegacyOneDec().Sub(slashFraction))
-
-	/* Get all delegations for this validator */
-	delegations, err := k.stakingKeeper.GetValidatorDelegations(ctx, validatorAddress)
-	if err != nil {
-		k.logger.Error("Failed to get validator delegations in ReactorUpdateInfusionsFromSlashing", "validator", validatorAddress.String(), "error", err)
-		return
-	}
-
-	/* Iterate through all delegations and update their infusions */
-	for _, delegation := range delegations {
-		delegatorAddr, err := sdk.AccAddressFromBech32(delegation.DelegatorAddress)
-		if err != nil {
-			k.logger.Error("Failed to parse delegator address", "address", delegation.DelegatorAddress, "error", err)
-			continue
-		}
-
-		/* Calculate the new delegation share value after slashing
-		 * Formula: (delegation.Shares / validator.DelegatorShares) * tokensAfterSlash
-		 * Note: Delegation shares don't change during slashing, only the token value per share decreases
-		 */
-		delegationShare := delegationShareValueAgainst(delegation.Shares, validator.DelegatorShares, tokensAfterSlash)
-
-		player := cc.UpsertPlayer(delegatorAddr.String())
-		infusion := cc.UpsertInfusion(types.ObjectType_reactor, reactor.Id, delegatorAddr.String(), player.GetPlayerId())
-
-		infusion.SetRatio(ratio)
-		infusion.SetFuelAndCommission(delegationShare.Uint64(), reactor.DefaultCommission)
-
-		/* Also check unbonding delegations (they may also be affected by slashing) */
-		unbondingDelegation, err := k.stakingKeeper.GetUnbondingDelegation(ctx, delegatorAddr, validatorAddress)
-		amount := math.ZeroInt()
-		if err == nil {
-			for _, entry := range unbondingDelegation.Entries {
-				amount = amount.Add(entry.Balance)
-			}
-		}
-		if infusion.GetDefusing() != amount.Uint64() {
-			infusion.SetDefusing(amount.Uint64())
-		}
-	}
+	k.EnqueueReactorSlashReconcile(ctx, reactor.Id)
 }

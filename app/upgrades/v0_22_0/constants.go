@@ -645,6 +645,39 @@ package v0_22_0
 //     rounds from a realistic seed. That cycle mints capacity and is a real bug,
 //     tracked separately; this is only the backstop under it.
 //
+//   - The validator slashing hook queues its reactor instead of reconciling
+//     every delegation inline.
+//
+//     BeforeValidatorSlashed ran ReactorUpdateInfusionsFromSlashing
+//     synchronously over the validator's entire active delegation set - a
+//     delegation read, an unbonding-delegation read and a grid rewrite each -
+//     inside BeginBlock, which has no gas meter. The set is unbounded and its
+//     size is chosen by the delegators. The SDK's own unbounded work during
+//     Slash covers unbonding delegations and redelegations, a window-limited
+//     set; this walked the full active one, so it was exposure the SDK does not
+//     have rather than exposure it already had.
+//
+//     A slash leaves delegation shares untouched, so AfterDelegationModified
+//     never fires for it and this hook is the module's only signal that one
+//     happened. Reconciliation can be deferred but never dropped: it now goes
+//     through ReactorSlashReconcileQueue, ReactorSlashReconcileBudget infusions
+//     per block in the EndBlocker, resuming from a stored cursor.
+//
+//     Deferring also removed a piece of hand-arithmetic. The hook fires before
+//     staking applies the slash, which is why the old code derived the
+//     post-slash token figure itself; by the time the queue runs, live staking
+//     state is the answer and nothing has to be carried.
+//
+//     GAME RULE CHANGE: an infusion not yet reached still carries its pre-slash
+//     fuel and the grid capacity standing on it. The window is bounded by the
+//     slash fraction and by delegators/budget blocks, and it is deliberate - the
+//     alternative, zeroing the reactor's contribution up front, would brown out
+//     every delegator's grid over a slash that took five percent.
+//
+//     The queue is not exported at genesis and does not need to be: genesis
+//     import rebuilds every reactor's infusions from staking through
+//     GenesisImportReactorInfusions, which is a full reconciliation by itself.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

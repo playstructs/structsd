@@ -55,6 +55,16 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 	destructionCC.ProcessInfusionDestructionQueue()
 	destructionCC.CommitAll()
 
+	/* Reconcile infusions on any reactor whose validator was slashed.
+	 *
+	 * BeforeValidatorSlashed only queues the reactor: it runs in BeginBlock with
+	 * no gas meter over a delegator set the delegators size, so doing the work
+	 * there made one slash cost whatever they had built up. It also fires before
+	 * staking applies the slash, so running here has the second advantage that
+	 * live staking state is already the answer and nothing has to be carried.
+	 */
+	k.ProcessReactorSlashReconcileQueue(ctx)
+
 	k.logger.Debug("End Block Complete")
 
 	return []abci.ValidatorUpdate{}, nil

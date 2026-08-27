@@ -167,6 +167,39 @@ const GridCascadeBlockBudget = 256
  */
 const AgreementExpirationBucketCap = 256
 
+/* ReactorSlashReconcileQueue holds reactors whose infusions still need
+ * reconciling after their validator was slashed, and how far through each one
+ * the reconciliation has got.
+ *
+ * A slash does not change delegation shares, so AfterDelegationModified never
+ * fires for it - BeforeValidatorSlashed is the only signal the module gets. It
+ * used to reconcile every active delegation to that validator inside the hook,
+ * which runs in BeginBlock against an infinite gas meter over a set the
+ * delegators choose the size of.
+ *
+ * The queue is keyed by reactor id and stores the address to resume from, so a
+ * reactor with more delegators than one block's budget simply comes back. The
+ * value is the *next* key to read, not the last one read, so resuming never
+ * re-does or skips an entry.
+ */
+const ReactorSlashReconcileQueue = "Reactor/slashReconcileQueue/"
+
+/* ReactorSlashReconcileBudget caps how many infusions are reconciled per block.
+ *
+ * Reconciling is not free - each one reads a delegation and an unbonding
+ * delegation out of staking and rewrites grid attributes - and it happens in a
+ * block hook, so nothing else bounds it.
+ *
+ * An infusion that has not been reached yet still carries its pre-slash fuel,
+ * and therefore its pre-slash grid capacity. That is a real window in which a
+ * reactor's delegators hold capacity the stake no longer backs, bounded by the
+ * slash fraction and by delegators/budget blocks. It is the price of not doing
+ * the whole set in one block; the alternative, zeroing the reactor's
+ * contribution up front, would brown out every delegator's grid over a slash
+ * that took five percent.
+ */
+const ReactorSlashReconcileBudget = 128
+
 const (
 	ReactorKey          = "Reactor/value/"
 	ReactorCountKey     = "Reactor/count/"
