@@ -1217,6 +1217,8 @@ func (e *AllocationError) Error() string {
 		return "trying to set an allocation that doesn't exist yet"
 	case "not_connected":
 		return fmt.Sprintf("allocation (%s) must not be connected to a substation during transfer", e.AllocationId)
+	case "already_connected":
+		return fmt.Sprintf("allocation (%s) already feeds substation (%s) and cannot create another", e.AllocationId, e.DestinationId)
 	default:
 		return fmt.Sprintf("allocation error on source (%s): %s", e.SourceId, e.Reason)
 	}

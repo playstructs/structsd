@@ -63,7 +63,26 @@ func (cc *CurrentContext) GenesisImportSubstation(substation types.Substation) {
 
 // Build this initial Substation Cache object
 // This does no validation on the provided substationId
+/* NewSubstation builds a substation around an allocation that is not yet feeding
+ * one.
+ *
+ * The allocation must be unconnected. SetDestination below is a *move*: it
+ * decrements the old destination's capacity and hands the power to the new one,
+ * so an allocation already feeding a substation could be submitted again and
+ * again, each call minting a fresh substation and a fresh permission record and
+ * leaving the previous substation behind with nothing feeding it. Substation
+ * creation is free, so the only bound was the per-block message cap.
+ *
+ * Checked here rather than in the handler so no future caller can skip it, and
+ * before the id counter is touched so a rejection consumes nothing. The same
+ * invariant is already spelled out on AllocationTransfer, which refuses a
+ * connected allocation for the same reason.
+ */
 func (cc *CurrentContext) NewSubstation(creatorAddress string, owner *PlayerCache, allocation *AllocationCache) (*SubstationCache, error) {
+    if destinationId := allocation.GetAllocation().DestinationId; destinationId != "" {
+        return nil, types.NewAllocationError(allocation.GetAllocation().SourceObjectId, "already_connected").WithAllocation(allocation.ID()).WithDestination(destinationId)
+    }
+
     var substation types.Substation
     substationId := GetObjectID(types.ObjectType_substation, cc.k.GetNextSubstationId(cc.ctx))
 

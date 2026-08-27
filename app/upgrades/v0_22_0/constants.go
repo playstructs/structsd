@@ -728,6 +728,28 @@ package v0_22_0
 //     slot for nothing, and the two ante checks then disagree about whether the
 //     slot was used.
 //
+//   - A substation can only be created from an allocation that is not already
+//     feeding one.
+//
+//     SubstationCreate checked that the allocation existed and that the caller
+//     could connect it, and nothing more. SetDestination is a move - it
+//     decrements the old destination's capacity and hands the power to the new
+//     one - so the same allocation could be submitted repeatedly, each call
+//     minting a fresh substation and a fresh permission record and leaving the
+//     previous substation behind with nothing feeding it. Creation is free, so
+//     the only bound was the per-block message cap: forty permanent, unfunded
+//     substations per player per block, from one allocation.
+//
+//     The invariant is not new. AllocationTransfer already refuses a connected
+//     allocation, and the simulator only ever offered ones whose DestinationId
+//     was empty - it was missing on the creation path alone. Enforced inside
+//     NewSubstation rather than the handler so no future caller can skip it, and
+//     ahead of the id counter so a rejection consumes nothing.
+//
+//     GAME RULE: an allocation released with SubstationAllocationDisconnect is
+//     free to seed a new substation again. The rule is about being connected,
+//     not about having been used.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs
