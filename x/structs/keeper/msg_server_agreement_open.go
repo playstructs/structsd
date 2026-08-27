@@ -32,7 +32,10 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
         return emptyResponse, err
     }
 
-    provider := cc.GetProvider(msg.ProviderId)
+    provider, providerErr := cc.GetExistingProvider(msg.ProviderId)
+    if providerErr != nil {
+        return emptyResponse, providerErr
+    }
 
     permissionError := provider.CanOpenAgreement(activePlayer)
     if (permissionError != nil) {

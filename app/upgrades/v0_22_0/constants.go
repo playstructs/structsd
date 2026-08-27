@@ -278,6 +278,28 @@ package v0_22_0
 //     would collide with another object's grid attributes while existing
 //     perfectly well.
 //
+//   - Every handler taking a provider id from a message resolves it through
+//     cc.GetExistingProvider rather than allocating a cache for it. Eight of
+//     them did the latter: the six provider update handlers, ProviderDelete and
+//     AgreementOpen.
+//
+//     Object permissions are keyed by the raw id string with no type
+//     namespacing, and registration grants every player PermAll on their own
+//     player id, so submitting that id as a provider id collided with a record
+//     that genuinely exists and CanBeUpdatedBy passed on a provider that did
+//     not. The handler then mutated and committed a zero-valued provider.
+//
+//     That commit panics in the KV store on the empty Provider.Id and BaseApp
+//     turns the panic into a failed transaction, so nothing was persisted -
+//     which is why the reachable damage was limited to the attacker's own
+//     transaction. It is not a check, though: the same shape wrote real state in
+//     AllocationTransfer, where the write was keyed by something non-empty and
+//     nothing tripped.
+//
+//     This is the third object type to get the treatment GetExistingPlayer
+//     introduced, after players and substations, and the arch guard now covers
+//     substations and providers together.
+//
 // This upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,

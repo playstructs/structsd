@@ -32,7 +32,7 @@ func TestMsgProviderUpdateAccessPolicy(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller: player.Id,
+		Controller:     player.Id,
 	}
 	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
@@ -128,4 +128,101 @@ func TestMsgProviderUpdateAccessPolicy(t *testing.T) {
 			}
 		})
 	}
+}
+
+/* TestProviderHandlersRequireARealProvider is the regression on a phantom
+ * provider clearing the permission gate.
+ *
+ * cc.GetProvider is a cache allocator: it wraps any string and reads nothing.
+ * The permission check that followed was not a backstop, because object
+ * permissions are keyed by the raw id string with no type namespacing and
+ * registration grants every player PermAll on their own player id - so
+ * submitting that id collided with a record that genuinely exists and
+ * CanBeUpdatedBy passed on a provider that did not.
+ *
+ * What followed was a zero-valued provider being mutated and committed. That
+ * commit panics in the KV store on the empty Provider.Id, and BaseApp turns the
+ * panic into a failed transaction - which reads like a refusal and is not one.
+ * The same shape wrote real state in AllocationTransfer, where the write was
+ * keyed by something non-empty and nothing tripped.
+ *
+ * Every provider handler took the id the same way, so all of them are covered
+ * here rather than only the one the report named.
+ */
+func TestProviderHandlersRequireARealProvider(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	wctx := sdk.UnwrapSDKContext(ctx)
+
+	acc := sdk.AccAddress("phantomprovider_player_pad_00001")
+	player := testAppendPlayer(k, ctx, types.Player{
+		Creator:        acc.String(),
+		PrimaryAddress: acc.String(),
+	})
+
+	// CurrentContext.NewPlayer grants this at registration; the test helper only
+	// sets the address permission, so put the attacker where a real
+	// registration would have.
+	k.SetPermissionsByBytes(ctx,
+		keeperlib.GetObjectPermissionIDBytes(player.Id, player.Id), types.PermAll)
+
+	// The attacker's own player id, standing in for a provider id.
+	phantom := player.Id
+
+	providersBefore := k.GetProviderCount(ctx)
+
+	t.Run("update access policy", func(t *testing.T) {
+		_, err := ms.ProviderUpdateAccessPolicy(wctx, &types.MsgProviderUpdateAccessPolicy{
+			Creator:      player.Creator,
+			ProviderId:   phantom,
+			AccessPolicy: types.ProviderAccessPolicy_openMarket,
+		})
+		require.Error(t, err, "holding rights on an object does not make it a provider")
+	})
+
+	t.Run("update capacity minimum", func(t *testing.T) {
+		_, err := ms.ProviderUpdateCapacityMinimum(wctx, &types.MsgProviderUpdateCapacityMinimum{
+			Creator:            player.Creator,
+			ProviderId:         phantom,
+			NewMinimumCapacity: 5,
+		})
+		require.Error(t, err)
+	})
+
+	t.Run("withdraw balance", func(t *testing.T) {
+		_, err := ms.ProviderWithdrawBalance(wctx, &types.MsgProviderWithdrawBalance{
+			Creator:            player.Creator,
+			ProviderId:         phantom,
+			DestinationAddress: acc.String(),
+		})
+		require.Error(t, err)
+	})
+
+	t.Run("delete", func(t *testing.T) {
+		_, err := ms.ProviderDelete(wctx, &types.MsgProviderDelete{
+			Creator:    player.Creator,
+			ProviderId: phantom,
+		})
+		require.Error(t, err)
+	})
+
+	t.Run("a well-formed provider id that names nothing", func(t *testing.T) {
+		_, err := ms.ProviderUpdateAccessPolicy(wctx, &types.MsgProviderUpdateAccessPolicy{
+			Creator:      player.Creator,
+			ProviderId:   keeperlib.GetObjectID(types.ObjectType_provider, 9999),
+			AccessPolicy: types.ProviderAccessPolicy_openMarket,
+		})
+		require.Error(t, err, "the right namespace is not the same as an existing record")
+	})
+
+	// Nothing was written under any of those ids, and in particular nothing
+	// under the empty key the phantom commit would have used.
+	t.Run("no provider was created", func(t *testing.T) {
+		require.Equal(t, providersBefore, k.GetProviderCount(ctx))
+
+		_, found := k.GetProvider(ctx, phantom)
+		require.False(t, found)
+
+		_, found = k.GetProvider(ctx, "")
+		require.False(t, found)
+	})
 }

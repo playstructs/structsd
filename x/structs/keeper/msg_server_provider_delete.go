@@ -20,7 +20,10 @@ func (k msgServer) ProviderDelete(goCtx context.Context, msg *types.MsgProviderD
         return emptyResponse, lookupErr
     }
 
-    provider := cc.GetProvider(msg.ProviderId)
+    provider, providerErr := cc.GetExistingProvider(msg.ProviderId)
+    if providerErr != nil {
+        return emptyResponse, providerErr
+    }
 
     permissionError := provider.CanBeDeletedBy(activePlayer)
     if (permissionError != nil) {

@@ -56,6 +56,20 @@ func (cache *ProviderCache) LoadProvider() (bool) {
 }
 
 
+// CheckProvider reports whether a provider actually exists at this cache's id.
+//
+// The other caches spell this the same way. It exists because the context getter
+// that produced the cache reads nothing: see CurrentContext.GetExistingProvider.
+func (cache *ProviderCache) CheckProvider() error {
+	if !cache.ProviderLoaded {
+		if !cache.LoadProvider() {
+			return types.NewObjectNotFoundError("provider", cache.ProviderId)
+		}
+	}
+	return nil
+}
+
+
 /* Getters
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
  */

@@ -29,7 +29,10 @@ func (k msgServer) ProviderWithdrawBalance(goCtx context.Context, msg *types.Msg
         return emptyResponse, lookupErr
     }
 
-    provider := cc.GetProvider(msg.ProviderId)
+    provider, providerErr := cc.GetExistingProvider(msg.ProviderId)
+    if providerErr != nil {
+        return emptyResponse, providerErr
+    }
 
     permissionError := provider.CanWithdrawBalanceBy(activePlayer)
     if (permissionError != nil) {

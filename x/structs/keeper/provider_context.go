@@ -28,6 +28,41 @@ func (cc *CurrentContext) GetProvider(providerId string) *ProviderCache {
 	return cc.providers[providerId]
 }
 
+/* GetExistingProvider resolves a provider id a message chose.
+ *
+ * GetProvider is a cache allocator: it wraps any string, reads nothing, and
+ * reports no miss. That is right for an id taken off something already loaded
+ * from state - an agreement's provider, a pool index row - and wrong for one a
+ * transaction supplied.
+ *
+ * The permission check is not a backstop, for the same reason it was not one in
+ * ProviderCreate and AllocationTransfer: object permissions are keyed by the raw
+ * id string with no type namespacing, and registration grants every player
+ * PermAll on their own player id. Submitting that id as a provider id therefore
+ * collides with a record that genuinely exists, and CanBeUpdatedBy passes on a
+ * provider that does not.
+ *
+ * What follows is a phantom cache, and the thing to know about a phantom is that
+ * it behaves: it reads as a zero-valued provider rather than failing, so the
+ * handler mutates it and commits. Today that commit happens to panic in the KV
+ * store on the empty Provider.Id, and BaseApp turns the panic into a failed
+ * transaction - but a refusal that only happens because an unrelated write
+ * panics is not a check. The same shape wrote real state in AllocationTransfer,
+ * where the write was keyed by something non-empty and nothing tripped.
+ */
+func (cc *CurrentContext) GetExistingProvider(providerId string) (*ProviderCache, error) {
+	if !ObjectIdHasType(providerId, types.ObjectType_provider) {
+		return nil, types.NewObjectNotFoundError("provider", providerId)
+	}
+
+	provider := cc.GetProvider(providerId)
+	if err := provider.CheckProvider(); err != nil {
+		return nil, err
+	}
+
+	return provider, nil
+}
+
 func (cc *CurrentContext) GenesisImportProvider(provider types.Provider) {
 	cache := cc.GetProvider(provider.Id)
 	cache.Provider = provider
