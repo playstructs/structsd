@@ -877,6 +877,33 @@ package v0_22_0
 //     already stamped the genesis height. Only the offline one wrote zero, so the
 //     two have collapsed into one.
 //
+//   - A fleet id has exactly one spelling. ParseFleetId refuses anything but the
+//     canonical form.
+//
+//     A fleet is the only object identified by a parsed number rather than by
+//     its id text: GetFleetById parses the suffix and GetFleet keys the cache and
+//     the store by that index. Structs, players and substations are keyed by the
+//     raw string, so a re-spelt id simply fails to load - fleets were the
+//     exception, and ParseUint accepts leading zeros, so "9-1", "9-01" and
+//     "9-001" all reached one fleet while remaining three distinct strings.
+//
+//     That mattered wherever the string rather than the fleet is the identity.
+//     The per-fleet throttle keys off the wire value, so three spellings bought
+//     three moves of one fleet in a block where the rule is one, and the raid
+//     proof throttle keys off the same field.
+//
+//     Fixed at the parser rather than at the throttle key. Canonicalising the key
+//     would have left the aliases resolving and merely counted them together;
+//     refusing them means there is one spelling of a fleet everywhere - in a
+//     throttle key, in an event, in a client's records - rather than one
+//     canonical form and an unknown number of accepted aliases. The throttle
+//     extractor therefore still keys off the raw string, and its comment records
+//     that relaxing the parser reopens this.
+//
+//     GAME RULE: a fleet id must be exactly "9-<decimal, no padding>". Nothing
+//     the chain generates is anything else, so no client sending back what it was
+//     given is affected.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

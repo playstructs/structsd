@@ -493,3 +493,48 @@ func TestFleetMoveRejectsCompletedPlanet(t *testing.T) {
 	})
 	require.NoError(t, err, "an active planet is still a valid destination")
 }
+
+/* TestFleetMoveRejectsNonCanonicalFleetId is the regression on a fleet wearing
+ * more than one name.
+ *
+ * A fleet is the only object identified by a parsed number rather than by its id
+ * text: GetFleetById parses the suffix and GetFleet keys the cache and store by
+ * that index. Structs, players and substations are keyed by the raw string, so a
+ * re-spelt id simply fails to load - fleets were the exception.
+ *
+ * ParseUint accepts leading zeros, so "9-1", "9-01" and "9-001" all reached one
+ * fleet while staying three distinct strings. That mattered wherever the string
+ * is the identity: the per-fleet throttle keys off the wire value, so three
+ * spellings bought three moves of one fleet in a block where the rule is one.
+ * Refusing every spelling but the canonical one closes it at the source - the
+ * alias cannot resolve to a fleet at all, so the throttle key and the fleet the
+ * handler loads are the same identity again.
+ */
+func TestFleetMoveRejectsNonCanonicalFleetId(t *testing.T) {
+	k, ms, goCtx := setupMsgServer(t)
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	acc := sdk.AccAddress("canonicalfleet12345678901234567890")
+	player := testAppendPlayer(k, ctx, types.Player{Creator: acc.String(), PrimaryAddress: acc.String()})
+
+	// The canonical id resolves - it fails later, on state this fixture does not
+	// build, which is what makes the aliases below fail for the right reason.
+	_, canonicalErr := ms.FleetMove(goCtx, &types.MsgFleetMove{
+		Creator:               player.Creator,
+		FleetId:               "9-1",
+		DestinationLocationId: "8-1",
+	})
+	require.NotErrorIs(t, canonicalErr, types.NewObjectNotFoundError("fleet", "9-1"),
+		"fixture sanity: the canonical id must get past the fleet lookup")
+
+	for _, alias := range []string{"9-01", "9-001", "9-0000000001"} {
+		_, err := ms.FleetMove(goCtx, &types.MsgFleetMove{
+			Creator:               player.Creator,
+			FleetId:               alias,
+			DestinationLocationId: "8-1",
+		})
+		require.Error(t, err, "fleet id %q is a re-spelling and must not resolve", alias)
+		require.ErrorContains(t, err, "fleet",
+			"the rejection must be the fleet lookup refusing the id")
+	}
+}

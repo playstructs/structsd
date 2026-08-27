@@ -394,6 +394,16 @@ var CreatorExtractors = map[string]func(sdk.Msg) string{
 // ThrottleKeyExtractors maps message type URLs to functions that return the
 // transient store throttle key for per-object-per-block rate limiting.
 var ThrottleKeyExtractors = map[string]func(sdk.Msg) string{
+	/* Keyed by the fleet id exactly as it arrived.
+	 *
+	 * That is only safe because a fleet has exactly one spelling: a fleet is the
+	 * one object identified by a parsed number rather than by its id text, and
+	 * ParseUint accepts leading zeros, so "9-1", "9-01" and "9-001" used to reach
+	 * one fleet under three throttle keys. ParseFleetId now refuses anything but
+	 * the canonical form, so a re-spelt id cannot resolve to a fleet at all and
+	 * the string here and the fleet the handler loads are the same identity
+	 * again. Relaxing that parser reopens this.
+	 */
 	"/structs.structs.MsgFleetMove": func(msg sdk.Msg) string {
 		if m, ok := msg.(*types.MsgFleetMove); ok {
 			return "fleet/" + m.FleetId
