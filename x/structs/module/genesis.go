@@ -202,6 +202,32 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		cc.GenesisImportStruct(s, importedStatus)
 	}
 
+	/* Pending struct sweeps.
+	 *
+	 * Destroying a struct does not remove it: the flag is set, the struct stays
+	 * in its planet or fleet slot, and StructSweepDestroyed clears the slot and
+	 * deletes the object StructSweepDelay blocks later. The queue holding that
+	 * appointment was exported and never imported, so a struct destroyed within
+	 * those blocks of an export came back as rubble that nothing was scheduled to
+	 * collect - occupying its slot, and for a command ship occupying
+	 * Fleet.CommandStruct, permanently. Nothing else clears either: StructTrash
+	 * refuses an already-destroyed struct.
+	 *
+	 * Rescheduled rather than restored verbatim, because the sweep reads the
+	 * queue at *exactly* the current height. An exported appointment is either
+	 * already behind the restart height or, after a zero-height export, so far
+	 * ahead the chain never reaches it; either way the entry would never be
+	 * visited again. The struct is rubble and contributes nothing, so when it is
+	 * collected does not matter - only that it is.
+	 */
+	sweepHeight := ctx.BlockHeight() + types.StructSweepDelay
+	for _, pending := range genState.StructDestructionQueue {
+		if pending == nil || pending.StructId == "" {
+			continue
+		}
+		k.SetStructDestructionQueueAtHeight(ctx, sweepHeight, pending.StructId)
+	}
+
 	// Selective grid attribute import: player ore, proxyNonce, nonce only
 	for _, attr := range genState.GridList {
 		if isGenesisGridImportable(attr.AttributeId) {

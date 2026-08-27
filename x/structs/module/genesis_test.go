@@ -435,3 +435,73 @@ func TestGenesis_WellFormedFleetIsImported(t *testing.T) {
 	require.True(t, found, "a well-formed fleet must actually be committed")
 	require.Equal(t, "1-1", stored.Owner)
 }
+
+/* TestGenesis_PendingStructSweepSurvivesImport is the regression on rubble that
+ * nothing is scheduled to collect.
+ *
+ * Destroying a struct does not remove it: the flag is set, the struct stays in
+ * its planet or fleet slot, and StructSweepDestroyed clears the slot and deletes
+ * the object StructSweepDelay blocks later. The queue holding that appointment
+ * was exported and never imported, so a struct destroyed within those blocks of
+ * an export came back occupying its slot with nothing left to free it - and
+ * StructTrash refuses an already-destroyed struct, so there was no way out.
+ *
+ * The entry is rescheduled rather than restored, because the sweep reads the
+ * queue at exactly the current height: the exported appointment is either behind
+ * the restart height or, after a zero-height export, unreachably ahead of it.
+ */
+func TestGenesis_PendingStructSweepSurvivesImport(t *testing.T) {
+	const structId = "6-1"
+
+	genesisState := types.DefaultGenesis()
+	genesisState.StructDestructionQueue = []*types.StructDestructionQueueRecord{
+		// An appointment from the old chain's clock, already behind the restart.
+		{SweepHeight: 12, StructId: structId},
+	}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(100)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	pending := k.GetStructDestructionQueueExport(ctx)
+	require.Len(t, pending, 1, "the sweep must be rescheduled, not dropped")
+	require.Equal(t, structId, pending[0].StructId)
+	require.NotEqual(t, int64(12), pending[0].SweepHeight,
+		"the old chain's appointment is behind the restart height and would never be read")
+	require.Greater(t, pending[0].SweepHeight, int64(100),
+		"a rescheduled sweep must land at a height the chain will actually reach")
+
+	// The property that matters: the sweep actually fires. It reads the queue at
+	// exactly the current height, so a wrong reschedule is indistinguishable from
+	// no reschedule at all.
+	k.StructSweepDestroyed(ctx.WithBlockHeight(pending[0].SweepHeight))
+	require.Empty(t, k.GetStructDestructionQueueExport(ctx),
+		"the rescheduled sweep must be reached and consume its entry")
+}
+
+// TestGenesis_PendingStructSweepRoundTrips is the property behind it: export
+// then import must leave an appointment the chain can still keep.
+func TestGenesis_PendingStructSweepRoundTrips(t *testing.T) {
+	const structId = "6-7"
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(500)
+
+	// The way a destruction schedules itself.
+	k.AppendStructDestructionQueue(ctx, structId)
+	exported := k.GetStructDestructionQueueExport(ctx)
+	require.Len(t, exported, 1)
+
+	genesisState := types.DefaultGenesis()
+	genesisState.StructDestructionQueue = exported
+
+	k2, ctx2 := keepertest.StructsKeeper(t)
+	ctx2 = ctx2.WithBlockHeight(1)
+	structs.InitGenesis(ctx2, k2, *genesisState)
+
+	restored := k2.GetStructDestructionQueueExport(ctx2)
+	require.Len(t, restored, 1, "a pending sweep must survive an export and import")
+	require.Equal(t, structId, restored[0].StructId)
+	require.Greater(t, restored[0].SweepHeight, int64(1),
+		"and must be reachable from the restarted chain's own clock, not the old one")
+}

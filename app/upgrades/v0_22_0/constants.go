@@ -811,6 +811,27 @@ package v0_22_0
 //     non-zero QueryGasLimit in app.toml is worthwhile alongside this, since it
 //     also covers the SDK's own modules, which have the identical shape.
 //
+//   - Genesis import restores the pending struct destruction queue, rescheduled
+//     onto the restarted chain's clock.
+//
+//     Destroying a struct does not remove it: the flag is set, the struct stays
+//     in its planet or fleet slot, and StructSweepDestroyed clears the slot and
+//     deletes the object StructSweepDelay blocks later. That appointment was
+//     exported and never imported - SetStructDestructionQueueAtHeight existed
+//     with no caller - so a struct destroyed within those five blocks of an
+//     export came back as rubble nothing was scheduled to collect, holding its
+//     slot and, for a command ship, Fleet.CommandStruct, permanently. There was
+//     no way out by hand either: StructTrash refuses an already-destroyed
+//     struct.
+//
+//     Rescheduled rather than restored verbatim, because StructSweepDestroyed
+//     reads the queue at *exactly* the current height - the same one-attempt
+//     shape as agreement expiry. An exported appointment is either behind the
+//     restart height already or, after a zero-height export, so far ahead the
+//     chain never reaches it; either way the entry would never be visited. The
+//     struct is rubble and contributes nothing, so when it is collected does not
+//     matter, only that it is.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs
