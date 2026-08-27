@@ -1644,7 +1644,7 @@ type FuelInfuseError struct {
 	StructId string
 	Amount   string
 	Denom    string
-	Reason   string // "invalid_amount", "invalid_denom", "transfer_failed"
+	Reason   string // "invalid_amount", "invalid_denom", "transfer_failed", "burn_failed"
 	Details  string // Additional error details (optional)
 }
 
@@ -1677,6 +1677,11 @@ func (e *FuelInfuseError) Error() string {
 			return fmt.Sprintf("infuse failed: %s", e.Details)
 		}
 		return "infuse failed"
+	case "burn_failed":
+		if e.Details != "" {
+			return fmt.Sprintf("infuse fuel could not be burned: %s", e.Details)
+		}
+		return "infuse fuel could not be burned"
 	default:
 		return fmt.Sprintf("fuel infuse error on struct (%s): %s", e.StructId, e.Reason)
 	}

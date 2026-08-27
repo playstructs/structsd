@@ -300,6 +300,28 @@ package v0_22_0
 //     introduced, after players and substations, and the arch guard now covers
 //     substations and providers together.
 //
+//   - StructGeneratorInfuse moves and burns only the coin it validated.
+//
+//     msg.InfuseAmount is a free-form string and ParseCoinsNormalized accepts a
+//     comma-separated list, sorting it by denom. The handler checked
+//     infusionAmount[0] and then passed the whole slice to
+//     SendCoinsFromAccountToModule and BurnCoins, so "1ualpha,1000000uguild.1-2"
+//     put a valid denom at index 0, passed, and destroyed the guild tokens.
+//     Only the first coin was ever credited as fuel, so the rest burned for
+//     nothing.
+//
+//     That crossed an authorization boundary as well as an accounting one. This
+//     handler asks only for PermTokenInfuse and spends the player's primary
+//     account, so a delegate scoped to infusion alone could destroy asset
+//     classes PermGuildTokenBurn exists to protect - guild tokens are minted
+//     straight into that same primary account.
+//
+//     The handler now requires exactly one coin, and rebuilds a canonical
+//     single-denomination value after the alpha conversion rather than reusing
+//     the parsed one: what moves has to be what was checked. The BurnCoins error
+//     is propagated too, since by then the coins are already in the module
+//     account.
+//
 // This upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,
