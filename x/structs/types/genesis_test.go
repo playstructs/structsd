@@ -68,6 +68,26 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: true,
 		},
 		{
+			/* A fleet whose id does not parse cannot be cached, so CommitAll
+			 * never writes it - the fleet vanished while the players and
+			 * structs pointing at it imported normally.
+			 */
+			desc: "fleet with an unparseable id is invalid",
+			genState: &types.GenesisState{
+				PortId:    types.PortID,
+				FleetList: []types.Fleet{{Id: "not-a-fleet"}},
+			},
+			valid: false,
+		},
+		{
+			desc: "fleet with a well-formed id is valid",
+			genState: &types.GenesisState{
+				PortId:    types.PortID,
+				FleetList: []types.Fleet{{Id: "9-7"}},
+			},
+			valid: true,
+		},
+		{
 			desc: "guild with entry rank zero is invalid",
 			genState: &types.GenesisState{
 				PortId: types.PortID,

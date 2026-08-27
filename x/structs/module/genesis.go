@@ -179,10 +179,21 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		cc.GenesisImportPlanet(planet)
 	}
 
-	// Fleets (send all home)
+	/* Fleets (send all home).
+	 *
+	 * A fleet whose id does not parse cannot be cached, and CommitAll only
+	 * commits what is in the cache - so this used to drop the fleet in silence
+	 * while the players and structs pointing at it imported normally, leaving
+	 * those owners holding fleet-bound assets with no fleet to hold them. Refuse
+	 * the file instead. GenesisState.Validate catches this first for anything
+	 * that goes through `structsd genesis validate`; this covers the paths that
+	 * reach InitGenesis without it.
+	 */
 	for _, fleet := range genState.FleetList {
 		homePlanetId := playerPlanetMap[fleet.Owner]
-		cc.GenesisImportFleet(fleet, homePlanetId)
+		if err := cc.GenesisImportFleet(fleet, homePlanetId); err != nil {
+			panic(fmt.Sprintf("fleet (%s) could not be imported: %s", fleet.Id, err))
+		}
 	}
 
 	// Structs

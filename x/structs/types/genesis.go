@@ -84,6 +84,21 @@ func (gs GenesisState) Validate() error {
 		}
 	}
 
+	/* A fleet id that does not parse cannot be imported at all.
+	 *
+	 * The keeper resolves a fleet by parsing its id into an index, and a
+	 * malformed one yields a cache that is not tracked and so is never
+	 * committed. The fleet vanished silently while the players and structs
+	 * referencing it imported normally - referentially inconsistent state with
+	 * no error anywhere. InitGenesis refuses it too; failing `structsd genesis
+	 * validate` on the file is the cheaper place to find out.
+	 */
+	for _, fleet := range gs.FleetList {
+		if _, err := ParseFleetId(fleet.Id); err != nil {
+			return err
+		}
+	}
+
 	/* A provider's published duration range is a safety property, not only a
 	 * policy one, and a genesis file is the only way it reaches state unchecked:
 	 * GenesisImportProvider assigns the whole record onto the cache and so skips

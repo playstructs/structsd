@@ -605,6 +605,25 @@ package v0_22_0
 //     what covers rows already on disk. The attacker is skipped there too, for a
 //     structural reason rather than a game one: it would be countering itself.
 //
+//   - Genesis import refuses a fleet whose id cannot be parsed, and
+//     GenesisState.Validate rejects the file first.
+//
+//     GetFleetById resolves a fleet by parsing its id into an index. A malformed
+//     one returned a FleetCache that was never inserted into cc.fleets, and
+//     CommitAll commits only what is in that map - so GenesisImportFleet
+//     discarding the error dropped the fleet in total silence, while the players
+//     and structs pointing at it imported normally. The result was an owner
+//     holding fleet-bound assets with no fleet, and nothing anywhere said so:
+//     the import returned no error to discard, and FleetList was not validated.
+//
+//     Fleets were the only import with this shape. Every other GenesisImport
+//     takes a plain allocator that always caches and always commits, so a bad id
+//     there is written under a bad key rather than lost.
+//
+//     The id rule now lives in types.ParseFleetId, used by both the keeper and
+//     GenesisState.Validate. One function rather than two spellings, because the
+//     property that matters is that a file which validates also imports.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

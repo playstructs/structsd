@@ -402,3 +402,36 @@ func TestGenesis_AcceptsAgreementEndingOnTheGenesisBlock(t *testing.T) {
 	require.NotPanics(t, func() { structs.InitGenesis(ctx, k, *genesisState) })
 	require.Contains(t, k.GetAllAgreementIdByExpirationIndex(ctx, 100), "11-1")
 }
+
+/* TestGenesis_MalformedFleetIdIsRefused is the import-side half.
+ *
+ * GetFleetById parses the id into an index; a malformed one yields a cache that
+ * is not in cc.fleets, and CommitAll only commits what is in that map. So the
+ * fleet was dropped in total silence while the player and struct records
+ * pointing at it imported normally, leaving those owners with fleet-bound assets
+ * and no fleet. Nothing downstream noticed: the import returned no error, and
+ * FleetList was not validated.
+ */
+func TestGenesis_MalformedFleetIdIsRefused(t *testing.T) {
+	genesisState := types.DefaultGenesis()
+	genesisState.FleetList = []types.Fleet{{Id: "not-a-fleet", Owner: "1-1"}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+
+	require.Panics(t, func() { structs.InitGenesis(ctx, k, *genesisState) },
+		"a fleet that cannot be imported must stop the chain starting, not vanish")
+}
+
+// TestGenesis_WellFormedFleetIsImported is the positive control: the refusal
+// above must be about the id, not about fleets.
+func TestGenesis_WellFormedFleetIsImported(t *testing.T) {
+	genesisState := types.DefaultGenesis()
+	genesisState.FleetList = []types.Fleet{{Id: "9-7", Owner: "1-1"}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	require.NotPanics(t, func() { structs.InitGenesis(ctx, k, *genesisState) })
+
+	stored, found := k.GetFleet(ctx, "9-7")
+	require.True(t, found, "a well-formed fleet must actually be committed")
+	require.Equal(t, "1-1", stored.Owner)
+}
