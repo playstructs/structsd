@@ -183,6 +183,35 @@ package v0_22_0
 //     the correct value, and the one s390x already computed. Everything else is
 //     unchanged.
 //
+//   - PlanetRaidComplete refuses a planet that is not active, and a completed
+//     planet no longer carries or starts a raid clock.
+//
+//     Completing a planet leaves its Owner stamped and its record in the store:
+//     PlanetExplore points the player at a new one and the old record stays
+//     loadable, still naming them. Every defence that makes a live raid hard
+//     hangs off the owner's current planet - RefreshRaidVulnerability is only
+//     ever called on owner.GetPlanet() - so a historical planet's clock was
+//     started once by an arriving raider and then never reset, ageing while the
+//     owner came and went from a planet they actually occupied, until the puzzle
+//     decayed to a single leading zero. IsDefenderCommandStructVulnerable
+//     compounded it by asking whether the owner's fleet was on station, which
+//     for an abandoned planet is a question about somewhere else.
+//
+//     Stored ore is a player attribute rather than a planet one, so the obsolete
+//     planet paid out the victim's entire live balance.
+//
+//     An active planet is always the owner's current one, because PlanetExplore
+//     will not move a player on until AttemptComplete succeeds and that fails
+//     while the planet still holds ore, so the active check is the whole of the
+//     condition. AttemptComplete now clears both raid clocks outright, and
+//     SetLocationListStart will not begin one on an inactive planet.
+//
+//     FleetMove refuses a completed planet as a destination, so a fleet cannot
+//     arrive at one at all. Only player-chosen destinations are gated: the
+//     internal moves - PeaceDeal, a completed raid, MigrateToNewPlanet - send a
+//     fleet to its owner's current planet, which is active by construction, and
+//     refusing those would strand fleets rather than protect anyone.
+//
 // This upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,

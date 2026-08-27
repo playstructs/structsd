@@ -297,6 +297,16 @@ func (cache *PlanetCache) SetLocationListStart(fleetId string) {
     uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
     _ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleetId, PlanetId: cache.GetPlanetId(), Status: types.RaidStatus_initiated}})
 
+    // A completed planet has no raid to run. Nothing refreshes its clock once
+    // started, because every refresh hook works on the owner's current planet,
+    // so a clock begun here would age untouched instead of resetting each time
+    // the owner came home. PlanetRaidComplete refuses an inactive planet
+    // outright; this is what stops the state existing to begin with.
+    if (!cache.IsActive()) {
+        cache.ClearBlockStartRaid()
+        return
+    }
+
     if (cache.IsDefenderCommandStructVulnerable()) {
         // The raid clock starts at the later of raider arrival and the
         // defending Command Ship going down. A promotion (front fleet
@@ -731,6 +741,13 @@ func (cache *PlanetCache) AttemptComplete() (error) {
                currentFleet, _ := cache.CC.GetFleetById(cache.GetLocationListStart())
                currentFleet.PeaceDeal()
         }
+
+        // The last departure above clears both clocks through
+        // SetLocationListStart(""), but only if there was a raider to send
+        // away. Say it outright: a planet nobody lives on any more must carry
+        // no raid state at all, whatever the queue happened to hold.
+        cache.ClearBlockStartRaid()
+        cache.ClearBlockRaiderArrived()
 
         return nil
     }

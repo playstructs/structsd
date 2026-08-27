@@ -398,3 +398,98 @@ func TestFleetReturnHomeWithDestroyedCommandShipStaysVulnerable(t *testing.T) {
 
 	require.Equal(t, uint64(3500), k.GetPlanetAttribute(sdkCtx, blockStartRaidAttrId), "home stays vulnerable when the fleet returns with a destroyed command ship")
 }
+
+/* TestFleetMoveRejectsCompletedPlanet closes the outermost of the three doors on
+ * abandoned planets.
+ *
+ * A completed planet is not a place: it is mined out, its structs are destroyed
+ * and its owner has moved on. The record survives only because completion never
+ * deletes it, and it keeps naming its former owner - which is what made parking
+ * a fleet there worth doing, since a raid clock started on it would age
+ * untouched while its owner came and went from the planet they actually occupy.
+ *
+ * PlanetRaidComplete refuses an inactive planet and SetLocationListStart will
+ * not begin a clock on one. This stops the fleet arriving at all.
+ */
+func TestFleetMoveRejectsCompletedPlanet(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	wctx := sdk.UnwrapSDKContext(ctx)
+
+	acc := sdk.AccAddress("fleetmove_complete_pad_addr_000001")
+	player := testAppendPlayer(k, ctx, types.Player{
+		Creator:        acc.String(),
+		PrimaryAddress: acc.String(),
+	})
+	k.SetGridAttribute(ctx,
+		keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id), 100000)
+	k.SetGridAttribute(ctx,
+		keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, player.Id),
+		uint64(wctx.BlockHeight())-100)
+
+	home := testAppendPlanet(k, ctx, types.Planet{Creator: player.Creator, Owner: player.Id})
+	player.PlanetId = home.Id
+
+	// A genuinely move-capable fleet: an online Command Ship aboard, on station.
+	// Without this the readiness check would refuse the move for its own reasons
+	// and the test would pass whether or not the destination was ever gated.
+	k.SetStructType(ctx, types.StructType{
+		Id:       types.CommandStructTypeId,
+		Type:     types.CommandStruct,
+		Category: types.ObjectType_fleet,
+	})
+	commandShip := testAppendStruct(k, ctx, types.Struct{
+		Creator:      player.Creator,
+		Owner:        player.Id,
+		Type:         types.CommandStructTypeId,
+		LocationType: types.ObjectType_fleet,
+	})
+	commandShipStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, commandShip.Id)
+	testSetStructAttributeFlagAdd(k, ctx, commandShipStatusAttrId, uint64(types.StructStateMaterialized))
+	testSetStructAttributeFlagAdd(k, ctx, commandShipStatusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, ctx, commandShipStatusAttrId, uint64(types.StructStateOnline))
+
+	fleet := testAppendFleet(k, ctx, types.Fleet{
+		Owner:         player.Id,
+		LocationId:    home.Id,
+		LocationType:  types.ObjectType_planet,
+		Status:        types.FleetStatus_onStation,
+		CommandStruct: commandShip.Id,
+	})
+	player.FleetId = fleet.Id
+	k.SetPlayer(ctx, player)
+
+	// The same fleet must be able to reach a live planet, or "cannot reach the
+	// completed one" would prove nothing about the planet's status.
+	live := testAppendPlanet(k, ctx, types.Planet{Creator: player.Creator, Owner: player.Id})
+
+	abandoned := testAppendPlanet(k, ctx, types.Planet{
+		Creator: player.Creator,
+		Owner:   player.Id,
+		Status:  types.PlanetStatus_complete,
+	})
+
+	_, err := ms.FleetMove(wctx, &types.MsgFleetMove{
+		Creator:               player.Creator,
+		FleetId:               fleet.Id,
+		DestinationLocationId: abandoned.Id,
+	})
+	require.Error(t, err, "a completed planet must not be a destination")
+	require.Contains(t, err.Error(), "not_active")
+
+	moved, found := k.GetFleet(ctx, fleet.Id)
+	require.True(t, found)
+	require.Equal(t, home.Id, moved.LocationId, "the fleet must not have gone anywhere")
+
+	require.Zero(t, k.GetPlanetAttribute(ctx,
+		keeperlib.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockStartRaid, abandoned.Id)),
+		"and no raid clock may have been started on it")
+
+	// The control: this fleet moves fine when the destination is active, so the
+	// refusal above is about the planet and not about the fleet.
+	_, err = ms.FleetMove(wctx, &types.MsgFleetMove{
+		Creator:               player.Creator,
+		FleetId:               fleet.Id,
+		DestinationLocationId: live.Id,
+	})
+	require.NoError(t, err, "an active planet is still a valid destination")
+}

@@ -37,6 +37,26 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
         return emptyResponse, types.NewObjectNotFoundError("planet", msg.DestinationLocationId)
     }
 
+    /* A completed planet is not a place. It is mined out, its structs are
+     * destroyed and its owner has moved on; nothing there can be raided,
+     * attacked or built on. The record survives only because completion never
+     * deletes it, and it keeps naming its former owner.
+     *
+     * Leaving it reachable is what let a fleet park on somebody's abandoned
+     * planet and start a raid clock that nothing would ever reset - see
+     * PlanetRaidComplete, which refuses an inactive planet, and
+     * SetLocationListStart, which will not start a clock on one. This is the
+     * outermost of the three: a fleet cannot get there at all.
+     *
+     * Only player-chosen destinations are gated. The internal moves -
+     * PeaceDeal, a completed raid, MigrateToNewPlanet - send a fleet to its
+     * owner's current planet, which is active by construction, and refusing
+     * those would strand fleets rather than protect anyone.
+     */
+    if (!destination.IsActive()) {
+        return emptyResponse, types.NewPlanetStateError(destination.GetPlanetId(), "not_active", "move")
+    }
+
 	if fleet.GetLocationId() == msg.DestinationLocationId {
 		return &types.MsgFleetMoveResponse{Fleet: &fleet.Fleet}, nil
 	}

@@ -67,6 +67,32 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 		return emptyResponse, types.NewPlayerPowerError(fleet.GetOwnerId(), "offline")
 	}
 
+	/* A raid takes ore from a planet's owner, so the planet has to be one they
+	 * still live on.
+	 *
+	 * Completing a planet leaves its Owner stamped and its record in the store:
+	 * PlanetExplore points the player at a new planet and the old one stays
+	 * loadable, still naming them. Nothing about the raid path noticed. The
+	 * defences that make a live raid hard all hang off the owner's *current*
+	 * planet - RefreshRaidVulnerability is only ever called on
+	 * owner.GetPlanet(), so a historical planet's clock is started once by an
+	 * arriving raider and then never reset again, decaying to a one-zero puzzle
+	 * while the owner comes and goes from a planet they actually occupy. And
+	 * IsDefenderCommandStructVulnerable asks whether the owner's fleet is on
+	 * station, which for an abandoned planet is a question about somewhere else
+	 * entirely.
+	 *
+	 * Stored ore is a player attribute rather than a planet one, so what the
+	 * obsolete planet paid out was the victim's whole live balance.
+	 *
+	 * An active planet is always the owner's current one - PlanetExplore refuses
+	 * to move a player on until AttemptComplete succeeds, and that fails while
+	 * the planet still holds ore - so this is the whole of the condition.
+	 */
+	if !fleet.GetPlanet().IsActive() {
+		return emptyResponse, types.NewPlanetStateError(fleet.GetPlanet().GetPlanetId(), "not_active", "raid_complete")
+	}
+
 	// The raid hashing puzzle can only be won while the defending Command
 	// Ship is offline, destroyed, or non-existent (shieldsVulnerable)
 	if !fleet.GetPlanet().IsDefenderCommandStructVulnerable() {

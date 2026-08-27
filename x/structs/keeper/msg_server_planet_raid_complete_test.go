@@ -345,3 +345,149 @@ func TestCommandShipRaidShieldHooks(t *testing.T) {
 		require.Equal(t, uint64(0), k.GetPlanetAttribute(sdkCtx, blockStartRaidAttrId), "blockStartRaid clears when shields are restored")
 	})
 }
+
+/* TestMsgPlanetRaidCompleteRejectsHistoricalPlanet is the regression on a
+ * completed planet still paying out its owner's live ore.
+ *
+ * Completing a planet leaves its Owner stamped and its record in the store:
+ * PlanetExplore points the player at a new one and the old record stays
+ * loadable, still naming them. The raid path never noticed, and every defence
+ * that makes a live raid hard hangs off the owner's *current* planet:
+ * RefreshRaidVulnerability is only ever called on owner.GetPlanet(), so a
+ * historical planet's clock is started once by an arriving raider and never
+ * reset again - it ages while the owner comes and goes from a planet they
+ * actually occupy, decaying to a one-zero puzzle. IsDefenderCommandStructVulnerable
+ * compounds it by asking whether the owner's fleet is on station, which for an
+ * abandoned planet is a question about somewhere else entirely.
+ *
+ * Stored ore is a player attribute rather than a planet one, so the obsolete
+ * planet paid out the victim's whole live balance.
+ */
+func TestMsgPlanetRaidCompleteRejectsHistoricalPlanet(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1_000_000_000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
+
+	attackerAcc := sdk.AccAddress("histraid_attacker_pad_addr_00000001")
+	attacker := testAppendPlayer(k, sdkCtx, types.Player{
+		Creator:        attackerAcc.String(),
+		PrimaryAddress: attackerAcc.String(),
+	})
+	k.SetGridAttribute(sdkCtx,
+		keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, attacker.Id), 100000)
+
+	attackerHome := testAppendPlanet(k, sdkCtx, types.Planet{Creator: attacker.Creator, Owner: attacker.Id})
+	attacker.PlanetId = attackerHome.Id
+	k.SetPlayer(sdkCtx, attacker)
+
+	victimAcc := sdk.AccAddress("histraid_victim_pad_addr_000000001")
+	victim := testAppendPlayer(k, sdkCtx, types.Player{
+		Creator:        victimAcc.String(),
+		PrimaryAddress: victimAcc.String(),
+	})
+	k.SetGridAttribute(sdkCtx,
+		keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, victim.Id), 100000)
+
+	// The planet the victim used to live on: mined out, completed, and still
+	// stamped with them as owner.
+	abandoned := testAppendPlanet(k, sdkCtx, types.Planet{
+		Creator: victim.Creator,
+		Owner:   victim.Id,
+		Status:  types.PlanetStatus_complete,
+	})
+
+	// The planet they live on now. The victim's fleet sits here, away from the
+	// abandoned one, which is what leaves that one permanently "vulnerable".
+	current := testAppendPlanet(k, sdkCtx, types.Planet{Creator: victim.Creator, Owner: victim.Id})
+	victim.PlanetId = current.Id
+	victimFleet := testAppendFleet(k, sdkCtx, types.Fleet{
+		Owner:        victim.Id,
+		LocationId:   current.Id,
+		LocationType: types.ObjectType_planet,
+		Status:       types.FleetStatus_onStation,
+	})
+	victim.FleetId = victimFleet.Id
+	k.SetPlayer(sdkCtx, victim)
+
+	// The victim's live ore balance, which is a player attribute and therefore
+	// has nothing to do with which planet is being raided.
+	victimOreAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_ore, victim.Id)
+	k.SetGridAttribute(sdkCtx, victimOreAttrId, 900000)
+
+	attackerOreAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_ore, attacker.Id)
+
+	attackerFleet := testAppendFleet(k, sdkCtx, types.Fleet{
+		Owner:        attacker.Id,
+		LocationId:   abandoned.Id,
+		LocationType: types.ObjectType_planet,
+		Status:       types.FleetStatus_away,
+	})
+	attacker.FleetId = attackerFleet.Id
+	k.SetPlayer(sdkCtx, attacker)
+
+	// A clock aged far enough that the puzzle has decayed to a single zero:
+	// exactly what an unrefreshed historical planet hands an attacker.
+	k.SetPlanetAttribute(sdkCtx,
+		keeperlib.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockStartRaid, abandoned.Id), 1)
+
+	hashTemplate := fmt.Sprintf("%s@%sRAID1NONCE%%s", attackerFleet.Id, abandoned.Id)
+	nonce, proof := testFindProof(hashTemplate, 1)
+
+	_, err := ms.PlanetRaidComplete(wctx, &types.MsgPlanetRaidComplete{
+		Creator: attacker.Creator,
+		FleetId: attackerFleet.Id,
+		Nonce:   nonce,
+		Proof:   proof,
+	})
+	require.Error(t, err, "a planet its owner no longer lives on must not pay out their ore")
+	require.Contains(t, err.Error(), "not_active")
+
+	require.Equal(t, uint64(900000), k.GetGridAttribute(sdkCtx, victimOreAttrId),
+		"the victim keeps every unit of their live balance")
+	require.Equal(t, uint64(0), k.GetGridAttribute(sdkCtx, attackerOreAttrId),
+		"and the attacker gains nothing")
+}
+
+// A planet nobody lives on any more must carry no raid state: neither one left
+// behind by completion, nor one an arriving fleet tries to start afterwards.
+func TestCompletedPlanetCarriesNoRaidClock(t *testing.T) {
+	k, _, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(500)
+
+	owner := testAppendPlayer(k, sdkCtx, types.Player{
+		Creator:        sdk.AccAddress("raidclock_owner_pad1").String(),
+		PrimaryAddress: sdk.AccAddress("raidclock_owner_pad1").String(),
+	})
+
+	planet := testAppendPlanet(k, sdkCtx, types.Planet{Creator: owner.Creator, Owner: owner.Id})
+	owner.PlanetId = planet.Id
+	k.SetPlayer(sdkCtx, owner)
+
+	clockAttrId := keeperlib.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockStartRaid, planet.Id)
+	arrivedAttrId := keeperlib.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockRaiderArrived, planet.Id)
+
+	cc := k.NewCurrentContext(sdkCtx)
+	planetCache := cc.GetPlanet(planet.Id)
+
+	// Mine it out and complete it, with a clock left running.
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_ore, planet.Id), 0)
+	k.SetPlanetAttribute(sdkCtx, clockAttrId, 100)
+	k.SetPlanetAttribute(sdkCtx, arrivedAttrId, 100)
+
+	require.NoError(t, planetCache.AttemptComplete())
+	cc.CommitAll()
+
+	require.Zero(t, k.GetPlanetAttribute(sdkCtx, clockAttrId),
+		"completing a planet must leave no raid clock behind")
+	require.Zero(t, k.GetPlanetAttribute(sdkCtx, arrivedAttrId))
+
+	// And a raider arriving afterwards must not start one.
+	cc = k.NewCurrentContext(sdkCtx)
+	cc.GetPlanet(planet.Id).SetLocationListStart("2-999")
+	cc.CommitAll()
+
+	require.Zero(t, k.GetPlanetAttribute(sdkCtx, clockAttrId),
+		"an arrival on a completed planet must not start a clock that nothing will ever reset")
+}
