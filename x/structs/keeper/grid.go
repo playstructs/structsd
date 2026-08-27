@@ -13,6 +13,7 @@ import (
 	"fmt"
 
 	"slices"
+	"strconv"
 	"strings"
 )
 
@@ -21,6 +22,29 @@ import (
 func GetObjectID(objectType types.ObjectType, objectId uint64) string {
 	id := fmt.Sprintf("%d-%d", objectType, objectId)
 	return id
+}
+
+/* ObjectIdHasType reports whether an object id names the given type.
+ *
+ * Every grid attribute id is derived from the object id string and nothing else,
+ * so two different kinds of object that share an id string share their capacity
+ * and load counters. Ids are namespaced by type precisely to stop that, and a
+ * handler that accepts a message-supplied id without checking the namespace
+ * throws the protection away: a player id used where a substation id belongs
+ * resolves to a cache that reads and writes the *player's* grid attributes.
+ */
+func ObjectIdHasType(objectId string, objectType types.ObjectType) bool {
+	parts := strings.SplitN(objectId, "-", 2)
+	if len(parts) != 2 {
+		return false
+	}
+
+	typeNum, err := strconv.ParseUint(parts[0], 10, 32)
+	if err != nil {
+		return false
+	}
+
+	return types.ObjectType(typeNum) == objectType
 }
 
 // GetGridAttributeID returns the string representation of the ID

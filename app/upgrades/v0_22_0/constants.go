@@ -257,6 +257,27 @@ package v0_22_0
 //     their rank bound after a PermissionCheck that has already enforced the
 //     ceiling.
 //
+//   - ProviderCreate resolves its substation id instead of merely allocating a
+//     cache for it.
+//
+//     cc.GetSubstation is a cache allocator: it wraps any string and reads
+//     nothing, which is correct for an id taken off something already loaded
+//     from state and wrong for one a transaction supplied. The permission check
+//     that followed was not a backstop - object permissions are keyed by the raw
+//     id string, and registration grants every player PermAll on their own
+//     player id, so submitting that id passed CanAllocateAsSourceBy against a
+//     substation that was never there.
+//
+//     Grid attribute ids are derived from the object id alone, so the resulting
+//     provider read its available capacity from the player's own capacity and
+//     load counters and sold grid the substation accounting knew nothing about.
+//
+//     cc.GetExistingSubstation checks both the id's type namespace and the
+//     record's existence. The type check is not redundant: a substation stored
+//     under a wrongly-typed id, which only a hand-written genesis could produce,
+//     would collide with another object's grid attributes while existing
+//     perfectly well.
+//
 // This upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,

@@ -42,7 +42,10 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
         return emptyResponse, lookupErr
     }
 
-    substation := cc.GetSubstation(msg.SubstationId)
+    substation, substationErr := cc.GetExistingSubstation(msg.SubstationId)
+    if substationErr != nil {
+        return emptyResponse, substationErr
+    }
 
     permissionError := substation.CanAllocateAsSourceBy(activePlayer)
     if (permissionError != nil) {
