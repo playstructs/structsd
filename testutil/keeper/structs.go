@@ -771,6 +771,22 @@ func WriteRawGridAttribute(t testing.TB, _ keeper.Keeper, ctx sdk.Context, gridA
 	rawStore.Set(append([]byte(types.GridAttributeKey), []byte(gridAttributeId)...), bz)
 }
 
+// WriteRawGridCascadeQueueLegacyRow plants a pre-v0.22.0 cascade queue row:
+// keyed by object id, value a placeholder. The queue is now keyed by sequence,
+// so nothing in production writes this shape any more and only the re-key
+// migration should ever read one. Production code must never use this.
+func WriteRawGridCascadeQueueLegacyRow(t testing.TB, ctx sdk.Context, objectId string) {
+	t.Helper()
+	storeKey, ok := ctx.Value(testStoreKeyCtx{}).(*storetypes.KVStoreKey)
+	require.True(t, ok, "WriteRawGridCascadeQueueLegacyRow: ctx not produced by keepertest.StructsKeeper")
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, 1)
+
+	rawStore := ctx.KVStore(storeKey)
+	rawStore.Set(append([]byte(types.GridCascadeQueue), []byte(objectId)...), bz)
+}
+
 // WriteRawGuild plants protobuf bytes directly under a guild key. It is used to
 // exercise migrations and queries against records encoded by pre-upgrade
 // schemas that cannot be produced through the current keeper.

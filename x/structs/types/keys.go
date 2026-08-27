@@ -94,8 +94,53 @@ const (
 
 const (
     GridAttributeKey = "Grid/attribute/"
-    GridCascadeQueue = "Grid/cascadeQueue/"
+
+    /* The cascade queue is FIFO, which is a safety property rather than a
+     * preference.
+     *
+     * GridCascade cannot drain the queue to exhaustion in one block, so what it
+     * does not reach stays pending and an object waits. Ordering by object id
+     * would let an attacker choose how long their own object waits: ids sort
+     * lexicographically, so one whose id sorts late is skipped for as long as
+     * cheaper-sorting entries keep arriving, and a substation that is never
+     * reached goes on powering structs it has no capacity for. Under a sequence
+     * nothing can be inserted in front of an entry already queued, so the wait
+     * is bounded by the backlog that existed when it was enqueued.
+     *
+     * GridCascadeQueue is keyed by that sequence and holds the object id.
+     * GridCascadeQueueIndex is the reverse row, keyed by object id, which makes
+     * a re-append while an object is still pending a no-op rather than a second
+     * entry. GridCascadeQueueSequenceKey is the monotonic counter.
+     */
+    GridCascadeQueue            = "Grid/cascadeQueue/"
+    GridCascadeQueueIndex       = "Grid/cascadeQueueIndex/"
+    GridCascadeQueueSequenceKey = "Grid/cascadeQueueSequence/"
 )
+
+/* GridCascadeBlockBudget caps the allocations GridCascade may destroy in one
+ * block.
+ *
+ * The EndBlocker runs against an infinite gas meter, so the cost of the cascade
+ * is block time every validator pays and nobody is charged for. The graph it
+ * walks is attacker-sized: an allocation of one power feeds a substation, that
+ * substation allocates the same power onward, and repeating two free messages
+ * builds a chain as long as patience allows. Destroying the root then collapsed
+ * the whole chain inside a single block, which is a halt rather than a slow
+ * block, and a deterministic one that replays on every retry.
+ *
+ * The budget makes the collapse proportional to the construction instead:
+ * building a link costs a transaction, and the per-player message cap is well
+ * under this, so a chain can never be torn down more slowly than it was built.
+ * A legitimate cascade - a reactor going offline, a guild's substation tree
+ * shedding - is orders of magnitude below this and still completes in the block
+ * it starts.
+ *
+ * It counts queue entries visited as well as allocations destroyed. Charging
+ * only for destroys would bound the shedding and leave the walk unbounded, and
+ * a queue full of objects that each turn out to be under capacity is exactly as
+ * cheap to build as one that is not.
+ */
+const GridCascadeBlockBudget = 256
 
 const (
 	ReactorKey          = "Reactor/value/"

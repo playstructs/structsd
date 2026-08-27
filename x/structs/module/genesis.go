@@ -219,6 +219,24 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		cc.GenesisImportReactorInfusions(reactor)
 	}
 
+	/* Pending grid cascades.
+	 *
+	 * The queue was exported but never imported, which was survivable only
+	 * while GridCascade drained it to exhaustion every block - anything pending
+	 * at export time had been enqueued and processed inside the same block, so
+	 * an export could not catch one. Now that the cascade is bounded and carries
+	 * work forward, a restore that dropped the queue would leave those objects
+	 * over-subscribed with nothing left to schedule them.
+	 *
+	 * Re-appended in export order, which is sequence order, so the restored
+	 * queue is the exported one.
+	 */
+	for _, objectId := range genState.GridCascadeQueue {
+		if err := k.AppendGridCascadeQueue(ctx, objectId); err != nil {
+			panic(err)
+		}
+	}
+
 	// =========================================================================
 	// Commit
 	// =========================================================================

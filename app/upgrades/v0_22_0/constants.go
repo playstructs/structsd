@@ -389,17 +389,66 @@ package v0_22_0
 //     exempt. This does not stop a bad key exhausting the quota. It stops that
 //     from being unrecoverable.
 //
-// This upgrade carries one state migration, MigrateInfusionFuelRounding, which
-// recomputes every reactor infusion against the corrected conversion. Without it
-// the fix would only reach an infusion the next time staking touched that
-// delegation, and a delegation nobody moves is never touched. Capacity moves
-// down where it moves at all, and the grid cascade that follows sheds the
-// allocations that were only ever powered by rounding.
+//   - GridCascade is bounded to GridCascadeBlockBudget units of work per block,
+//     and the cascade queue is FIFO rather than keyed by object id.
 //
-// Everything else in this upgrade is binary-only, and there are no store-key
-// changes. The address nonce store starts empty and every address correctly
-// begins at 0, because the sign-byte change invalidates every previously issued
-// proof regardless. The upgrade exists so validators adopt the new ante and
-// handler behaviour at a coordinated height - nodes running a mix of the old and
-// new binaries would accept different transactions and diverge.
+//     The cascade ran to exhaustion in the EndBlocker, which has no gas meter,
+//     over a graph an attacker sizes for nothing: an allocation of one power
+//     feeds a substation, that substation allocates the same power onward, and
+//     two free messages add a link. Destroying the root collapsed the whole
+//     chain inside one block - a halt rather than a slow block, and a
+//     deterministic one, so every retry of that block did the same thing.
+//
+//     The budget counts queue entries visited as well as allocations destroyed;
+//     charging only for destroys would bound the shedding and leave the walk
+//     unbounded. What the budget does not reach stays queued for the next block.
+//
+//     FIFO is the other half and is a security property, not tidiness. Ordering
+//     by object id sorts lexicographically, so an attacker could hold a
+//     substation whose id sorts late out of the queue indefinitely by keeping
+//     cheaper-sorting entries in front of it, and an object that is never
+//     reached goes on powering structs it has no capacity for. Under a sequence
+//     nothing can be inserted ahead of an entry already queued. Re-appending a
+//     pending object is a no-op rather than a move to the back, for the same
+//     reason.
+//
+//     A deferred object cannot sell what it does not have: every gate that
+//     grants power compares before it subtracts - SubstationCache and
+//     PlayerCache GetAvailableCapacity, CanSupportLoadAddition - so an
+//     over-subscribed object reports zero headroom while it waits. What it keeps
+//     doing is powering what is already attached, which is the "one last block
+//     of power" this has always accepted, over more blocks.
+//
+//     GAME RULE CHANGE: a cascade larger than the budget now sheds over several
+//     blocks instead of one. A grid a real guild builds is orders of magnitude
+//     below the budget and still finishes in the block it starts.
+//
+//     The queue is also imported at genesis now. It was exported and never
+//     imported, which was survivable only while the cascade drained it inside
+//     the block that filled it; deferred work would otherwise be lost across a
+//     restore, leaving those objects over-subscribed with nothing left to
+//     schedule them.
+//
+// This upgrade carries two state migrations.
+//
+// MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs
+// first, before anything else in the upgrade can enqueue: the re-key reads every
+// row under the queue prefix as a legacy object-id key, and object ids are not
+// fixed width, so an id eight bytes long becomes indistinguishable from a
+// sequence the moment the two shapes coexist. Legacy rows carry no ordering of
+// their own and are re-appended sorted, which is the order the old cascade
+// processed them in.
+//
+// MigrateInfusionFuelRounding recomputes every reactor infusion against the
+// corrected conversion. Without it the fix would only reach an infusion the next
+// time staking touched that delegation, and a delegation nobody moves is never
+// touched. Capacity moves down where it moves at all, and the grid cascade that
+// follows sheds the allocations that were only ever powered by rounding.
+//
+// Everything else in this upgrade is binary-only, and the cascade queue re-key
+// is the only store-key change. The address nonce store starts empty and every
+// address correctly begins at 0, because the sign-byte change invalidates every
+// previously issued proof regardless. The upgrade exists so validators adopt the
+// new ante and handler behaviour at a coordinated height - nodes running a mix
+// of the old and new binaries would accept different transactions and diverge.
 const UpgradeName = "v0.22.0"

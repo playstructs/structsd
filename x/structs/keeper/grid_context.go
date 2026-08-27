@@ -108,33 +108,82 @@ func (cc *CurrentContext) UpdateSubstationConnectionCapacity(objectId string) {
 
 
 
+/* GridCascade sheds load from every object that is over-subscribed, and stops
+ * when it runs out of budget rather than when it runs out of work.
+ *
+ * The queue is drained in sequence order up to GridCascadeBlockBudget
+ * allocations destroyed. What is left stays queued and is picked up by the next
+ * block, ahead of anything enqueued since - that ordering is what stops an
+ * attacker from parking their own over-subscribed substation at the back of the
+ * line indefinitely. See the GridCascadeQueue comment in types/keys.go.
+ *
+ * A deferred object is not a granted one. Every gate that sells power compares
+ * before it subtracts - SubstationCache.GetAvailableCapacity,
+ * PlayerCache.GetAvailableCapacity, CanSupportLoadAddition - so an
+ * over-subscribed object reports zero headroom and can hand out nothing new
+ * while it waits. What it keeps doing is powering what is already attached,
+ * which is the same "one last block of power" this has always accepted, over
+ * more blocks.
+ */
 func (cc *CurrentContext) GridCascade() {
 
-	// This needs to be able to iterate until the queue is empty
-	// If there are no bugs, there should always be an end
-	// If there are bugs, Cisphyx will find it
-	for {
-		// Get Queue (and clear it in the process)
-		gridQueue := cc.k.GetGridCascadeQueue(cc.ctx, true)
+	budget := types.GridCascadeBlockBudget
 
-		if len(gridQueue) == 0 {
+	for budget > 0 {
+		// Read without clearing: an entry is removed when it is finished, so
+		// whatever the budget does not reach is still queued next block.
+		batch := cc.k.GetGridCascadeQueueBatch(cc.ctx, budget)
+
+		if len(batch) == 0 {
 			break
 		}
 
-		// For each Queue Item
-		for _, objectId := range gridQueue {
+		for _, entry := range batch {
+			if budget <= 0 {
+				break
+			}
+
+			objectId := entry.ObjectId
+
+			// Visiting an entry costs budget even when it turns out to need no
+			// work. Charging only for destroys would leave the walk itself
+			// unbounded, and a queue of objects that are each already under
+			// capacity is exactly as cheap to build and exactly as expensive to
+			// walk.
+			budget--
+
+			// Clear the entry before doing the work. The cascade below can
+			// re-enqueue this same object through Destroy, and that append has
+			// to be able to take a fresh sequence rather than be swallowed as a
+			// duplicate of the row being processed.
+			cc.k.RemoveGridCascadeQueueEntry(cc.ctx, entry)
+
+			if objectId == "" {
+				continue
+			}
 
 			allocationList := cc.GetAllAllocationBySource(objectId)
 			allocationPointer := 0
 
-            loadAttributeId := GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)
-            capacityAttributeId := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)
+			loadAttributeId := GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)
+			capacityAttributeId := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)
 
 			for cc.GetGridAttribute(loadAttributeId) > cc.GetGridAttribute(capacityAttributeId) {
 				if allocationPointer >= len(allocationList) {
-				    // Something is probably wrong here...
-				    cc.k.logger.Warn("Grid Queue problem", "objectId", objectId)
-				    break;
+					// Something is probably wrong here...
+					cc.k.logger.Warn("Grid Queue problem", "objectId", objectId)
+					break
+				}
+
+				if budget <= 0 {
+					// Out of budget with this object still over-subscribed.
+					// Re-queue it so the remaining allocations are shed next
+					// block; it goes to the back, but nothing that arrives
+					// later can overtake it.
+					if err := cc.k.AppendGridCascadeQueue(cc.ctx, objectId); err != nil {
+						cc.k.logger.Error("Grid Queue (requeue failed)", "objectId", objectId, "error", err)
+					}
+					break
 				}
 
 				cc.k.logger.Info("Grid Queue (Brownout)", "objectId", objectId, "load", cc.GetGridAttribute(loadAttributeId), "capacity", cc.GetGridAttribute(capacityAttributeId))
@@ -148,7 +197,14 @@ func (cc *CurrentContext) GridCascade() {
 				cc.k.logger.Info("Grid Queue (Allocation Destroyed)", "allocationId", allocationList[allocationPointer].GetAllocationId())
 
 				allocationPointer++
+				budget--
 			}
 		}
+	}
+
+	// Never leave a cap silent: a backlog here means objects are running
+	// over-subscribed until a later block reaches them.
+	if remaining := cc.k.GetGridCascadeQueueLength(cc.ctx); remaining > 0 {
+		cc.k.logger.Warn("Grid Queue (deferred)", "remaining", remaining, "budget", types.GridCascadeBlockBudget)
 	}
 }

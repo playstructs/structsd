@@ -147,25 +147,124 @@ func (k Keeper) SetGridAttribute(ctx context.Context, gridAttributeId string, am
 }
 
 
-func (k Keeper) GetGridCascadeQueue(ctx context.Context, clear bool) (queue []string) {
-	gridCascadeQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
-	iterator := storetypes.KVStorePrefixIterator(gridCascadeQueueStore, []byte{})
+// GridCascadeQueueEntry is one pending cascade. The sequence travels with the
+// object id because the processor has to delete the row it read, and only the
+// sequence identifies it.
+type GridCascadeQueueEntry struct {
+	Sequence uint64
+	ObjectId string
+}
+
+func gridCascadeQueueSequenceKey(sequence uint64) []byte {
+	key := make([]byte, 8)
+	binary.BigEndian.PutUint64(key, sequence)
+	return key
+}
+
+// nextGridCascadeQueueSequence hands out the next sequence and advances the
+// counter. Big-endian so the store's byte order is the numeric order.
+func (k Keeper) nextGridCascadeQueueSequence(ctx context.Context) uint64 {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
+
+	var next uint64
+	if bz := store.Get(types.KeyPrefix(types.GridCascadeQueueSequenceKey)); bz != nil {
+		next = binary.BigEndian.Uint64(bz)
+	}
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, next+1)
+	store.Set(types.KeyPrefix(types.GridCascadeQueueSequenceKey), bz)
+
+	return next
+}
+
+/* GetGridCascadeQueueBatch reads up to limit pending entries in sequence order.
+ *
+ * It does not clear them. The processor deletes each entry as it finishes it,
+ * so an entry the budget did not reach is still queued in the next block - which
+ * is the whole point of the budget. See GridCascadeBlockBudget.
+ */
+func (k Keeper) GetGridCascadeQueueBatch(ctx context.Context, limit int) (batch []GridCascadeQueueEntry) {
+	if limit <= 0 {
+		return
+	}
+
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		queue = append(queue, string(iterator.Key()))
+		if len(batch) >= limit {
+			return
+		}
+
+		key := iterator.Key()
+		if len(key) != 8 {
+			// Not a sequence row. Nothing writes one, but a malformed key would
+			// otherwise panic the EndBlocker rather than be skipped.
+			continue
+		}
+
+		batch = append(batch, GridCascadeQueueEntry{
+			Sequence: binary.BigEndian.Uint64(key),
+			ObjectId: string(iterator.Value()),
+		})
 	}
-    iterator.Close()
 
-    slices.Sort(queue)
-
-    if clear {
-        for _, key := range queue {
-            gridCascadeQueueStore.Delete([]byte(key))
-        }
-    }
 	return
 }
 
+// GetGridCascadeQueueLength reports how many entries are pending. Used for
+// logging the backlog the budget left behind, so a cap is never silent.
+func (k Keeper) GetGridCascadeQueueLength(ctx context.Context) (count int) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		count++
+	}
+
+	return
+}
+
+// RemoveGridCascadeQueueEntry clears a processed entry. Both rows go, keyed by
+// the same values they were written under.
+func (k Keeper) RemoveGridCascadeQueueEntry(ctx context.Context, entry GridCascadeQueueEntry) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
+	store.Delete(gridCascadeQueueSequenceKey(entry.Sequence))
+
+	if entry.ObjectId != "" {
+		indexStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueueIndex))
+		indexStore.Delete([]byte(entry.ObjectId))
+	}
+}
+
+// GetGridCascadeQueue returns the pending object ids in sequence order,
+// optionally clearing the queue. Genesis, tests and diagnostics use it; the
+// EndBlocker does not, because draining to exhaustion is what this issue was.
+func (k Keeper) GetGridCascadeQueue(ctx context.Context, clear bool) (queue []string) {
+	batch := k.GetGridCascadeQueueBatch(ctx, int(^uint(0)>>1))
+
+	for _, entry := range batch {
+		queue = append(queue, entry.ObjectId)
+
+		if clear {
+			k.RemoveGridCascadeQueueEntry(ctx, entry)
+		}
+	}
+
+	return
+}
+
+/* AppendGridCascadeQueue queues an object for the next cascade pass.
+ *
+ * An object already pending is left where it is rather than re-queued. Moving
+ * it to the back would let a stream of appends push an entry backwards forever,
+ * which is the starvation the sequence exists to prevent, and a second row for
+ * the same object is redundant work: the cascade reads live load and capacity,
+ * so one visit accounts for every append that preceded it.
+ */
 func (k Keeper) AppendGridCascadeQueue(ctx context.Context, queueId string) (err error) {
 
 	// Skip if queueId is empty or nil to prevent "key is nil or empty" panic
@@ -173,18 +272,72 @@ func (k Keeper) AppendGridCascadeQueue(ctx context.Context, queueId string) (err
 		return types.NewObjectNotFoundError("grid_queue", queueId)
 	}
 
+	indexStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueueIndex))
+	if indexStore.Has([]byte(queueId)) {
+		return nil
+	}
+
+	sequence := k.nextGridCascadeQueueSequence(ctx)
+
 	gridCascadeQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
+	gridCascadeQueueStore.Set(gridCascadeQueueSequenceKey(sequence), []byte(queueId))
 
 	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, 1)
+	binary.BigEndian.PutUint64(bz, sequence)
+	indexStore.Set([]byte(queueId), bz)
 
-	gridCascadeQueueStore.Set([]byte(queueId), bz)
-
-	k.logger.Info("Grid Queue (Add)", "queueId", queueId)
+	k.logger.Info("Grid Queue (Add)", "queueId", queueId, "sequence", sequence)
 
 	return err
 }
 
+
+/* MigrateGridCascadeQueueToSequence re-keys a pre-v0.22.0 cascade queue.
+ *
+ * The old rows were keyed by object id with a placeholder value; the new ones
+ * are keyed by sequence and hold the object id, with a reverse index for
+ * dedup. Every row under the prefix is therefore read as a legacy object-id key,
+ * which is only safe because nothing has written the new shape yet - object ids
+ * are not fixed width, so an id eight bytes long is indistinguishable from a
+ * sequence once the two shapes coexist. Run this before anything in the upgrade
+ * that can enqueue.
+ *
+ * Re-appended in sorted order, which is the order the old cascade processed
+ * them in, so the queue a restarted chain drains is the queue it would have
+ * drained.
+ */
+func (k Keeper) MigrateGridCascadeQueueToSequence(ctx context.Context) (migrated int, err error) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
+
+	var legacy []string
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	for ; iterator.Valid(); iterator.Next() {
+		legacy = append(legacy, string(iterator.Key()))
+	}
+	iterator.Close()
+
+	if len(legacy) == 0 {
+		return 0, nil
+	}
+
+	for _, key := range legacy {
+		store.Delete([]byte(key))
+	}
+
+	slices.Sort(legacy)
+
+	for _, objectId := range legacy {
+		if appendErr := k.AppendGridCascadeQueue(ctx, objectId); appendErr != nil {
+			// An empty id could not have been written by AppendGridCascadeQueue,
+			// which refuses one. Drop it rather than fail the upgrade.
+			k.logger.Warn("Grid Queue (migration skipped entry)", "objectId", objectId, "error", appendErr)
+			continue
+		}
+		migrated++
+	}
+
+	return migrated, nil
+}
 
 // GetAllGridExport returns all grid attributes
 func (k Keeper) GetAllGridExport(ctx context.Context) (list []*types.GridRecord) {
@@ -252,13 +405,9 @@ func (k Keeper) GetGridAttributesByObject(ctx context.Context, objectId string) 
 	}
 }
 
+// GetGridCascadeQueueExport returns the pending object ids in sequence order.
+// Genesis import re-appends them in that order, which reproduces the queue the
+// export was taken from.
 func (k Keeper) GetGridCascadeQueueExport(ctx context.Context) (queue []string) {
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
-	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		queue = append(queue, string(iterator.Key()))
-	}
-	return
+	return k.GetGridCascadeQueue(ctx, false)
 }

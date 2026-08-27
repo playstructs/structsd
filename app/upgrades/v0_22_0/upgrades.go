@@ -22,6 +22,13 @@ func CreateUpgradeHandler(
 	keepers *upgrades.Keepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		// Before anything that can enqueue: the re-key reads every row under
+		// the queue prefix as a legacy object-id key, which stops being true the
+		// moment a new-shape row exists.
+		if err := MigrateGridCascadeQueue(ctx, keepers); err != nil {
+			return nil, err
+		}
+
 		if err := MigrateInfusionFuelRounding(ctx, keepers); err != nil {
 			return nil, err
 		}
@@ -102,4 +109,28 @@ func NewUpgrade() upgrades.Upgrade {
 		CreateUpgradeHandler: CreateUpgradeHandler,
 		StoreUpgrades:        storetypes.StoreUpgrades{},
 	}
+}
+
+/* MigrateGridCascadeQueue re-keys the pending cascade queue by sequence.
+ *
+ * GridCascade no longer drains the queue to exhaustion, so what it does not
+ * reach has to wait - and the order it waits in is now a safety property rather
+ * than an implementation detail. Ordering by object id would let an attacker
+ * hold their own over-subscribed substation at the back of the line forever by
+ * keeping cheaper-sorting entries in front of it.
+ *
+ * The old rows carry no ordering of their own, so they are re-appended sorted,
+ * which is exactly the order the old cascade would have processed them in.
+ */
+func MigrateGridCascadeQueue(ctx context.Context, keepers *upgrades.Keepers) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger().With("upgrade", UpgradeName, "phase", "migrateGridCascadeQueue")
+
+	migrated, err := keepers.StructsKeeper.MigrateGridCascadeQueueToSequence(ctx)
+	if err != nil {
+		return err
+	}
+
+	logger.Info("grid cascade queue re-keyed", "entries", migrated)
+	return nil
 }
