@@ -236,6 +236,27 @@ package v0_22_0
 //     malformed recipient rather than discarding the parse error and sending to
 //     the empty address, and rejects a non-positive amount.
 //
+//   - PlayerUpdateGuildRank re-applies the signing key's permission ceiling
+//     before falling back to rank authority.
+//
+//     PermissionCheck fails for two unrelated reasons: the key that signed does
+//     not carry PermAdmin, or it does and the player has no standing on the
+//     guild. The handler treated both alike and fell through to a comparison of
+//     player-level ranks, so a deliberately restricted secondary key inherited
+//     its player's whole rank authority and could re-rank every member below
+//     them - including promoting a colluding member up to the actor's own rank,
+//     which carries rank-derived grants on guild objects.
+//
+//     Rank substitutes for standing, not for the ceiling, so the fallback now
+//     demands PermAdmin on the signing address alone (SignerPermissionCheck,
+//     the same helper the guild bypass tiers use). A primary address holds
+//     PermAll, so an ordinary member is unaffected.
+//
+//     This was the only rank check in the module that substituted for a
+//     permission. GuildUpdateEntryRank and the membership kick path both apply
+//     their rank bound after a PermissionCheck that has already enforced the
+//     ceiling.
+//
 // This upgrade is binary-only. There is no state migration: no persisted state
 // is read or written by this upgrade and there are no store-key changes. The
 // address nonce store starts empty and every address correctly begins at 0,

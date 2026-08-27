@@ -64,6 +64,23 @@ func (k msgServer) PlayerUpdateGuildRank(goCtx context.Context, msg *types.MsgPl
 			return emptyResponse, permErr
 		}
 
+		/* PermissionCheck can fail for two unrelated reasons: the signing key
+		 * does not carry PermAdmin, or it does but the player has no standing on
+		 * this guild. Rank is a substitute for the second and not the first, so
+		 * the ceiling has to be re-applied before falling back - otherwise every
+		 * failure looked alike and a deliberately restricted key inherited its
+		 * player's whole rank authority.
+		 *
+		 * This is the only rank check in the module that substitutes for a
+		 * permission rather than adding to one: GuildUpdateEntryRank and the kick
+		 * path both run their rank bound after a PermissionCheck that already
+		 * applied the ceiling. A primary address holds PermAll, so an ordinary
+		 * member is unaffected.
+		 */
+		if signerErr := cc.SignerPermissionCheck(types.PermAdmin); signerErr != nil {
+			return emptyResponse, signerErr
+		}
+
 		actorRank := callingPlayer.GetGuildRank()
 		targetRank := targetPlayer.GetGuildRank()
 
