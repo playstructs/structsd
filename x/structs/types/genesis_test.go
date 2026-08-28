@@ -28,6 +28,35 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: true,
 		},
 		{
+			/* An infusion key is destinationId + "-" + address, and the keeper
+			 * resolves one by splitting that into three parts. A key that does
+			 * not split yields a cache with no CurrentContext, and the
+			 * destruction queue that reads these keys runs in the EndBlocker.
+			 */
+			desc: "infusion whose key cannot be parsed is invalid",
+			genState: &types.GenesisState{
+				PortId:       types.PortID,
+				InfusionList: []types.Infusion{{DestinationId: "", Address: ""}},
+			},
+			valid: false,
+		},
+		{
+			desc: "infusion with a hyphen in the address is invalid",
+			genState: &types.GenesisState{
+				PortId:       types.PortID,
+				InfusionList: []types.Infusion{{DestinationId: "3-1", Address: "has-hyphen"}},
+			},
+			valid: false,
+		},
+		{
+			desc: "infusion with a well-formed key is valid",
+			genState: &types.GenesisState{
+				PortId:       types.PortID,
+				InfusionList: []types.Infusion{{DestinationId: "3-1", Address: "structs1abc"}},
+			},
+			valid: true,
+		},
+		{
 			// A provider's duration minimum is what stops a capacity resize from
 			// rescaling an agreement down to no duration at all, and
 			// GenesisImportProvider assigns the whole record, skipping the

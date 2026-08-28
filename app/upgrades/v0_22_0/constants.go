@@ -1038,6 +1038,29 @@ package v0_22_0
 //     makes it hardening rather than a live theft, and the residual it removes is
 //     a permanently non-expiring agreement pinning capacity.
 //
+//   - GetInfusionById reports whether it resolved, and the destruction queue
+//     discards a key it cannot parse instead of panicking on it.
+//
+//     An infusion key is destinationId + "-" + address, resolved by splitting it
+//     into three parts. A key that does not split has no destination and no
+//     address to build a cache around, so what came back was a zero InfusionCache
+//     with a nil CurrentContext - and the first method called on it dereferenced
+//     that nil. The caller could not tell, because the signature had nothing to
+//     tell them with.
+//
+//     ProcessInfusionDestructionQueue reads those keys off disk in the
+//     EndBlocker, which is what turned a crash into a halt: the read clears its
+//     rows in the same block, the panic discards that delete, and the next block
+//     reads the same row again.
+//
+//     No transaction can write such a key - a destination id carries exactly one
+//     hyphen and a bech32 address carries none - so the state comes from a
+//     genesis file, which assigns those fields directly and validated neither.
+//     GenesisState.Validate now rejects a record whose key does not round-trip,
+//     through types.ValidInfusionParts, the same rule the keeper resolves with.
+//     Both ends, as with fleet ids: refusing the file is what stops new ones, and
+//     the keeper dropping the row is what covers one already on disk.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

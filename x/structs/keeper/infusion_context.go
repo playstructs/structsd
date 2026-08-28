@@ -2,24 +2,33 @@ package keeper
 
 import (
     "structs/x/structs/types"
-    "strings"
     "cosmossdk.io/math"
 )
 
 
-func (cc *CurrentContext) GetInfusionById(infusionKey string) *InfusionCache {
+/* GetInfusionById resolves a stored infusion key, and reports whether it could.
+ *
+ * A key that does not split into three parts has no destination and no address
+ * to build a cache around, so what came back was a zero InfusionCache with a nil
+ * CurrentContext - and the first method called on it dereferenced that nil. The
+ * caller could not tell the difference, because the old signature had nothing to
+ * tell them with.
+ *
+ * That mattered because the only caller that reads keys off disk is the
+ * destruction queue, which runs in the EndBlocker: a single malformed row there
+ * panics the block, the panic discards the delete that would have removed it,
+ * and the next block does it again.
+ */
+func (cc *CurrentContext) GetInfusionById(infusionKey string) (*InfusionCache, bool) {
 
     if cache, exists := cc.infusions[infusionKey]; exists {
-        return cache
+        return cache, true
     }
 
-	infusionIdSplit := strings.Split(infusionKey, "-")
-	if len(infusionIdSplit) != 3 {
-		return &InfusionCache{}
-	}
-
-    destinationId := infusionIdSplit[0] + "-" + infusionIdSplit[1]
-    address := infusionIdSplit[2]
+    destinationId, address, err := types.ParseInfusionKey(infusionKey)
+    if err != nil {
+        return &InfusionCache{}, false
+    }
 
     cc.infusions[infusionKey] = &InfusionCache{
         InfusionId:                     infusionKey,
@@ -30,7 +39,7 @@ func (cc *CurrentContext) GetInfusionById(infusionKey string) *InfusionCache {
         DestinationCapacityAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, destinationId),
     }
 
-    return cc.infusions[infusionKey]
+    return cc.infusions[infusionKey], true
 }
 
 
@@ -73,7 +82,14 @@ func (cc *CurrentContext) GenesisImportInfusion(infusion types.Infusion) {
 func (cc *CurrentContext) GetAllInfusionByDestination(destinationId string) (infusions []*InfusionCache) {
     infusionIds := cc.k.GetAllInfusionIdsByDestination(cc.ctx, destinationId)
     for _, infusionId := range infusionIds {
-        infusion := cc.GetInfusionById(infusionId)
+        infusion, found := cc.GetInfusionById(infusionId)
+        if !found {
+            // The index is written beside the record, so a key here that cannot
+            // be parsed is corrupt rather than merely absent. Skip it; the
+            // destruction queue below is what clears such rows.
+            cc.k.logger.Error("Unparseable infusion key in destination index", "destinationId", destinationId, "infusionKey", infusionId)
+            continue
+        }
         infusions = append(infusions, infusion)
     }
     return
@@ -118,7 +134,22 @@ func (cc *CurrentContext) ProcessInfusionDestructionQueue() {
         }
 
         for _, infusionId := range queue {
-            infusion := cc.GetInfusionById(infusionId)
+            infusion, found := cc.GetInfusionById(infusionId)
+            if !found {
+                /* A key that cannot be parsed has no infusion behind it and
+                 * never will. Dropping it is the whole repair: this runs in the
+                 * EndBlocker, and calling through to the cache would dereference
+                 * a nil CurrentContext and panic the block - taking the delete
+                 * above down with it, so the same row would be read again next
+                 * block, and every block after that.
+                 *
+                 * The read already cleared the row, so returning without
+                 * re-queueing is what discards it.
+                 */
+                cc.k.logger.Error("Discarding unparseable infusion destruction queue entry", "infusionKey", infusionId)
+                continue
+            }
+
             if (infusion.CheckInfusion() == nil && infusion.IsEmpty()) {
                 infusion.Destroy()
             }
@@ -128,7 +159,11 @@ func (cc *CurrentContext) ProcessInfusionDestructionQueue() {
 
 func (cc *CurrentContext) DestroyAllInfusions(infusionIds []string) {
 	for _, infusionId := range infusionIds {
-		infusion := cc.GetInfusionById(infusionId)
+		infusion, found := cc.GetInfusionById(infusionId)
+		if !found {
+			cc.k.logger.Error("Skipping unparseable infusion key", "infusionKey", infusionId)
+			continue
+		}
 		if infusion.CheckInfusion() == nil {
 		    infusion.Destroy()
 		}

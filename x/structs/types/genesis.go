@@ -84,6 +84,27 @@ func (gs GenesisState) Validate() error {
 		}
 	}
 
+	/* An infusion whose key cannot be parsed can never be resolved again.
+	 *
+	 * The store key is destinationId + "-" + address, and the keeper resolves an
+	 * infusion by splitting that back into three parts. Every runtime path
+	 * satisfies this without trying - a destination id carries exactly one
+	 * hyphen and a bech32 address carries none - so a genesis file is the only
+	 * way a key that does not round-trip reaches state.
+	 *
+	 * The consequence is not a lookup miss. A split that fails yields a cache
+	 * with no CurrentContext behind it, and the destruction queue that reads
+	 * these keys runs in the EndBlocker: the first method call panics the block,
+	 * the panic discards the delete that would have cleared the row, and the
+	 * next block does the same. The keeper now drops such a row instead, but the
+	 * file should not carry one.
+	 */
+	for _, infusion := range gs.InfusionList {
+		if !ValidInfusionParts(infusion.DestinationId, infusion.Address) {
+			return NewObjectNotFoundError("infusion", BuildInfusionKey(infusion.DestinationId, infusion.Address))
+		}
+	}
+
 	/* A fleet id that does not parse cannot be imported at all.
 	 *
 	 * The keeper resolves a fleet by parsing its id into an index, and a
