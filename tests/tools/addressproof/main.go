@@ -13,7 +13,8 @@
 //
 //	go run ./tests/tools/addressproof -chain-id structstestnet-00 -player 1-1 [-nonce 0]
 //
-// Prints three shell-friendly lines: ADDRESS, PROOF_PUBKEY, PROOF_SIGNATURE.
+// Prints shell-friendly lines: ADDRESS, PROOF_PUBKEY, PROOF_SIGNATURE, and
+// PRIVKEY (hex) so the live script can import the key and sign as that address.
 package main
 
 import (
@@ -54,4 +55,5 @@ func main() {
 	fmt.Printf("ADDRESS=%s\n", address)
 	fmt.Printf("PROOF_PUBKEY=%s\n", hex.EncodeToString(pubKey.Bytes()))
 	fmt.Printf("PROOF_SIGNATURE=%s\n", hex.EncodeToString(signature))
+	fmt.Printf("PRIVKEY=%s\n", hex.EncodeToString(privKey.Bytes()))
 }

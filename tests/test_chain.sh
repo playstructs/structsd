@@ -1471,80 +1471,113 @@ assert_eq "Substation exists" "${SUBSTATION_ID}" "${SUB_CHECK}"
 # ─────────────────────────────────────────────────────────────────────────────
 # Throwaway substations
 #
-# Three later phases need a second substation to test against. They each used to
-# run substation-create with the P1_ALLOC_ID captured just above, which was wrong
-# in a way nothing reported until the fourth attempt.
+# Three later phases need a second substation to test against. v0.22.0 refuses
+# MsgSubstationCreate when the named allocation already feeds a substation
+# ("already feeds substation … and cannot create another"), so these helpers
+# mint a fresh unused allocation carved out of Alice's main feeder rather than
+# reusing P1_ALLOC_ID.
 #
-# substation-create does not copy an allocation, it MOVES it: NewSubstation calls
-# allocation.SetDestination, so every one of those calls quietly pulled Alice's
-# entire capacity off SUBSTATION_ID and parked it on a throwaway. And
-# SubstationCache.Delete destroys the allocations pointing *into* the substation
-# being removed, so the first test that tidied up took Alice's only allocation
-# with it. From then on the allocation did not exist, the create failed, and the
-# block carried on against whatever `.Substation[-1]` happened to return — in the
-# last run an orphan left behind by an earlier test, which it then deleted.
-#
-# So: re-resolve the allocation at use time, prove the substation is genuinely
-# new rather than adopted, and hand the allocation back before anything deletes
-# the throwaway.
+# P1_ALLOC_ID stays pointed at the allocation that powers SUBSTATION_ID for the
+# whole run. TEMP_ALLOC_ID is the throwaway; SubstationCache.Delete destroys
+# allocations still pointing into the deleted substation, so the destroy path
+# deliberately does not move TEMP_ALLOC_ID home first.
 # ─────────────────────────────────────────────────────────────────────────────
+
+TEMP_ALLOC_ID=""
+TEMP_ALLOC_POWER=100000
 
 # temp_substation_create <out_var> <label>
 # Writes the new substation id to out_var and returns non-zero when there is
 # nothing to test with, which every caller treats as a skip.
 temp_substation_create() {
     local out_var="$1" label="$2"
-    local alloc before after
+    local main_power new_main before after temp_dst
     eval "${out_var}=''"
+    TEMP_ALLOC_ID=""
 
-    alloc=$(get_latest_allocation_for_source "${PLAYER_1_ID}")
-    if [ -z "${alloc}" ]; then
-        info "SKIP ${label}: Player 1 has no allocation to power a temporary substation"
+    if [ -z "${P1_ALLOC_ID}" ]; then
+        P1_ALLOC_ID=$(get_latest_allocation_for_source "${PLAYER_1_ID}")
+    fi
+    if [ -z "${P1_ALLOC_ID}" ]; then
+        info "SKIP ${label}: Player 1 has no allocation to carve a temporary substation from"
         return 1
     fi
-    P1_ALLOC_ID="${alloc}"
+
+    main_power=$(jqr "$(query query structs allocation "${P1_ALLOC_ID}")" '.gridAttributes.power' '0')
+    if [ -z "${main_power}" ] || [ "${main_power}" -le "${TEMP_ALLOC_POWER}" ] 2>/dev/null; then
+        info "SKIP ${label}: main allocation power ${main_power} too small to carve ${TEMP_ALLOC_POWER}"
+        return 1
+    fi
+
+    new_main=$((main_power - TEMP_ALLOC_POWER))
+    run_tx "Freeing ${TEMP_ALLOC_POWER} from ${P1_ALLOC_ID} for ${label}" \
+        tx structs allocation-update "${P1_ALLOC_ID}" "${new_main}" --from alice
+
+    run_tx "Creating unused throwaway allocation for ${label}" \
+        tx structs allocation-create "${PLAYER_1_ID}" "${TEMP_ALLOC_POWER}" \
+        --controller "${PLAYER_1_ID}" --allocation-type dynamic --from alice
+
+    TEMP_ALLOC_ID=$(get_latest_allocation_for_source "${PLAYER_1_ID}")
+    if [ -z "${TEMP_ALLOC_ID}" ] || [ "${TEMP_ALLOC_ID}" = "${P1_ALLOC_ID}" ]; then
+        info "SKIP ${label}: throwaway allocation did not appear"
+        TEMP_ALLOC_ID=""
+        run_tx "Restoring ${P1_ALLOC_ID} power after failed throwaway mint (${label})" \
+            tx structs allocation-update "${P1_ALLOC_ID}" "${main_power}" --from alice
+        return 1
+    fi
+
+    temp_dst=$(jqr "$(query query structs allocation "${TEMP_ALLOC_ID}")" '.Allocation.destinationId' '')
+    if [ -n "${temp_dst}" ]; then
+        info "SKIP ${label}: throwaway allocation ${TEMP_ALLOC_ID} already feeds ${temp_dst}"
+        TEMP_ALLOC_ID=""
+        return 1
+    fi
 
     before=$(get_newest_substation_id)
     run_tx "Creating temporary substation for ${label}" \
-        tx structs substation-create "${PLAYER_1_ID}" "${alloc}" --from alice
+        tx structs substation-create "${PLAYER_1_ID}" "${TEMP_ALLOC_ID}" --from alice
 
     after=$(get_newest_substation_id)
     if [ -z "${after}" ] || [ "${after}" = "${before}" ] || [ "${after}" = "${SUBSTATION_ID}" ]; then
         info "SKIP ${label}: no new substation appeared (create was rejected)"
+        TEMP_ALLOC_ID=""
         return 1
     fi
 
     eval "${out_var}='${after}'"
-    info "Temporary substation for ${label}: ${after}"
+    info "Temporary substation for ${label}: ${after} (alloc ${TEMP_ALLOC_ID})"
 }
 
 # temp_substation_return_allocation <label>
-# Puts Alice's allocation back on the main substation. Call this before deleting
-# a throwaway, or the delete destroys the allocation and every later test that
-# needs one fails with "allocation not found".
+# Moves the throwaway allocation onto the main substation when a caller needs
+# the allocation to survive a subsequent delete. Prefer temp_substation_destroy,
+# which lets Delete consume the throwaway instead.
 temp_substation_return_allocation() {
     local label="$1" dst
-    [ -z "${P1_ALLOC_ID}" ] && return 0
+    [ -z "${TEMP_ALLOC_ID}" ] && return 0
 
-    # connect refuses same_destination, so check before asking. Nothing should
-    # have moved the allocation home already, but a caller that skipped the
-    # create would otherwise turn a no-op into a counted failure.
-    dst=$(query query structs allocation "${P1_ALLOC_ID}" 2>/dev/null | jq -r '.Allocation.destinationId // empty' 2>/dev/null || echo "")
+    dst=$(query query structs allocation "${TEMP_ALLOC_ID}" 2>/dev/null | jq -r '.Allocation.destinationId // empty' 2>/dev/null || echo "")
     if [ "${dst}" = "${SUBSTATION_ID}" ]; then
         return 0
     fi
+    if [ -z "${dst}" ] && [ -z "$(query query structs allocation "${TEMP_ALLOC_ID}" 2>/dev/null | jq -r '.Allocation.id // empty' 2>/dev/null || echo "")" ]; then
+        TEMP_ALLOC_ID=""
+        return 0
+    fi
 
-    run_tx "Returning Player 1 allocation to ${SUBSTATION_ID} after ${label}" \
-        tx structs substation-allocation-connect "${P1_ALLOC_ID}" "${SUBSTATION_ID}" --from alice
+    run_tx "Returning throwaway allocation ${TEMP_ALLOC_ID} to ${SUBSTATION_ID} after ${label}" \
+        tx structs substation-allocation-connect "${TEMP_ALLOC_ID}" "${SUBSTATION_ID}" --from alice
 }
 
 # temp_substation_destroy <sub_id> <label>
+# Deletes the throwaway substation. The throwaway allocation still feeds it, so
+# Delete destroys that allocation; P1_ALLOC_ID is untouched.
 temp_substation_destroy() {
     local sub_id="$1" label="$2"
     [ -z "${sub_id}" ] && return 0
-    temp_substation_return_allocation "${label}"
     run_tx "Deleting temporary substation ${sub_id} (${label})" \
         tx structs substation-delete "${sub_id}" "${SUBSTATION_ID}" --from alice
+    TEMP_ALLOC_ID=""
 }
 
 # ─── Discover Reactor (created during validator setup) ───
@@ -3261,7 +3294,8 @@ run_tx "Clearing Player 5 permissions on substation" \
 
 # ─── permission-grant-on-address / permission-revoke-on-address ───
 # Address permissions can only be managed on your OWN player's addresses.
-# Player 5 grants PermDelete (8) on their own address (already has it, but tests the grant path).
+# Player 5 grants PermDelete (8) on their own primary (already has it, but tests
+# the grant path).
 run_tx "Player 5 granting own address PermDelete (8)" \
     tx structs permission-grant-on-address "${PLAYER_5_ADDRESS}" 8 --from player_5
 
@@ -3270,46 +3304,87 @@ PERM_BY_PLAYER=$(query query structs permission-by-player "${PLAYER_5_ID}" 2>/de
 info "Permissions for Player 5 after address grant:"
 echo "${PERM_BY_PLAYER}" | jq -r '.permissionRecord[]? | "  obj=\(.objectId) val=\(.value)"' 2>/dev/null | head -5 || echo "  (no records)"
 
-# Dropping PermDelete below is a one-way door unless somebody else can put it
-# back: permission-grant-on-address runs PermissionCheck(target player, caller,
-# PermDelete), and Alice holds nothing on object 1-5 — being the guild owner is
-# not standing on another player. Player 5 delegates the bit on their own player
-# object while they still hold it, which is what makes the restore below possible.
-run_tx "Player 5 delegates PermDelete on self to Alice (so the restore below is possible)" \
-    tx structs permission-grant-on-object "${PLAYER_5_ID}" "${PLAYER_1_ID}" "${PERM_DELETE}" --from player_5
-
-# Revoke PermDelete (8) from Player 5's address
-run_tx "Player 5 revoking own address PermDelete (8)" \
+# v0.22.0: a primary address must keep PermAll. Narrowing it in place is refused
+# so a player cannot lock themselves out of every recovery route. Assert both
+# revoke and set hit that gate; the supported way to hold a narrow key is to
+# rotate the primary first, then narrow the old address.
+run_tx_expect_fail "Player 5 cannot revoke PermDelete from primary address" \
     tx structs permission-revoke-on-address "${PLAYER_5_ADDRESS}" 8 --from player_5
 
-# ─── permission-set-on-address ───
-# NOTE: permission-set-on-address prevents privilege escalation — the caller
-# needs ALL bits of the target value. After revoking PermDelete (8),
-# the address has PermAll minus PermDelete = 33554423. We demonstrate set
-# by setting to that value (proving the command works).
-# (33554423 = (2^25 - 1) ^ 8; the older 16777207 constant predates the UGC bit.)
-run_tx "Player 5 setting own address permissions to 33554423 (PermAll minus PermDelete)" \
+# 33554423 = PermAll minus PermDelete = (2^25 - 1) ^ 8
+run_tx_expect_fail "Player 5 cannot set primary address below PermAll" \
     tx structs permission-set-on-address "${PLAYER_5_ADDRESS}" 33554423 --from player_5
 
-# While below PermAll, player-update-primary-address must fail. Passing the
-# player's own already-registered address clears both lookups and hits the
-# new PermAll gate without needing a crypto proof for a second address.
-run_tx_expect_fail "Player 5 cannot update primary address without PermAll" \
-    tx structs player-update-primary-address "${PLAYER_5_ADDRESS}" --from player_5
-
-# Restore Player 5 address to full permissions for later phases. Player 5 can't
-# re-grant it themselves (escalation prevention), so Alice does it on the strength
-# of the object-level delegation taken out above.
-run_tx "Alice restoring Player 5 address PermDelete" \
-    tx structs permission-grant-on-address "${PLAYER_5_ADDRESS}" 8 --from alice
-
-# With PermAll restored, the same self-update clears the gate (noop swap).
+# With PermAll intact, a no-op primary self-update clears the gate.
 run_tx "Player 5 can update primary address with PermAll" \
     tx structs player-update-primary-address "${PLAYER_5_ADDRESS}" --from player_5
 
-# Hand the delegation back now that the restore is done.
-run_tx "Player 5 revokes Alice's PermDelete delegation on self" \
-    tx structs permission-revoke-on-object "${PLAYER_5_ID}" "${PLAYER_1_ID}" "${PERM_DELETE}" --from player_5
+# ─── PermAll gate on a secondary address ───
+# Register a second key for Player 5, narrow it, and show that key cannot call
+# player-update-primary-address. The primary stays whole throughout.
+P5_SEC_KEY="player_5_sec"
+P5_SEC_ADDR=""
+ADDRESS_PROOF_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CHAIN_ID_FOR_P5=$(jq -r '.chain_id' ~/.structs/config/genesis.json 2>/dev/null || echo "")
+P5_SEC_PROOF=""
+if [ -n "${CHAIN_ID_FOR_P5}" ] && [ "${CHAIN_ID_FOR_P5}" != "null" ]; then
+    P5_SEC_PROOF=$(cd "${ADDRESS_PROOF_REPO}" && go run ./tests/tools/addressproof \
+        -chain-id "${CHAIN_ID_FOR_P5}" -player "${PLAYER_5_ID}" -nonce 0 2>&1) || P5_SEC_PROOF=""
+fi
+
+if [ -n "${P5_SEC_PROOF}" ] && echo "${P5_SEC_PROOF}" | grep -q '^ADDRESS='; then
+    # go run can print build chatter on a cold module cache; keep only the
+    # assignment lines the tool emits.
+    eval "$(echo "${P5_SEC_PROOF}" | grep -E '^(ADDRESS|PROOF_PUBKEY|PROOF_SIGNATURE|PRIVKEY)=')"
+    P5_SEC_ADDR="${ADDRESS}"
+    assert_not_empty "Player 5 secondary address" "${P5_SEC_ADDR}"
+    assert_not_empty "Player 5 secondary privkey" "${PRIVKEY}"
+
+    # Drop any leftover key from a prior run, then import the freshly minted one.
+    structsd ${PARAMS_KEYS} keys delete "${P5_SEC_KEY}" --yes >/dev/null 2>&1 || true
+    info "Importing Player 5 secondary key into keyring"
+    IMPORT_OUT=$(structsd ${PARAMS_KEYS} keys import-hex "${P5_SEC_KEY}" "${PRIVKEY}" 2>&1) || true
+    IMPORTED_ADDR=$(structsd ${PARAMS_KEYS} keys show "${P5_SEC_KEY}" --address 2>/dev/null | jq -r '.' 2>/dev/null || true)
+    if [ -z "${IMPORTED_ADDR}" ] || [ "${IMPORTED_ADDR}" = "null" ]; then
+        IMPORTED_ADDR=$(structsd --home ~/.structs --keyring-dir ~/.structs --keyring-backend test keys show "${P5_SEC_KEY}" -a 2>/dev/null || true)
+    fi
+    if [ "${IMPORTED_ADDR}" != "${P5_SEC_ADDR}" ]; then
+        echo -e "  ${RED}FAIL${NC}: imported key address '${IMPORTED_ADDR}' != proof address '${P5_SEC_ADDR}'"
+        echo "  ${IMPORT_OUT}"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+        P5_SEC_ADDR=""
+    else
+        echo -e "  ${GREEN}Imported${NC}: ${P5_SEC_KEY} = ${IMPORTED_ADDR}"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    fi
+
+    if [ -n "${P5_SEC_ADDR}" ]; then
+        # Register with PermAll so the subsequent narrow is the only thing stripping it.
+        run_tx "Registering secondary address for Player 5 with PermAll" \
+            tx structs address-register \
+            "${PLAYER_5_ID}" \
+            "${P5_SEC_ADDR}" \
+            "${PROOF_PUBKEY}" \
+            "${PROOF_SIGNATURE}" \
+            33554431 --from player_5
+
+        ADDR_CHECK_JSON=$(query query structs address "${P5_SEC_ADDR}")
+        assert_eq "Player 5 secondary belongs to Player 5" "${PLAYER_5_ID}" "$(jqr "${ADDR_CHECK_JSON}" '.playerId')"
+
+        run_tx "Narrowing Player 5 secondary to PermAll minus PermDelete" \
+            tx structs permission-set-on-address "${P5_SEC_ADDR}" 33554423 --from player_5
+
+        run_tx_expect_fail "Narrowed secondary cannot update primary address" \
+            tx structs player-update-primary-address "${PLAYER_5_ADDRESS}" --from "${P5_SEC_KEY}"
+
+        # Leave the secondary registered but restore PermAll so later phases that
+        # touch Player 5's address set are not fighting a deliberately broken key.
+        run_tx "Restoring Player 5 secondary to PermAll" \
+            tx structs permission-set-on-address "${P5_SEC_ADDR}" 33554431 --from player_5
+    fi
+else
+    info "SKIP: could not mint Player 5 secondary address proof for PermAll gate"
+fi
 
 # ─── General permission query ───
 info "All permissions sample:"
@@ -4038,14 +4113,11 @@ if temp_substation_create SECOND_SUB_ID "migration test"; then
     run_tx "Setting guild rank perm on second substation (pre-delete)" \
         tx structs permission-guild-rank-set "${SECOND_SUB_ID}" "${GUILD_ID}" 4 2 --from alice
 
-    # The delete below destroys every allocation whose destination is this
-    # substation, and substation-create moved Alice's onto it. Take it back
-    # first, or the allocation is gone for the rest of the run.
-    temp_substation_return_allocation "migration test"
-
-    # ─── substation-delete: delete second substation ───
+    # The throwaway allocation still feeds SECOND_SUB_ID. Delete destroys it
+    # with the substation; P1_ALLOC_ID never left the main feeder.
     run_tx "Deleting second substation (migrate to original)" \
         tx structs substation-delete "${SECOND_SUB_ID}" "${SUBSTATION_ID}" --from alice
+    TEMP_ALLOC_ID=""
 
     # Verify second substation is gone
     DEL_SUB_JSON=$(query query structs substation "${SECOND_SUB_ID}" 2>/dev/null || echo '{}')
@@ -4063,9 +4135,8 @@ if temp_substation_create SECOND_SUB_ID "migration test"; then
     info "Guild rank permissions on deleted substation: ${GRANK_CLEANUP_COUNT} records"
     assert_eq "Guild rank permissions cleaned up after substation delete" "0" "${GRANK_CLEANUP_COUNT}"
 
-    # The allocation was handed back before the delete, so it should still be
-    # powering the main substation. Pin it: this is the exact state whose loss
-    # broke the agreement phase, silently, several thousand lines later.
+    # Main feeder never moved onto the throwaway, so it must still be powering
+    # the main substation after the delete.
     P1_ALLOC_DST_AFTER=$(query query structs allocation "${P1_ALLOC_ID}" 2>/dev/null | jq -r '.Allocation.destinationId // empty' 2>/dev/null || echo "")
     assert_eq "Player 1 allocation survived the substation delete" "${SUBSTATION_ID}" "${P1_ALLOC_DST_AFTER}"
 else
@@ -5638,10 +5709,10 @@ if [ -n "${P3_BALANCE_BEFORE}" ] && [ -n "${P3_BALANCE_AFTER}" ] && [ "${P3_BALA
     assert_gt "Player 3 balance increased after player-send" "${P3_BALANCE_BEFORE}" "${P3_BALANCE_AFTER}"
 fi
 
-# Note: the PermAll gate for player-update-primary-address is covered in the
-# Player 5 permission phase (self-update while reduced / restored). The happy
-# path that swaps onto a second address still needs a crypto proof signature,
-# which is complex to generate in bash, so that case stays skipped here.
+# Note: the PermAll gate for player-update-primary-address is covered in Phase 4e
+# against a narrowed secondary address. The primary-rotation path that swaps onto
+# a second address still needs a crypto proof signature on some flows beyond
+# address-register, so that case stays skipped here.
 info "player-update-primary-address second-address swap: SKIP (requires crypto proof)"
 
 fi # phase 15b
