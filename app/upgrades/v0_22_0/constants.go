@@ -1061,6 +1061,88 @@ package v0_22_0
 //     Both ends, as with fleet ids: refusing the file is what stops new ones, and
 //     the keeper dropping the row is what covers one already on disk.
 //
+//   - github.com/cosmos/iavl moves from v1.2.2 to v1.2.8 for cosmos/iavl#1142,
+//     a race between the fast-node cache and the batch commit that this chain
+//     hit at height 2586840 on structs-public-rpc.
+//
+//     SaveVersion evicted a deleted key from the in-memory fast-node cache and
+//     queued the disk delete in a batch, then released the mutex while it wrote
+//     the tree nodes. gRPC and LCD queries go straight to the query router, not
+//     through the ABCI mutex, so one landing in that window missed the cache,
+//     read the not-yet-deleted node from disk and put it back. After the batch
+//     landed the disk was right and the cache held a deleted key indefinitely.
+//
+//     The fast-node index is not part of the Merkle tree, so AppHash stayed in
+//     agreement with the network. What diverged was execution: SetStructDefender
+//     read a protectedStructIndex the tree no longer had, took the clear branch
+//     nobody else took, emitted an extra EventStructDefenderClear and paid 1024
+//     more gas (a 1000-gas Delete plus 3 gas per byte of the phantom 8-byte
+//     value), and the block's LastResultsHash no longer matched. CometBFT
+//     treats that as CONSENSUS FAILURE and stops advancing while RPC keeps
+//     answering at the frozen height.
+//
+//     Only a node serving queries at volume is exposed, which is why the same
+//     network on the same binary saw this as a recurring public-node stall and
+//     never as a validator fork, and why stop, `structsd rollback`, start always
+//     recovered it: the stale value lived in process memory, so a fresh process
+//     re-executed the block correctly.
+//
+//     This is a node-local read bug and not a state or rule change. It needs no
+//     migration, and a node on the new binary agrees with a node on the old one
+//     wherever the old one was reading correctly; it rides in this release only
+//     because this is the next coordinated binary. app/arch_deps_test.go holds
+//     the version floor at v1.2.7.
+//
+//   - github.com/cosmos/ibc-go/v10 moves from v10.0.0 to v10.7.0. v10.0.0
+//     predates ASA-2025-004 (GHSA-jg6f-48ff-5xrw, critical): AcknowledgePacket
+//     accepted an acknowledgement whose JSON did not round-trip through the
+//     canonical encoder, and non-deterministic unmarshalling of it could halt
+//     the chain. From v10.1.0 an acknowledgement whose re-encoding differs from
+//     the bytes supplied is refused with ErrInvalidAcknowledgement. Channel
+//     handshakes are permissionless, so the exposure never depended on a
+//     channel existing on this chain.
+//
+//     Consensus-affecting: a relayer can submit an acknowledgement that the old
+//     binary accepts and the new one rejects, so this rides the coordinated
+//     upgrade and not a rolling binary swap. No store change: core, transfer
+//     and 27-interchain-accounts keep ConsensusVersion 8 / 6 / 3, so
+//     RunMigrations has nothing to do for them. v10.1+ also ships IBC v2 with
+//     its own router; app/ibc.go sets an empty one so a v2 message fails through
+//     the router's own "no route" path rather than a nil pointer. No v2
+//     application is registered.
+//
+//   - github.com/cosmos/cosmos-sdk moves from v0.53.5 to v0.53.8. The patch
+//     line bounds the indices in multisig verification, tx signature decoding
+//     and the compact bit array so arbitrary transaction bytes return an error
+//     instead of panicking in CheckTx; stops x/distribution erroring inside
+//     Begin/EndBlock when a withdraw address is blocked or a historical-rewards
+//     record is absent; and fixes MsgBeginRedelegate failing from a removed
+//     source validator.
+//
+//     Consensus-affecting on one axis: cosmos/cosmos-sdk#26529 validates the
+//     SEC1 tag byte when a compressed secp256k1 pubkey is unmarshalled, so a
+//     transaction carrying a malformed key that the old binary would decode is
+//     now rejected at decode. That changes which transactions are valid and is
+//     the second reason this bump is coordinated. v0.53.8 still pins iavl v1.2.2
+//     indirectly, so the explicit v1.2.8 require and the floor test above stay
+//     load-bearing.
+//
+//   - github.com/cometbft/cometbft moves from v0.38.21 to v0.38.26. v0.38.25
+//     adds MsgBytesFilter to the mempool reactor against a heap-amplification
+//     DoS from crafted gossip, fixes the setRecheckFull/setDone race that
+//     produced spurious ErrRecheckFull (the shape of this chain's stuck-mempool
+//     incidents), validates blocksync response senders and signature counts,
+//     tolerates a late BlockResponse after switching to consensus, and stops
+//     holding the consensus mutex across a channel send. v0.38.22 added evidence
+//     validation and full-commit verification in blocksync.
+//
+//     Engine-only: no app state, no results, mixed versions are safe. Bundled
+//     because it is the same release train, not because it needs coordination.
+//
+//   app/arch_deps_test.go holds all four floors (iavl v1.2.7, ibc-go v10.1.0,
+//   cosmos-sdk v0.53.8, cometbft v0.38.25) so a later bump that resolves any of
+//   them lower fails the suite rather than reintroducing the incident.
+//
 // This upgrade carries three state migrations.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs

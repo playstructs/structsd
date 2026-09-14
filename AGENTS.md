@@ -368,6 +368,43 @@ provably cannot reach state. `norm.NFC` is the one allowed external dependency, 
 `golang.org/x/text` changes which names the chain accepts and needs an upgrade handler** — treat a
 Unicode-version review as part of writing one.
 
+**A results mismatch with a matching AppHash is a node-local read, not a handler bug — go to the
+store before the code.** `LastResultsHash` covers events and gas; `AppHash` covers the tree. When
+one node diverges on the first while agreeing on the second, the tree it wrote is right and the
+value it *read* was not, so the question is where a read can come from other than the tree. The
+answer on this chain was IAVL's fast-node index: before `cosmos/iavl` v1.2.7, `SaveVersion` evicted
+a deleted key from the in-memory fast-node LRU and queued the disk delete, then released its lock
+while writing tree nodes; a gRPC or LCD query for that key in the window — those bypass the ABCI
+mutex — read the not-yet-deleted node from disk and put it back. After commit the disk was right
+and the LRU held a deleted key for good. `SetStructDefender` later read a `protectedStructIndex`
+the tree no longer had, took the clear branch nobody else took, and `structs-public-rpc` wedged at
+2586840 with `CONSENSUS FAILURE`. Only a node serving queries at volume is exposed, which is why it
+presented as a recurring public-node stall and never a validator fork, and why a rollback always
+cleared it: the stale value lived in process memory. Read the gas delta before reading code — 1024
+here was a 1000-gas `Delete` plus 3 gas/byte on an 8-byte value that one node saw and the others
+did not, which names the key shape and the branch without touching the handler. `go.mod` requires
+`github.com/cosmos/iavl` v1.2.8 for cosmos/iavl#1142 and `app/arch_deps_test.go` holds the floor
+at v1.2.7; an SDK or store bump that resolves it lower reintroduces the incident. Not a state
+change, so no upgrade handler: it rode in v0.22.0 because that was the next binary.
+`docs/runbooks/consensus-failure-lastresultshash.md` is the operator side.
+
+**A security-driven dependency floor goes in `app/arch_deps_test.go`, and one that changes what the
+chain accepts needs a coordinated upgrade.** `TestArch_DependencyFloors` reads `go.mod` — test
+binaries carry no dependency list in their build info — and holds `iavl` ≥ v1.2.7, `ibc-go/v10`
+≥ v10.1.0 (ASA-2025-004, the acknowledgement round-trip check), `cosmos-sdk` ≥ v0.53.8 (tx-decode
+panics, the secp256k1 SEC1 tag check, distribution block-hook errors) and `cometbft` ≥ v0.38.25
+(mempool heap amplification, the `ErrRecheckFull` race). Each entry carries the reason in its
+failure message; add the next one there rather than in a comment on the require line, because the
+require line is what `go mod tidy` and a transitive bump rewrite. The floors are not all the same
+kind of fix, and the difference decides how a bump ships. The IAVL and CometBFT fixes are
+node-local — a node on either version agrees with the network wherever the old one was reading or
+gossiping correctly — so they can ride any binary. The IBC acknowledgement check and the pubkey tag
+check each **reject an input the old binary accepts**, and a network split across those two
+behaviours diverges on the first such transaction, so they ride a named upgrade or not at all.
+Read the changelog for that distinction before deciding a patch bump is safe to roll. Also note
+what an SDK bump does not do: v0.53.8 still pins `iavl` v1.2.2 indirectly, so the explicit require
+in `go.mod` is what holds the version, and the floor test is what notices if a tidy drops it.
+
 **A proto3 enum is an open int32, so a switch on one that decides authorization must end in a
 default that denies.** The generated decoder shifts bytes into an int32 and never consults the
 enum, so a field typed `guildJoinBypassLevel` holds any number a transaction or a genesis file
