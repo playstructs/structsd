@@ -10,20 +10,7 @@ import (
 	"structs/x/structs/types"
 )
 
-/* TestPlayerUpdateGuildRankKeepsTheSigningKeyCeiling is the regression on rank
- * standing in for a permission it was only ever meant to stand beside.
- *
- * PermissionCheck fails for two unrelated reasons: the signing key does not
- * carry the bit, or it does but the player has no standing on the object. This
- * handler treated both alike and fell through to a rank comparison that reads
- * only player-level attributes - so a deliberately restricted secondary key
- * inherited its player's whole rank authority, and could re-rank every member
- * below them.
- *
- * It is the only rank check in the module that substitutes for a permission.
- * GuildUpdateEntryRank and the kick path both apply their rank bound *after* a
- * PermissionCheck that has already enforced the ceiling.
- */
+// Rank never substitutes for administrative authority or signing-key bits.
 func TestPlayerUpdateGuildRankKeepsTheSigningKeyCeiling(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
 	wctx := sdk.UnwrapSDKContext(ctx)
@@ -66,24 +53,24 @@ func TestPlayerUpdateGuildRankKeepsTheSigningKeyCeiling(t *testing.T) {
 		require.Equal(t, uint64(50), after.GuildRank, "the promotion must not have landed")
 	})
 
-	// The control: the officer's own primary address holds PermAll, so the rank
-	// fallback still does exactly what it is for.
-	t.Run("the officer's own key still outranks the junior", func(t *testing.T) {
+	// The primary key also fails without an explicit administrative grant.
+	t.Run("rank alone cannot promote", func(t *testing.T) {
 		_, err := ms.PlayerUpdateGuildRank(wctx, &types.MsgPlayerUpdateGuildRank{
 			Creator:   officer.Creator,
 			GuildId:   gs.Guild.Id,
 			PlayerId:  junior.Id,
 			GuildRank: 2,
 		})
-		require.NoError(t, err)
+		require.Error(t, err)
 
 		after, found := k.GetPlayer(ctx, junior.Id)
 		require.True(t, found)
-		require.Equal(t, uint64(2), after.GuildRank)
+		require.Equal(t, uint64(50), after.GuildRank)
 	})
 
-	// And the rank bounds themselves still hold: nobody promotes past their own.
-	t.Run("the rank bounds are unchanged", func(t *testing.T) {
+	// An explicit administrator can manage ranks regardless of their own rank.
+	t.Run("explicit admin can promote", func(t *testing.T) {
+        k.SetPermissionsByBytes(ctx, keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id, officer.Id), types.PermAdmin)
 		peerAcc := sdk.AccAddress("rankceiling_peer_pad0001")
 		peer := testAppendPlayer(k, ctx, types.Player{
 			Creator:        peerAcc.String(),
@@ -98,6 +85,9 @@ func TestPlayerUpdateGuildRankKeepsTheSigningKeyCeiling(t *testing.T) {
 			PlayerId:  peer.Id,
 			GuildRank: 1,
 		})
-		require.Error(t, err, "an actor may not hand out a rank better than their own")
+		require.NoError(t, err)
+        after, found := k.GetPlayer(ctx, peer.Id)
+        require.True(t, found)
+        require.Equal(t, uint64(1), after.GuildRank)
 	})
 }

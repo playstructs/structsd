@@ -446,6 +446,18 @@ func TestMsgStructAttackGuaranteedShots(t *testing.T) {
 // Ready flag instead of the live destroyed/online status, so the destroyed
 // attacker still inflicted blocker damage on the defender.
 func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
+	testMsgStructAttackDefenderCounterDestroysAttacker(t, false, 1)
+}
+
+func TestMsgStructAttackEvadedVolleyStillReportsLethalDefenderCounter(t *testing.T) {
+	testMsgStructAttackDefenderCounterDestroysAttacker(t, true, 1)
+}
+
+func TestMsgStructAttackEvadedVolleyStillReportsNonlethalDefenderCounter(t *testing.T) {
+	testMsgStructAttackDefenderCounterDestroysAttacker(t, true, 2)
+}
+
+func testMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T, evade bool, attackerHealth uint64) {
 	k, ms, ctx := setupMsgServer(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sdkCtx = sdkCtx.WithBlockHeight(1000)
@@ -487,7 +499,7 @@ func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
 		Id:                                      301,
 		Type:                                    "TankAttacker",
 		Category:                                types.ObjectType_fleet,
-		MaxHealth:                               1,
+		MaxHealth:                               attackerHealth,
 		PossibleAmbit:                           landAmbitFlag,
 		PrimaryWeapon:                           types.TechActiveWeaponry_unguidedWeaponry,
 		PrimaryWeaponControl:                    types.TechWeaponControl_unguided,
@@ -514,6 +526,11 @@ func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
 		MaxHealth:       3,
 		PossibleAmbit:   landAmbitFlag,
 		AttackReduction: 1,
+	}
+	if evade {
+		tgtType.UnitDefenses = types.TechUnitDefenses_signalJamming
+		tgtType.UnguidedDefensiveSuccessRateNumerator = 1
+		tgtType.UnguidedDefensiveSuccessRateDenominator = 1
 	}
 	k.SetStructType(sdkCtx, tgtType)
 
@@ -576,7 +593,7 @@ func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
 	testSetStructAttributeFlagAdd(k, sdkCtx, atkSAttr, uint64(types.StructStateBuilt))
 	testSetStructAttributeFlagAdd(k, sdkCtx, atkSAttr, uint64(types.StructStateOnline))
 	atkHAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, atkStruct.Id)
-	k.SetStructAttribute(sdkCtx, atkHAttr, uint64(1))
+	k.SetStructAttribute(sdkCtx, atkHAttr, attackerHealth)
 
 	// --- target struct ---
 	tgtStruct := testAppendStruct(k, sdkCtx, types.Struct{
@@ -620,9 +637,9 @@ func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
 
 	// --- assert ---
 	// Attacker destroyed by the defender's counter.
-	require.Equal(t, uint64(0), k.GetStructAttribute(sdkCtx, atkHAttr),
-		"attacker should be at 0 HP after defender counter")
-	require.True(t,
+	require.Equal(t, attackerHealth-1, k.GetStructAttribute(sdkCtx, atkHAttr),
+		"attacker loses exactly the defender counter damage")
+	require.Equal(t, attackerHealth == 1,
 		testStructAttributeFlagHasAll(k, sdkCtx, atkSAttr, uint64(types.StructStateDestroyed)),
 		"attacker should be flagged destroyed")
 
@@ -636,6 +653,34 @@ func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
 	// the volley would have hit it.
 	require.Equal(t, tgtType.MaxHealth, k.GetStructAttribute(sdkCtx, tgtHAttr),
 		"target HP should be unchanged when attacker is destroyed before volley")
+
+	var attacks []*types.EventAttack
+	for _, event := range sdkCtx.EventManager().ABCIEvents() {
+		if event.Type != "structs.structs.EventAttack" {
+			continue
+		}
+		message, parseErr := sdk.ParseTypedEvent(event)
+		require.NoError(t, parseErr)
+		attack, ok := message.(*types.EventAttack)
+		require.True(t, ok)
+		attacks = append(attacks, attack)
+	}
+	require.Len(t, attacks, 1)
+	detail := attacks[0].EventAttackDetail
+	require.Equal(t, attackerHealth, detail.AttackerHealthBefore)
+	require.Equal(t, attackerHealth-1, detail.AttackerHealthAfter)
+	require.Len(t, detail.EventAttackShotDetail, 1)
+	shot := detail.EventAttackShotDetail[0]
+	require.Equal(t, evade, shot.Evaded)
+	require.False(t, shot.Blocked)
+	require.Zero(t, shot.Damage)
+	require.Equal(t, tgtType.MaxHealth, shot.TargetHealthBefore)
+	require.Equal(t, tgtType.MaxHealth, shot.TargetHealthAfter)
+	require.Len(t, shot.EventAttackDefenderCounterDetail, 1, "evasion must not hide a counter that actually executed")
+	counter := shot.EventAttackDefenderCounterDetail[0]
+	require.Equal(t, defStruct.Id, counter.CounterByStructId)
+	require.Equal(t, uint64(1), counter.CounterDamage)
+	require.Equal(t, attackerHealth == 1, counter.CounterDestroyedAttacker)
 }
 
 // TestMsgStructAttackBlockerSortedBeforeLethalCounter reproduces the live

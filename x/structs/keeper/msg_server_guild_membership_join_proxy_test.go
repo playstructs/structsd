@@ -131,6 +131,64 @@ func TestGuildMembershipJoinProxyRefusesExistingMember(t *testing.T) {
 	require.Equal(t, uint64(7), after.GuildRank)
 }
 
+func TestGuildMembershipJoinProxyRejectsClosingSubstation(t *testing.T) {
+	for _, registered := range []bool{false, true} {
+		for _, override := range []bool{false, true} {
+			t.Run(fmt.Sprintf("registered=%t/override=%t", registered, override), func(t *testing.T) {
+				k, ms, ctx := setupMsgServer(t)
+				gs := testCreateGuild(k, ctx)
+				station := types.Substation{Id: "4-9000", Owner: gs.GuildOwner.Id, DeletionPending: true}
+				k.SetSubstation(ctx, station)
+				if !override {
+					guild := gs.Guild
+					guild.EntrySubstationId = station.Id
+					k.SetGuild(ctx, guild)
+				}
+
+				key := secp256k1.GenPrivKey()
+				address := types.PubKeyToBech32(key.PubKey().Bytes())
+				var original types.Player
+				if registered {
+					original = testAppendPlayer(k, ctx, types.Player{Creator: address, PrimaryAddress: address})
+				}
+				count := k.GetPlayerCount(ctx)
+				signature, err := key.Sign([]byte(fmt.Sprintf("GUILD%sADDRESS%sNONCE0", gs.Guild.Id, address)))
+				require.NoError(t, err)
+				msg := &types.MsgGuildMembershipJoinProxy{
+					Creator: gs.GuildOwner.Creator, Address: address,
+					ProofPubKey: hex.EncodeToString(key.PubKey().Bytes()), ProofSignature: hex.EncodeToString(signature),
+				}
+				if override {
+					msg.SubstationId = station.Id
+				}
+				_, err = ms.GuildMembershipJoinProxy(ctx, msg)
+				require.ErrorContains(t, err, "substation_deleting")
+				require.Equal(t, count, k.GetPlayerCount(ctx), "rejection must not create a player")
+				require.Empty(t, k.GetAllPlayerIdBySubstationIndex(ctx, station.Id))
+				if registered {
+					after, found := k.GetPlayer(ctx, original.Id)
+					require.True(t, found)
+					require.Equal(t, original, after, "rejection must preserve membership, rank and connection")
+				} else {
+					require.Zero(t, k.GetPlayerIndexFromAddress(ctx, address))
+				}
+
+				// Reusing the exact proof against an open station also proves that
+				// the failed admission did not consume the player's proxy nonce.
+				station.DeletionPending = false
+				k.SetSubstation(ctx, station)
+				_, err = ms.GuildMembershipJoinProxy(ctx, msg)
+				require.NoError(t, err)
+				index := k.GetPlayerIndexFromAddress(ctx, address)
+				joined, found := k.GetPlayer(ctx, keeperlib.GetObjectID(types.ObjectType_player, index))
+				require.True(t, found)
+				require.Equal(t, gs.Guild.Id, joined.GuildId)
+				require.Equal(t, station.Id, joined.SubstationId)
+			})
+		}
+	}
+}
+
 /* TestGuildMembershipJoinProxyRequiresMembershipBitOnRegisteredAddress is the
  * regression on the proxy path being a way around a restricted key.
  *

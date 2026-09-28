@@ -1,12 +1,36 @@
 package keeper
 
 import (
+	"math/big"
 	"testing"
 
 	"cosmossdk.io/math"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 )
+
+// Rounding at the decimal division step can cross a whole-token boundary
+// before TruncateInt gets to discard the fraction.
+func TestDelegationShareValueFloorsNearIntegerBoundaries(t *testing.T) {
+	for _, test := range []struct{ shares, total string; tokens int64 }{
+		{"2.999999999999999999", "3", 1},
+		{"0.999999999999999999", "3", 3},
+		{"2.999999999999999999", "3", 7},
+		{"3", "3", 7},
+	} {
+		shares := math.LegacyMustNewDecFromStr(test.shares)
+		total := math.LegacyMustNewDecFromStr(test.total)
+		// Independent exact rational arithmetic, with no LegacyDec division.
+		value, ok := new(big.Rat).SetString(test.shares)
+		require.True(t, ok)
+		denominator, ok := new(big.Rat).SetString(test.total)
+		require.True(t, ok)
+		value.Mul(value, new(big.Rat).SetInt64(test.tokens)).Quo(value, denominator)
+		want := new(big.Int).Quo(value.Num(), value.Denom())
+		got := delegationShareValueAgainst(shares, total, math.LegacyNewDec(test.tokens))
+		require.Equal(t, want.String(), got.String(), "shares=%s total=%s tokens=%d", test.shares, test.total, test.tokens)
+	}
+}
 
 /* Internal because the arithmetic is the thing under test and it is unexported.
  * Everything else in this package tests through the keeper; this one has to
@@ -49,7 +73,7 @@ func TestDelegationShareValueCannotOutgrowTheStake(t *testing.T) {
 /* TestDelegationShareValueMatchesTheStakingKeeper pins the conversion to the
  * SDK's own, rather than to a second hand-written copy of it.
  *
- * Validator.TokensFromShares multiplies by the pool before dividing by the share
+ * Validator.TokensFromSharesTruncated multiplies by the pool before dividing by the share
  * total; dividing first rounds the ratio to LegacyDec's 18 places before it
  * meets the pool, so the error scales with the pool. What a delegation is worth
  * is staking's answer to give, so this asserts agreement rather than restating
@@ -72,7 +96,7 @@ func TestDelegationShareValueMatchesTheStakingKeeper(t *testing.T) {
 			shares := math.LegacyNewDec(tokens / split)
 
 			require.Equal(t,
-				validator.TokensFromShares(shares).TruncateInt(),
+				validator.TokensFromSharesTruncated(shares).TruncateInt(),
 				delegationShareValue(shares, validator),
 				"tokens=%d split=%d", tokens, split)
 		}

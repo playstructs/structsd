@@ -214,8 +214,17 @@ func (k Keeper) GetGridCascadeQueueBatch(ctx context.Context, limit int) (batch 
 	return
 }
 
-// GetGridCascadeQueueLength reports how many entries are pending. Used for
-// logging the backlog the budget left behind, so a cap is never silent.
+// HasPendingGridCascade checks the first queue row without counting the backlog.
+// EndBlock logging must not turn a bounded cascade into an unbounded queue scan.
+func (k Keeper) HasPendingGridCascade(ctx context.Context) bool {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+	return iterator.Valid()
+}
+
+// GetGridCascadeQueueLength counts the entire queue for diagnostics and tests.
+// Live block paths must use HasPendingGridCascade instead.
 func (k Keeper) GetGridCascadeQueueLength(ctx context.Context) (count int) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
 	iterator := storetypes.KVStorePrefixIterator(store, []byte{})

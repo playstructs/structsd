@@ -70,12 +70,14 @@ func TestAddressRegisterProofCannotBeReplayedAfterRevoke(t *testing.T) {
 	firstBalance := math.NewInt(3_000_000)
 	fundRedelegationAccount(t, bApp, ctx, secondaryAcc, sdk.NewCoins(sdk.NewCoin(bondDenom, firstBalance)))
 
+	vault, err := structstypes.VaultAddress(playerId)
+	require.NoError(t, err)
 	structsMsgServer := structskeeper.NewMsgServerImpl(bApp.StructsKeeper)
 	_, err = structsMsgServer.AddressRegister(ctx, msg)
 	require.NoError(t, err, "a proof signed against the current nonce registers")
 
-	require.Equal(t, firstBalance, bApp.BankKeeper.GetBalance(ctx, primaryAcc, bondDenom).Amount,
-		"registration sweeps the address balance to the primary")
+	require.Equal(t, firstBalance, bApp.BankKeeper.GetBalance(ctx, vault, bondDenom).Amount,
+		"registration sweeps the address balance to the vault")
 	require.Equal(t, uint64(1), bApp.StructsKeeper.GetAddressProofNonce(ctx, secondaryAcc.String()),
 		"registering burns the nonce the proof was signed against")
 
@@ -95,7 +97,7 @@ func TestAddressRegisterProofCannotBeReplayedAfterRevoke(t *testing.T) {
 	secondBalance := math.NewInt(5_000_000)
 	fundRedelegationAccount(t, bApp, ctx, secondaryAcc, sdk.NewCoins(sdk.NewCoin(bondDenom, secondBalance)))
 
-	primaryBefore := bApp.BankKeeper.GetBalance(ctx, primaryAcc, bondDenom).Amount
+	vaultBefore := bApp.BankKeeper.GetBalance(ctx, vault, bondDenom).Amount
 
 	_, err = structsMsgServer.AddressRegister(ctx, msg)
 	require.Error(t, err, "the original proof must not register the address a second time")
@@ -103,7 +105,7 @@ func TestAddressRegisterProofCannotBeReplayedAfterRevoke(t *testing.T) {
 
 	require.Equal(t, secondBalance, bApp.BankKeeper.GetBalance(ctx, secondaryAcc, bondDenom).Amount,
 		"the replay must not have swept anything")
-	require.Equal(t, primaryBefore, bApp.BankKeeper.GetBalance(ctx, primaryAcc, bondDenom).Amount)
+	require.Equal(t, vaultBefore, bApp.BankKeeper.GetBalance(ctx, vault, bondDenom).Amount)
 	require.Zero(t, bApp.StructsKeeper.GetPlayerIndexFromAddress(ctx, secondaryAcc.String()),
 		"and must not have re-associated the address")
 
@@ -119,8 +121,8 @@ func TestAddressRegisterProofCannotBeReplayedAfterRevoke(t *testing.T) {
 	require.NoError(t, err, "re-registering with a freshly signed proof is still allowed")
 
 	require.Equal(t, uint64(2), bApp.StructsKeeper.GetAddressProofNonce(ctx, secondaryAcc.String()))
-	require.Equal(t, primaryBefore.Add(secondBalance),
-		bApp.BankKeeper.GetBalance(ctx, primaryAcc, bondDenom).Amount)
+	require.Equal(t, vaultBefore.Add(secondBalance),
+		bApp.BankKeeper.GetBalance(ctx, vault, bondDenom).Amount)
 }
 
 // A proof carries no meaning off the chain it was signed for. Player ids are

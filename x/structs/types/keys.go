@@ -168,8 +168,9 @@ const GridCascadeBlockBudget = 256
 const AgreementExpirationBucketCap = 256
 
 /* ReactorSlashReconcileQueue holds reactors whose infusions still need
- * reconciling after their validator was slashed, and how far through each one
- * the reconciliation has got.
+ * reconciling after their validator was slashed or, after economy activation,
+ * bonded, and how far through each one the reconciliation has got. The stored
+ * prefix retains its historical name for compatibility.
  *
  * A slash does not change delegation shares, so AfterDelegationModified never
  * fires for it - BeforeValidatorSlashed is the only signal the module gets. It
@@ -183,6 +184,10 @@ const AgreementExpirationBucketCap = 256
  * re-does or skips an entry.
  */
 const ReactorSlashReconcileQueue = "Reactor/slashReconcileQueue/"
+
+// The last serviced reactor, outside the queue prefix, rotates bounded work
+// across reactors even when a new slash resets one reactor's infusion cursor.
+const ReactorSlashReconcilePosition = "Reactor/slashReconcilePosition"
 
 /* ReactorSlashReconcileBudget caps how many infusions are reconciled per block.
  *
@@ -199,6 +204,14 @@ const ReactorSlashReconcileQueue = "Reactor/slashReconcileQueue/"
  * that took five percent.
  */
 const ReactorSlashReconcileBudget = 128
+
+// InfusionMaturitySweepBudget limits queue rows examined per block, including
+// duplicate and malformed rows. Native staking refunds run independently;
+// deferred rows only delay Structs reconciliation of the resulting state.
+const InfusionMaturitySweepBudget = 128
+
+// InfusionDestructionBudget bounds queued cleanup attempts, including stale keys.
+const InfusionDestructionBudget = 128
 
 /* PermissionCleanupQueue holds objects whose permission rows are still being
  * removed after the object itself was destroyed.
@@ -274,6 +287,8 @@ const (
 	InfusionKey      = "Infusion/value/"
 	InfusionCountKey = "Infusion/count/"
 	InfusionDestructionQueue = "Infusion/destructionQueue/"
+	// Scheduling hint outside the queue prefix; pending rows remain authoritative.
+	InfusionDestructionPosition = "Infusion/destructionPosition"
 
 	// InfusionMaturitySweepQueue indexes (Cosmos UBD entry CompletionTime, infusionKey)
 	// rows that the structs EndBlocker drains as their maturity time arrives, calling

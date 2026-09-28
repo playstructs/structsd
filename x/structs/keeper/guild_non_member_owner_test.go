@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	keeperlib "structs/x/structs/keeper"
+ keepertest "structs/testutil/keeper"
 	"structs/x/structs/types"
 )
 
@@ -61,6 +62,7 @@ func newNonMemberOwnerFixture(t *testing.T) *nonMemberOwnerFixture {
 		Owner:      seller.Id,
 	})
 
+ k.StakingKeeper().(*keepertest.MockStakingKeeper).AddValidator(sdk.ValAddress(sellerAcc.Bytes()), math.NewInt(1000))
 	guild := k.AppendGuild(ctx, "owner-test", "", reactor, seller, "")
 	seller.GuildId = guild.Id
 	seller.GuildRank = 1
@@ -131,7 +133,7 @@ func TestNonMemberOwnerMintsAndBurns(t *testing.T) {
 	f := newNonMemberOwnerFixture(t)
 	f.fundAlpha(f.buyer, 1000)
 
-	_, err := f.ms.GuildBankMint(f.ctx, &types.MsgGuildBankMint{
+	_, err := bootstrapGuildTokens(t, f.k, f.ms, f.ctx, &types.MsgGuildBankMint{
 		Creator:     f.buyer.Creator,
 		GuildId:     f.guild.Id,
 		AmountAlpha: 100,
@@ -294,11 +296,11 @@ func TestGuildHandlerMembershipFallback(t *testing.T) {
 
 	// Grant the member the bits a permissioned officer would hold, so the
 	// fallback is exercised by somebody other than an owner.
-	testPermissionAdd(f.k, f.ctx, keeperlib.GetObjectPermissionIDBytes(f.guild.Id, f.member.Id), types.PermGuildTokenMint)
-	testPermissionAdd(f.k, f.ctx, keeperlib.GetObjectPermissionIDBytes(f.guild.Id, f.member.Id), types.PermUpdate)
+	testPermissionAdd(f.k, f.ctx, keeperlib.GetObjectPermissionIDBytes(f.guild.Id, f.member.Id), types.PermGuildTokenMint | types.PermTokenTransfer)
+	testPermissionAdd(f.k, f.ctx, keeperlib.GetObjectPermissionIDBytes(f.guild.Id, f.member.Id), types.PermUpdate|types.PermAdmin)
 	f.fundAlpha(f.member, 1000)
 
-	_, err := f.ms.GuildBankMint(f.ctx, &types.MsgGuildBankMint{
+	_, err := bootstrapGuildTokens(t, f.k, f.ms, f.ctx, &types.MsgGuildBankMint{
 		Creator:     f.member.Creator,
 		AmountAlpha: 100,
 		AmountToken: 10,

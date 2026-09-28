@@ -78,6 +78,7 @@ func (cache *SubstationCache) GetSubstationId() (string)            { return cac
 func (cache *SubstationCache) GetOwnerId()      (string)            { if (!cache.SubstationLoaded) { cache.LoadSubstation() }; return cache.Substation.Owner }
 
 func (cache *SubstationCache) GetConnectionCapacity() (uint64) {
+    if cache.IsDeletionPending() { return 0 }
     return cache.CC.GetGridAttribute(cache.ConnectionCapacityAttributeId)
 }
 
@@ -87,6 +88,12 @@ func (cache *SubstationCache) GetConnectionCount() (uint64) {
 
 func (cache *SubstationCache) GetCapacity() (uint64) {
     return cache.CC.GetGridAttribute(cache.CapacityAttributeId)
+}
+
+// GetUsableCapacity excludes the station's fixed 10% operating consumption.
+// GetCapacity and capacity grid events continue to report raw incoming power.
+func (cache *SubstationCache) GetUsableCapacity() uint64 {
+    return cache.CC.GetEffectiveGridCapacity(cache.SubstationId)
 }
 
 func (cache *SubstationCache) GetLoad() (uint64) {
@@ -103,8 +110,11 @@ func (cache *SubstationCache) GetLoad() (uint64) {
 // substation would sell power it does not have and deepen the brownout it is
 // already in. Clamping matches PlayerCache.GetAvailableCapacity and the
 // comparisons SetInitialPower and SetDynamicPower make before subtracting.
+// Grid accounting owns available capacity; bounded GridCascade propagates
+// upstream losses. Incoming contribution count cannot turn positive capacity off.
 func (cache *SubstationCache) GetAvailableCapacity() (uint64) {
-    capacity := cache.GetCapacity()
+    if cache.IsDeletionPending() { return 0 }
+    capacity := cache.GetUsableCapacity()
     load := cache.GetLoad()
 
     if load >= capacity {
@@ -115,46 +125,91 @@ func (cache *SubstationCache) GetAvailableCapacity() (uint64) {
 }
 
 func (cache *SubstationCache) GetOwner() (*PlayerCache) {
-    return cache.CC.GetPlayer( cache.GetOwnerId() )
+    owner, err := cache.CC.GetExistingAssetOwner(cache.GetOwnerId())
+    if err != nil {
+        return nil
+    }
+    player, _ := owner.(*PlayerCache)
+    return player
+}
+
+// IsDeletionPending is persisted so closing survives restart and export.
+func (cache *SubstationCache) IsDeletionPending() bool {
+    return cache.GetSubstation().DeletionPending
+}
+
+func (cache *SubstationCache) CheckAcceptingConnections() error {
+    if err := cache.CheckSubstation(); err != nil { return err }
+    if cache.Deleted || cache.IsDeletionPending() {
+        return types.NewAllocationError(cache.ID(), "substation_deleting")
+    }
+    return nil
 }
 
 func (cache *SubstationCache) Delete(migrationSubstationId string) {
+    if cache.Deleted { return }
+    if !cache.IsDeletionPending() {
+        cache.Substation.DeletionPending = true
+        cache.Substation.DeletionMigrationSubstationId = migrationSubstationId
+        cache.Changed = true
+        cache.CC.SetGridAttribute(cache.ConnectionCapacityAttributeId, 0)
+    }
+    // Keep small deletes immediate, but never charge a transaction for an
+    // attacker-sized incoming prefix. The existing persistent FIFO finishes it.
+    _, done := cache.ProcessDeletion(8)
+    if !done { cache.CC.k.AppendGridCascadeQueue(cache.CC.ctx, cache.ID()) }
+}
 
-    // Migrate everyone away
-    if (cache.GetConnectionCount() > 0) {
-        connectedPlayers := cache.CC.GetAllPlayerBySubstation(cache.GetSubstationId())
-        for _, disconnectPlayer := range connectedPlayers {
-            if migrationSubstationId == "" || migrationSubstationId == cache.GetSubstationId() {
-               // Somewhat punishes tomfoolery but whatever
-               disconnectPlayer.DisconnectSubstation()
-            } else {
-               disconnectPlayer.MigrateSubstation(migrationSubstationId)
+// ProcessDeletion charges each raw index row against the caller's shared budget.
+// Index updates are immediate; records remain in this CurrentContext until commit.
+func (cache *SubstationCache) ProcessDeletion(limit int) (used int, done bool) {
+    if cache.Deleted { return 0, true }
+    if !cache.IsDeletionPending() { return 0, false }
+    ids, more := cache.CC.k.GetPlayerIdsBySubstationIndexUpTo(cache.CC.ctx, cache.ID(), limit)
+    for _, id := range ids {
+        used++
+        player, err := cache.CC.GetExistingPlayer(id)
+        if err != nil || player.GetSubstationId() != cache.ID() {
+            cache.CC.k.RemoveSubstationPlayerIndex(cache.CC.ctx, cache.ID(), id)
+            continue
+        }
+        target := cache.Substation.DeletionMigrationSubstationId
+        if target == cache.ID() { target = "" }
+        player.MigrateSubstation(target)
+    }
+    if more { return used, false }
+    for _, incoming := range []bool{false, true} {
+        if incoming {
+            ids, more = cache.CC.k.GetAllocationIdsByDestinationIndexUpTo(cache.CC.ctx, cache.ID(), limit-used)
+        } else {
+            ids, more = cache.CC.k.GetAllocationIdsBySourceIndexUpTo(cache.CC.ctx, cache.ID(), limit-used)
+        }
+        for _, id := range ids {
+            used++
+            allocation, found := cache.CC.GetAllocation(id)
+            if !found || (incoming && allocation.GetAllocation().DestinationId != cache.ID()) || (!incoming && allocation.GetSourceId() != cache.ID()) {
+                if incoming { cache.CC.k.RemoveAllocationDestinationIndex(cache.CC.ctx, cache.ID(), id) } else { cache.CC.k.RemoveAllocationSourceIndex(cache.CC.ctx, cache.ID(), id) }
+                continue
+            }
+            var err error
+            // A consumer deleting its receiving station cannot claim the
+            // provider's cancellation penalty. Only detach that incoming edge.
+            if incoming && allocation.IsProviderAgreement() { err = allocation.SetDestination("") } else { err = allocation.Destroy() }
+            if err != nil {
+                cache.CC.k.logger.Error("Substation deletion deferred", "substationId", cache.ID(), "allocationId", id, "error", err)
+                return used, false
             }
         }
-	}
-
-	// Destroy allocations out
-    allocationsOut := cache.CC.k.GetAllAllocationIdBySourceIndex(cache.CC.ctx, cache.GetSubstationId())
-    cache.CC.DestroyMultipleAllocations(allocationsOut)
-
-    // Inbound is not symmetric with outbound: see
-    // DisconnectMultipleAgreementAllocations. Destroying an arriving agreement
-    // allocation settles its agreement at the provider's cancellation price,
-    // which is not what a consumer tearing down their own substation should get
-    // to choose.
-    allocationsIn := cache.CC.k.GetAllAllocationIdByDestinationIndex(cache.CC.ctx, cache.GetSubstationId())
-    cache.CC.DisconnectMultipleAgreementAllocations(allocationsIn)
-
-	// Clear out Grid attributes
-	cache.CC.ClearGridAttribute(cache.LoadAttributeId)
-	cache.CC.ClearGridAttribute(cache.CapacityAttributeId)
-	cache.CC.ClearGridAttribute(cache.ConnectionCountAttributeId)
-	cache.CC.ClearGridAttribute(cache.ConnectionCapacityAttributeId)
-
+        if more { return used, false }
+    }
+    cache.CC.ClearGridAttribute(cache.LoadAttributeId)
+    cache.CC.ClearGridAttribute(cache.CapacityAttributeId)
+    cache.CC.ClearGridAttribute(cache.ConnectionCountAttributeId)
+    cache.CC.ClearGridAttribute(cache.ConnectionCapacityAttributeId)
     cache.CC.ClearPermissionsForObject(cache.ID())
-
     cache.Deleted = true
     cache.Changed = true
+    return used, true
 }
 
 // Set the Owner Id data
@@ -172,10 +227,12 @@ func (cache *SubstationCache) CanBeDeleteDBy(activePlayer *PlayerCache) (error) 
 
 // Association Permission
 func (cache *SubstationCache) CanManageConnectionsBy(activePlayer *PlayerCache) error {
+    if err := cache.CheckAcceptingConnections(); err != nil { return err }
     return cache.CC.PermissionCheck(cache, activePlayer, types.PermSubstationConnection)
 }
 
 func (cache *SubstationCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    if err := cache.CheckAcceptingConnections(); err != nil { return err }
     return cache.CC.PermissionCheck(cache, activePlayer, types.PermSourceAllocation)
 }
 

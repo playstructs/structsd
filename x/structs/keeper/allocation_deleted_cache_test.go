@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
 	keeperlib "structs/x/structs/keeper"
@@ -17,9 +18,9 @@ import (
  * the same shape as the phantom PlayerCache, where a context getter is a cache
  * allocator and says nothing about whether the object is real.
  *
- * What made it damaging rather than merely untidy is that Destroy never zeroes
- * the power attribute. GetPower reads the grid, so a second Destroy sees the
- * original power and takes it off the source's load again - and that load
+ * What made the original bug damaging rather than merely untidy was that
+ * Destroy retained the power attribute. GetPower read the grid, so a second
+ * Destroy took the original power off the source's load again - and that load
  * belongs to whichever allocations are still sharing the source. The source then
  * reports headroom it does not have, which is the direction that oversubscribes
  * a grid rather than the direction that merely wastes it.
@@ -93,8 +94,8 @@ func TestDeletedAllocation_SecondDestroyDoesNotEatSurvivingLoad(t *testing.T) {
 }
 
 // TestDeletedAllocation_SetPowerIsRejected covers the mutator the auto-resize
-// path reaches. previousPower is still the pre-destroy value, so any delta
-// computed from it moves the grid by an amount Destroy already removed.
+// path reaches. A stale handle cannot install new power after teardown, whether
+// or not its old power attribute has already been reclaimed.
 func TestDeletedAllocation_SetPowerIsRejected(t *testing.T) {
 	d := setupDeletedAllocationFixture(t)
 
@@ -135,4 +136,56 @@ func TestDeletedAllocation_DestroyMultipleSkipsRepeats(t *testing.T) {
 
 	require.Equal(t, uint64(150), cc.GetGridAttribute(d.srcLoad),
 		"a duplicated id in a teardown list must not tear down twice")
+}
+
+func TestDeletedAllocation_RemovesPowerRowAndEmitsOneClear(t *testing.T) {
+	d := setupDeletedAllocationFixture(t)
+	ctx := d.f.ctx.WithEventManager(sdk.NewEventManager())
+	powerID := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_power, d.victimId)
+	require.Equal(t, uint64(100), d.f.k.GetGridAttribute(ctx, powerID))
+	cc := d.f.k.NewCurrentContext(ctx)
+	allocation, found := cc.GetAllocation(d.victimId)
+	require.True(t, found)
+	require.NoError(t, allocation.Destroy())
+	require.NoError(t, allocation.Destroy())
+	cc.CommitAll()
+	for _, row := range d.f.k.GetAllGridExport(ctx) {
+		require.NotEqual(t, powerID, row.AttributeId, "a zero lookup is insufficient: the orphan row must be removed")
+	}
+	require.Zero(t, d.f.k.GetGridAttribute(ctx, powerID))
+	require.Equal(t, uint64(150), d.f.k.GetGridAttribute(ctx, d.srcLoad))
+	require.Equal(t, uint64(150), d.f.k.GetGridAttribute(ctx, d.destCap))
+	clears := 0
+	for _, event := range ctx.EventManager().ABCIEvents() {
+		if event.Type != "structs.structs.EventGrid" {
+			continue
+		}
+		parsed, err := sdk.ParseTypedEvent(event)
+		require.NoError(t, err)
+		row := parsed.(*types.EventGrid).GridRecord
+		if row.AttributeId == powerID {
+			require.Zero(t, row.Value)
+			clears++
+		}
+	}
+	require.Equal(t, 1, clears)
+}
+
+func TestDeletedAllocation_PendingPowerWriteCannotRestoreOrphan(t *testing.T) {
+	d := setupDeletedAllocationFixture(t)
+	cc := d.f.k.NewCurrentContext(d.f.ctx)
+	allocation, found := cc.GetAllocation(d.victimId)
+	require.True(t, found)
+	_, err := allocation.SetPower(125)
+	require.NoError(t, err)
+	require.Equal(t, uint64(275), cc.GetGridAttribute(d.srcLoad))
+	require.NoError(t, allocation.Destroy())
+	require.Zero(t, allocation.GetPower(), "the staged deletion replaces the dirty power cache entry")
+	cc.CommitAll()
+	powerID := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_power, d.victimId)
+	for _, row := range d.f.k.GetAllGridExport(d.f.ctx) {
+		require.NotEqual(t, powerID, row.AttributeId)
+	}
+	require.Equal(t, uint64(150), d.f.k.GetGridAttribute(d.f.ctx, d.srcLoad))
+	require.Equal(t, uint64(150), d.f.k.GetGridAttribute(d.f.ctx, d.destCap))
 }

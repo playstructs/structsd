@@ -5,6 +5,7 @@ import (
 
 	"structs/x/structs/types"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -68,6 +69,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					Id:              "7-0",
 					DurationMinimum: 0,
 					DurationMaximum: 1000,
+					Rate:            sdk.NewInt64Coin("ualpha", 1),
 				}},
 			},
 			valid: false,
@@ -80,6 +82,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					Id:              "7-0",
 					DurationMinimum: 500,
 					DurationMaximum: 100,
+					Rate:            sdk.NewInt64Coin("ualpha", 1),
 				}},
 			},
 			valid: false,
@@ -92,6 +95,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					Id:              "7-0",
 					DurationMinimum: 1,
 					DurationMaximum: 1000,
+					Rate:            sdk.NewInt64Coin("ualpha", 1),
 				}},
 			},
 			valid: true,

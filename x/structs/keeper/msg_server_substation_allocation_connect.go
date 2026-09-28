@@ -43,7 +43,9 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 		return emptyResponse, types.NewAllocationError(allocation.GetAllocation().SourceObjectId, "same_destination").WithDestination(allocation.GetAllocation().DestinationId)
 	}
 
-    allocation.SetDestination(substation.GetSubstationId())
+    if err := allocation.SetDestination(substation.GetSubstationId()); err != nil {
+        return emptyResponse, err
+    }
 
 	cc.CommitAll()
 	return &types.MsgSubstationAllocationConnectResponse{}, err

@@ -225,12 +225,15 @@ func TestAutoResize_StaleHookFallsThroughToCascade(t *testing.T) {
 // a cascade, or the fall-through has turned into a permanent load-shedder.
 func TestAutoResize_LiveHookResizesAndSkipsCascade(t *testing.T) {
 	f := setupAutoResizeFixture(t, 500)
+	validator := sdk.ValAddress("autoresize-reactor-01")
+	testAddValidator(f.k, validator, math.NewInt(1000))
+	f.destinationId = f.k.AppendReactor(f.ctx, types.Reactor{Validator: validator.String(), RawAddress: validator.Bytes()}).Id
 
 	const ratio, fuel = 10, 100
 	commission := math.LegacyMustNewDecFromStr("0.5")
 
 	infusion := types.CreateNewInfusion(
-		types.ObjectType_substation,
+		types.ObjectType_reactor,
 		f.destinationId,
 		f.owner.PrimaryAddress,
 		f.owner.Id,

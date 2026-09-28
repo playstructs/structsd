@@ -21,4 +21,11 @@ message Params {
   // guildCharterReactorAge is how many blocks after creation a reactor becomes
   // eligible to found one guild without solving the puzzle.
   uint64 guildCharterReactorAge = 2;
+  // Admission limit for validator inflows, in basis points (1..10000).
+  uint64 reactorStakeCapBps = 3;
+  // Sticky cap activation threshold, evaluated after validator-set updates.
+  uint64 reactorStakeCapMinValidators = 4;
+  // Diversity pricing changes require an upgrade rebuilding derived power.
+  uint64 diversityMaxBonusBps = 5;
+  uint64 diversityTargetExtraReactors = 6;
 }

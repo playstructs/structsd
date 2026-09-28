@@ -12,6 +12,7 @@ type AddressCache struct {
 	Loaded      bool
 	Changed     bool
 	Deleted     bool
+	cachedPlayerIndex uint64
 
 	ProofNonce        uint64
 	ProofNonceLoaded  bool

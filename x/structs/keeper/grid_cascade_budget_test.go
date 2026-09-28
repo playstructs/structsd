@@ -1,8 +1,10 @@
 package keeper_test
 
 import (
+	"fmt"
 	"testing"
 
+	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -39,14 +41,9 @@ type cascadeChain struct {
 	substationIds    []string
 }
 
-/* buildCascadeChain builds the attack topology: one unit of power threaded
- * through links substations in series.
- *
- * Each link is exactly what a player can do with two ordinary messages -
- * AllocationCreate against the previous substation as source, then
- * SubstationCreate on that allocation - so nothing here needs a permission or a
- * balance the attacker would not have.
- */
+// buildCascadeChain imports a legacy lossless chain carrying two units per link.
+// Such arbitrarily deep chains were legal before the 10% operating loss. They
+// must still be drained within budget after migration or loss of external input.
 func buildCascadeChain(t *testing.T, links int) *cascadeChain {
 	t.Helper()
 
@@ -59,9 +56,8 @@ func buildCascadeChain(t *testing.T, links int) *cascadeChain {
 		PrimaryAddress: ownerAcc.String(),
 	})
 
-	// The player is the root source and needs the one unit that travels the
-	// whole chain.
-	k.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, owner.Id), 1)
+	// The player is the legacy chain's two-unit root source.
+	k.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, owner.Id), 2)
 
 	chain := &cascadeChain{k: k, ctx: ctx, owner: owner}
 
@@ -70,15 +66,17 @@ func buildCascadeChain(t *testing.T, links int) *cascadeChain {
 		cc := k.NewCurrentContext(ctx)
 		ownerCache := cc.GetPlayer(owner.Id)
 
-		allocation, err := cc.NewAllocation(
-			types.AllocationType_dynamic,
-			sourceId,
-			"",
-			owner.Creator,
-			owner.Id,
-			1,
-		)
-		require.NoError(t, err, "link %d allocation", i)
+		index := k.GetAllocationCount(ctx)
+		id := keeperlib.GetObjectID(types.ObjectType_allocation, index)
+		k.SetAllocationCount(ctx, index+1)
+		k.ImportAllocation(ctx, types.Allocation{Id: id, Index: index,
+			Type: types.AllocationType_dynamic, SourceObjectId: sourceId,
+			Creator: owner.Creator, Controller: owner.Id})
+		cc.SetGridAttribute(keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_power, id), 2)
+		cc.SetGridAttributeIncrement(keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_load, sourceId), 2)
+		cc.UpdateSubstationConnectionCapacity(sourceId)
+		allocation, found := cc.GetAllocation(id)
+		require.True(t, found)
 
 		substation, err := cc.NewSubstation(owner.Creator, ownerCache, allocation)
 		require.NoError(t, err, "link %d substation", i)
@@ -304,6 +302,37 @@ func TestAllocationSourceIndex_EmptySource(t *testing.T) {
 	require.False(t, more)
 }
 
+func TestGridCascade_BacklogLoggingDoesNotScanRemainingQueue(t *testing.T) {
+	var costs []uint64
+	for _, size := range []int{types.GridCascadeBlockBudget * 2, types.GridCascadeBlockBudget * 16} {
+		chain := buildFanOut(t, 0)
+		for i := 0; i < size; i++ {
+			// Empty source rows need only a queue visit, isolating queue cost
+			// from allocation teardown and downstream settlement.
+			require.NoError(t, chain.k.AppendGridCascadeQueue(chain.ctx, fmt.Sprintf("1-%08d", i+10000)))
+		}
+		costs = append(costs, chain.cascadeBlockGas(t))
+		require.Equal(t, size-types.GridCascadeBlockBudget, chain.k.GetGridCascadeQueueLength(chain.ctx))
+	}
+	require.Less(t, costs[1], costs[0]*5/4,
+		"bounded queue visits must not be followed by a full backlog count: narrow=%d wide=%d", costs[0], costs[1])
+}
+
+func TestAllocationSourceReadBudgetIncludesMissingAllocations(t *testing.T) {
+	chain := buildFanOut(t, 0)
+	require.NoError(t, chain.k.SetAllocationSourceIndex(chain.ctx, chain.owner.Id, "3-999998"))
+	require.NoError(t, chain.k.SetAllocationSourceIndex(chain.ctx, chain.owner.Id, "3-999999"))
+	cc := chain.k.NewCurrentContext(chain.ctx)
+	allocations, more, rows := cc.GetAllocationsBySourceUpTo(chain.owner.Id, 1)
+	require.Empty(t, allocations)
+	require.True(t, more)
+	require.Equal(t, 1, rows, "missing allocation rows still consume the read reservation")
+	allocations, more, rows = cc.GetAllocationsBySourceUpTo(chain.owner.Id, 2)
+	require.Empty(t, allocations)
+	require.False(t, more)
+	require.Equal(t, 2, rows)
+}
+
 /* TestGridCascade_WideSourceLoadsOnlyWhatItCanShed is the fan-out regression.
  *
  * The budget bounds how many allocations a block *destroys*. It said nothing
@@ -331,6 +360,37 @@ func TestGridCascade_WideSourceLoadsOnlyWhatItCanShed(t *testing.T) {
 	require.Less(t, wideGas, narrowGas*5/4,
 		"an eightfold wider source cost materially more to cascade, so the block is still loading the whole set: narrow=%d wide=%d",
 		narrowGas, wideGas)
+}
+
+func TestGridCascade_RecoveredSourceDoesNotLoadItsAllocations(t *testing.T) {
+	var costs []uint64
+	for _, width := range []int{1, types.GridCascadeBlockBudget * 8} {
+		chain := buildFanOut(t, width)
+		// A queued source can regain capacity before its turn is reached.
+		require.NoError(t, chain.k.AppendGridCascadeQueue(chain.ctx, chain.owner.Id))
+		costs = append(costs, chain.cascadeBlockGas(t))
+		require.Zero(t, chain.k.GetGridCascadeQueueLength(chain.ctx))
+		require.Equal(t, width, chain.liveAllocations(t))
+	}
+	require.Less(t, costs[1], costs[0]*2,
+		"a recovered source must not load its outgoing allocation prefix: narrow=%d wide=%d", costs[0], costs[1])
+}
+
+func TestGridCascade_ChargesLoadedRowsEvenWhenOnlyOneAllocationIsShed(t *testing.T) {
+	const width = types.GridCascadeBlockBudget * 2
+	chain := buildFanOut(t, width)
+	chain.k.SetGridAttribute(chain.ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, chain.owner.Id), width-1)
+	require.NoError(t, chain.k.AppendGridCascadeQueue(chain.ctx, chain.owner.Id))
+	// This healthy entry would otherwise be visited after the wide source
+	// paid only for its one destruction despite loading a full batch.
+	marker := chain.substationIds[len(chain.substationIds)-1]
+	require.NoError(t, chain.k.AppendGridCascadeQueue(chain.ctx, marker))
+	chain.cascadeBlockGas(t)
+	require.Equal(t, width-1, chain.liveAllocations(t))
+	queued := chain.k.GetGridCascadeQueue(chain.ctx, false)
+	require.Contains(t, queued, marker, "allocation reads must consume the shared work budget")
+	chain.cascadeBlockGas(t)
+	require.Empty(t, chain.k.GetGridCascadeQueue(chain.ctx, false))
 }
 
 /* TestGridCascade_WideSourceStillFinishes is the other half. A bounded load must
@@ -481,4 +541,154 @@ func TestGridCascadeQueue_SurvivesExportImport(t *testing.T) {
 
 	require.Equal(t, pending, k.GetGridCascadeQueue(ctx, false),
 		"an import must reproduce the queue that was exported")
+}
+
+// New commitments follow local accounting and are shed when the cascade arrives.
+func TestGridCascade_ShedsDownstreamAllocationAdmittedDuringBacklog(t *testing.T) {
+	chain := buildCascadeChain(t, types.GridCascadeBlockBudget+40)
+	chain.pullTheRoot(t)
+	require.Positive(t, chain.cascadeBlock(t))
+	tail := chain.substationIds[len(chain.substationIds)-1]
+	cc := chain.k.NewCurrentContext(chain.ctx)
+	first, err := cc.GetExistingSubstation(chain.substationIds[0])
+	require.NoError(t, err)
+	require.Zero(t, first.GetCapacity())
+	last, err := cc.GetExistingSubstation(tail)
+	require.NoError(t, err)
+	require.Equal(t, uint64(2), last.GetCapacity())
+	require.Zero(t, last.GetLoad(), "this is stale upstream backing, not local uint64 underflow")
+	require.Equal(t, uint64(1), last.GetAvailableCapacity())
+
+	server := keeperlib.NewMsgServerImpl(chain.k)
+	created, err := server.AllocationCreate(chain.ctx, &types.MsgAllocationCreate{
+		Creator: chain.owner.Creator, Controller: chain.owner.Id,
+		SourceObjectId: tail, Power: 1, AllocationType: types.AllocationType_dynamic,
+	})
+	require.NoError(t, err)
+	require.NotEmpty(t, created.AllocationId)
+
+	// The new allocation is included in the bounded teardown.
+	remaining := 1
+	for blocks := 0; remaining > 0 && blocks < 100; blocks++ {
+		remaining = chain.cascadeBlock(t)
+	}
+	require.Zero(t, remaining)
+	require.Zero(t, chain.liveAllocations(t))
+}
+
+// An upstream-validity traversal cannot assume the accepted topology is a DAG.
+// Fixed transmission loss makes the cycle overloaded when external supply is removed.
+func TestGridCascade_CharacterizesCycleAfterExternalSupplyRemoval(t *testing.T) {
+	chain := buildCascadeChain(t, 2)
+	server := keeperlib.NewMsgServerImpl(chain.k)
+	created, err := server.AllocationCreate(chain.ctx, &types.MsgAllocationCreate{
+		Creator: chain.owner.Creator, Controller: chain.owner.Id,
+		SourceObjectId: chain.substationIds[1], Power: 1, AllocationType: types.AllocationType_dynamic,
+	})
+	require.NoError(t, err)
+	_, err = server.SubstationAllocationConnect(chain.ctx, &types.MsgSubstationAllocationConnect{
+		Creator: chain.owner.Creator, AllocationId: created.AllocationId, DestinationId: chain.substationIds[0],
+	})
+	require.NoError(t, err, "the existing handler permits a multi-hop cycle")
+	chain.pullTheRoot(t)
+	for block := 0; block < 3; block++ {
+		chain.cascadeBlock(t)
+	}
+	require.Zero(t, chain.liveAllocations(t), "a cycle cannot sustain itself after external supply disappears")
+	for _, id := range chain.substationIds {
+		station, err := chain.k.NewCurrentContext(chain.ctx).GetExistingSubstation(id)
+		require.NoError(t, err)
+		require.Zero(t, station.GetCapacity())
+		require.Zero(t, station.GetLoad())
+		require.Zero(t, station.GetAvailableCapacity())
+		_, err = server.AllocationCreate(chain.ctx, &types.MsgAllocationCreate{
+			Creator: chain.owner.Creator, Controller: chain.owner.Id,
+			SourceObjectId: id, Power: 1, AllocationType: types.AllocationType_dynamic,
+		})
+		require.Error(t, err, "circulating stored capacity is not spare power in this fixture")
+	}
+}
+
+// Agreements admitted before a queued brownout still settle once through cascade.
+func TestGridCascade_SettlesAgreementAdmittedDuringBacklog(t *testing.T) {
+	chain := buildCascadeChain(t, types.GridCascadeBlockBudget+40)
+	tail := chain.substationIds[len(chain.substationIds)-1]
+	cc := chain.k.NewCurrentContext(chain.ctx)
+	provider := cc.NewProvider(types.Provider{
+		Owner: chain.owner.Id, Creator: chain.owner.Creator, SubstationId: tail,
+		Rate: sdk.NewInt64Coin("ualpha", 1), AccessPolicy: types.ProviderAccessPolicy_openMarket,
+		CapacityMinimum: 1, CapacityMaximum: 1, DurationMinimum: 1, DurationMaximum: 1000,
+		ProviderCancellationPenalty: math.LegacyZeroDec(), ConsumerCancellationPenalty: math.LegacyZeroDec(),
+	})
+	cc.CommitAll()
+	consumerAddress := sdk.AccAddress("cascade-consumer-12345678901234567")
+	consumer := testAppendPlayer(chain.k, chain.ctx, types.Player{Creator: consumerAddress.String(), PrimaryAddress: consumerAddress.String()})
+	vaults, err := chain.k.NewCurrentContext(chain.ctx).EnsureVaults(consumer.Id)
+	require.NoError(t, err)
+	bank := chain.k.BankKeeper()
+	funds := sdk.NewCoins(sdk.NewInt64Coin("ualpha", 100))
+	require.NoError(t, bank.MintCoins(chain.ctx, types.ModuleName, funds))
+	require.NoError(t, bank.SendCoinsFromModuleToAccount(chain.ctx, types.ModuleName, vaults[0], funds))
+	chain.pullTheRoot(t)
+	require.Positive(t, chain.cascadeBlock(t))
+	server := keeperlib.NewMsgServerImpl(chain.k)
+	_, err = server.AgreementOpen(chain.ctx, &types.MsgAgreementOpen{
+		Creator: consumer.Creator, ProviderId: provider.ID(), Capacity: 1, Duration: 100,
+	})
+	require.NoError(t, err)
+    require.Len(t, chain.k.GetAllAgreementIdByProviderIndex(chain.ctx, provider.ID()), 1)
+    require.Zero(t, bank.SpendableCoin(chain.ctx, vaults[0], "ualpha").Amount.Int64())
+    start := chain.ctx.BlockHeight()
+	for blocks := 0; chain.k.HasPendingGridCascade(chain.ctx) && blocks < 10; blocks++ {
+		chain.ctx = chain.ctx.WithBlockHeight(chain.ctx.BlockHeight()+1)
+		chain.cascadeBlock(t)
+	}
+	require.False(t, chain.k.HasPendingGridCascade(chain.ctx))
+	require.Empty(t, chain.k.GetAllAgreementIdByProviderIndex(chain.ctx, provider.ID()))
+	require.Zero(t, chain.k.GetGridAttribute(chain.ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_load, provider.ID())))
+	served := chain.ctx.BlockHeight() - start
+    require.Positive(t, served)
+    require.Equal(t, 100-served, bank.SpendableCoin(chain.ctx, vaults[0], "ualpha").Amount.Int64())
+    require.True(t, bank.SpendableCoin(chain.ctx, provider.GetCollateralPoolLocation(), "ualpha").IsZero())
+    require.Equal(t, served, bank.SpendableCoin(chain.ctx, provider.GetEarningsPoolLocation(), "ualpha").Amount.Int64())
+
+}
+
+// Any upstream-validity replacement must preserve independent healthy grids.
+// In particular, a pending global cascade queue is not an authorization gate.
+func TestGridCascade_BacklogDoesNotBlockIndependentHealthyAllocation(t *testing.T) {
+	chain := buildCascadeChain(t, types.GridCascadeBlockBudget+40)
+	address := sdk.AccAddress("independent-grid-12345678901234567")
+	owner := testAppendPlayer(chain.k, chain.ctx, types.Player{Creator: address.String(), PrimaryAddress: address.String()})
+	chain.k.SetGridAttribute(chain.ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, owner.Id), 2)
+	cc := chain.k.NewCurrentContext(chain.ctx)
+	input, err := cc.NewAllocation(types.AllocationType_dynamic, owner.Id, "", owner.Creator, owner.Id, 2)
+	require.NoError(t, err)
+	station, err := cc.NewSubstation(owner.Creator, cc.GetPlayer(owner.Id), input)
+	require.NoError(t, err)
+	cc.CommitAll()
+	chain.pullTheRoot(t)
+	require.Positive(t, chain.cascadeBlock(t))
+	server := keeperlib.NewMsgServerImpl(chain.k)
+	result, err := server.AllocationCreate(chain.ctx, &types.MsgAllocationCreate{
+		Creator: owner.Creator, Controller: owner.Id, SourceObjectId: station.ID(),
+		Power: 1, AllocationType: types.AllocationType_dynamic,
+	})
+	require.NoError(t, err, "an unrelated loss queue must not stop a healthy source")
+	for blocks := 0; chain.k.HasPendingGridCascade(chain.ctx) && blocks < 10; blocks++ {
+		chain.ctx = chain.ctx.WithBlockHeight(chain.ctx.BlockHeight()+1)
+		chain.cascadeBlock(t)
+	}
+	require.False(t, chain.k.HasPendingGridCascade(chain.ctx))
+	fresh := chain.k.NewCurrentContext(chain.ctx)
+	allocation, found := fresh.GetAllocation(result.AllocationId)
+	require.True(t, found)
+	require.Equal(t, uint64(1), allocation.GetPower())
+	healthy, err := fresh.GetExistingSubstation(station.ID())
+	require.NoError(t, err)
+	require.Equal(t, uint64(2), healthy.GetCapacity())
+	require.Equal(t, uint64(1), healthy.GetLoad())
+	require.Zero(t, healthy.GetAvailableCapacity())
+	_, found = fresh.GetAllocation(input.ID())
+	require.True(t, found)
 }

@@ -125,6 +125,15 @@ func (cache *GuildMembershipApplicationCache) GetSubstationId() (substationId st
 	return
 }
 
+// ValidateJoinSubstation rechecks the current destination at acceptance time.
+// An entry station or invitation override may have started closing since setup.
+func (cache *GuildMembershipApplicationCache) ValidateJoinSubstation() error {
+	if id := cache.GetSubstationId(); id != "" {
+		return cache.CC.GetSubstation(id).CheckAcceptingConnections()
+	}
+	return nil
+}
+
 func (cache *GuildMembershipApplicationCache) SetSubstationIdOverride(substationId string) error {
 
 	if cache.GuildMembershipApplication.SubstationId != substationId {
@@ -192,6 +201,8 @@ func (cache *GuildMembershipApplicationCache) ApproveInvite() error {
 		return err
 	}
 
+	if err := cache.ValidateJoinSubstation(); err != nil { return err }
+
 	cache.GetPlayer().MigrateGuild(cache.GetGuild())
 	cache.GetPlayer().MigrateSubstation(cache.GetSubstationId())
 
@@ -243,6 +254,8 @@ func (cache *GuildMembershipApplicationCache) ApproveRequest() error {
 		return err
 	}
 
+	if err := cache.ValidateJoinSubstation(); err != nil { return err }
+
 	cache.GetPlayer().MigrateGuild(cache.GetGuild())
 	cache.GetPlayer().MigrateSubstation(cache.GetSubstationId())
 
@@ -279,31 +292,8 @@ func (cache *GuildMembershipApplicationCache) RevokeRequest() error {
 // authorization: CanKickMembers, plus a rank comparison for callers who
 // are members of this guild, plus refusing the owner.
 func (cache *GuildMembershipApplicationCache) Kick() error {
-	/* A kick is the guild withdrawing this player's standing, so the grants it
-	 * made them have to go with it. LeaveGuild only clears GuildId and resets
-	 * the rank, and PermissionCheck reads a direct object grant with no
-	 * membership predicate - only the rank-derived branch is gated on being in a
-	 * guild. So a kicked administrator kept whatever was granted to them
-	 * directly, and PermAdmin on a guild is enough for GuildUpdateOwnerId, which
-	 * requires no membership either. The dismissal handed the guild over.
-	 *
-	 * The whole row goes, not one bit. AllocationTransfer deliberately removes a
-	 * single bit because its row also carries the creator's rights over their own
-	 * allocation; this row is keyed (guild, player) and holds nothing but what
-	 * this guild granted this player, and after a kick none of it applies.
-	 *
-	 * The owner's row is the exception and is left alone: SetOwner stores
-	 * ownership as PermGuildAll, and ownership survives leaving - guilds are
-	 * property and an owner need not be a member. GetGuildMembershipKickCache
-	 * already refuses to kick the owner, so this is a backstop rather than the
-	 * guard, and it fails in the safe direction if a future path forgets.
-	 */
-	if cache.GetGuild().GetOwnerId() != cache.GetPlayer().GetPlayerId() {
-		cache.CC.SetPermissions(
-			GetObjectPermissionIDBytes(cache.GetGuild().GetGuildId(), cache.GetPlayer().GetPlayerId()),
-			types.Permissionless,
-		)
-	}
+	// Membership supplies rank authority only. Independent direct grants must
+	// be revoked by an explicit administrator, not erased by a membership actor.
 
 	cache.GetPlayer().LeaveGuild()
 
@@ -318,6 +308,7 @@ func (cache *GuildMembershipApplicationCache) Kick() error {
 }
 
 func (cache *GuildMembershipApplicationCache) VerifyDirectJoin() error {
+    if err := cache.ValidateJoinSubstation(); err != nil { return err }
     return cache.CC.PermissionCheck(cache.GetPlayer(), cache.CallingPlayer, types.PermGuildMembership)
 }
 
@@ -326,6 +317,8 @@ func (cache *GuildMembershipApplicationCache) VerifyDirectJoin() error {
 // a stored row to find, and consent is not in question: VerifyDirectJoin demands
 // PermGuildMembership on the joining player themselves.
 func (cache *GuildMembershipApplicationCache) DirectJoin() error {
+
+	if err := cache.ValidateJoinSubstation(); err != nil { return err }
 
 	cache.GetPlayer().MigrateGuild(cache.GetGuild())
 	cache.GetPlayer().MigrateSubstation(cache.GetSubstationId())

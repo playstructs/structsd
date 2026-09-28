@@ -247,7 +247,7 @@ proto-gen-ts:
 
 proto-swagger:
 	@echo "--> Generating OpenAPI/Swagger spec..."
-	buf generate --template proto/buf.gen.swagger.yaml
+	python3 -B proto/update_openapi.py
 
 proto-format:
 	@echo "--> Formatting proto files..."

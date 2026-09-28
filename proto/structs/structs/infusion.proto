@@ -27,6 +27,13 @@ message Infusion {
 
   uint64      ratio                         = 8;
   uint64      defusing                      = 9;
+
+  // Canonical asset owner. Empty falls back to legacy playerId. Guild-owned
+  // positions set ownerId to the guild and leave playerId empty.
+  string      ownerId                       = 11;
+
+  // Generator shutdown preserves burned fuel and its historical conversion
+  // ratio while recording zero output. False is the legacy enabled state.
+  bool        generatorDisabled             = 12;
+
 }
-
-

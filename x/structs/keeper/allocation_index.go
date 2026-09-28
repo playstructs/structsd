@@ -134,6 +134,22 @@ func (k Keeper) GetAllAllocationIdByDestinationIndex(ctx context.Context, destin
     return
 }
 
+// GetAllocationIdsByDestinationIndexUpTo bounds incoming-edge reads by index
+// rows, including stale rows. Callers must treat more as incomplete knowledge,
+// not as proof that the returned allocations are the destination's full supply.
+func (k Keeper) GetAllocationIdsByDestinationIndexUpTo(ctx context.Context, destinationId string, limit int) (list []string, more bool) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AllocationDestinationKeyPrefix(destinationId))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		if len(list) >= limit {
+			return list, true
+		}
+		list = append(list, string(iterator.Key()))
+	}
+	return list, false
+}
+
 func (k Keeper) GetAllAllocationByDestinationIndex(ctx context.Context, destinationId string) (list []types.Allocation) {
 	destinationIndexStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AllocationDestinationKeyPrefix(destinationId))
 	iterator := storetypes.KVStorePrefixIterator(destinationIndexStore, []byte{})
@@ -256,5 +272,4 @@ func (k Keeper) ClearAllAutoResizeAllocationSource(ctx context.Context) (cleared
 
     	return len(keys)
 }
-
 

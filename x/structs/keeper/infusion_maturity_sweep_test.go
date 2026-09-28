@@ -1,11 +1,13 @@
 package keeper_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
 	"cosmossdk.io/core/header"
 	"cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
@@ -14,6 +16,56 @@ import (
 	keeperlib "structs/x/structs/keeper"
 	"structs/x/structs/types"
 )
+
+func TestInfusionMaturitySweepBoundsRowsBeforeDeduplication(t *testing.T) {
+	for _, shape := range []string{"distinct", "duplicate", "malformed"} {
+		t.Run(shape, func(t *testing.T) {
+			k, ctx := keepertest.StructsKeeper(t)
+			now := time.Date(2026, 9, 11, 0, 0, 0, 0, time.UTC)
+			count := types.InfusionMaturitySweepBudget*2 + 1
+			for i := 0; i < count; i++ {
+				id := fmt.Sprintf("3-1-address%06d", i)
+				if shape == "duplicate" { id = "3-1-same" }
+				if shape == "malformed" {
+					// All sort before the current timestamp, but have no separator.
+					k.ImportInfusionMaturitySweepRow(ctx, fmt.Sprintf("!%06d", i))
+				} else {
+					k.EnqueueInfusionMaturitySweep(ctx, now.Add(time.Duration(i-count)*time.Second), id)
+				}
+			}
+			k.EnqueueInfusionMaturitySweep(ctx, now.Add(time.Hour), "3-1-future")
+			for pass := 0; pass < 3; pass++ {
+				rows := k.DequeueMatureInfusionSweeps(ctx, now)
+				examined := types.InfusionMaturitySweepBudget
+				if pass == 2 { examined = 1 }
+				count -= examined
+				require.Len(t, k.GetInfusionMaturitySweepQueueExport(ctx), count+1, "future and unprocessed rows must stay queued")
+				switch shape {
+				case "distinct": require.Len(t, rows, examined)
+				case "duplicate": require.Equal(t, []string{"3-1-same"}, rows)
+				case "malformed": require.Empty(t, rows)
+				}
+			}
+			require.Empty(t, k.DequeueMatureInfusionSweeps(ctx, now))
+			require.Equal(t, []string{"3-1-future"}, k.DequeueMatureInfusionSweeps(ctx, now.Add(time.Hour)))
+		})
+	}
+}
+
+func TestInfusionMaturitySweepReadCostDoesNotGrowWithBacklog(t *testing.T) {
+	cost := func(count int) uint64 {
+		k, ctx := keepertest.StructsKeeper(t)
+		now := time.Date(2026, 9, 11, 0, 0, 0, 0, time.UTC)
+		for i := 0; i < count; i++ {
+			k.EnqueueInfusionMaturitySweep(ctx, now, fmt.Sprintf("3-1-address%06d", i))
+		}
+		meter := storetypes.NewGasMeter(20000000)
+		rows := k.DequeueMatureInfusionSweeps(ctx.WithGasMeter(meter), now)
+		require.Len(t, rows, types.InfusionMaturitySweepBudget)
+		return meter.GasConsumed()
+	}
+	require.Equal(t, cost(1000), cost(10000), "only the bounded first batch may be read")
+}
 
 // TestInfusionMaturitySweepQueueEnqueueDequeue covers the time-boundary
 // semantics of the queue API: rows with CompletionTime <= blockTime are

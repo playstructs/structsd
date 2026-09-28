@@ -3,6 +3,7 @@ package structs
 
 import (
 	_ "cosmossdk.io/api/amino"
+	v1beta1 "cosmossdk.io/api/cosmos/staking/v1beta1"
 	fmt "fmt"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
 	_ "github.com/cosmos/gogoproto/gogoproto"
@@ -15,6 +16,2974 @@ import (
 	reflect "reflect"
 	sync "sync"
 )
+
+var (
+	md_EventOwnerReactorDiversity           protoreflect.MessageDescriptor
+	fd_EventOwnerReactorDiversity_diversity protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventOwnerReactorDiversity = File_structs_structs_events_proto.Messages().ByName("EventOwnerReactorDiversity")
+	fd_EventOwnerReactorDiversity_diversity = md_EventOwnerReactorDiversity.Fields().ByName("diversity")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventOwnerReactorDiversity)(nil)
+
+type fastReflection_EventOwnerReactorDiversity EventOwnerReactorDiversity
+
+func (x *EventOwnerReactorDiversity) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventOwnerReactorDiversity)(x)
+}
+
+func (x *EventOwnerReactorDiversity) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventOwnerReactorDiversity_messageType fastReflection_EventOwnerReactorDiversity_messageType
+var _ protoreflect.MessageType = fastReflection_EventOwnerReactorDiversity_messageType{}
+
+type fastReflection_EventOwnerReactorDiversity_messageType struct{}
+
+func (x fastReflection_EventOwnerReactorDiversity_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventOwnerReactorDiversity)(nil)
+}
+func (x fastReflection_EventOwnerReactorDiversity_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventOwnerReactorDiversity)
+}
+func (x fastReflection_EventOwnerReactorDiversity_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventOwnerReactorDiversity
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventOwnerReactorDiversity) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventOwnerReactorDiversity
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventOwnerReactorDiversity) Type() protoreflect.MessageType {
+	return _fastReflection_EventOwnerReactorDiversity_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventOwnerReactorDiversity) New() protoreflect.Message {
+	return new(fastReflection_EventOwnerReactorDiversity)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventOwnerReactorDiversity) Interface() protoreflect.ProtoMessage {
+	return (*EventOwnerReactorDiversity)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventOwnerReactorDiversity) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Diversity != nil {
+		value := protoreflect.ValueOfMessage(x.Diversity.ProtoReflect())
+		if !f(fd_EventOwnerReactorDiversity_diversity, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventOwnerReactorDiversity) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventOwnerReactorDiversity.diversity":
+		return x.Diversity != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventOwnerReactorDiversity"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventOwnerReactorDiversity does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventOwnerReactorDiversity) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventOwnerReactorDiversity.diversity":
+		x.Diversity = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventOwnerReactorDiversity"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventOwnerReactorDiversity does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventOwnerReactorDiversity) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventOwnerReactorDiversity.diversity":
+		value := x.Diversity
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventOwnerReactorDiversity"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventOwnerReactorDiversity does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventOwnerReactorDiversity) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventOwnerReactorDiversity.diversity":
+		x.Diversity = value.Message().Interface().(*OwnerReactorDiversity)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventOwnerReactorDiversity"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventOwnerReactorDiversity does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventOwnerReactorDiversity) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventOwnerReactorDiversity.diversity":
+		if x.Diversity == nil {
+			x.Diversity = new(OwnerReactorDiversity)
+		}
+		return protoreflect.ValueOfMessage(x.Diversity.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventOwnerReactorDiversity"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventOwnerReactorDiversity does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventOwnerReactorDiversity) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventOwnerReactorDiversity.diversity":
+		m := new(OwnerReactorDiversity)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventOwnerReactorDiversity"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventOwnerReactorDiversity does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventOwnerReactorDiversity) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventOwnerReactorDiversity", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventOwnerReactorDiversity) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventOwnerReactorDiversity) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventOwnerReactorDiversity) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventOwnerReactorDiversity) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventOwnerReactorDiversity)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Diversity != nil {
+			l = options.Size(x.Diversity)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventOwnerReactorDiversity)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Diversity != nil {
+			encoded, err := options.Marshal(x.Diversity)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventOwnerReactorDiversity)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventOwnerReactorDiversity: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventOwnerReactorDiversity: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Diversity", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Diversity == nil {
+					x.Diversity = &OwnerReactorDiversity{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Diversity); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventOwnerReactorDiversityReset protoreflect.MessageDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventOwnerReactorDiversityReset = File_structs_structs_events_proto.Messages().ByName("EventOwnerReactorDiversityReset")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventOwnerReactorDiversityReset)(nil)
+
+type fastReflection_EventOwnerReactorDiversityReset EventOwnerReactorDiversityReset
+
+func (x *EventOwnerReactorDiversityReset) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventOwnerReactorDiversityReset)(x)
+}
+
+func (x *EventOwnerReactorDiversityReset) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventOwnerReactorDiversityReset_messageType fastReflection_EventOwnerReactorDiversityReset_messageType
+var _ protoreflect.MessageType = fastReflection_EventOwnerReactorDiversityReset_messageType{}
+
+type fastReflection_EventOwnerReactorDiversityReset_messageType struct{}
+
+func (x fastReflection_EventOwnerReactorDiversityReset_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventOwnerReactorDiversityReset)(nil)
+}
+func (x fastReflection_EventOwnerReactorDiversityReset_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventOwnerReactorDiversityReset)
+}
+func (x fastReflection_EventOwnerReactorDiversityReset_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventOwnerReactorDiversityReset
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventOwnerReactorDiversityReset) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventOwnerReactorDiversityReset
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventOwnerReactorDiversityReset) Type() protoreflect.MessageType {
+	return _fastReflection_EventOwnerReactorDiversityReset_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventOwnerReactorDiversityReset) New() protoreflect.Message {
+	return new(fastReflection_EventOwnerReactorDiversityReset)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventOwnerReactorDiversityReset) Interface() protoreflect.ProtoMessage {
+	return (*EventOwnerReactorDiversityReset)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventOwnerReactorDiversityReset) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventOwnerReactorDiversityReset) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventOwnerReactorDiversityReset"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventOwnerReactorDiversityReset does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventOwnerReactorDiversityReset) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventOwnerReactorDiversityReset"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventOwnerReactorDiversityReset does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventOwnerReactorDiversityReset) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventOwnerReactorDiversityReset"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventOwnerReactorDiversityReset does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventOwnerReactorDiversityReset) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventOwnerReactorDiversityReset"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventOwnerReactorDiversityReset does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventOwnerReactorDiversityReset) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventOwnerReactorDiversityReset"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventOwnerReactorDiversityReset does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventOwnerReactorDiversityReset) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventOwnerReactorDiversityReset"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventOwnerReactorDiversityReset does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventOwnerReactorDiversityReset) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventOwnerReactorDiversityReset", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventOwnerReactorDiversityReset) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventOwnerReactorDiversityReset) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventOwnerReactorDiversityReset) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventOwnerReactorDiversityReset) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventOwnerReactorDiversityReset)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventOwnerReactorDiversityReset)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventOwnerReactorDiversityReset)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventOwnerReactorDiversityReset: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventOwnerReactorDiversityReset: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventReactorCommissionRevisionReset protoreflect.MessageDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventReactorCommissionRevisionReset = File_structs_structs_events_proto.Messages().ByName("EventReactorCommissionRevisionReset")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventReactorCommissionRevisionReset)(nil)
+
+type fastReflection_EventReactorCommissionRevisionReset EventReactorCommissionRevisionReset
+
+func (x *EventReactorCommissionRevisionReset) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventReactorCommissionRevisionReset)(x)
+}
+
+func (x *EventReactorCommissionRevisionReset) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventReactorCommissionRevisionReset_messageType fastReflection_EventReactorCommissionRevisionReset_messageType
+var _ protoreflect.MessageType = fastReflection_EventReactorCommissionRevisionReset_messageType{}
+
+type fastReflection_EventReactorCommissionRevisionReset_messageType struct{}
+
+func (x fastReflection_EventReactorCommissionRevisionReset_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventReactorCommissionRevisionReset)(nil)
+}
+func (x fastReflection_EventReactorCommissionRevisionReset_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventReactorCommissionRevisionReset)
+}
+func (x fastReflection_EventReactorCommissionRevisionReset_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventReactorCommissionRevisionReset
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventReactorCommissionRevisionReset) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventReactorCommissionRevisionReset
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventReactorCommissionRevisionReset) Type() protoreflect.MessageType {
+	return _fastReflection_EventReactorCommissionRevisionReset_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventReactorCommissionRevisionReset) New() protoreflect.Message {
+	return new(fastReflection_EventReactorCommissionRevisionReset)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventReactorCommissionRevisionReset) Interface() protoreflect.ProtoMessage {
+	return (*EventReactorCommissionRevisionReset)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventReactorCommissionRevisionReset) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventReactorCommissionRevisionReset) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorCommissionRevisionReset"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorCommissionRevisionReset does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventReactorCommissionRevisionReset) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorCommissionRevisionReset"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorCommissionRevisionReset does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventReactorCommissionRevisionReset) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorCommissionRevisionReset"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorCommissionRevisionReset does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventReactorCommissionRevisionReset) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorCommissionRevisionReset"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorCommissionRevisionReset does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventReactorCommissionRevisionReset) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorCommissionRevisionReset"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorCommissionRevisionReset does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventReactorCommissionRevisionReset) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorCommissionRevisionReset"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorCommissionRevisionReset does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventReactorCommissionRevisionReset) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventReactorCommissionRevisionReset", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventReactorCommissionRevisionReset) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventReactorCommissionRevisionReset) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventReactorCommissionRevisionReset) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventReactorCommissionRevisionReset) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventReactorCommissionRevisionReset)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventReactorCommissionRevisionReset)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventReactorCommissionRevisionReset)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventReactorCommissionRevisionReset: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventReactorCommissionRevisionReset: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventReactorCommissionRevision                         protoreflect.MessageDescriptor
+	fd_EventReactorCommissionRevision_reactorId               protoreflect.FieldDescriptor
+	fd_EventReactorCommissionRevision_slashRevision           protoreflect.FieldDescriptor
+	fd_EventReactorCommissionRevision_reconciledSlashRevision protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventReactorCommissionRevision = File_structs_structs_events_proto.Messages().ByName("EventReactorCommissionRevision")
+	fd_EventReactorCommissionRevision_reactorId = md_EventReactorCommissionRevision.Fields().ByName("reactorId")
+	fd_EventReactorCommissionRevision_slashRevision = md_EventReactorCommissionRevision.Fields().ByName("slashRevision")
+	fd_EventReactorCommissionRevision_reconciledSlashRevision = md_EventReactorCommissionRevision.Fields().ByName("reconciledSlashRevision")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventReactorCommissionRevision)(nil)
+
+type fastReflection_EventReactorCommissionRevision EventReactorCommissionRevision
+
+func (x *EventReactorCommissionRevision) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventReactorCommissionRevision)(x)
+}
+
+func (x *EventReactorCommissionRevision) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventReactorCommissionRevision_messageType fastReflection_EventReactorCommissionRevision_messageType
+var _ protoreflect.MessageType = fastReflection_EventReactorCommissionRevision_messageType{}
+
+type fastReflection_EventReactorCommissionRevision_messageType struct{}
+
+func (x fastReflection_EventReactorCommissionRevision_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventReactorCommissionRevision)(nil)
+}
+func (x fastReflection_EventReactorCommissionRevision_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventReactorCommissionRevision)
+}
+func (x fastReflection_EventReactorCommissionRevision_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventReactorCommissionRevision
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventReactorCommissionRevision) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventReactorCommissionRevision
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventReactorCommissionRevision) Type() protoreflect.MessageType {
+	return _fastReflection_EventReactorCommissionRevision_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventReactorCommissionRevision) New() protoreflect.Message {
+	return new(fastReflection_EventReactorCommissionRevision)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventReactorCommissionRevision) Interface() protoreflect.ProtoMessage {
+	return (*EventReactorCommissionRevision)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventReactorCommissionRevision) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.ReactorId != "" {
+		value := protoreflect.ValueOfString(x.ReactorId)
+		if !f(fd_EventReactorCommissionRevision_reactorId, value) {
+			return
+		}
+	}
+	if x.SlashRevision != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SlashRevision)
+		if !f(fd_EventReactorCommissionRevision_slashRevision, value) {
+			return
+		}
+	}
+	if x.ReconciledSlashRevision != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.ReconciledSlashRevision)
+		if !f(fd_EventReactorCommissionRevision_reconciledSlashRevision, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventReactorCommissionRevision) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventReactorCommissionRevision.reactorId":
+		return x.ReactorId != ""
+	case "structs.structs.EventReactorCommissionRevision.slashRevision":
+		return x.SlashRevision != uint64(0)
+	case "structs.structs.EventReactorCommissionRevision.reconciledSlashRevision":
+		return x.ReconciledSlashRevision != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorCommissionRevision"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorCommissionRevision does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventReactorCommissionRevision) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventReactorCommissionRevision.reactorId":
+		x.ReactorId = ""
+	case "structs.structs.EventReactorCommissionRevision.slashRevision":
+		x.SlashRevision = uint64(0)
+	case "structs.structs.EventReactorCommissionRevision.reconciledSlashRevision":
+		x.ReconciledSlashRevision = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorCommissionRevision"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorCommissionRevision does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventReactorCommissionRevision) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventReactorCommissionRevision.reactorId":
+		value := x.ReactorId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventReactorCommissionRevision.slashRevision":
+		value := x.SlashRevision
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventReactorCommissionRevision.reconciledSlashRevision":
+		value := x.ReconciledSlashRevision
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorCommissionRevision"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorCommissionRevision does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventReactorCommissionRevision) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventReactorCommissionRevision.reactorId":
+		x.ReactorId = value.Interface().(string)
+	case "structs.structs.EventReactorCommissionRevision.slashRevision":
+		x.SlashRevision = value.Uint()
+	case "structs.structs.EventReactorCommissionRevision.reconciledSlashRevision":
+		x.ReconciledSlashRevision = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorCommissionRevision"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorCommissionRevision does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventReactorCommissionRevision) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventReactorCommissionRevision.reactorId":
+		panic(fmt.Errorf("field reactorId of message structs.structs.EventReactorCommissionRevision is not mutable"))
+	case "structs.structs.EventReactorCommissionRevision.slashRevision":
+		panic(fmt.Errorf("field slashRevision of message structs.structs.EventReactorCommissionRevision is not mutable"))
+	case "structs.structs.EventReactorCommissionRevision.reconciledSlashRevision":
+		panic(fmt.Errorf("field reconciledSlashRevision of message structs.structs.EventReactorCommissionRevision is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorCommissionRevision"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorCommissionRevision does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventReactorCommissionRevision) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventReactorCommissionRevision.reactorId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventReactorCommissionRevision.slashRevision":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventReactorCommissionRevision.reconciledSlashRevision":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorCommissionRevision"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorCommissionRevision does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventReactorCommissionRevision) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventReactorCommissionRevision", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventReactorCommissionRevision) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventReactorCommissionRevision) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventReactorCommissionRevision) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventReactorCommissionRevision) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventReactorCommissionRevision)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.ReactorId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.SlashRevision != 0 {
+			n += 1 + runtime.Sov(uint64(x.SlashRevision))
+		}
+		if x.ReconciledSlashRevision != 0 {
+			n += 1 + runtime.Sov(uint64(x.ReconciledSlashRevision))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventReactorCommissionRevision)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.ReconciledSlashRevision != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ReconciledSlashRevision))
+			i--
+			dAtA[i] = 0x18
+		}
+		if x.SlashRevision != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SlashRevision))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.ReactorId) > 0 {
+			i -= len(x.ReactorId)
+			copy(dAtA[i:], x.ReactorId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ReactorId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventReactorCommissionRevision)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventReactorCommissionRevision: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventReactorCommissionRevision: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ReactorId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ReactorId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SlashRevision", wireType)
+				}
+				x.SlashRevision = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.SlashRevision |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ReconciledSlashRevision", wireType)
+				}
+				x.ReconciledSlashRevision = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ReconciledSlashRevision |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var _ protoreflect.List = (*_EventVaultVestingMigration_2_list)(nil)
+
+type _EventVaultVestingMigration_2_list struct {
+	list *[]string
+}
+
+func (x *_EventVaultVestingMigration_2_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_EventVaultVestingMigration_2_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfString((*x.list)[i])
+}
+
+func (x *_EventVaultVestingMigration_2_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_EventVaultVestingMigration_2_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_EventVaultVestingMigration_2_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message EventVaultVestingMigration at list field SourceAddresses as it is not of Message kind"))
+}
+
+func (x *_EventVaultVestingMigration_2_list) Truncate(n int) {
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_EventVaultVestingMigration_2_list) NewElement() protoreflect.Value {
+	v := ""
+	return protoreflect.ValueOfString(v)
+}
+
+func (x *_EventVaultVestingMigration_2_list) IsValid() bool {
+	return x.list != nil
+}
+
+var (
+	md_EventVaultVestingMigration                  protoreflect.MessageDescriptor
+	fd_EventVaultVestingMigration_vault            protoreflect.FieldDescriptor
+	fd_EventVaultVestingMigration_source_addresses protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventVaultVestingMigration = File_structs_structs_events_proto.Messages().ByName("EventVaultVestingMigration")
+	fd_EventVaultVestingMigration_vault = md_EventVaultVestingMigration.Fields().ByName("vault")
+	fd_EventVaultVestingMigration_source_addresses = md_EventVaultVestingMigration.Fields().ByName("source_addresses")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventVaultVestingMigration)(nil)
+
+type fastReflection_EventVaultVestingMigration EventVaultVestingMigration
+
+func (x *EventVaultVestingMigration) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventVaultVestingMigration)(x)
+}
+
+func (x *EventVaultVestingMigration) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventVaultVestingMigration_messageType fastReflection_EventVaultVestingMigration_messageType
+var _ protoreflect.MessageType = fastReflection_EventVaultVestingMigration_messageType{}
+
+type fastReflection_EventVaultVestingMigration_messageType struct{}
+
+func (x fastReflection_EventVaultVestingMigration_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventVaultVestingMigration)(nil)
+}
+func (x fastReflection_EventVaultVestingMigration_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventVaultVestingMigration)
+}
+func (x fastReflection_EventVaultVestingMigration_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventVaultVestingMigration
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventVaultVestingMigration) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventVaultVestingMigration
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventVaultVestingMigration) Type() protoreflect.MessageType {
+	return _fastReflection_EventVaultVestingMigration_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventVaultVestingMigration) New() protoreflect.Message {
+	return new(fastReflection_EventVaultVestingMigration)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventVaultVestingMigration) Interface() protoreflect.ProtoMessage {
+	return (*EventVaultVestingMigration)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventVaultVestingMigration) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Vault != nil {
+		value := protoreflect.ValueOfMessage(x.Vault.ProtoReflect())
+		if !f(fd_EventVaultVestingMigration_vault, value) {
+			return
+		}
+	}
+	if len(x.SourceAddresses) != 0 {
+		value := protoreflect.ValueOfList(&_EventVaultVestingMigration_2_list{list: &x.SourceAddresses})
+		if !f(fd_EventVaultVestingMigration_source_addresses, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventVaultVestingMigration) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultVestingMigration.vault":
+		return x.Vault != nil
+	case "structs.structs.EventVaultVestingMigration.source_addresses":
+		return len(x.SourceAddresses) != 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultVestingMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultVestingMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultVestingMigration) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultVestingMigration.vault":
+		x.Vault = nil
+	case "structs.structs.EventVaultVestingMigration.source_addresses":
+		x.SourceAddresses = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultVestingMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultVestingMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventVaultVestingMigration) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventVaultVestingMigration.vault":
+		value := x.Vault
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "structs.structs.EventVaultVestingMigration.source_addresses":
+		if len(x.SourceAddresses) == 0 {
+			return protoreflect.ValueOfList(&_EventVaultVestingMigration_2_list{})
+		}
+		listValue := &_EventVaultVestingMigration_2_list{list: &x.SourceAddresses}
+		return protoreflect.ValueOfList(listValue)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultVestingMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultVestingMigration does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultVestingMigration) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultVestingMigration.vault":
+		x.Vault = value.Message().Interface().(*VaultVestingAccount)
+	case "structs.structs.EventVaultVestingMigration.source_addresses":
+		lv := value.List()
+		clv := lv.(*_EventVaultVestingMigration_2_list)
+		x.SourceAddresses = *clv.list
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultVestingMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultVestingMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultVestingMigration) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultVestingMigration.vault":
+		if x.Vault == nil {
+			x.Vault = new(VaultVestingAccount)
+		}
+		return protoreflect.ValueOfMessage(x.Vault.ProtoReflect())
+	case "structs.structs.EventVaultVestingMigration.source_addresses":
+		if x.SourceAddresses == nil {
+			x.SourceAddresses = []string{}
+		}
+		value := &_EventVaultVestingMigration_2_list{list: &x.SourceAddresses}
+		return protoreflect.ValueOfList(value)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultVestingMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultVestingMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventVaultVestingMigration) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultVestingMigration.vault":
+		m := new(VaultVestingAccount)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "structs.structs.EventVaultVestingMigration.source_addresses":
+		list := []string{}
+		return protoreflect.ValueOfList(&_EventVaultVestingMigration_2_list{list: &list})
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultVestingMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultVestingMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventVaultVestingMigration) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventVaultVestingMigration", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventVaultVestingMigration) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultVestingMigration) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventVaultVestingMigration) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventVaultVestingMigration) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventVaultVestingMigration)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Vault != nil {
+			l = options.Size(x.Vault)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if len(x.SourceAddresses) > 0 {
+			for _, s := range x.SourceAddresses {
+				l = len(s)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventVaultVestingMigration)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.SourceAddresses) > 0 {
+			for iNdEx := len(x.SourceAddresses) - 1; iNdEx >= 0; iNdEx-- {
+				i -= len(x.SourceAddresses[iNdEx])
+				copy(dAtA[i:], x.SourceAddresses[iNdEx])
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.SourceAddresses[iNdEx])))
+				i--
+				dAtA[i] = 0x12
+			}
+		}
+		if x.Vault != nil {
+			encoded, err := options.Marshal(x.Vault)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventVaultVestingMigration)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventVaultVestingMigration: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventVaultVestingMigration: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Vault", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Vault == nil {
+					x.Vault = &VaultVestingAccount{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Vault); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SourceAddresses", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.SourceAddresses = append(x.SourceAddresses, string(dAtA[iNdEx:postIndex]))
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventGuildRankPurchase              protoreflect.MessageDescriptor
+	fd_EventGuildRankPurchase_guildId      protoreflect.FieldDescriptor
+	fd_EventGuildRankPurchase_playerId     protoreflect.FieldDescriptor
+	fd_EventGuildRankPurchase_previousRank protoreflect.FieldDescriptor
+	fd_EventGuildRankPurchase_rank         protoreflect.FieldDescriptor
+	fd_EventGuildRankPurchase_price        protoreflect.FieldDescriptor
+	fd_EventGuildRankPurchase_denom        protoreflect.FieldDescriptor
+	fd_EventGuildRankPurchase_joined       protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventGuildRankPurchase = File_structs_structs_events_proto.Messages().ByName("EventGuildRankPurchase")
+	fd_EventGuildRankPurchase_guildId = md_EventGuildRankPurchase.Fields().ByName("guildId")
+	fd_EventGuildRankPurchase_playerId = md_EventGuildRankPurchase.Fields().ByName("playerId")
+	fd_EventGuildRankPurchase_previousRank = md_EventGuildRankPurchase.Fields().ByName("previousRank")
+	fd_EventGuildRankPurchase_rank = md_EventGuildRankPurchase.Fields().ByName("rank")
+	fd_EventGuildRankPurchase_price = md_EventGuildRankPurchase.Fields().ByName("price")
+	fd_EventGuildRankPurchase_denom = md_EventGuildRankPurchase.Fields().ByName("denom")
+	fd_EventGuildRankPurchase_joined = md_EventGuildRankPurchase.Fields().ByName("joined")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventGuildRankPurchase)(nil)
+
+type fastReflection_EventGuildRankPurchase EventGuildRankPurchase
+
+func (x *EventGuildRankPurchase) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventGuildRankPurchase)(x)
+}
+
+func (x *EventGuildRankPurchase) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventGuildRankPurchase_messageType fastReflection_EventGuildRankPurchase_messageType
+var _ protoreflect.MessageType = fastReflection_EventGuildRankPurchase_messageType{}
+
+type fastReflection_EventGuildRankPurchase_messageType struct{}
+
+func (x fastReflection_EventGuildRankPurchase_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventGuildRankPurchase)(nil)
+}
+func (x fastReflection_EventGuildRankPurchase_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventGuildRankPurchase)
+}
+func (x fastReflection_EventGuildRankPurchase_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventGuildRankPurchase
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventGuildRankPurchase) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventGuildRankPurchase
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventGuildRankPurchase) Type() protoreflect.MessageType {
+	return _fastReflection_EventGuildRankPurchase_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventGuildRankPurchase) New() protoreflect.Message {
+	return new(fastReflection_EventGuildRankPurchase)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventGuildRankPurchase) Interface() protoreflect.ProtoMessage {
+	return (*EventGuildRankPurchase)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventGuildRankPurchase) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.GuildId != "" {
+		value := protoreflect.ValueOfString(x.GuildId)
+		if !f(fd_EventGuildRankPurchase_guildId, value) {
+			return
+		}
+	}
+	if x.PlayerId != "" {
+		value := protoreflect.ValueOfString(x.PlayerId)
+		if !f(fd_EventGuildRankPurchase_playerId, value) {
+			return
+		}
+	}
+	if x.PreviousRank != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PreviousRank)
+		if !f(fd_EventGuildRankPurchase_previousRank, value) {
+			return
+		}
+	}
+	if x.Rank != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Rank)
+		if !f(fd_EventGuildRankPurchase_rank, value) {
+			return
+		}
+	}
+	if x.Price != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Price)
+		if !f(fd_EventGuildRankPurchase_price, value) {
+			return
+		}
+	}
+	if x.Denom != "" {
+		value := protoreflect.ValueOfString(x.Denom)
+		if !f(fd_EventGuildRankPurchase_denom, value) {
+			return
+		}
+	}
+	if x.Joined != false {
+		value := protoreflect.ValueOfBool(x.Joined)
+		if !f(fd_EventGuildRankPurchase_joined, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventGuildRankPurchase) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildRankPurchase.guildId":
+		return x.GuildId != ""
+	case "structs.structs.EventGuildRankPurchase.playerId":
+		return x.PlayerId != ""
+	case "structs.structs.EventGuildRankPurchase.previousRank":
+		return x.PreviousRank != uint64(0)
+	case "structs.structs.EventGuildRankPurchase.rank":
+		return x.Rank != uint64(0)
+	case "structs.structs.EventGuildRankPurchase.price":
+		return x.Price != uint64(0)
+	case "structs.structs.EventGuildRankPurchase.denom":
+		return x.Denom != ""
+	case "structs.structs.EventGuildRankPurchase.joined":
+		return x.Joined != false
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildRankPurchase"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildRankPurchase does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildRankPurchase) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildRankPurchase.guildId":
+		x.GuildId = ""
+	case "structs.structs.EventGuildRankPurchase.playerId":
+		x.PlayerId = ""
+	case "structs.structs.EventGuildRankPurchase.previousRank":
+		x.PreviousRank = uint64(0)
+	case "structs.structs.EventGuildRankPurchase.rank":
+		x.Rank = uint64(0)
+	case "structs.structs.EventGuildRankPurchase.price":
+		x.Price = uint64(0)
+	case "structs.structs.EventGuildRankPurchase.denom":
+		x.Denom = ""
+	case "structs.structs.EventGuildRankPurchase.joined":
+		x.Joined = false
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildRankPurchase"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildRankPurchase does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventGuildRankPurchase) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventGuildRankPurchase.guildId":
+		value := x.GuildId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventGuildRankPurchase.playerId":
+		value := x.PlayerId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventGuildRankPurchase.previousRank":
+		value := x.PreviousRank
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventGuildRankPurchase.rank":
+		value := x.Rank
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventGuildRankPurchase.price":
+		value := x.Price
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventGuildRankPurchase.denom":
+		value := x.Denom
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventGuildRankPurchase.joined":
+		value := x.Joined
+		return protoreflect.ValueOfBool(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildRankPurchase"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildRankPurchase does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildRankPurchase) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildRankPurchase.guildId":
+		x.GuildId = value.Interface().(string)
+	case "structs.structs.EventGuildRankPurchase.playerId":
+		x.PlayerId = value.Interface().(string)
+	case "structs.structs.EventGuildRankPurchase.previousRank":
+		x.PreviousRank = value.Uint()
+	case "structs.structs.EventGuildRankPurchase.rank":
+		x.Rank = value.Uint()
+	case "structs.structs.EventGuildRankPurchase.price":
+		x.Price = value.Uint()
+	case "structs.structs.EventGuildRankPurchase.denom":
+		x.Denom = value.Interface().(string)
+	case "structs.structs.EventGuildRankPurchase.joined":
+		x.Joined = value.Bool()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildRankPurchase"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildRankPurchase does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildRankPurchase) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildRankPurchase.guildId":
+		panic(fmt.Errorf("field guildId of message structs.structs.EventGuildRankPurchase is not mutable"))
+	case "structs.structs.EventGuildRankPurchase.playerId":
+		panic(fmt.Errorf("field playerId of message structs.structs.EventGuildRankPurchase is not mutable"))
+	case "structs.structs.EventGuildRankPurchase.previousRank":
+		panic(fmt.Errorf("field previousRank of message structs.structs.EventGuildRankPurchase is not mutable"))
+	case "structs.structs.EventGuildRankPurchase.rank":
+		panic(fmt.Errorf("field rank of message structs.structs.EventGuildRankPurchase is not mutable"))
+	case "structs.structs.EventGuildRankPurchase.price":
+		panic(fmt.Errorf("field price of message structs.structs.EventGuildRankPurchase is not mutable"))
+	case "structs.structs.EventGuildRankPurchase.denom":
+		panic(fmt.Errorf("field denom of message structs.structs.EventGuildRankPurchase is not mutable"))
+	case "structs.structs.EventGuildRankPurchase.joined":
+		panic(fmt.Errorf("field joined of message structs.structs.EventGuildRankPurchase is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildRankPurchase"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildRankPurchase does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventGuildRankPurchase) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildRankPurchase.guildId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventGuildRankPurchase.playerId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventGuildRankPurchase.previousRank":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventGuildRankPurchase.rank":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventGuildRankPurchase.price":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventGuildRankPurchase.denom":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventGuildRankPurchase.joined":
+		return protoreflect.ValueOfBool(false)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildRankPurchase"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildRankPurchase does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventGuildRankPurchase) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventGuildRankPurchase", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventGuildRankPurchase) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildRankPurchase) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventGuildRankPurchase) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventGuildRankPurchase) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventGuildRankPurchase)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.GuildId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.PlayerId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.PreviousRank != 0 {
+			n += 1 + runtime.Sov(uint64(x.PreviousRank))
+		}
+		if x.Rank != 0 {
+			n += 1 + runtime.Sov(uint64(x.Rank))
+		}
+		if x.Price != 0 {
+			n += 1 + runtime.Sov(uint64(x.Price))
+		}
+		l = len(x.Denom)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Joined {
+			n += 2
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventGuildRankPurchase)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Joined {
+			i--
+			if x.Joined {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x38
+		}
+		if len(x.Denom) > 0 {
+			i -= len(x.Denom)
+			copy(dAtA[i:], x.Denom)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Denom)))
+			i--
+			dAtA[i] = 0x32
+		}
+		if x.Price != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Price))
+			i--
+			dAtA[i] = 0x28
+		}
+		if x.Rank != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Rank))
+			i--
+			dAtA[i] = 0x20
+		}
+		if x.PreviousRank != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PreviousRank))
+			i--
+			dAtA[i] = 0x18
+		}
+		if len(x.PlayerId) > 0 {
+			i -= len(x.PlayerId)
+			copy(dAtA[i:], x.PlayerId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.PlayerId)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.GuildId) > 0 {
+			i -= len(x.GuildId)
+			copy(dAtA[i:], x.GuildId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.GuildId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventGuildRankPurchase)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildRankPurchase: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildRankPurchase: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.GuildId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.PlayerId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PreviousRank", wireType)
+				}
+				x.PreviousRank = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PreviousRank |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Rank", wireType)
+				}
+				x.Rank = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Rank |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 5:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Price", wireType)
+				}
+				x.Price = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Price |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 6:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Denom = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 7:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Joined", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.Joined = bool(v != 0)
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
 
 var (
 	md_EventAllocation            protoreflect.MessageDescriptor
@@ -36,7 +3005,7 @@ func (x *EventAllocation) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAllocation) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[0]
+	mi := &file_structs_structs_events_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -471,7 +3440,7 @@ func (x *EventAgreement) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAgreement) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[1]
+	mi := &file_structs_structs_events_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -906,7 +3875,7 @@ func (x *EventFleet) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventFleet) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[2]
+	mi := &file_structs_structs_events_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1341,7 +4310,7 @@ func (x *EventGuild) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuild) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[3]
+	mi := &file_structs_structs_events_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1776,7 +4745,7 @@ func (x *EventInfusion) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventInfusion) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[4]
+	mi := &file_structs_structs_events_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2211,7 +5180,7 @@ func (x *EventPlanet) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventPlanet) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[5]
+	mi := &file_structs_structs_events_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2646,7 +5615,7 @@ func (x *EventPlanetAttribute) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventPlanetAttribute) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[6]
+	mi := &file_structs_structs_events_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3081,7 +6050,7 @@ func (x *EventPlayer) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventPlayer) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[7]
+	mi := &file_structs_structs_events_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3516,7 +6485,7 @@ func (x *EventProvider) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventProvider) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[8]
+	mi := &file_structs_structs_events_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3951,7 +6920,7 @@ func (x *EventReactor) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventReactor) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[9]
+	mi := &file_structs_structs_events_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4386,7 +7355,7 @@ func (x *EventStruct) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventStruct) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[10]
+	mi := &file_structs_structs_events_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4821,7 +7790,7 @@ func (x *EventStructAttribute) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventStructAttribute) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[11]
+	mi := &file_structs_structs_events_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5256,7 +8225,7 @@ func (x *EventStructDefender) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventStructDefender) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[12]
+	mi := &file_structs_structs_events_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5691,7 +8660,7 @@ func (x *EventStructType) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventStructType) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[13]
+	mi := &file_structs_structs_events_proto_msgTypes[19]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6126,7 +9095,7 @@ func (x *EventSubstation) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventSubstation) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[14]
+	mi := &file_structs_structs_events_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6561,7 +9530,7 @@ func (x *EventTime) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventTime) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[15]
+	mi := &file_structs_structs_events_proto_msgTypes[21]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6998,7 +9967,7 @@ func (x *EventTimeDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventTimeDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[16]
+	mi := &file_structs_structs_events_proto_msgTypes[22]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7479,7 +10448,7 @@ func (x *EventPermission) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventPermission) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[17]
+	mi := &file_structs_structs_events_proto_msgTypes[23]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7914,7 +10883,7 @@ func (x *EventGuildRankPermission) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildRankPermission) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[18]
+	mi := &file_structs_structs_events_proto_msgTypes[24]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8349,7 +11318,7 @@ func (x *EventGrid) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGrid) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[19]
+	mi := &file_structs_structs_events_proto_msgTypes[25]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8784,7 +11753,7 @@ func (x *EventProviderAddress) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventProviderAddress) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[20]
+	mi := &file_structs_structs_events_proto_msgTypes[26]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9223,7 +12192,7 @@ func (x *EventProviderAddressDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventProviderAddressDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[21]
+	mi := &file_structs_structs_events_proto_msgTypes[27]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9767,7 +12736,7 @@ func (x *EventProviderGrantGuild) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventProviderGrantGuild) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[22]
+	mi := &file_structs_structs_events_proto_msgTypes[28]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10204,7 +13173,7 @@ func (x *EventProviderGrantGuildDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventProviderGrantGuildDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[23]
+	mi := &file_structs_structs_events_proto_msgTypes[29]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10686,7 +13655,7 @@ func (x *EventProviderRevokeGuild) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventProviderRevokeGuild) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[24]
+	mi := &file_structs_structs_events_proto_msgTypes[30]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11123,7 +14092,7 @@ func (x *EventProviderRevokeGuildDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventProviderRevokeGuildDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[25]
+	mi := &file_structs_structs_events_proto_msgTypes[31]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11605,7 +14574,7 @@ func (x *EventProviderRevenueShortfall) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventProviderRevenueShortfall) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[26]
+	mi := &file_structs_structs_events_proto_msgTypes[32]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12050,7 +15019,7 @@ func (x *EventProviderRevenueShortfallDetail) ProtoReflect() protoreflect.Messag
 }
 
 func (x *EventProviderRevenueShortfallDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[27]
+	mi := &file_structs_structs_events_proto_msgTypes[33]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12780,7 +15749,7 @@ func (x *EventPlayerHalted) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventPlayerHalted) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[28]
+	mi := &file_structs_structs_events_proto_msgTypes[34]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13200,7 +16169,7 @@ func (x *EventPlayerResumed) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventPlayerResumed) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[29]
+	mi := &file_structs_structs_events_proto_msgTypes[35]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13620,7 +16589,7 @@ func (x *EventDelete) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventDelete) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[30]
+	mi := &file_structs_structs_events_proto_msgTypes[36]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14040,7 +17009,7 @@ func (x *EventAddressAssociation) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAddressAssociation) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[31]
+	mi := &file_structs_structs_events_proto_msgTypes[37]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14475,7 +17444,7 @@ func (x *EventAddressActivity) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAddressActivity) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[32]
+	mi := &file_structs_structs_events_proto_msgTypes[38]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14891,6 +17860,3013 @@ func (x *fastReflection_EventAddressActivity) ProtoMethods() *protoiface.Methods
 }
 
 var (
+	md_EventVaultAddress                         protoreflect.MessageDescriptor
+	fd_EventVaultAddress_eventVaultAddressDetail protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventVaultAddress = File_structs_structs_events_proto.Messages().ByName("EventVaultAddress")
+	fd_EventVaultAddress_eventVaultAddressDetail = md_EventVaultAddress.Fields().ByName("eventVaultAddressDetail")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventVaultAddress)(nil)
+
+type fastReflection_EventVaultAddress EventVaultAddress
+
+func (x *EventVaultAddress) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventVaultAddress)(x)
+}
+
+func (x *EventVaultAddress) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[39]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventVaultAddress_messageType fastReflection_EventVaultAddress_messageType
+var _ protoreflect.MessageType = fastReflection_EventVaultAddress_messageType{}
+
+type fastReflection_EventVaultAddress_messageType struct{}
+
+func (x fastReflection_EventVaultAddress_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventVaultAddress)(nil)
+}
+func (x fastReflection_EventVaultAddress_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventVaultAddress)
+}
+func (x fastReflection_EventVaultAddress_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventVaultAddress
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventVaultAddress) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventVaultAddress
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventVaultAddress) Type() protoreflect.MessageType {
+	return _fastReflection_EventVaultAddress_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventVaultAddress) New() protoreflect.Message {
+	return new(fastReflection_EventVaultAddress)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventVaultAddress) Interface() protoreflect.ProtoMessage {
+	return (*EventVaultAddress)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventVaultAddress) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.EventVaultAddressDetail != nil {
+		value := protoreflect.ValueOfMessage(x.EventVaultAddressDetail.ProtoReflect())
+		if !f(fd_EventVaultAddress_eventVaultAddressDetail, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventVaultAddress) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultAddress.eventVaultAddressDetail":
+		return x.EventVaultAddressDetail != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultAddress"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultAddress does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultAddress) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultAddress.eventVaultAddressDetail":
+		x.EventVaultAddressDetail = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultAddress"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultAddress does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventVaultAddress) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventVaultAddress.eventVaultAddressDetail":
+		value := x.EventVaultAddressDetail
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultAddress"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultAddress does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultAddress) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultAddress.eventVaultAddressDetail":
+		x.EventVaultAddressDetail = value.Message().Interface().(*EventVaultAddressDetail)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultAddress"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultAddress does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultAddress) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultAddress.eventVaultAddressDetail":
+		if x.EventVaultAddressDetail == nil {
+			x.EventVaultAddressDetail = new(EventVaultAddressDetail)
+		}
+		return protoreflect.ValueOfMessage(x.EventVaultAddressDetail.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultAddress"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultAddress does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventVaultAddress) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultAddress.eventVaultAddressDetail":
+		m := new(EventVaultAddressDetail)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultAddress"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultAddress does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventVaultAddress) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventVaultAddress", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventVaultAddress) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultAddress) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventVaultAddress) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventVaultAddress) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventVaultAddress)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.EventVaultAddressDetail != nil {
+			l = options.Size(x.EventVaultAddressDetail)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventVaultAddress)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.EventVaultAddressDetail != nil {
+			encoded, err := options.Marshal(x.EventVaultAddressDetail)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventVaultAddress)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventVaultAddress: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventVaultAddress: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field EventVaultAddressDetail", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.EventVaultAddressDetail == nil {
+					x.EventVaultAddressDetail = &EventVaultAddressDetail{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.EventVaultAddressDetail); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventVaultAddressDetail                protoreflect.MessageDescriptor
+	fd_EventVaultAddressDetail_ownerId        protoreflect.FieldDescriptor
+	fd_EventVaultAddressDetail_vaultAddress   protoreflect.FieldDescriptor
+	fd_EventVaultAddressDetail_accountNumber  protoreflect.FieldDescriptor
+	fd_EventVaultAddressDetail_accountCreated protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventVaultAddressDetail = File_structs_structs_events_proto.Messages().ByName("EventVaultAddressDetail")
+	fd_EventVaultAddressDetail_ownerId = md_EventVaultAddressDetail.Fields().ByName("ownerId")
+	fd_EventVaultAddressDetail_vaultAddress = md_EventVaultAddressDetail.Fields().ByName("vaultAddress")
+	fd_EventVaultAddressDetail_accountNumber = md_EventVaultAddressDetail.Fields().ByName("accountNumber")
+	fd_EventVaultAddressDetail_accountCreated = md_EventVaultAddressDetail.Fields().ByName("accountCreated")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventVaultAddressDetail)(nil)
+
+type fastReflection_EventVaultAddressDetail EventVaultAddressDetail
+
+func (x *EventVaultAddressDetail) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventVaultAddressDetail)(x)
+}
+
+func (x *EventVaultAddressDetail) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[40]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventVaultAddressDetail_messageType fastReflection_EventVaultAddressDetail_messageType
+var _ protoreflect.MessageType = fastReflection_EventVaultAddressDetail_messageType{}
+
+type fastReflection_EventVaultAddressDetail_messageType struct{}
+
+func (x fastReflection_EventVaultAddressDetail_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventVaultAddressDetail)(nil)
+}
+func (x fastReflection_EventVaultAddressDetail_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventVaultAddressDetail)
+}
+func (x fastReflection_EventVaultAddressDetail_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventVaultAddressDetail
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventVaultAddressDetail) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventVaultAddressDetail
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventVaultAddressDetail) Type() protoreflect.MessageType {
+	return _fastReflection_EventVaultAddressDetail_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventVaultAddressDetail) New() protoreflect.Message {
+	return new(fastReflection_EventVaultAddressDetail)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventVaultAddressDetail) Interface() protoreflect.ProtoMessage {
+	return (*EventVaultAddressDetail)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventVaultAddressDetail) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.OwnerId != "" {
+		value := protoreflect.ValueOfString(x.OwnerId)
+		if !f(fd_EventVaultAddressDetail_ownerId, value) {
+			return
+		}
+	}
+	if x.VaultAddress != "" {
+		value := protoreflect.ValueOfString(x.VaultAddress)
+		if !f(fd_EventVaultAddressDetail_vaultAddress, value) {
+			return
+		}
+	}
+	if x.AccountNumber != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.AccountNumber)
+		if !f(fd_EventVaultAddressDetail_accountNumber, value) {
+			return
+		}
+	}
+	if x.AccountCreated != false {
+		value := protoreflect.ValueOfBool(x.AccountCreated)
+		if !f(fd_EventVaultAddressDetail_accountCreated, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventVaultAddressDetail) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultAddressDetail.ownerId":
+		return x.OwnerId != ""
+	case "structs.structs.EventVaultAddressDetail.vaultAddress":
+		return x.VaultAddress != ""
+	case "structs.structs.EventVaultAddressDetail.accountNumber":
+		return x.AccountNumber != uint64(0)
+	case "structs.structs.EventVaultAddressDetail.accountCreated":
+		return x.AccountCreated != false
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultAddressDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultAddressDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultAddressDetail) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultAddressDetail.ownerId":
+		x.OwnerId = ""
+	case "structs.structs.EventVaultAddressDetail.vaultAddress":
+		x.VaultAddress = ""
+	case "structs.structs.EventVaultAddressDetail.accountNumber":
+		x.AccountNumber = uint64(0)
+	case "structs.structs.EventVaultAddressDetail.accountCreated":
+		x.AccountCreated = false
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultAddressDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultAddressDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventVaultAddressDetail) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventVaultAddressDetail.ownerId":
+		value := x.OwnerId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventVaultAddressDetail.vaultAddress":
+		value := x.VaultAddress
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventVaultAddressDetail.accountNumber":
+		value := x.AccountNumber
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventVaultAddressDetail.accountCreated":
+		value := x.AccountCreated
+		return protoreflect.ValueOfBool(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultAddressDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultAddressDetail does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultAddressDetail) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultAddressDetail.ownerId":
+		x.OwnerId = value.Interface().(string)
+	case "structs.structs.EventVaultAddressDetail.vaultAddress":
+		x.VaultAddress = value.Interface().(string)
+	case "structs.structs.EventVaultAddressDetail.accountNumber":
+		x.AccountNumber = value.Uint()
+	case "structs.structs.EventVaultAddressDetail.accountCreated":
+		x.AccountCreated = value.Bool()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultAddressDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultAddressDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultAddressDetail) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultAddressDetail.ownerId":
+		panic(fmt.Errorf("field ownerId of message structs.structs.EventVaultAddressDetail is not mutable"))
+	case "structs.structs.EventVaultAddressDetail.vaultAddress":
+		panic(fmt.Errorf("field vaultAddress of message structs.structs.EventVaultAddressDetail is not mutable"))
+	case "structs.structs.EventVaultAddressDetail.accountNumber":
+		panic(fmt.Errorf("field accountNumber of message structs.structs.EventVaultAddressDetail is not mutable"))
+	case "structs.structs.EventVaultAddressDetail.accountCreated":
+		panic(fmt.Errorf("field accountCreated of message structs.structs.EventVaultAddressDetail is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultAddressDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultAddressDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventVaultAddressDetail) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultAddressDetail.ownerId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventVaultAddressDetail.vaultAddress":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventVaultAddressDetail.accountNumber":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventVaultAddressDetail.accountCreated":
+		return protoreflect.ValueOfBool(false)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultAddressDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultAddressDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventVaultAddressDetail) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventVaultAddressDetail", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventVaultAddressDetail) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultAddressDetail) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventVaultAddressDetail) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventVaultAddressDetail) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventVaultAddressDetail)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.OwnerId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.VaultAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.AccountNumber != 0 {
+			n += 1 + runtime.Sov(uint64(x.AccountNumber))
+		}
+		if x.AccountCreated {
+			n += 2
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventVaultAddressDetail)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.AccountCreated {
+			i--
+			if x.AccountCreated {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x20
+		}
+		if x.AccountNumber != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AccountNumber))
+			i--
+			dAtA[i] = 0x18
+		}
+		if len(x.VaultAddress) > 0 {
+			i -= len(x.VaultAddress)
+			copy(dAtA[i:], x.VaultAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.VaultAddress)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.OwnerId) > 0 {
+			i -= len(x.OwnerId)
+			copy(dAtA[i:], x.OwnerId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.OwnerId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventVaultAddressDetail)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventVaultAddressDetail: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventVaultAddressDetail: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OwnerId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.OwnerId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field VaultAddress", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.VaultAddress = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AccountNumber", wireType)
+				}
+				x.AccountNumber = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AccountNumber |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AccountCreated", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.AccountCreated = bool(v != 0)
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventVaultDelegationMigration                   protoreflect.MessageDescriptor
+	fd_EventVaultDelegationMigration_ownerId           protoreflect.FieldDescriptor
+	fd_EventVaultDelegationMigration_sourceAddress     protoreflect.FieldDescriptor
+	fd_EventVaultDelegationMigration_vaultAddress      protoreflect.FieldDescriptor
+	fd_EventVaultDelegationMigration_validatorAddress  protoreflect.FieldDescriptor
+	fd_EventVaultDelegationMigration_sharesMoved       protoreflect.FieldDescriptor
+	fd_EventVaultDelegationMigration_destinationShares protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventVaultDelegationMigration = File_structs_structs_events_proto.Messages().ByName("EventVaultDelegationMigration")
+	fd_EventVaultDelegationMigration_ownerId = md_EventVaultDelegationMigration.Fields().ByName("ownerId")
+	fd_EventVaultDelegationMigration_sourceAddress = md_EventVaultDelegationMigration.Fields().ByName("sourceAddress")
+	fd_EventVaultDelegationMigration_vaultAddress = md_EventVaultDelegationMigration.Fields().ByName("vaultAddress")
+	fd_EventVaultDelegationMigration_validatorAddress = md_EventVaultDelegationMigration.Fields().ByName("validatorAddress")
+	fd_EventVaultDelegationMigration_sharesMoved = md_EventVaultDelegationMigration.Fields().ByName("sharesMoved")
+	fd_EventVaultDelegationMigration_destinationShares = md_EventVaultDelegationMigration.Fields().ByName("destinationShares")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventVaultDelegationMigration)(nil)
+
+type fastReflection_EventVaultDelegationMigration EventVaultDelegationMigration
+
+func (x *EventVaultDelegationMigration) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventVaultDelegationMigration)(x)
+}
+
+func (x *EventVaultDelegationMigration) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[41]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventVaultDelegationMigration_messageType fastReflection_EventVaultDelegationMigration_messageType
+var _ protoreflect.MessageType = fastReflection_EventVaultDelegationMigration_messageType{}
+
+type fastReflection_EventVaultDelegationMigration_messageType struct{}
+
+func (x fastReflection_EventVaultDelegationMigration_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventVaultDelegationMigration)(nil)
+}
+func (x fastReflection_EventVaultDelegationMigration_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventVaultDelegationMigration)
+}
+func (x fastReflection_EventVaultDelegationMigration_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventVaultDelegationMigration
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventVaultDelegationMigration) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventVaultDelegationMigration
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventVaultDelegationMigration) Type() protoreflect.MessageType {
+	return _fastReflection_EventVaultDelegationMigration_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventVaultDelegationMigration) New() protoreflect.Message {
+	return new(fastReflection_EventVaultDelegationMigration)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventVaultDelegationMigration) Interface() protoreflect.ProtoMessage {
+	return (*EventVaultDelegationMigration)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventVaultDelegationMigration) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.OwnerId != "" {
+		value := protoreflect.ValueOfString(x.OwnerId)
+		if !f(fd_EventVaultDelegationMigration_ownerId, value) {
+			return
+		}
+	}
+	if x.SourceAddress != "" {
+		value := protoreflect.ValueOfString(x.SourceAddress)
+		if !f(fd_EventVaultDelegationMigration_sourceAddress, value) {
+			return
+		}
+	}
+	if x.VaultAddress != "" {
+		value := protoreflect.ValueOfString(x.VaultAddress)
+		if !f(fd_EventVaultDelegationMigration_vaultAddress, value) {
+			return
+		}
+	}
+	if x.ValidatorAddress != "" {
+		value := protoreflect.ValueOfString(x.ValidatorAddress)
+		if !f(fd_EventVaultDelegationMigration_validatorAddress, value) {
+			return
+		}
+	}
+	if x.SharesMoved != "" {
+		value := protoreflect.ValueOfString(x.SharesMoved)
+		if !f(fd_EventVaultDelegationMigration_sharesMoved, value) {
+			return
+		}
+	}
+	if x.DestinationShares != "" {
+		value := protoreflect.ValueOfString(x.DestinationShares)
+		if !f(fd_EventVaultDelegationMigration_destinationShares, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventVaultDelegationMigration) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultDelegationMigration.ownerId":
+		return x.OwnerId != ""
+	case "structs.structs.EventVaultDelegationMigration.sourceAddress":
+		return x.SourceAddress != ""
+	case "structs.structs.EventVaultDelegationMigration.vaultAddress":
+		return x.VaultAddress != ""
+	case "structs.structs.EventVaultDelegationMigration.validatorAddress":
+		return x.ValidatorAddress != ""
+	case "structs.structs.EventVaultDelegationMigration.sharesMoved":
+		return x.SharesMoved != ""
+	case "structs.structs.EventVaultDelegationMigration.destinationShares":
+		return x.DestinationShares != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultDelegationMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultDelegationMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultDelegationMigration) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultDelegationMigration.ownerId":
+		x.OwnerId = ""
+	case "structs.structs.EventVaultDelegationMigration.sourceAddress":
+		x.SourceAddress = ""
+	case "structs.structs.EventVaultDelegationMigration.vaultAddress":
+		x.VaultAddress = ""
+	case "structs.structs.EventVaultDelegationMigration.validatorAddress":
+		x.ValidatorAddress = ""
+	case "structs.structs.EventVaultDelegationMigration.sharesMoved":
+		x.SharesMoved = ""
+	case "structs.structs.EventVaultDelegationMigration.destinationShares":
+		x.DestinationShares = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultDelegationMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultDelegationMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventVaultDelegationMigration) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventVaultDelegationMigration.ownerId":
+		value := x.OwnerId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventVaultDelegationMigration.sourceAddress":
+		value := x.SourceAddress
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventVaultDelegationMigration.vaultAddress":
+		value := x.VaultAddress
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventVaultDelegationMigration.validatorAddress":
+		value := x.ValidatorAddress
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventVaultDelegationMigration.sharesMoved":
+		value := x.SharesMoved
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventVaultDelegationMigration.destinationShares":
+		value := x.DestinationShares
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultDelegationMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultDelegationMigration does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultDelegationMigration) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultDelegationMigration.ownerId":
+		x.OwnerId = value.Interface().(string)
+	case "structs.structs.EventVaultDelegationMigration.sourceAddress":
+		x.SourceAddress = value.Interface().(string)
+	case "structs.structs.EventVaultDelegationMigration.vaultAddress":
+		x.VaultAddress = value.Interface().(string)
+	case "structs.structs.EventVaultDelegationMigration.validatorAddress":
+		x.ValidatorAddress = value.Interface().(string)
+	case "structs.structs.EventVaultDelegationMigration.sharesMoved":
+		x.SharesMoved = value.Interface().(string)
+	case "structs.structs.EventVaultDelegationMigration.destinationShares":
+		x.DestinationShares = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultDelegationMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultDelegationMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultDelegationMigration) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultDelegationMigration.ownerId":
+		panic(fmt.Errorf("field ownerId of message structs.structs.EventVaultDelegationMigration is not mutable"))
+	case "structs.structs.EventVaultDelegationMigration.sourceAddress":
+		panic(fmt.Errorf("field sourceAddress of message structs.structs.EventVaultDelegationMigration is not mutable"))
+	case "structs.structs.EventVaultDelegationMigration.vaultAddress":
+		panic(fmt.Errorf("field vaultAddress of message structs.structs.EventVaultDelegationMigration is not mutable"))
+	case "structs.structs.EventVaultDelegationMigration.validatorAddress":
+		panic(fmt.Errorf("field validatorAddress of message structs.structs.EventVaultDelegationMigration is not mutable"))
+	case "structs.structs.EventVaultDelegationMigration.sharesMoved":
+		panic(fmt.Errorf("field sharesMoved of message structs.structs.EventVaultDelegationMigration is not mutable"))
+	case "structs.structs.EventVaultDelegationMigration.destinationShares":
+		panic(fmt.Errorf("field destinationShares of message structs.structs.EventVaultDelegationMigration is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultDelegationMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultDelegationMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventVaultDelegationMigration) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultDelegationMigration.ownerId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventVaultDelegationMigration.sourceAddress":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventVaultDelegationMigration.vaultAddress":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventVaultDelegationMigration.validatorAddress":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventVaultDelegationMigration.sharesMoved":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventVaultDelegationMigration.destinationShares":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultDelegationMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultDelegationMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventVaultDelegationMigration) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventVaultDelegationMigration", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventVaultDelegationMigration) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultDelegationMigration) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventVaultDelegationMigration) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventVaultDelegationMigration) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventVaultDelegationMigration)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.OwnerId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.SourceAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.VaultAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.ValidatorAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.SharesMoved)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.DestinationShares)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventVaultDelegationMigration)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.DestinationShares) > 0 {
+			i -= len(x.DestinationShares)
+			copy(dAtA[i:], x.DestinationShares)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.DestinationShares)))
+			i--
+			dAtA[i] = 0x32
+		}
+		if len(x.SharesMoved) > 0 {
+			i -= len(x.SharesMoved)
+			copy(dAtA[i:], x.SharesMoved)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.SharesMoved)))
+			i--
+			dAtA[i] = 0x2a
+		}
+		if len(x.ValidatorAddress) > 0 {
+			i -= len(x.ValidatorAddress)
+			copy(dAtA[i:], x.ValidatorAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ValidatorAddress)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if len(x.VaultAddress) > 0 {
+			i -= len(x.VaultAddress)
+			copy(dAtA[i:], x.VaultAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.VaultAddress)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if len(x.SourceAddress) > 0 {
+			i -= len(x.SourceAddress)
+			copy(dAtA[i:], x.SourceAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.SourceAddress)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.OwnerId) > 0 {
+			i -= len(x.OwnerId)
+			copy(dAtA[i:], x.OwnerId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.OwnerId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventVaultDelegationMigration)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventVaultDelegationMigration: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventVaultDelegationMigration: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OwnerId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.OwnerId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SourceAddress", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.SourceAddress = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field VaultAddress", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.VaultAddress = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ValidatorAddress", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ValidatorAddress = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 5:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SharesMoved", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.SharesMoved = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 6:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DestinationShares", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.DestinationShares = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var _ protoreflect.List = (*_EventVaultUnbondingMigration_2_list)(nil)
+
+type _EventVaultUnbondingMigration_2_list struct {
+	list *[]string
+}
+
+func (x *_EventVaultUnbondingMigration_2_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_EventVaultUnbondingMigration_2_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfString((*x.list)[i])
+}
+
+func (x *_EventVaultUnbondingMigration_2_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_EventVaultUnbondingMigration_2_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_EventVaultUnbondingMigration_2_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message EventVaultUnbondingMigration at list field SourceAddresses as it is not of Message kind"))
+}
+
+func (x *_EventVaultUnbondingMigration_2_list) Truncate(n int) {
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_EventVaultUnbondingMigration_2_list) NewElement() protoreflect.Value {
+	v := ""
+	return protoreflect.ValueOfString(v)
+}
+
+func (x *_EventVaultUnbondingMigration_2_list) IsValid() bool {
+	return x.list != nil
+}
+
+var (
+	md_EventVaultUnbondingMigration                 protoreflect.MessageDescriptor
+	fd_EventVaultUnbondingMigration_ownerId         protoreflect.FieldDescriptor
+	fd_EventVaultUnbondingMigration_sourceAddresses protoreflect.FieldDescriptor
+	fd_EventVaultUnbondingMigration_destination     protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventVaultUnbondingMigration = File_structs_structs_events_proto.Messages().ByName("EventVaultUnbondingMigration")
+	fd_EventVaultUnbondingMigration_ownerId = md_EventVaultUnbondingMigration.Fields().ByName("ownerId")
+	fd_EventVaultUnbondingMigration_sourceAddresses = md_EventVaultUnbondingMigration.Fields().ByName("sourceAddresses")
+	fd_EventVaultUnbondingMigration_destination = md_EventVaultUnbondingMigration.Fields().ByName("destination")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventVaultUnbondingMigration)(nil)
+
+type fastReflection_EventVaultUnbondingMigration EventVaultUnbondingMigration
+
+func (x *EventVaultUnbondingMigration) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventVaultUnbondingMigration)(x)
+}
+
+func (x *EventVaultUnbondingMigration) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[42]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventVaultUnbondingMigration_messageType fastReflection_EventVaultUnbondingMigration_messageType
+var _ protoreflect.MessageType = fastReflection_EventVaultUnbondingMigration_messageType{}
+
+type fastReflection_EventVaultUnbondingMigration_messageType struct{}
+
+func (x fastReflection_EventVaultUnbondingMigration_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventVaultUnbondingMigration)(nil)
+}
+func (x fastReflection_EventVaultUnbondingMigration_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventVaultUnbondingMigration)
+}
+func (x fastReflection_EventVaultUnbondingMigration_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventVaultUnbondingMigration
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventVaultUnbondingMigration) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventVaultUnbondingMigration
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventVaultUnbondingMigration) Type() protoreflect.MessageType {
+	return _fastReflection_EventVaultUnbondingMigration_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventVaultUnbondingMigration) New() protoreflect.Message {
+	return new(fastReflection_EventVaultUnbondingMigration)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventVaultUnbondingMigration) Interface() protoreflect.ProtoMessage {
+	return (*EventVaultUnbondingMigration)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventVaultUnbondingMigration) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.OwnerId != "" {
+		value := protoreflect.ValueOfString(x.OwnerId)
+		if !f(fd_EventVaultUnbondingMigration_ownerId, value) {
+			return
+		}
+	}
+	if len(x.SourceAddresses) != 0 {
+		value := protoreflect.ValueOfList(&_EventVaultUnbondingMigration_2_list{list: &x.SourceAddresses})
+		if !f(fd_EventVaultUnbondingMigration_sourceAddresses, value) {
+			return
+		}
+	}
+	if x.Destination != nil {
+		value := protoreflect.ValueOfMessage(x.Destination.ProtoReflect())
+		if !f(fd_EventVaultUnbondingMigration_destination, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventVaultUnbondingMigration) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultUnbondingMigration.ownerId":
+		return x.OwnerId != ""
+	case "structs.structs.EventVaultUnbondingMigration.sourceAddresses":
+		return len(x.SourceAddresses) != 0
+	case "structs.structs.EventVaultUnbondingMigration.destination":
+		return x.Destination != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultUnbondingMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultUnbondingMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultUnbondingMigration) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultUnbondingMigration.ownerId":
+		x.OwnerId = ""
+	case "structs.structs.EventVaultUnbondingMigration.sourceAddresses":
+		x.SourceAddresses = nil
+	case "structs.structs.EventVaultUnbondingMigration.destination":
+		x.Destination = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultUnbondingMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultUnbondingMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventVaultUnbondingMigration) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventVaultUnbondingMigration.ownerId":
+		value := x.OwnerId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventVaultUnbondingMigration.sourceAddresses":
+		if len(x.SourceAddresses) == 0 {
+			return protoreflect.ValueOfList(&_EventVaultUnbondingMigration_2_list{})
+		}
+		listValue := &_EventVaultUnbondingMigration_2_list{list: &x.SourceAddresses}
+		return protoreflect.ValueOfList(listValue)
+	case "structs.structs.EventVaultUnbondingMigration.destination":
+		value := x.Destination
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultUnbondingMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultUnbondingMigration does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultUnbondingMigration) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultUnbondingMigration.ownerId":
+		x.OwnerId = value.Interface().(string)
+	case "structs.structs.EventVaultUnbondingMigration.sourceAddresses":
+		lv := value.List()
+		clv := lv.(*_EventVaultUnbondingMigration_2_list)
+		x.SourceAddresses = *clv.list
+	case "structs.structs.EventVaultUnbondingMigration.destination":
+		x.Destination = value.Message().Interface().(*v1beta1.UnbondingDelegation)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultUnbondingMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultUnbondingMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultUnbondingMigration) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultUnbondingMigration.sourceAddresses":
+		if x.SourceAddresses == nil {
+			x.SourceAddresses = []string{}
+		}
+		value := &_EventVaultUnbondingMigration_2_list{list: &x.SourceAddresses}
+		return protoreflect.ValueOfList(value)
+	case "structs.structs.EventVaultUnbondingMigration.destination":
+		if x.Destination == nil {
+			x.Destination = new(v1beta1.UnbondingDelegation)
+		}
+		return protoreflect.ValueOfMessage(x.Destination.ProtoReflect())
+	case "structs.structs.EventVaultUnbondingMigration.ownerId":
+		panic(fmt.Errorf("field ownerId of message structs.structs.EventVaultUnbondingMigration is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultUnbondingMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultUnbondingMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventVaultUnbondingMigration) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultUnbondingMigration.ownerId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventVaultUnbondingMigration.sourceAddresses":
+		list := []string{}
+		return protoreflect.ValueOfList(&_EventVaultUnbondingMigration_2_list{list: &list})
+	case "structs.structs.EventVaultUnbondingMigration.destination":
+		m := new(v1beta1.UnbondingDelegation)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultUnbondingMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultUnbondingMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventVaultUnbondingMigration) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventVaultUnbondingMigration", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventVaultUnbondingMigration) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultUnbondingMigration) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventVaultUnbondingMigration) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventVaultUnbondingMigration) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventVaultUnbondingMigration)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.OwnerId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if len(x.SourceAddresses) > 0 {
+			for _, s := range x.SourceAddresses {
+				l = len(s)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if x.Destination != nil {
+			l = options.Size(x.Destination)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventVaultUnbondingMigration)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Destination != nil {
+			encoded, err := options.Marshal(x.Destination)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if len(x.SourceAddresses) > 0 {
+			for iNdEx := len(x.SourceAddresses) - 1; iNdEx >= 0; iNdEx-- {
+				i -= len(x.SourceAddresses[iNdEx])
+				copy(dAtA[i:], x.SourceAddresses[iNdEx])
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.SourceAddresses[iNdEx])))
+				i--
+				dAtA[i] = 0x12
+			}
+		}
+		if len(x.OwnerId) > 0 {
+			i -= len(x.OwnerId)
+			copy(dAtA[i:], x.OwnerId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.OwnerId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventVaultUnbondingMigration)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventVaultUnbondingMigration: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventVaultUnbondingMigration: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OwnerId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.OwnerId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SourceAddresses", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.SourceAddresses = append(x.SourceAddresses, string(dAtA[iNdEx:postIndex]))
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Destination", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Destination == nil {
+					x.Destination = &v1beta1.UnbondingDelegation{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Destination); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var _ protoreflect.List = (*_EventVaultRedelegationMigration_2_list)(nil)
+
+type _EventVaultRedelegationMigration_2_list struct {
+	list *[]string
+}
+
+func (x *_EventVaultRedelegationMigration_2_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_EventVaultRedelegationMigration_2_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfString((*x.list)[i])
+}
+
+func (x *_EventVaultRedelegationMigration_2_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_EventVaultRedelegationMigration_2_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_EventVaultRedelegationMigration_2_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message EventVaultRedelegationMigration at list field SourceAddresses as it is not of Message kind"))
+}
+
+func (x *_EventVaultRedelegationMigration_2_list) Truncate(n int) {
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_EventVaultRedelegationMigration_2_list) NewElement() protoreflect.Value {
+	v := ""
+	return protoreflect.ValueOfString(v)
+}
+
+func (x *_EventVaultRedelegationMigration_2_list) IsValid() bool {
+	return x.list != nil
+}
+
+var (
+	md_EventVaultRedelegationMigration                 protoreflect.MessageDescriptor
+	fd_EventVaultRedelegationMigration_ownerId         protoreflect.FieldDescriptor
+	fd_EventVaultRedelegationMigration_sourceAddresses protoreflect.FieldDescriptor
+	fd_EventVaultRedelegationMigration_destination     protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventVaultRedelegationMigration = File_structs_structs_events_proto.Messages().ByName("EventVaultRedelegationMigration")
+	fd_EventVaultRedelegationMigration_ownerId = md_EventVaultRedelegationMigration.Fields().ByName("ownerId")
+	fd_EventVaultRedelegationMigration_sourceAddresses = md_EventVaultRedelegationMigration.Fields().ByName("sourceAddresses")
+	fd_EventVaultRedelegationMigration_destination = md_EventVaultRedelegationMigration.Fields().ByName("destination")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventVaultRedelegationMigration)(nil)
+
+type fastReflection_EventVaultRedelegationMigration EventVaultRedelegationMigration
+
+func (x *EventVaultRedelegationMigration) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventVaultRedelegationMigration)(x)
+}
+
+func (x *EventVaultRedelegationMigration) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[43]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventVaultRedelegationMigration_messageType fastReflection_EventVaultRedelegationMigration_messageType
+var _ protoreflect.MessageType = fastReflection_EventVaultRedelegationMigration_messageType{}
+
+type fastReflection_EventVaultRedelegationMigration_messageType struct{}
+
+func (x fastReflection_EventVaultRedelegationMigration_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventVaultRedelegationMigration)(nil)
+}
+func (x fastReflection_EventVaultRedelegationMigration_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventVaultRedelegationMigration)
+}
+func (x fastReflection_EventVaultRedelegationMigration_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventVaultRedelegationMigration
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventVaultRedelegationMigration) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventVaultRedelegationMigration
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventVaultRedelegationMigration) Type() protoreflect.MessageType {
+	return _fastReflection_EventVaultRedelegationMigration_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventVaultRedelegationMigration) New() protoreflect.Message {
+	return new(fastReflection_EventVaultRedelegationMigration)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventVaultRedelegationMigration) Interface() protoreflect.ProtoMessage {
+	return (*EventVaultRedelegationMigration)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventVaultRedelegationMigration) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.OwnerId != "" {
+		value := protoreflect.ValueOfString(x.OwnerId)
+		if !f(fd_EventVaultRedelegationMigration_ownerId, value) {
+			return
+		}
+	}
+	if len(x.SourceAddresses) != 0 {
+		value := protoreflect.ValueOfList(&_EventVaultRedelegationMigration_2_list{list: &x.SourceAddresses})
+		if !f(fd_EventVaultRedelegationMigration_sourceAddresses, value) {
+			return
+		}
+	}
+	if x.Destination != nil {
+		value := protoreflect.ValueOfMessage(x.Destination.ProtoReflect())
+		if !f(fd_EventVaultRedelegationMigration_destination, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventVaultRedelegationMigration) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultRedelegationMigration.ownerId":
+		return x.OwnerId != ""
+	case "structs.structs.EventVaultRedelegationMigration.sourceAddresses":
+		return len(x.SourceAddresses) != 0
+	case "structs.structs.EventVaultRedelegationMigration.destination":
+		return x.Destination != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultRedelegationMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultRedelegationMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultRedelegationMigration) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultRedelegationMigration.ownerId":
+		x.OwnerId = ""
+	case "structs.structs.EventVaultRedelegationMigration.sourceAddresses":
+		x.SourceAddresses = nil
+	case "structs.structs.EventVaultRedelegationMigration.destination":
+		x.Destination = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultRedelegationMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultRedelegationMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventVaultRedelegationMigration) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventVaultRedelegationMigration.ownerId":
+		value := x.OwnerId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventVaultRedelegationMigration.sourceAddresses":
+		if len(x.SourceAddresses) == 0 {
+			return protoreflect.ValueOfList(&_EventVaultRedelegationMigration_2_list{})
+		}
+		listValue := &_EventVaultRedelegationMigration_2_list{list: &x.SourceAddresses}
+		return protoreflect.ValueOfList(listValue)
+	case "structs.structs.EventVaultRedelegationMigration.destination":
+		value := x.Destination
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultRedelegationMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultRedelegationMigration does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultRedelegationMigration) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultRedelegationMigration.ownerId":
+		x.OwnerId = value.Interface().(string)
+	case "structs.structs.EventVaultRedelegationMigration.sourceAddresses":
+		lv := value.List()
+		clv := lv.(*_EventVaultRedelegationMigration_2_list)
+		x.SourceAddresses = *clv.list
+	case "structs.structs.EventVaultRedelegationMigration.destination":
+		x.Destination = value.Message().Interface().(*v1beta1.Redelegation)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultRedelegationMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultRedelegationMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultRedelegationMigration) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultRedelegationMigration.sourceAddresses":
+		if x.SourceAddresses == nil {
+			x.SourceAddresses = []string{}
+		}
+		value := &_EventVaultRedelegationMigration_2_list{list: &x.SourceAddresses}
+		return protoreflect.ValueOfList(value)
+	case "structs.structs.EventVaultRedelegationMigration.destination":
+		if x.Destination == nil {
+			x.Destination = new(v1beta1.Redelegation)
+		}
+		return protoreflect.ValueOfMessage(x.Destination.ProtoReflect())
+	case "structs.structs.EventVaultRedelegationMigration.ownerId":
+		panic(fmt.Errorf("field ownerId of message structs.structs.EventVaultRedelegationMigration is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultRedelegationMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultRedelegationMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventVaultRedelegationMigration) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventVaultRedelegationMigration.ownerId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventVaultRedelegationMigration.sourceAddresses":
+		list := []string{}
+		return protoreflect.ValueOfList(&_EventVaultRedelegationMigration_2_list{list: &list})
+	case "structs.structs.EventVaultRedelegationMigration.destination":
+		m := new(v1beta1.Redelegation)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventVaultRedelegationMigration"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventVaultRedelegationMigration does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventVaultRedelegationMigration) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventVaultRedelegationMigration", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventVaultRedelegationMigration) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventVaultRedelegationMigration) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventVaultRedelegationMigration) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventVaultRedelegationMigration) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventVaultRedelegationMigration)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.OwnerId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if len(x.SourceAddresses) > 0 {
+			for _, s := range x.SourceAddresses {
+				l = len(s)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if x.Destination != nil {
+			l = options.Size(x.Destination)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventVaultRedelegationMigration)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Destination != nil {
+			encoded, err := options.Marshal(x.Destination)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if len(x.SourceAddresses) > 0 {
+			for iNdEx := len(x.SourceAddresses) - 1; iNdEx >= 0; iNdEx-- {
+				i -= len(x.SourceAddresses[iNdEx])
+				copy(dAtA[i:], x.SourceAddresses[iNdEx])
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.SourceAddresses[iNdEx])))
+				i--
+				dAtA[i] = 0x12
+			}
+		}
+		if len(x.OwnerId) > 0 {
+			i -= len(x.OwnerId)
+			copy(dAtA[i:], x.OwnerId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.OwnerId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventVaultRedelegationMigration)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventVaultRedelegationMigration: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventVaultRedelegationMigration: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OwnerId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.OwnerId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SourceAddresses", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.SourceAddresses = append(x.SourceAddresses, string(dAtA[iNdEx:postIndex]))
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Destination", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Destination == nil {
+					x.Destination = &v1beta1.Redelegation{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Destination); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
 	md_EventGuildBankAddress                             protoreflect.MessageDescriptor
 	fd_EventGuildBankAddress_eventGuildBankAddressDetail protoreflect.FieldDescriptor
 )
@@ -14910,7 +20886,7 @@ func (x *EventGuildBankAddress) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildBankAddress) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[33]
+	mi := &file_structs_structs_events_proto_msgTypes[44]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15349,7 +21325,7 @@ func (x *EventGuildBankAddressDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildBankAddressDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[34]
+	mi := &file_structs_structs_events_proto_msgTypes[45]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15893,7 +21869,7 @@ func (x *EventGuildBankMint) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildBankMint) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[35]
+	mi := &file_structs_structs_events_proto_msgTypes[46]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16334,7 +22310,7 @@ func (x *EventGuildBankMintDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildBankMintDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[36]
+	mi := &file_structs_structs_events_proto_msgTypes[47]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16908,7 +22884,7 @@ func (x *EventGuildBankRedeem) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildBankRedeem) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[37]
+	mi := &file_structs_structs_events_proto_msgTypes[48]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17351,7 +23327,7 @@ func (x *EventGuildBankRedeemDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildBankRedeemDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[38]
+	mi := &file_structs_structs_events_proto_msgTypes[49]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17971,7 +23947,7 @@ func (x *EventGuildBankConfiscateAndBurn) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildBankConfiscateAndBurn) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[39]
+	mi := &file_structs_structs_events_proto_msgTypes[50]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18412,7 +24388,7 @@ func (x *EventGuildBankConfiscateAndBurnDetail) ProtoReflect() protoreflect.Mess
 }
 
 func (x *EventGuildBankConfiscateAndBurnDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[40]
+	mi := &file_structs_structs_events_proto_msgTypes[51]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18986,7 +24962,7 @@ func (x *EventGuildBankConvert) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildBankConvert) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[41]
+	mi := &file_structs_structs_events_proto_msgTypes[52]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19429,7 +25405,7 @@ func (x *EventGuildBankConvertDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildBankConvertDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[42]
+	mi := &file_structs_structs_events_proto_msgTypes[53]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20049,7 +26025,7 @@ func (x *EventGuildBankConvertToken) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildBankConvertToken) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[43]
+	mi := &file_structs_structs_events_proto_msgTypes[54]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20494,7 +26470,7 @@ func (x *EventGuildBankConvertTokenDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildBankConvertTokenDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[44]
+	mi := &file_structs_structs_events_proto_msgTypes[55]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21176,7 +27152,7 @@ func (x *EventGuildMembershipApplication) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildMembershipApplication) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[45]
+	mi := &file_structs_structs_events_proto_msgTypes[56]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21611,7 +27587,7 @@ func (x *EventOreMine) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventOreMine) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[46]
+	mi := &file_structs_structs_events_proto_msgTypes[57]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22050,7 +28026,7 @@ func (x *EventOreMineDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventOreMineDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[47]
+	mi := &file_structs_structs_events_proto_msgTypes[58]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22578,7 +28554,7 @@ func (x *EventAlphaRefine) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAlphaRefine) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[48]
+	mi := &file_structs_structs_events_proto_msgTypes[59]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22998,6 +28974,7 @@ var (
 	fd_EventAlphaRefineDetail_playerId       protoreflect.FieldDescriptor
 	fd_EventAlphaRefineDetail_primaryAddress protoreflect.FieldDescriptor
 	fd_EventAlphaRefineDetail_amount         protoreflect.FieldDescriptor
+	fd_EventAlphaRefineDetail_vaultAddress   protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -23006,6 +28983,7 @@ func init() {
 	fd_EventAlphaRefineDetail_playerId = md_EventAlphaRefineDetail.Fields().ByName("playerId")
 	fd_EventAlphaRefineDetail_primaryAddress = md_EventAlphaRefineDetail.Fields().ByName("primaryAddress")
 	fd_EventAlphaRefineDetail_amount = md_EventAlphaRefineDetail.Fields().ByName("amount")
+	fd_EventAlphaRefineDetail_vaultAddress = md_EventAlphaRefineDetail.Fields().ByName("vaultAddress")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventAlphaRefineDetail)(nil)
@@ -23017,7 +28995,7 @@ func (x *EventAlphaRefineDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAlphaRefineDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[49]
+	mi := &file_structs_structs_events_proto_msgTypes[60]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23091,6 +29069,12 @@ func (x *fastReflection_EventAlphaRefineDetail) Range(f func(protoreflect.FieldD
 			return
 		}
 	}
+	if x.VaultAddress != "" {
+		value := protoreflect.ValueOfString(x.VaultAddress)
+		if !f(fd_EventAlphaRefineDetail_vaultAddress, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -23112,6 +29096,8 @@ func (x *fastReflection_EventAlphaRefineDetail) Has(fd protoreflect.FieldDescrip
 		return x.PrimaryAddress != ""
 	case "structs.structs.EventAlphaRefineDetail.amount":
 		return x.Amount != uint64(0)
+	case "structs.structs.EventAlphaRefineDetail.vaultAddress":
+		return x.VaultAddress != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAlphaRefineDetail"))
@@ -23134,6 +29120,8 @@ func (x *fastReflection_EventAlphaRefineDetail) Clear(fd protoreflect.FieldDescr
 		x.PrimaryAddress = ""
 	case "structs.structs.EventAlphaRefineDetail.amount":
 		x.Amount = uint64(0)
+	case "structs.structs.EventAlphaRefineDetail.vaultAddress":
+		x.VaultAddress = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAlphaRefineDetail"))
@@ -23159,6 +29147,9 @@ func (x *fastReflection_EventAlphaRefineDetail) Get(descriptor protoreflect.Fiel
 	case "structs.structs.EventAlphaRefineDetail.amount":
 		value := x.Amount
 		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventAlphaRefineDetail.vaultAddress":
+		value := x.VaultAddress
+		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAlphaRefineDetail"))
@@ -23185,6 +29176,8 @@ func (x *fastReflection_EventAlphaRefineDetail) Set(fd protoreflect.FieldDescrip
 		x.PrimaryAddress = value.Interface().(string)
 	case "structs.structs.EventAlphaRefineDetail.amount":
 		x.Amount = value.Uint()
+	case "structs.structs.EventAlphaRefineDetail.vaultAddress":
+		x.VaultAddress = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAlphaRefineDetail"))
@@ -23211,6 +29204,8 @@ func (x *fastReflection_EventAlphaRefineDetail) Mutable(fd protoreflect.FieldDes
 		panic(fmt.Errorf("field primaryAddress of message structs.structs.EventAlphaRefineDetail is not mutable"))
 	case "structs.structs.EventAlphaRefineDetail.amount":
 		panic(fmt.Errorf("field amount of message structs.structs.EventAlphaRefineDetail is not mutable"))
+	case "structs.structs.EventAlphaRefineDetail.vaultAddress":
+		panic(fmt.Errorf("field vaultAddress of message structs.structs.EventAlphaRefineDetail is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAlphaRefineDetail"))
@@ -23230,6 +29225,8 @@ func (x *fastReflection_EventAlphaRefineDetail) NewField(fd protoreflect.FieldDe
 		return protoreflect.ValueOfString("")
 	case "structs.structs.EventAlphaRefineDetail.amount":
 		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventAlphaRefineDetail.vaultAddress":
+		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAlphaRefineDetail"))
@@ -23310,6 +29307,10 @@ func (x *fastReflection_EventAlphaRefineDetail) ProtoMethods() *protoiface.Metho
 		if x.Amount != 0 {
 			n += 1 + runtime.Sov(uint64(x.Amount))
 		}
+		l = len(x.VaultAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -23338,6 +29339,13 @@ func (x *fastReflection_EventAlphaRefineDetail) ProtoMethods() *protoiface.Metho
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.VaultAddress) > 0 {
+			i -= len(x.VaultAddress)
+			copy(dAtA[i:], x.VaultAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.VaultAddress)))
+			i--
+			dAtA[i] = 0x22
 		}
 		if x.Amount != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.Amount))
@@ -23490,6 +29498,38 @@ func (x *fastReflection_EventAlphaRefineDetail) ProtoMethods() *protoiface.Metho
 						break
 					}
 				}
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field VaultAddress", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.VaultAddress = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -23545,7 +29585,7 @@ func (x *EventAlphaInfuse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAlphaInfuse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[50]
+	mi := &file_structs_structs_events_proto_msgTypes[61]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23965,6 +30005,7 @@ var (
 	fd_EventAlphaInfuseDetail_playerId       protoreflect.FieldDescriptor
 	fd_EventAlphaInfuseDetail_primaryAddress protoreflect.FieldDescriptor
 	fd_EventAlphaInfuseDetail_amount         protoreflect.FieldDescriptor
+	fd_EventAlphaInfuseDetail_vaultAddress   protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -23973,6 +30014,7 @@ func init() {
 	fd_EventAlphaInfuseDetail_playerId = md_EventAlphaInfuseDetail.Fields().ByName("playerId")
 	fd_EventAlphaInfuseDetail_primaryAddress = md_EventAlphaInfuseDetail.Fields().ByName("primaryAddress")
 	fd_EventAlphaInfuseDetail_amount = md_EventAlphaInfuseDetail.Fields().ByName("amount")
+	fd_EventAlphaInfuseDetail_vaultAddress = md_EventAlphaInfuseDetail.Fields().ByName("vaultAddress")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventAlphaInfuseDetail)(nil)
@@ -23984,7 +30026,7 @@ func (x *EventAlphaInfuseDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAlphaInfuseDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[51]
+	mi := &file_structs_structs_events_proto_msgTypes[62]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24058,6 +30100,12 @@ func (x *fastReflection_EventAlphaInfuseDetail) Range(f func(protoreflect.FieldD
 			return
 		}
 	}
+	if x.VaultAddress != "" {
+		value := protoreflect.ValueOfString(x.VaultAddress)
+		if !f(fd_EventAlphaInfuseDetail_vaultAddress, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -24079,6 +30127,8 @@ func (x *fastReflection_EventAlphaInfuseDetail) Has(fd protoreflect.FieldDescrip
 		return x.PrimaryAddress != ""
 	case "structs.structs.EventAlphaInfuseDetail.amount":
 		return x.Amount != uint64(0)
+	case "structs.structs.EventAlphaInfuseDetail.vaultAddress":
+		return x.VaultAddress != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAlphaInfuseDetail"))
@@ -24101,6 +30151,8 @@ func (x *fastReflection_EventAlphaInfuseDetail) Clear(fd protoreflect.FieldDescr
 		x.PrimaryAddress = ""
 	case "structs.structs.EventAlphaInfuseDetail.amount":
 		x.Amount = uint64(0)
+	case "structs.structs.EventAlphaInfuseDetail.vaultAddress":
+		x.VaultAddress = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAlphaInfuseDetail"))
@@ -24126,6 +30178,9 @@ func (x *fastReflection_EventAlphaInfuseDetail) Get(descriptor protoreflect.Fiel
 	case "structs.structs.EventAlphaInfuseDetail.amount":
 		value := x.Amount
 		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventAlphaInfuseDetail.vaultAddress":
+		value := x.VaultAddress
+		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAlphaInfuseDetail"))
@@ -24152,6 +30207,8 @@ func (x *fastReflection_EventAlphaInfuseDetail) Set(fd protoreflect.FieldDescrip
 		x.PrimaryAddress = value.Interface().(string)
 	case "structs.structs.EventAlphaInfuseDetail.amount":
 		x.Amount = value.Uint()
+	case "structs.structs.EventAlphaInfuseDetail.vaultAddress":
+		x.VaultAddress = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAlphaInfuseDetail"))
@@ -24178,6 +30235,8 @@ func (x *fastReflection_EventAlphaInfuseDetail) Mutable(fd protoreflect.FieldDes
 		panic(fmt.Errorf("field primaryAddress of message structs.structs.EventAlphaInfuseDetail is not mutable"))
 	case "structs.structs.EventAlphaInfuseDetail.amount":
 		panic(fmt.Errorf("field amount of message structs.structs.EventAlphaInfuseDetail is not mutable"))
+	case "structs.structs.EventAlphaInfuseDetail.vaultAddress":
+		panic(fmt.Errorf("field vaultAddress of message structs.structs.EventAlphaInfuseDetail is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAlphaInfuseDetail"))
@@ -24197,6 +30256,8 @@ func (x *fastReflection_EventAlphaInfuseDetail) NewField(fd protoreflect.FieldDe
 		return protoreflect.ValueOfString("")
 	case "structs.structs.EventAlphaInfuseDetail.amount":
 		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventAlphaInfuseDetail.vaultAddress":
+		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAlphaInfuseDetail"))
@@ -24277,6 +30338,10 @@ func (x *fastReflection_EventAlphaInfuseDetail) ProtoMethods() *protoiface.Metho
 		if x.Amount != 0 {
 			n += 1 + runtime.Sov(uint64(x.Amount))
 		}
+		l = len(x.VaultAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -24305,6 +30370,13 @@ func (x *fastReflection_EventAlphaInfuseDetail) ProtoMethods() *protoiface.Metho
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.VaultAddress) > 0 {
+			i -= len(x.VaultAddress)
+			copy(dAtA[i:], x.VaultAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.VaultAddress)))
+			i--
+			dAtA[i] = 0x22
 		}
 		if x.Amount != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.Amount))
@@ -24457,6 +30529,38 @@ func (x *fastReflection_EventAlphaInfuseDetail) ProtoMethods() *protoiface.Metho
 						break
 					}
 				}
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field VaultAddress", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.VaultAddress = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -24512,7 +30616,7 @@ func (x *EventAlphaDefuse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAlphaDefuse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[52]
+	mi := &file_structs_structs_events_proto_msgTypes[63]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24949,7 +31053,7 @@ func (x *EventAlphaDefuseDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAlphaDefuseDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[53]
+	mi := &file_structs_structs_events_proto_msgTypes[64]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25415,7 +31519,7 @@ func (x *EventOreTheft) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventOreTheft) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[54]
+	mi := &file_structs_structs_events_proto_msgTypes[65]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25858,7 +31962,7 @@ func (x *EventOreTheftDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventOreTheftDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[55]
+	mi := &file_structs_structs_events_proto_msgTypes[66]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26510,7 +32614,7 @@ func (x *EventOreMigrate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventOreMigrate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[56]
+	mi := &file_structs_structs_events_proto_msgTypes[67]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26951,7 +33055,7 @@ func (x *EventOreMigrateDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventOreMigrateDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[57]
+	mi := &file_structs_structs_events_proto_msgTypes[68]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27541,7 +33645,7 @@ func (x *EventStructDefenderClear) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventStructDefenderClear) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[58]
+	mi := &file_structs_structs_events_proto_msgTypes[69]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27976,7 +34080,7 @@ func (x *EventStructDefenderClearDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventStructDefenderClearDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[59]
+	mi := &file_structs_structs_events_proto_msgTypes[70]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28396,7 +34500,7 @@ func (x *EventAttack) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAttack) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[60]
+	mi := &file_structs_structs_events_proto_msgTypes[71]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28922,7 +35026,7 @@ func (x *EventAttackDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAttackDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[61]
+	mi := &file_structs_structs_events_proto_msgTypes[72]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -30524,7 +36628,7 @@ func (x *EventAttackShotDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAttackShotDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[62]
+	mi := &file_structs_structs_events_proto_msgTypes[73]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -33245,7 +39349,7 @@ func (x *EventAttackDefenderCounterDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAttackDefenderCounterDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[63]
+	mi := &file_structs_structs_events_proto_msgTypes[74]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -34209,7 +40313,7 @@ func (x *EventRaid) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventRaid) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[64]
+	mi := &file_structs_structs_events_proto_msgTypes[75]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -34650,7 +40754,7 @@ func (x *EventRaidDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventRaidDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[65]
+	mi := &file_structs_structs_events_proto_msgTypes[76]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -35224,7 +41328,7 @@ func (x *EventHashSuccess) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventHashSuccess) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[66]
+	mi := &file_structs_structs_events_proto_msgTypes[77]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -35667,7 +41771,7 @@ func (x *EventHashSuccessDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventHashSuccessDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[67]
+	mi := &file_structs_structs_events_proto_msgTypes[78]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -36299,6 +42403,512 @@ func (x *fastReflection_EventHashSuccessDetail) ProtoMethods() *protoiface.Metho
 	}
 }
 
+var (
+	md_EventReactorStakeCap               protoreflect.MessageDescriptor
+	fd_EventReactorStakeCap_active        protoreflect.FieldDescriptor
+	fd_EventReactorStakeCap_capBps        protoreflect.FieldDescriptor
+	fd_EventReactorStakeCap_minValidators protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventReactorStakeCap = File_structs_structs_events_proto.Messages().ByName("EventReactorStakeCap")
+	fd_EventReactorStakeCap_active = md_EventReactorStakeCap.Fields().ByName("active")
+	fd_EventReactorStakeCap_capBps = md_EventReactorStakeCap.Fields().ByName("capBps")
+	fd_EventReactorStakeCap_minValidators = md_EventReactorStakeCap.Fields().ByName("minValidators")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventReactorStakeCap)(nil)
+
+type fastReflection_EventReactorStakeCap EventReactorStakeCap
+
+func (x *EventReactorStakeCap) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventReactorStakeCap)(x)
+}
+
+func (x *EventReactorStakeCap) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[79]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventReactorStakeCap_messageType fastReflection_EventReactorStakeCap_messageType
+var _ protoreflect.MessageType = fastReflection_EventReactorStakeCap_messageType{}
+
+type fastReflection_EventReactorStakeCap_messageType struct{}
+
+func (x fastReflection_EventReactorStakeCap_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventReactorStakeCap)(nil)
+}
+func (x fastReflection_EventReactorStakeCap_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventReactorStakeCap)
+}
+func (x fastReflection_EventReactorStakeCap_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventReactorStakeCap
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventReactorStakeCap) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventReactorStakeCap
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventReactorStakeCap) Type() protoreflect.MessageType {
+	return _fastReflection_EventReactorStakeCap_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventReactorStakeCap) New() protoreflect.Message {
+	return new(fastReflection_EventReactorStakeCap)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventReactorStakeCap) Interface() protoreflect.ProtoMessage {
+	return (*EventReactorStakeCap)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventReactorStakeCap) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Active != false {
+		value := protoreflect.ValueOfBool(x.Active)
+		if !f(fd_EventReactorStakeCap_active, value) {
+			return
+		}
+	}
+	if x.CapBps != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.CapBps)
+		if !f(fd_EventReactorStakeCap_capBps, value) {
+			return
+		}
+	}
+	if x.MinValidators != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.MinValidators)
+		if !f(fd_EventReactorStakeCap_minValidators, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventReactorStakeCap) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventReactorStakeCap.active":
+		return x.Active != false
+	case "structs.structs.EventReactorStakeCap.capBps":
+		return x.CapBps != uint64(0)
+	case "structs.structs.EventReactorStakeCap.minValidators":
+		return x.MinValidators != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorStakeCap"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorStakeCap does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventReactorStakeCap) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventReactorStakeCap.active":
+		x.Active = false
+	case "structs.structs.EventReactorStakeCap.capBps":
+		x.CapBps = uint64(0)
+	case "structs.structs.EventReactorStakeCap.minValidators":
+		x.MinValidators = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorStakeCap"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorStakeCap does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventReactorStakeCap) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventReactorStakeCap.active":
+		value := x.Active
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.EventReactorStakeCap.capBps":
+		value := x.CapBps
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventReactorStakeCap.minValidators":
+		value := x.MinValidators
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorStakeCap"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorStakeCap does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventReactorStakeCap) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventReactorStakeCap.active":
+		x.Active = value.Bool()
+	case "structs.structs.EventReactorStakeCap.capBps":
+		x.CapBps = value.Uint()
+	case "structs.structs.EventReactorStakeCap.minValidators":
+		x.MinValidators = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorStakeCap"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorStakeCap does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventReactorStakeCap) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventReactorStakeCap.active":
+		panic(fmt.Errorf("field active of message structs.structs.EventReactorStakeCap is not mutable"))
+	case "structs.structs.EventReactorStakeCap.capBps":
+		panic(fmt.Errorf("field capBps of message structs.structs.EventReactorStakeCap is not mutable"))
+	case "structs.structs.EventReactorStakeCap.minValidators":
+		panic(fmt.Errorf("field minValidators of message structs.structs.EventReactorStakeCap is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorStakeCap"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorStakeCap does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventReactorStakeCap) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventReactorStakeCap.active":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.EventReactorStakeCap.capBps":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventReactorStakeCap.minValidators":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactorStakeCap"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventReactorStakeCap does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventReactorStakeCap) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventReactorStakeCap", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventReactorStakeCap) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventReactorStakeCap) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventReactorStakeCap) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventReactorStakeCap) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventReactorStakeCap)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Active {
+			n += 2
+		}
+		if x.CapBps != 0 {
+			n += 1 + runtime.Sov(uint64(x.CapBps))
+		}
+		if x.MinValidators != 0 {
+			n += 1 + runtime.Sov(uint64(x.MinValidators))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventReactorStakeCap)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.MinValidators != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.MinValidators))
+			i--
+			dAtA[i] = 0x18
+		}
+		if x.CapBps != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.CapBps))
+			i--
+			dAtA[i] = 0x10
+		}
+		if x.Active {
+			i--
+			if x.Active {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventReactorStakeCap)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventReactorStakeCap: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventReactorStakeCap: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Active", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.Active = bool(v != 0)
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CapBps", wireType)
+				}
+				x.CapBps = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.CapBps |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MinValidators", wireType)
+				}
+				x.MinValidators = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.MinValidators |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -36312,6 +42922,282 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Replace this owner's current applied diversity accounting. A zero row clears
+// the previous value, including when its empty summary is removed from storage.
+type EventOwnerReactorDiversity struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Diversity *OwnerReactorDiversity `protobuf:"bytes,1,opt,name=diversity,proto3" json:"diversity,omitempty"`
+}
+
+func (x *EventOwnerReactorDiversity) Reset() {
+	*x = EventOwnerReactorDiversity{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventOwnerReactorDiversity) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventOwnerReactorDiversity) ProtoMessage() {}
+
+// Deprecated: Use EventOwnerReactorDiversity.ProtoReflect.Descriptor instead.
+func (*EventOwnerReactorDiversity) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *EventOwnerReactorDiversity) GetDiversity() *OwnerReactorDiversity {
+	if x != nil {
+		return x.Diversity
+	}
+	return nil
+}
+
+// Genesis replay replaces the entire derived owner-diversity projection.
+type EventOwnerReactorDiversityReset struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *EventOwnerReactorDiversityReset) Reset() {
+	*x = EventOwnerReactorDiversityReset{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventOwnerReactorDiversityReset) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventOwnerReactorDiversityReset) ProtoMessage() {}
+
+// Deprecated: Use EventOwnerReactorDiversityReset.ProtoReflect.Descriptor instead.
+func (*EventOwnerReactorDiversityReset) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{1}
+}
+
+// Begin complete replacement of indexed commission-repair revisions during
+// genesis replay or upgrade. Clear prior revisions; reactors absent from the
+// following EventReactorCommissionRevision rows have the initial 0/0 state.
+// Consume the reset and subsequent rows in block event order, atomically.
+type EventReactorCommissionRevisionReset struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *EventReactorCommissionRevisionReset) Reset() {
+	*x = EventReactorCommissionRevisionReset{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventReactorCommissionRevisionReset) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventReactorCommissionRevisionReset) ProtoMessage() {}
+
+// Deprecated: Use EventReactorCommissionRevisionReset.ProtoReflect.Descriptor instead.
+func (*EventReactorCommissionRevisionReset) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{2}
+}
+
+// Replace one reactor's slash-repair revisions, not its power or validator
+// health. Unequal revisions gate commission admission. Equality only removes
+// that gate. Manual restart never advances slashRevision.
+type EventReactorCommissionRevision struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ReactorId               string `protobuf:"bytes,1,opt,name=reactorId,proto3" json:"reactorId,omitempty"`
+	SlashRevision           uint64 `protobuf:"varint,2,opt,name=slashRevision,proto3" json:"slashRevision,omitempty"`
+	ReconciledSlashRevision uint64 `protobuf:"varint,3,opt,name=reconciledSlashRevision,proto3" json:"reconciledSlashRevision,omitempty"`
+}
+
+func (x *EventReactorCommissionRevision) Reset() {
+	*x = EventReactorCommissionRevision{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventReactorCommissionRevision) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventReactorCommissionRevision) ProtoMessage() {}
+
+// Deprecated: Use EventReactorCommissionRevision.ProtoReflect.Descriptor instead.
+func (*EventReactorCommissionRevision) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *EventReactorCommissionRevision) GetReactorId() string {
+	if x != nil {
+		return x.ReactorId
+	}
+	return ""
+}
+
+func (x *EventReactorCommissionRevision) GetSlashRevision() uint64 {
+	if x != nil {
+		return x.SlashRevision
+	}
+	return 0
+}
+
+func (x *EventReactorCommissionRevision) GetReconciledSlashRevision() uint64 {
+	if x != nil {
+		return x.ReconciledSlashRevision
+	}
+	return 0
+}
+
+// Source accounts retain their BaseAccount identity and become ordinary accounts.
+// The complete destination schedules/counters allow indexers to preserve locks.
+type EventVaultVestingMigration struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Vault           *VaultVestingAccount `protobuf:"bytes,1,opt,name=vault,proto3" json:"vault,omitempty"`
+	SourceAddresses []string             `protobuf:"bytes,2,rep,name=source_addresses,json=sourceAddresses,proto3" json:"source_addresses,omitempty"`
+}
+
+func (x *EventVaultVestingMigration) Reset() {
+	*x = EventVaultVestingMigration{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventVaultVestingMigration) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventVaultVestingMigration) ProtoMessage() {}
+
+// Deprecated: Use EventVaultVestingMigration.ProtoReflect.Descriptor instead.
+func (*EventVaultVestingMigration) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *EventVaultVestingMigration) GetVault() *VaultVestingAccount {
+	if x != nil {
+		return x.Vault
+	}
+	return nil
+}
+
+func (x *EventVaultVestingMigration) GetSourceAddresses() []string {
+	if x != nil {
+		return x.SourceAddresses
+	}
+	return nil
+}
+
+type EventGuildRankPurchase struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	GuildId      string `protobuf:"bytes,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	PlayerId     string `protobuf:"bytes,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
+	PreviousRank uint64 `protobuf:"varint,3,opt,name=previousRank,proto3" json:"previousRank,omitempty"`
+	Rank         uint64 `protobuf:"varint,4,opt,name=rank,proto3" json:"rank,omitempty"`
+	Price        uint64 `protobuf:"varint,5,opt,name=price,proto3" json:"price,omitempty"`
+	Denom        string `protobuf:"bytes,6,opt,name=denom,proto3" json:"denom,omitempty"`
+	Joined       bool   `protobuf:"varint,7,opt,name=joined,proto3" json:"joined,omitempty"`
+}
+
+func (x *EventGuildRankPurchase) Reset() {
+	*x = EventGuildRankPurchase{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventGuildRankPurchase) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventGuildRankPurchase) ProtoMessage() {}
+
+// Deprecated: Use EventGuildRankPurchase.ProtoReflect.Descriptor instead.
+func (*EventGuildRankPurchase) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *EventGuildRankPurchase) GetGuildId() string {
+	if x != nil {
+		return x.GuildId
+	}
+	return ""
+}
+
+func (x *EventGuildRankPurchase) GetPlayerId() string {
+	if x != nil {
+		return x.PlayerId
+	}
+	return ""
+}
+
+func (x *EventGuildRankPurchase) GetPreviousRank() uint64 {
+	if x != nil {
+		return x.PreviousRank
+	}
+	return 0
+}
+
+func (x *EventGuildRankPurchase) GetRank() uint64 {
+	if x != nil {
+		return x.Rank
+	}
+	return 0
+}
+
+func (x *EventGuildRankPurchase) GetPrice() uint64 {
+	if x != nil {
+		return x.Price
+	}
+	return 0
+}
+
+func (x *EventGuildRankPurchase) GetDenom() string {
+	if x != nil {
+		return x.Denom
+	}
+	return ""
+}
+
+func (x *EventGuildRankPurchase) GetJoined() bool {
+	if x != nil {
+		return x.Joined
+	}
+	return false
+}
+
 type EventAllocation struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -36323,7 +43209,7 @@ type EventAllocation struct {
 func (x *EventAllocation) Reset() {
 	*x = EventAllocation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[0]
+		mi := &file_structs_structs_events_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36337,7 +43223,7 @@ func (*EventAllocation) ProtoMessage() {}
 
 // Deprecated: Use EventAllocation.ProtoReflect.Descriptor instead.
 func (*EventAllocation) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{0}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *EventAllocation) GetAllocation() *Allocation {
@@ -36358,7 +43244,7 @@ type EventAgreement struct {
 func (x *EventAgreement) Reset() {
 	*x = EventAgreement{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[1]
+		mi := &file_structs_structs_events_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36372,7 +43258,7 @@ func (*EventAgreement) ProtoMessage() {}
 
 // Deprecated: Use EventAgreement.ProtoReflect.Descriptor instead.
 func (*EventAgreement) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{1}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *EventAgreement) GetAgreement() *Agreement {
@@ -36393,7 +43279,7 @@ type EventFleet struct {
 func (x *EventFleet) Reset() {
 	*x = EventFleet{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[2]
+		mi := &file_structs_structs_events_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36407,7 +43293,7 @@ func (*EventFleet) ProtoMessage() {}
 
 // Deprecated: Use EventFleet.ProtoReflect.Descriptor instead.
 func (*EventFleet) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{2}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *EventFleet) GetFleet() *Fleet {
@@ -36428,7 +43314,7 @@ type EventGuild struct {
 func (x *EventGuild) Reset() {
 	*x = EventGuild{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[3]
+		mi := &file_structs_structs_events_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36442,7 +43328,7 @@ func (*EventGuild) ProtoMessage() {}
 
 // Deprecated: Use EventGuild.ProtoReflect.Descriptor instead.
 func (*EventGuild) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{3}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *EventGuild) GetGuild() *Guild {
@@ -36463,7 +43349,7 @@ type EventInfusion struct {
 func (x *EventInfusion) Reset() {
 	*x = EventInfusion{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[4]
+		mi := &file_structs_structs_events_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36477,7 +43363,7 @@ func (*EventInfusion) ProtoMessage() {}
 
 // Deprecated: Use EventInfusion.ProtoReflect.Descriptor instead.
 func (*EventInfusion) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{4}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *EventInfusion) GetInfusion() *Infusion {
@@ -36498,7 +43384,7 @@ type EventPlanet struct {
 func (x *EventPlanet) Reset() {
 	*x = EventPlanet{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[5]
+		mi := &file_structs_structs_events_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36512,7 +43398,7 @@ func (*EventPlanet) ProtoMessage() {}
 
 // Deprecated: Use EventPlanet.ProtoReflect.Descriptor instead.
 func (*EventPlanet) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{5}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *EventPlanet) GetPlanet() *Planet {
@@ -36533,7 +43419,7 @@ type EventPlanetAttribute struct {
 func (x *EventPlanetAttribute) Reset() {
 	*x = EventPlanetAttribute{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[6]
+		mi := &file_structs_structs_events_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36547,7 +43433,7 @@ func (*EventPlanetAttribute) ProtoMessage() {}
 
 // Deprecated: Use EventPlanetAttribute.ProtoReflect.Descriptor instead.
 func (*EventPlanetAttribute) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{6}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *EventPlanetAttribute) GetPlanetAttributeRecord() *PlanetAttributeRecord {
@@ -36568,7 +43454,7 @@ type EventPlayer struct {
 func (x *EventPlayer) Reset() {
 	*x = EventPlayer{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[7]
+		mi := &file_structs_structs_events_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36582,7 +43468,7 @@ func (*EventPlayer) ProtoMessage() {}
 
 // Deprecated: Use EventPlayer.ProtoReflect.Descriptor instead.
 func (*EventPlayer) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{7}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *EventPlayer) GetPlayer() *Player {
@@ -36603,7 +43489,7 @@ type EventProvider struct {
 func (x *EventProvider) Reset() {
 	*x = EventProvider{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[8]
+		mi := &file_structs_structs_events_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36617,7 +43503,7 @@ func (*EventProvider) ProtoMessage() {}
 
 // Deprecated: Use EventProvider.ProtoReflect.Descriptor instead.
 func (*EventProvider) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{8}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *EventProvider) GetProvider() *Provider {
@@ -36638,7 +43524,7 @@ type EventReactor struct {
 func (x *EventReactor) Reset() {
 	*x = EventReactor{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[9]
+		mi := &file_structs_structs_events_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36652,7 +43538,7 @@ func (*EventReactor) ProtoMessage() {}
 
 // Deprecated: Use EventReactor.ProtoReflect.Descriptor instead.
 func (*EventReactor) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{9}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *EventReactor) GetReactor() *Reactor {
@@ -36673,7 +43559,7 @@ type EventStruct struct {
 func (x *EventStruct) Reset() {
 	*x = EventStruct{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[10]
+		mi := &file_structs_structs_events_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36687,7 +43573,7 @@ func (*EventStruct) ProtoMessage() {}
 
 // Deprecated: Use EventStruct.ProtoReflect.Descriptor instead.
 func (*EventStruct) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{10}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *EventStruct) GetStructure() *Struct {
@@ -36708,7 +43594,7 @@ type EventStructAttribute struct {
 func (x *EventStructAttribute) Reset() {
 	*x = EventStructAttribute{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[11]
+		mi := &file_structs_structs_events_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36722,7 +43608,7 @@ func (*EventStructAttribute) ProtoMessage() {}
 
 // Deprecated: Use EventStructAttribute.ProtoReflect.Descriptor instead.
 func (*EventStructAttribute) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{11}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *EventStructAttribute) GetStructAttributeRecord() *StructAttributeRecord {
@@ -36743,7 +43629,7 @@ type EventStructDefender struct {
 func (x *EventStructDefender) Reset() {
 	*x = EventStructDefender{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[12]
+		mi := &file_structs_structs_events_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36757,7 +43643,7 @@ func (*EventStructDefender) ProtoMessage() {}
 
 // Deprecated: Use EventStructDefender.ProtoReflect.Descriptor instead.
 func (*EventStructDefender) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{12}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *EventStructDefender) GetStructDefender() *StructDefender {
@@ -36778,7 +43664,7 @@ type EventStructType struct {
 func (x *EventStructType) Reset() {
 	*x = EventStructType{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[13]
+		mi := &file_structs_structs_events_proto_msgTypes[19]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36792,7 +43678,7 @@ func (*EventStructType) ProtoMessage() {}
 
 // Deprecated: Use EventStructType.ProtoReflect.Descriptor instead.
 func (*EventStructType) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{13}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *EventStructType) GetStructType() *StructType {
@@ -36813,7 +43699,7 @@ type EventSubstation struct {
 func (x *EventSubstation) Reset() {
 	*x = EventSubstation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[14]
+		mi := &file_structs_structs_events_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36827,7 +43713,7 @@ func (*EventSubstation) ProtoMessage() {}
 
 // Deprecated: Use EventSubstation.ProtoReflect.Descriptor instead.
 func (*EventSubstation) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{14}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *EventSubstation) GetSubstation() *Substation {
@@ -36848,7 +43734,7 @@ type EventTime struct {
 func (x *EventTime) Reset() {
 	*x = EventTime{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[15]
+		mi := &file_structs_structs_events_proto_msgTypes[21]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36862,7 +43748,7 @@ func (*EventTime) ProtoMessage() {}
 
 // Deprecated: Use EventTime.ProtoReflect.Descriptor instead.
 func (*EventTime) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{15}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *EventTime) GetEventTimeDetail() *EventTimeDetail {
@@ -36884,7 +43770,7 @@ type EventTimeDetail struct {
 func (x *EventTimeDetail) Reset() {
 	*x = EventTimeDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[16]
+		mi := &file_structs_structs_events_proto_msgTypes[22]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36898,7 +43784,7 @@ func (*EventTimeDetail) ProtoMessage() {}
 
 // Deprecated: Use EventTimeDetail.ProtoReflect.Descriptor instead.
 func (*EventTimeDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{16}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *EventTimeDetail) GetBlockHeight() int64 {
@@ -36926,7 +43812,7 @@ type EventPermission struct {
 func (x *EventPermission) Reset() {
 	*x = EventPermission{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[17]
+		mi := &file_structs_structs_events_proto_msgTypes[23]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36940,7 +43826,7 @@ func (*EventPermission) ProtoMessage() {}
 
 // Deprecated: Use EventPermission.ProtoReflect.Descriptor instead.
 func (*EventPermission) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{17}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *EventPermission) GetPermissionRecord() *PermissionRecord {
@@ -36961,7 +43847,7 @@ type EventGuildRankPermission struct {
 func (x *EventGuildRankPermission) Reset() {
 	*x = EventGuildRankPermission{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[18]
+		mi := &file_structs_structs_events_proto_msgTypes[24]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -36975,7 +43861,7 @@ func (*EventGuildRankPermission) ProtoMessage() {}
 
 // Deprecated: Use EventGuildRankPermission.ProtoReflect.Descriptor instead.
 func (*EventGuildRankPermission) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{18}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *EventGuildRankPermission) GetGuildRankPermissionRecord() *GuildRankPermissionRecord {
@@ -36996,7 +43882,7 @@ type EventGrid struct {
 func (x *EventGrid) Reset() {
 	*x = EventGrid{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[19]
+		mi := &file_structs_structs_events_proto_msgTypes[25]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37010,7 +43896,7 @@ func (*EventGrid) ProtoMessage() {}
 
 // Deprecated: Use EventGrid.ProtoReflect.Descriptor instead.
 func (*EventGrid) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{19}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *EventGrid) GetGridRecord() *GridRecord {
@@ -37031,7 +43917,7 @@ type EventProviderAddress struct {
 func (x *EventProviderAddress) Reset() {
 	*x = EventProviderAddress{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[20]
+		mi := &file_structs_structs_events_proto_msgTypes[26]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37045,7 +43931,7 @@ func (*EventProviderAddress) ProtoMessage() {}
 
 // Deprecated: Use EventProviderAddress.ProtoReflect.Descriptor instead.
 func (*EventProviderAddress) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{20}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *EventProviderAddress) GetEventProviderAddressDetail() *EventProviderAddressDetail {
@@ -37068,7 +43954,7 @@ type EventProviderAddressDetail struct {
 func (x *EventProviderAddressDetail) Reset() {
 	*x = EventProviderAddressDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[21]
+		mi := &file_structs_structs_events_proto_msgTypes[27]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37082,7 +43968,7 @@ func (*EventProviderAddressDetail) ProtoMessage() {}
 
 // Deprecated: Use EventProviderAddressDetail.ProtoReflect.Descriptor instead.
 func (*EventProviderAddressDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{21}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *EventProviderAddressDetail) GetProviderId() string {
@@ -37117,7 +44003,7 @@ type EventProviderGrantGuild struct {
 func (x *EventProviderGrantGuild) Reset() {
 	*x = EventProviderGrantGuild{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[22]
+		mi := &file_structs_structs_events_proto_msgTypes[28]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37131,7 +44017,7 @@ func (*EventProviderGrantGuild) ProtoMessage() {}
 
 // Deprecated: Use EventProviderGrantGuild.ProtoReflect.Descriptor instead.
 func (*EventProviderGrantGuild) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{22}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *EventProviderGrantGuild) GetEventProviderGrantGuildDetail() *EventProviderGrantGuildDetail {
@@ -37153,7 +44039,7 @@ type EventProviderGrantGuildDetail struct {
 func (x *EventProviderGrantGuildDetail) Reset() {
 	*x = EventProviderGrantGuildDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[23]
+		mi := &file_structs_structs_events_proto_msgTypes[29]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37167,7 +44053,7 @@ func (*EventProviderGrantGuildDetail) ProtoMessage() {}
 
 // Deprecated: Use EventProviderGrantGuildDetail.ProtoReflect.Descriptor instead.
 func (*EventProviderGrantGuildDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{23}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *EventProviderGrantGuildDetail) GetProviderId() string {
@@ -37195,7 +44081,7 @@ type EventProviderRevokeGuild struct {
 func (x *EventProviderRevokeGuild) Reset() {
 	*x = EventProviderRevokeGuild{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[24]
+		mi := &file_structs_structs_events_proto_msgTypes[30]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37209,7 +44095,7 @@ func (*EventProviderRevokeGuild) ProtoMessage() {}
 
 // Deprecated: Use EventProviderRevokeGuild.ProtoReflect.Descriptor instead.
 func (*EventProviderRevokeGuild) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{24}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *EventProviderRevokeGuild) GetEventProviderRevokeGuildDetail() *EventProviderRevokeGuildDetail {
@@ -37231,7 +44117,7 @@ type EventProviderRevokeGuildDetail struct {
 func (x *EventProviderRevokeGuildDetail) Reset() {
 	*x = EventProviderRevokeGuildDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[25]
+		mi := &file_structs_structs_events_proto_msgTypes[31]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37245,7 +44131,7 @@ func (*EventProviderRevokeGuildDetail) ProtoMessage() {}
 
 // Deprecated: Use EventProviderRevokeGuildDetail.ProtoReflect.Descriptor instead.
 func (*EventProviderRevokeGuildDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{25}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *EventProviderRevokeGuildDetail) GetProviderId() string {
@@ -37279,7 +44165,7 @@ type EventProviderRevenueShortfall struct {
 func (x *EventProviderRevenueShortfall) Reset() {
 	*x = EventProviderRevenueShortfall{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[26]
+		mi := &file_structs_structs_events_proto_msgTypes[32]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37293,7 +44179,7 @@ func (*EventProviderRevenueShortfall) ProtoMessage() {}
 
 // Deprecated: Use EventProviderRevenueShortfall.ProtoReflect.Descriptor instead.
 func (*EventProviderRevenueShortfall) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{26}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *EventProviderRevenueShortfall) GetEventProviderRevenueShortfallDetail() *EventProviderRevenueShortfallDetail {
@@ -37319,7 +44205,7 @@ type EventProviderRevenueShortfallDetail struct {
 func (x *EventProviderRevenueShortfallDetail) Reset() {
 	*x = EventProviderRevenueShortfallDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[27]
+		mi := &file_structs_structs_events_proto_msgTypes[33]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37333,7 +44219,7 @@ func (*EventProviderRevenueShortfallDetail) ProtoMessage() {}
 
 // Deprecated: Use EventProviderRevenueShortfallDetail.ProtoReflect.Descriptor instead.
 func (*EventProviderRevenueShortfallDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{27}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *EventProviderRevenueShortfallDetail) GetProviderId() string {
@@ -37389,7 +44275,7 @@ type EventPlayerHalted struct {
 func (x *EventPlayerHalted) Reset() {
 	*x = EventPlayerHalted{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[28]
+		mi := &file_structs_structs_events_proto_msgTypes[34]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37403,7 +44289,7 @@ func (*EventPlayerHalted) ProtoMessage() {}
 
 // Deprecated: Use EventPlayerHalted.ProtoReflect.Descriptor instead.
 func (*EventPlayerHalted) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{28}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *EventPlayerHalted) GetPlayerId() string {
@@ -37424,7 +44310,7 @@ type EventPlayerResumed struct {
 func (x *EventPlayerResumed) Reset() {
 	*x = EventPlayerResumed{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[29]
+		mi := &file_structs_structs_events_proto_msgTypes[35]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37438,7 +44324,7 @@ func (*EventPlayerResumed) ProtoMessage() {}
 
 // Deprecated: Use EventPlayerResumed.ProtoReflect.Descriptor instead.
 func (*EventPlayerResumed) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{29}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *EventPlayerResumed) GetPlayerId() string {
@@ -37459,7 +44345,7 @@ type EventDelete struct {
 func (x *EventDelete) Reset() {
 	*x = EventDelete{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[30]
+		mi := &file_structs_structs_events_proto_msgTypes[36]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37473,7 +44359,7 @@ func (*EventDelete) ProtoMessage() {}
 
 // Deprecated: Use EventDelete.ProtoReflect.Descriptor instead.
 func (*EventDelete) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{30}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *EventDelete) GetObjectId() string {
@@ -37494,7 +44380,7 @@ type EventAddressAssociation struct {
 func (x *EventAddressAssociation) Reset() {
 	*x = EventAddressAssociation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[31]
+		mi := &file_structs_structs_events_proto_msgTypes[37]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37508,7 +44394,7 @@ func (*EventAddressAssociation) ProtoMessage() {}
 
 // Deprecated: Use EventAddressAssociation.ProtoReflect.Descriptor instead.
 func (*EventAddressAssociation) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{31}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *EventAddressAssociation) GetAddressAssociation() *AddressAssociation {
@@ -37529,7 +44415,7 @@ type EventAddressActivity struct {
 func (x *EventAddressActivity) Reset() {
 	*x = EventAddressActivity{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[32]
+		mi := &file_structs_structs_events_proto_msgTypes[38]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37543,12 +44429,287 @@ func (*EventAddressActivity) ProtoMessage() {}
 
 // Deprecated: Use EventAddressActivity.ProtoReflect.Descriptor instead.
 func (*EventAddressActivity) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{32}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *EventAddressActivity) GetAddressActivity() *AddressActivity {
 	if x != nil {
 		return x.AddressActivity
+	}
+	return nil
+}
+
+// A protocol vault is an asset owner association, never a player signing key.
+type EventVaultAddress struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	EventVaultAddressDetail *EventVaultAddressDetail `protobuf:"bytes,1,opt,name=eventVaultAddressDetail,proto3" json:"eventVaultAddressDetail,omitempty"`
+}
+
+func (x *EventVaultAddress) Reset() {
+	*x = EventVaultAddress{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[39]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventVaultAddress) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventVaultAddress) ProtoMessage() {}
+
+// Deprecated: Use EventVaultAddress.ProtoReflect.Descriptor instead.
+func (*EventVaultAddress) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *EventVaultAddress) GetEventVaultAddressDetail() *EventVaultAddressDetail {
+	if x != nil {
+		return x.EventVaultAddressDetail
+	}
+	return nil
+}
+
+type EventVaultAddressDetail struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	OwnerId        string `protobuf:"bytes,1,opt,name=ownerId,proto3" json:"ownerId,omitempty"`
+	VaultAddress   string `protobuf:"bytes,2,opt,name=vaultAddress,proto3" json:"vaultAddress,omitempty"`
+	AccountNumber  uint64 `protobuf:"varint,3,opt,name=accountNumber,proto3" json:"accountNumber,omitempty"`
+	AccountCreated bool   `protobuf:"varint,4,opt,name=accountCreated,proto3" json:"accountCreated,omitempty"`
+}
+
+func (x *EventVaultAddressDetail) Reset() {
+	*x = EventVaultAddressDetail{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[40]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventVaultAddressDetail) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventVaultAddressDetail) ProtoMessage() {}
+
+// Deprecated: Use EventVaultAddressDetail.ProtoReflect.Descriptor instead.
+func (*EventVaultAddressDetail) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *EventVaultAddressDetail) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
+func (x *EventVaultAddressDetail) GetVaultAddress() string {
+	if x != nil {
+		return x.VaultAddress
+	}
+	return ""
+}
+
+func (x *EventVaultAddressDetail) GetAccountNumber() uint64 {
+	if x != nil {
+		return x.AccountNumber
+	}
+	return 0
+}
+
+func (x *EventVaultAddressDetail) GetAccountCreated() bool {
+	if x != nil {
+		return x.AccountCreated
+	}
+	return false
+}
+
+// Migration events describe relocation, not a new stake or unbond operation.
+type EventVaultDelegationMigration struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	OwnerId           string `protobuf:"bytes,1,opt,name=ownerId,proto3" json:"ownerId,omitempty"`
+	SourceAddress     string `protobuf:"bytes,2,opt,name=sourceAddress,proto3" json:"sourceAddress,omitempty"`
+	VaultAddress      string `protobuf:"bytes,3,opt,name=vaultAddress,proto3" json:"vaultAddress,omitempty"`
+	ValidatorAddress  string `protobuf:"bytes,4,opt,name=validatorAddress,proto3" json:"validatorAddress,omitempty"`
+	SharesMoved       string `protobuf:"bytes,5,opt,name=sharesMoved,proto3" json:"sharesMoved,omitempty"`
+	DestinationShares string `protobuf:"bytes,6,opt,name=destinationShares,proto3" json:"destinationShares,omitempty"`
+}
+
+func (x *EventVaultDelegationMigration) Reset() {
+	*x = EventVaultDelegationMigration{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[41]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventVaultDelegationMigration) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventVaultDelegationMigration) ProtoMessage() {}
+
+// Deprecated: Use EventVaultDelegationMigration.ProtoReflect.Descriptor instead.
+func (*EventVaultDelegationMigration) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *EventVaultDelegationMigration) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
+func (x *EventVaultDelegationMigration) GetSourceAddress() string {
+	if x != nil {
+		return x.SourceAddress
+	}
+	return ""
+}
+
+func (x *EventVaultDelegationMigration) GetVaultAddress() string {
+	if x != nil {
+		return x.VaultAddress
+	}
+	return ""
+}
+
+func (x *EventVaultDelegationMigration) GetValidatorAddress() string {
+	if x != nil {
+		return x.ValidatorAddress
+	}
+	return ""
+}
+
+func (x *EventVaultDelegationMigration) GetSharesMoved() string {
+	if x != nil {
+		return x.SharesMoved
+	}
+	return ""
+}
+
+func (x *EventVaultDelegationMigration) GetDestinationShares() string {
+	if x != nil {
+		return x.DestinationShares
+	}
+	return ""
+}
+
+// One event per merged destination record preserves all original entry IDs,
+// amounts, shares, heights, times and hold counts without quadratic payloads.
+type EventVaultUnbondingMigration struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	OwnerId         string                       `protobuf:"bytes,1,opt,name=ownerId,proto3" json:"ownerId,omitempty"`
+	SourceAddresses []string                     `protobuf:"bytes,2,rep,name=sourceAddresses,proto3" json:"sourceAddresses,omitempty"`
+	Destination     *v1beta1.UnbondingDelegation `protobuf:"bytes,3,opt,name=destination,proto3" json:"destination,omitempty"`
+}
+
+func (x *EventVaultUnbondingMigration) Reset() {
+	*x = EventVaultUnbondingMigration{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[42]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventVaultUnbondingMigration) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventVaultUnbondingMigration) ProtoMessage() {}
+
+// Deprecated: Use EventVaultUnbondingMigration.ProtoReflect.Descriptor instead.
+func (*EventVaultUnbondingMigration) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *EventVaultUnbondingMigration) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
+func (x *EventVaultUnbondingMigration) GetSourceAddresses() []string {
+	if x != nil {
+		return x.SourceAddresses
+	}
+	return nil
+}
+
+func (x *EventVaultUnbondingMigration) GetDestination() *v1beta1.UnbondingDelegation {
+	if x != nil {
+		return x.Destination
+	}
+	return nil
+}
+
+type EventVaultRedelegationMigration struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	OwnerId         string                `protobuf:"bytes,1,opt,name=ownerId,proto3" json:"ownerId,omitempty"`
+	SourceAddresses []string              `protobuf:"bytes,2,rep,name=sourceAddresses,proto3" json:"sourceAddresses,omitempty"`
+	Destination     *v1beta1.Redelegation `protobuf:"bytes,3,opt,name=destination,proto3" json:"destination,omitempty"`
+}
+
+func (x *EventVaultRedelegationMigration) Reset() {
+	*x = EventVaultRedelegationMigration{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[43]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventVaultRedelegationMigration) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventVaultRedelegationMigration) ProtoMessage() {}
+
+// Deprecated: Use EventVaultRedelegationMigration.ProtoReflect.Descriptor instead.
+func (*EventVaultRedelegationMigration) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *EventVaultRedelegationMigration) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
+func (x *EventVaultRedelegationMigration) GetSourceAddresses() []string {
+	if x != nil {
+		return x.SourceAddresses
+	}
+	return nil
+}
+
+func (x *EventVaultRedelegationMigration) GetDestination() *v1beta1.Redelegation {
+	if x != nil {
+		return x.Destination
 	}
 	return nil
 }
@@ -37564,7 +44725,7 @@ type EventGuildBankAddress struct {
 func (x *EventGuildBankAddress) Reset() {
 	*x = EventGuildBankAddress{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[33]
+		mi := &file_structs_structs_events_proto_msgTypes[44]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37578,7 +44739,7 @@ func (*EventGuildBankAddress) ProtoMessage() {}
 
 // Deprecated: Use EventGuildBankAddress.ProtoReflect.Descriptor instead.
 func (*EventGuildBankAddress) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{33}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *EventGuildBankAddress) GetEventGuildBankAddressDetail() *EventGuildBankAddressDetail {
@@ -37601,7 +44762,7 @@ type EventGuildBankAddressDetail struct {
 func (x *EventGuildBankAddressDetail) Reset() {
 	*x = EventGuildBankAddressDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[34]
+		mi := &file_structs_structs_events_proto_msgTypes[45]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37615,7 +44776,7 @@ func (*EventGuildBankAddressDetail) ProtoMessage() {}
 
 // Deprecated: Use EventGuildBankAddressDetail.ProtoReflect.Descriptor instead.
 func (*EventGuildBankAddressDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{34}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *EventGuildBankAddressDetail) GetGuildId() string {
@@ -37650,7 +44811,7 @@ type EventGuildBankMint struct {
 func (x *EventGuildBankMint) Reset() {
 	*x = EventGuildBankMint{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[35]
+		mi := &file_structs_structs_events_proto_msgTypes[46]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37664,7 +44825,7 @@ func (*EventGuildBankMint) ProtoMessage() {}
 
 // Deprecated: Use EventGuildBankMint.ProtoReflect.Descriptor instead.
 func (*EventGuildBankMint) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{35}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *EventGuildBankMint) GetEventGuildBankMintDetail() *EventGuildBankMintDetail {
@@ -37688,7 +44849,7 @@ type EventGuildBankMintDetail struct {
 func (x *EventGuildBankMintDetail) Reset() {
 	*x = EventGuildBankMintDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[36]
+		mi := &file_structs_structs_events_proto_msgTypes[47]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37702,7 +44863,7 @@ func (*EventGuildBankMintDetail) ProtoMessage() {}
 
 // Deprecated: Use EventGuildBankMintDetail.ProtoReflect.Descriptor instead.
 func (*EventGuildBankMintDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{36}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *EventGuildBankMintDetail) GetGuildId() string {
@@ -37747,7 +44908,7 @@ type EventGuildBankRedeem struct {
 func (x *EventGuildBankRedeem) Reset() {
 	*x = EventGuildBankRedeem{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[37]
+		mi := &file_structs_structs_events_proto_msgTypes[48]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37761,7 +44922,7 @@ func (*EventGuildBankRedeem) ProtoMessage() {}
 
 // Deprecated: Use EventGuildBankRedeem.ProtoReflect.Descriptor instead.
 func (*EventGuildBankRedeem) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{37}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *EventGuildBankRedeem) GetEventGuildBankRedeemDetail() *EventGuildBankRedeemDetail {
@@ -37786,7 +44947,7 @@ type EventGuildBankRedeemDetail struct {
 func (x *EventGuildBankRedeemDetail) Reset() {
 	*x = EventGuildBankRedeemDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[38]
+		mi := &file_structs_structs_events_proto_msgTypes[49]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37800,7 +44961,7 @@ func (*EventGuildBankRedeemDetail) ProtoMessage() {}
 
 // Deprecated: Use EventGuildBankRedeemDetail.ProtoReflect.Descriptor instead.
 func (*EventGuildBankRedeemDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{38}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *EventGuildBankRedeemDetail) GetGuildId() string {
@@ -37849,7 +45010,7 @@ type EventGuildBankConfiscateAndBurn struct {
 func (x *EventGuildBankConfiscateAndBurn) Reset() {
 	*x = EventGuildBankConfiscateAndBurn{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[39]
+		mi := &file_structs_structs_events_proto_msgTypes[50]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37863,7 +45024,7 @@ func (*EventGuildBankConfiscateAndBurn) ProtoMessage() {}
 
 // Deprecated: Use EventGuildBankConfiscateAndBurn.ProtoReflect.Descriptor instead.
 func (*EventGuildBankConfiscateAndBurn) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{39}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *EventGuildBankConfiscateAndBurn) GetEventGuildBankConfiscateAndBurnDetail() *EventGuildBankConfiscateAndBurnDetail {
@@ -37887,7 +45048,7 @@ type EventGuildBankConfiscateAndBurnDetail struct {
 func (x *EventGuildBankConfiscateAndBurnDetail) Reset() {
 	*x = EventGuildBankConfiscateAndBurnDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[40]
+		mi := &file_structs_structs_events_proto_msgTypes[51]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37901,7 +45062,7 @@ func (*EventGuildBankConfiscateAndBurnDetail) ProtoMessage() {}
 
 // Deprecated: Use EventGuildBankConfiscateAndBurnDetail.ProtoReflect.Descriptor instead.
 func (*EventGuildBankConfiscateAndBurnDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{40}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *EventGuildBankConfiscateAndBurnDetail) GetGuildId() string {
@@ -37946,7 +45107,7 @@ type EventGuildBankConvert struct {
 func (x *EventGuildBankConvert) Reset() {
 	*x = EventGuildBankConvert{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[41]
+		mi := &file_structs_structs_events_proto_msgTypes[52]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37960,7 +45121,7 @@ func (*EventGuildBankConvert) ProtoMessage() {}
 
 // Deprecated: Use EventGuildBankConvert.ProtoReflect.Descriptor instead.
 func (*EventGuildBankConvert) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{41}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *EventGuildBankConvert) GetEventGuildBankConvertDetail() *EventGuildBankConvertDetail {
@@ -37985,7 +45146,7 @@ type EventGuildBankConvertDetail struct {
 func (x *EventGuildBankConvertDetail) Reset() {
 	*x = EventGuildBankConvertDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[42]
+		mi := &file_structs_structs_events_proto_msgTypes[53]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -37999,7 +45160,7 @@ func (*EventGuildBankConvertDetail) ProtoMessage() {}
 
 // Deprecated: Use EventGuildBankConvertDetail.ProtoReflect.Descriptor instead.
 func (*EventGuildBankConvertDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{42}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *EventGuildBankConvertDetail) GetGuildId() string {
@@ -38051,7 +45212,7 @@ type EventGuildBankConvertToken struct {
 func (x *EventGuildBankConvertToken) Reset() {
 	*x = EventGuildBankConvertToken{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[43]
+		mi := &file_structs_structs_events_proto_msgTypes[54]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38065,7 +45226,7 @@ func (*EventGuildBankConvertToken) ProtoMessage() {}
 
 // Deprecated: Use EventGuildBankConvertToken.ProtoReflect.Descriptor instead.
 func (*EventGuildBankConvertToken) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{43}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *EventGuildBankConvertToken) GetEventGuildBankConvertTokenDetail() *EventGuildBankConvertTokenDetail {
@@ -38091,7 +45252,7 @@ type EventGuildBankConvertTokenDetail struct {
 func (x *EventGuildBankConvertTokenDetail) Reset() {
 	*x = EventGuildBankConvertTokenDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[44]
+		mi := &file_structs_structs_events_proto_msgTypes[55]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38105,7 +45266,7 @@ func (*EventGuildBankConvertTokenDetail) ProtoMessage() {}
 
 // Deprecated: Use EventGuildBankConvertTokenDetail.ProtoReflect.Descriptor instead.
 func (*EventGuildBankConvertTokenDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{44}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *EventGuildBankConvertTokenDetail) GetSourceGuildId() string {
@@ -38161,7 +45322,7 @@ type EventGuildMembershipApplication struct {
 func (x *EventGuildMembershipApplication) Reset() {
 	*x = EventGuildMembershipApplication{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[45]
+		mi := &file_structs_structs_events_proto_msgTypes[56]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38175,7 +45336,7 @@ func (*EventGuildMembershipApplication) ProtoMessage() {}
 
 // Deprecated: Use EventGuildMembershipApplication.ProtoReflect.Descriptor instead.
 func (*EventGuildMembershipApplication) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{45}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *EventGuildMembershipApplication) GetGuildMembershipApplication() *GuildMembershipApplication {
@@ -38196,7 +45357,7 @@ type EventOreMine struct {
 func (x *EventOreMine) Reset() {
 	*x = EventOreMine{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[46]
+		mi := &file_structs_structs_events_proto_msgTypes[57]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38210,7 +45371,7 @@ func (*EventOreMine) ProtoMessage() {}
 
 // Deprecated: Use EventOreMine.ProtoReflect.Descriptor instead.
 func (*EventOreMine) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{46}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *EventOreMine) GetEventOreMineDetail() *EventOreMineDetail {
@@ -38233,7 +45394,7 @@ type EventOreMineDetail struct {
 func (x *EventOreMineDetail) Reset() {
 	*x = EventOreMineDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[47]
+		mi := &file_structs_structs_events_proto_msgTypes[58]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38247,7 +45408,7 @@ func (*EventOreMineDetail) ProtoMessage() {}
 
 // Deprecated: Use EventOreMineDetail.ProtoReflect.Descriptor instead.
 func (*EventOreMineDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{47}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *EventOreMineDetail) GetPlayerId() string {
@@ -38282,7 +45443,7 @@ type EventAlphaRefine struct {
 func (x *EventAlphaRefine) Reset() {
 	*x = EventAlphaRefine{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[48]
+		mi := &file_structs_structs_events_proto_msgTypes[59]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38296,7 +45457,7 @@ func (*EventAlphaRefine) ProtoMessage() {}
 
 // Deprecated: Use EventAlphaRefine.ProtoReflect.Descriptor instead.
 func (*EventAlphaRefine) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{48}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *EventAlphaRefine) GetEventAlphaRefineDetail() *EventAlphaRefineDetail {
@@ -38314,12 +45475,13 @@ type EventAlphaRefineDetail struct {
 	PlayerId       string `protobuf:"bytes,1,opt,name=playerId,proto3" json:"playerId,omitempty"`
 	PrimaryAddress string `protobuf:"bytes,2,opt,name=primaryAddress,proto3" json:"primaryAddress,omitempty"`
 	Amount         uint64 `protobuf:"varint,3,opt,name=amount,proto3" json:"amount,omitempty"`
+	VaultAddress   string `protobuf:"bytes,4,opt,name=vaultAddress,proto3" json:"vaultAddress,omitempty"`
 }
 
 func (x *EventAlphaRefineDetail) Reset() {
 	*x = EventAlphaRefineDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[49]
+		mi := &file_structs_structs_events_proto_msgTypes[60]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38333,7 +45495,7 @@ func (*EventAlphaRefineDetail) ProtoMessage() {}
 
 // Deprecated: Use EventAlphaRefineDetail.ProtoReflect.Descriptor instead.
 func (*EventAlphaRefineDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{49}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *EventAlphaRefineDetail) GetPlayerId() string {
@@ -38357,6 +45519,13 @@ func (x *EventAlphaRefineDetail) GetAmount() uint64 {
 	return 0
 }
 
+func (x *EventAlphaRefineDetail) GetVaultAddress() string {
+	if x != nil {
+		return x.VaultAddress
+	}
+	return ""
+}
+
 type EventAlphaInfuse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -38368,7 +45537,7 @@ type EventAlphaInfuse struct {
 func (x *EventAlphaInfuse) Reset() {
 	*x = EventAlphaInfuse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[50]
+		mi := &file_structs_structs_events_proto_msgTypes[61]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38382,7 +45551,7 @@ func (*EventAlphaInfuse) ProtoMessage() {}
 
 // Deprecated: Use EventAlphaInfuse.ProtoReflect.Descriptor instead.
 func (*EventAlphaInfuse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{50}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *EventAlphaInfuse) GetEventAlphaInfuseDetail() *EventAlphaInfuseDetail {
@@ -38400,12 +45569,13 @@ type EventAlphaInfuseDetail struct {
 	PlayerId       string `protobuf:"bytes,1,opt,name=playerId,proto3" json:"playerId,omitempty"`
 	PrimaryAddress string `protobuf:"bytes,2,opt,name=primaryAddress,proto3" json:"primaryAddress,omitempty"`
 	Amount         uint64 `protobuf:"varint,3,opt,name=amount,proto3" json:"amount,omitempty"`
+	VaultAddress   string `protobuf:"bytes,4,opt,name=vaultAddress,proto3" json:"vaultAddress,omitempty"`
 }
 
 func (x *EventAlphaInfuseDetail) Reset() {
 	*x = EventAlphaInfuseDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[51]
+		mi := &file_structs_structs_events_proto_msgTypes[62]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38419,7 +45589,7 @@ func (*EventAlphaInfuseDetail) ProtoMessage() {}
 
 // Deprecated: Use EventAlphaInfuseDetail.ProtoReflect.Descriptor instead.
 func (*EventAlphaInfuseDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{51}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *EventAlphaInfuseDetail) GetPlayerId() string {
@@ -38443,6 +45613,13 @@ func (x *EventAlphaInfuseDetail) GetAmount() uint64 {
 	return 0
 }
 
+func (x *EventAlphaInfuseDetail) GetVaultAddress() string {
+	if x != nil {
+		return x.VaultAddress
+	}
+	return ""
+}
+
 type EventAlphaDefuse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -38454,7 +45631,7 @@ type EventAlphaDefuse struct {
 func (x *EventAlphaDefuse) Reset() {
 	*x = EventAlphaDefuse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[52]
+		mi := &file_structs_structs_events_proto_msgTypes[63]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38468,7 +45645,7 @@ func (*EventAlphaDefuse) ProtoMessage() {}
 
 // Deprecated: Use EventAlphaDefuse.ProtoReflect.Descriptor instead.
 func (*EventAlphaDefuse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{52}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *EventAlphaDefuse) GetEventAlphaDefuseDetail() *EventAlphaDefuseDetail {
@@ -38490,7 +45667,7 @@ type EventAlphaDefuseDetail struct {
 func (x *EventAlphaDefuseDetail) Reset() {
 	*x = EventAlphaDefuseDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[53]
+		mi := &file_structs_structs_events_proto_msgTypes[64]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38504,7 +45681,7 @@ func (*EventAlphaDefuseDetail) ProtoMessage() {}
 
 // Deprecated: Use EventAlphaDefuseDetail.ProtoReflect.Descriptor instead.
 func (*EventAlphaDefuseDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{53}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *EventAlphaDefuseDetail) GetPrimaryAddress() string {
@@ -38532,7 +45709,7 @@ type EventOreTheft struct {
 func (x *EventOreTheft) Reset() {
 	*x = EventOreTheft{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[54]
+		mi := &file_structs_structs_events_proto_msgTypes[65]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38546,7 +45723,7 @@ func (*EventOreTheft) ProtoMessage() {}
 
 // Deprecated: Use EventOreTheft.ProtoReflect.Descriptor instead.
 func (*EventOreTheft) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{54}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *EventOreTheft) GetEventOreTheftDetail() *EventOreTheftDetail {
@@ -38571,7 +45748,7 @@ type EventOreTheftDetail struct {
 func (x *EventOreTheftDetail) Reset() {
 	*x = EventOreTheftDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[55]
+		mi := &file_structs_structs_events_proto_msgTypes[66]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38585,7 +45762,7 @@ func (*EventOreTheftDetail) ProtoMessage() {}
 
 // Deprecated: Use EventOreTheftDetail.ProtoReflect.Descriptor instead.
 func (*EventOreTheftDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{55}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *EventOreTheftDetail) GetVictimPrimaryAddress() string {
@@ -38634,7 +45811,7 @@ type EventOreMigrate struct {
 func (x *EventOreMigrate) Reset() {
 	*x = EventOreMigrate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[56]
+		mi := &file_structs_structs_events_proto_msgTypes[67]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38648,7 +45825,7 @@ func (*EventOreMigrate) ProtoMessage() {}
 
 // Deprecated: Use EventOreMigrate.ProtoReflect.Descriptor instead.
 func (*EventOreMigrate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{56}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *EventOreMigrate) GetEventOreMigrateDetail() *EventOreMigrateDetail {
@@ -38672,7 +45849,7 @@ type EventOreMigrateDetail struct {
 func (x *EventOreMigrateDetail) Reset() {
 	*x = EventOreMigrateDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[57]
+		mi := &file_structs_structs_events_proto_msgTypes[68]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38686,7 +45863,7 @@ func (*EventOreMigrateDetail) ProtoMessage() {}
 
 // Deprecated: Use EventOreMigrateDetail.ProtoReflect.Descriptor instead.
 func (*EventOreMigrateDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{57}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *EventOreMigrateDetail) GetPlayerId() string {
@@ -38728,7 +45905,7 @@ type EventStructDefenderClear struct {
 func (x *EventStructDefenderClear) Reset() {
 	*x = EventStructDefenderClear{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[58]
+		mi := &file_structs_structs_events_proto_msgTypes[69]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38742,7 +45919,7 @@ func (*EventStructDefenderClear) ProtoMessage() {}
 
 // Deprecated: Use EventStructDefenderClear.ProtoReflect.Descriptor instead.
 func (*EventStructDefenderClear) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{58}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *EventStructDefenderClear) GetStructDefenderClearDetail() *EventStructDefenderClearDetail {
@@ -38763,7 +45940,7 @@ type EventStructDefenderClearDetail struct {
 func (x *EventStructDefenderClearDetail) Reset() {
 	*x = EventStructDefenderClearDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[59]
+		mi := &file_structs_structs_events_proto_msgTypes[70]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38777,7 +45954,7 @@ func (*EventStructDefenderClearDetail) ProtoMessage() {}
 
 // Deprecated: Use EventStructDefenderClearDetail.ProtoReflect.Descriptor instead.
 func (*EventStructDefenderClearDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{59}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *EventStructDefenderClearDetail) GetDefendingStructId() string {
@@ -38798,7 +45975,7 @@ type EventAttack struct {
 func (x *EventAttack) Reset() {
 	*x = EventAttack{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[60]
+		mi := &file_structs_structs_events_proto_msgTypes[71]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38812,7 +45989,7 @@ func (*EventAttack) ProtoMessage() {}
 
 // Deprecated: Use EventAttack.ProtoReflect.Descriptor instead.
 func (*EventAttack) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{60}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *EventAttack) GetEventAttackDetail() *EventAttackDetail {
@@ -38853,7 +46030,7 @@ type EventAttackDetail struct {
 func (x *EventAttackDetail) Reset() {
 	*x = EventAttackDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[61]
+		mi := &file_structs_structs_events_proto_msgTypes[72]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -38867,7 +46044,7 @@ func (*EventAttackDetail) ProtoMessage() {}
 
 // Deprecated: Use EventAttackDetail.ProtoReflect.Descriptor instead.
 func (*EventAttackDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{61}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *EventAttackDetail) GetAttackerStructId() string {
@@ -39072,7 +46249,7 @@ type EventAttackShotDetail struct {
 func (x *EventAttackShotDetail) Reset() {
 	*x = EventAttackShotDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[62]
+		mi := &file_structs_structs_events_proto_msgTypes[73]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -39086,7 +46263,7 @@ func (*EventAttackShotDetail) ProtoMessage() {}
 
 // Deprecated: Use EventAttackShotDetail.ProtoReflect.Descriptor instead.
 func (*EventAttackShotDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{62}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *EventAttackShotDetail) GetTargetStructId() string {
@@ -39426,7 +46603,7 @@ type EventAttackDefenderCounterDetail struct {
 func (x *EventAttackDefenderCounterDetail) Reset() {
 	*x = EventAttackDefenderCounterDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[63]
+		mi := &file_structs_structs_events_proto_msgTypes[74]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -39440,7 +46617,7 @@ func (*EventAttackDefenderCounterDetail) ProtoMessage() {}
 
 // Deprecated: Use EventAttackDefenderCounterDetail.ProtoReflect.Descriptor instead.
 func (*EventAttackDefenderCounterDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{63}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *EventAttackDefenderCounterDetail) GetCounterByStructId() string {
@@ -39538,7 +46715,7 @@ type EventRaid struct {
 func (x *EventRaid) Reset() {
 	*x = EventRaid{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[64]
+		mi := &file_structs_structs_events_proto_msgTypes[75]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -39552,7 +46729,7 @@ func (*EventRaid) ProtoMessage() {}
 
 // Deprecated: Use EventRaid.ProtoReflect.Descriptor instead.
 func (*EventRaid) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{64}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *EventRaid) GetEventRaidDetail() *EventRaidDetail {
@@ -39576,7 +46753,7 @@ type EventRaidDetail struct {
 func (x *EventRaidDetail) Reset() {
 	*x = EventRaidDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[65]
+		mi := &file_structs_structs_events_proto_msgTypes[76]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -39590,7 +46767,7 @@ func (*EventRaidDetail) ProtoMessage() {}
 
 // Deprecated: Use EventRaidDetail.ProtoReflect.Descriptor instead.
 func (*EventRaidDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{65}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *EventRaidDetail) GetFleetId() string {
@@ -39632,7 +46809,7 @@ type EventHashSuccess struct {
 func (x *EventHashSuccess) Reset() {
 	*x = EventHashSuccess{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[66]
+		mi := &file_structs_structs_events_proto_msgTypes[77]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -39646,7 +46823,7 @@ func (*EventHashSuccess) ProtoMessage() {}
 
 // Deprecated: Use EventHashSuccess.ProtoReflect.Descriptor instead.
 func (*EventHashSuccess) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{66}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *EventHashSuccess) GetEventHashSuccessDetail() *EventHashSuccessDetail {
@@ -39671,7 +46848,7 @@ type EventHashSuccessDetail struct {
 func (x *EventHashSuccessDetail) Reset() {
 	*x = EventHashSuccessDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[67]
+		mi := &file_structs_structs_events_proto_msgTypes[78]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -39685,7 +46862,7 @@ func (*EventHashSuccessDetail) ProtoMessage() {}
 
 // Deprecated: Use EventHashSuccessDetail.ProtoReflect.Descriptor instead.
 func (*EventHashSuccessDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{67}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *EventHashSuccessDetail) GetCallerAddress() string {
@@ -39723,6 +46900,58 @@ func (x *EventHashSuccessDetail) GetPlanetId() string {
 	return ""
 }
 
+// Current cap activation/configuration, replayed at genesis and upgrade.
+type EventReactorStakeCap struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Active        bool   `protobuf:"varint,1,opt,name=active,proto3" json:"active,omitempty"`
+	CapBps        uint64 `protobuf:"varint,2,opt,name=capBps,proto3" json:"capBps,omitempty"`
+	MinValidators uint64 `protobuf:"varint,3,opt,name=minValidators,proto3" json:"minValidators,omitempty"`
+}
+
+func (x *EventReactorStakeCap) Reset() {
+	*x = EventReactorStakeCap{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[79]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventReactorStakeCap) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventReactorStakeCap) ProtoMessage() {}
+
+// Deprecated: Use EventReactorStakeCap.ProtoReflect.Descriptor instead.
+func (*EventReactorStakeCap) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{79}
+}
+
+func (x *EventReactorStakeCap) GetActive() bool {
+	if x != nil {
+		return x.Active
+	}
+	return false
+}
+
+func (x *EventReactorStakeCap) GetCapBps() uint64 {
+	if x != nil {
+		return x.CapBps
+	}
+	return 0
+}
+
+func (x *EventReactorStakeCap) GetMinValidators() uint64 {
+	if x != nil {
+		return x.MinValidators
+	}
+	return 0
+}
+
 var File_structs_structs_events_proto protoreflect.FileDescriptor
 
 var file_structs_structs_events_proto_rawDesc = []byte{
@@ -39737,849 +46966,967 @@ var file_structs_structs_events_proto_rawDesc = []byte{
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1d, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x67, 0x72, 0x65, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x72, 0x69, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x1a, 0x1b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x69,
-	0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1a, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x6b,
-	0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x65, 0x72, 0x6d, 0x69,
-	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e, 0x65,
-	0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65,
-	0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1d, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x4e, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41,
-	0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3b, 0x0a, 0x0a, 0x61, 0x6c, 0x6c,
-	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x61, 0x6c, 0x6c, 0x6f,
-	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x4a, 0x0a, 0x0e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41,
-	0x67, 0x72, 0x65, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x38, 0x0a, 0x09, 0x61, 0x67, 0x72, 0x65,
-	0x65, 0x6d, 0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x41, 0x67,
-	0x72, 0x65, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x09, 0x61, 0x67, 0x72, 0x65, 0x65, 0x6d, 0x65,
-	0x6e, 0x74, 0x22, 0x3a, 0x0a, 0x0a, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x6c, 0x65, 0x65, 0x74,
-	0x12, 0x2c, 0x0a, 0x05, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x46, 0x6c, 0x65, 0x65, 0x74, 0x52, 0x05, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x22, 0x3a,
-	0x0a, 0x0a, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x12, 0x2c, 0x0a, 0x05,
-	0x67, 0x75, 0x69, 0x6c, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x52, 0x05, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x22, 0x46, 0x0a, 0x0d, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x35, 0x0a, 0x08, 0x69,
-	0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x08, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69,
-	0x6f, 0x6e, 0x22, 0x3e, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x6c, 0x61, 0x6e, 0x65,
-	0x74, 0x12, 0x2f, 0x0a, 0x06, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x06, 0x70, 0x6c, 0x61, 0x6e,
-	0x65, 0x74, 0x22, 0x74, 0x0a, 0x14, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x6c, 0x61, 0x6e, 0x65,
-	0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x12, 0x5c, 0x0a, 0x15, 0x70, 0x6c,
-	0x61, 0x6e, 0x65, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x63,
-	0x6f, 0x72, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x6e,
-	0x65, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72,
-	0x64, 0x52, 0x15, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75,
-	0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x22, 0x3e, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e,
-	0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x2f, 0x0a, 0x06, 0x70, 0x6c, 0x61, 0x79, 0x65,
-	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
-	0x52, 0x06, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x22, 0x46, 0x0a, 0x0d, 0x45, 0x76, 0x65, 0x6e,
-	0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x12, 0x35, 0x0a, 0x08, 0x70, 0x72, 0x6f,
-	0x76, 0x69, 0x64, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x72,
-	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x08, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72,
-	0x22, 0x42, 0x0a, 0x0c, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72,
-	0x12, 0x32, 0x0a, 0x07, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x18, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x07, 0x72, 0x65, 0x61,
-	0x63, 0x74, 0x6f, 0x72, 0x22, 0x44, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x12, 0x35, 0x0a, 0x09, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x75, 0x72, 0x65,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52,
-	0x09, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x75, 0x72, 0x65, 0x22, 0x74, 0x0a, 0x14, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75,
-	0x74, 0x65, 0x12, 0x5c, 0x0a, 0x15, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74, 0x72,
-	0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62,
-	0x75, 0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x15, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
-	0x22, 0x5e, 0x0a, 0x13, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44,
-	0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x12, 0x47, 0x0a, 0x0e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72,
-	0x52, 0x0e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72,
-	0x22, 0x4e, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54,
-	0x79, 0x70, 0x65, 0x12, 0x3b, 0x0a, 0x0a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70,
-	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x54, 0x79, 0x70, 0x65, 0x52, 0x0a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65,
-	0x22, 0x4e, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x12, 0x3b, 0x0a, 0x0a, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x22, 0x57, 0x0a, 0x09, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x4a, 0x0a,
-	0x0f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x54, 0x69, 0x6d, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x54, 0x69,
-	0x6d, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x0f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x54,
-	0x69, 0x6d, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x77, 0x0a, 0x0f, 0x45, 0x76, 0x65,
-	0x6e, 0x74, 0x54, 0x69, 0x6d, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x20, 0x0a, 0x0b,
-	0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x03, 0x52, 0x0b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12, 0x42,
-	0x0a, 0x09, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x54, 0x69, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8,
-	0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x09, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x54, 0x69,
-	0x6d, 0x65, 0x22, 0x60, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x65, 0x72, 0x6d, 0x69,
-	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x4d, 0x0a, 0x10, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73,
-	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f,
-	0x72, 0x64, 0x52, 0x10, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65,
-	0x63, 0x6f, 0x72, 0x64, 0x22, 0x84, 0x01, 0x0a, 0x18, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
-	0x6e, 0x12, 0x68, 0x0a, 0x19, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x50, 0x65,
-	0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b,
-	0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
-	0x52, 0x19, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x50, 0x65, 0x72, 0x6d, 0x69,
-	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x22, 0x48, 0x0a, 0x09, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x47, 0x72, 0x69, 0x64, 0x12, 0x3b, 0x0a, 0x0a, 0x67, 0x72, 0x69, 0x64,
-	0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47,
-	0x72, 0x69, 0x64, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x0a, 0x67, 0x72, 0x69, 0x64, 0x52,
-	0x65, 0x63, 0x6f, 0x72, 0x64, 0x22, 0x83, 0x01, 0x0a, 0x14, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50,
-	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x6b,
-	0x0a, 0x1a, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64,
-	0x65, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52,
-	0x1a, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x41, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x86, 0x01, 0x0a, 0x1a,
-	0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x41, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x72,
-	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a,
-	0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x63, 0x6f,
-	0x6c, 0x6c, 0x61, 0x74, 0x65, 0x72, 0x61, 0x6c, 0x50, 0x6f, 0x6f, 0x6c, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x0e, 0x63, 0x6f, 0x6c, 0x6c, 0x61, 0x74, 0x65, 0x72, 0x61, 0x6c, 0x50, 0x6f,
-	0x6f, 0x6c, 0x12, 0x20, 0x0a, 0x0b, 0x65, 0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67, 0x50, 0x6f, 0x6f,
-	0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x65, 0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67,
-	0x50, 0x6f, 0x6f, 0x6c, 0x22, 0x8f, 0x01, 0x0a, 0x17, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72,
-	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64,
-	0x12, 0x74, 0x0a, 0x1d, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65,
-	0x72, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69,
-	0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50,
-	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c,
-	0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x1d, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72,
-	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64,
-	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x59, 0x0a, 0x1d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50,
-	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c,
-	0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69,
-	0x64, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x70, 0x72, 0x6f,
-	0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64,
-	0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49,
-	0x64, 0x22, 0x93, 0x01, 0x0a, 0x18, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69,
-	0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x12, 0x77,
-	0x0a, 0x1e, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52,
-	0x65, 0x76, 0x6f, 0x6b, 0x65, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72,
-	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x47, 0x75, 0x69, 0x6c,
-	0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x1e, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72,
-	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x47, 0x75, 0x69, 0x6c,
-	0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x5a, 0x0a, 0x1e, 0x45, 0x76, 0x65, 0x6e, 0x74,
-	0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x72, 0x6f,
-	0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x70,
-	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69,
-	0x6c, 0x64, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c,
-	0x64, 0x49, 0x64, 0x22, 0xa8, 0x01, 0x0a, 0x1d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f,
-	0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x65, 0x6e, 0x75, 0x65, 0x53, 0x68, 0x6f, 0x72,
-	0x74, 0x66, 0x61, 0x6c, 0x6c, 0x12, 0x86, 0x01, 0x0a, 0x23, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x50,
-	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x65, 0x6e, 0x75, 0x65, 0x53, 0x68,
-	0x6f, 0x72, 0x74, 0x66, 0x61, 0x6c, 0x6c, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x34, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69,
-	0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x65, 0x6e, 0x75, 0x65, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x66,
-	0x61, 0x6c, 0x6c, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x23, 0x65, 0x76, 0x65, 0x6e, 0x74,
-	0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x65, 0x6e, 0x75, 0x65, 0x53,
-	0x68, 0x6f, 0x72, 0x74, 0x66, 0x61, 0x6c, 0x6c, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xcd,
-	0x01, 0x0a, 0x23, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72,
-	0x52, 0x65, 0x76, 0x65, 0x6e, 0x75, 0x65, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x66, 0x61, 0x6c, 0x6c,
-	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64,
-	0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x70, 0x72, 0x6f, 0x76,
-	0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x67, 0x72, 0x65, 0x65, 0x6d,
-	0x65, 0x6e, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x67, 0x72,
-	0x65, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f,
-	0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x1c,
-	0x0a, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x65, 0x64, 0x12, 0x12, 0x0a, 0x04,
-	0x70, 0x61, 0x69, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x70, 0x61, 0x69, 0x64,
-	0x12, 0x1c, 0x0a, 0x09, 0x73, 0x68, 0x6f, 0x72, 0x74, 0x66, 0x61, 0x6c, 0x6c, 0x18, 0x06, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x09, 0x73, 0x68, 0x6f, 0x72, 0x74, 0x66, 0x61, 0x6c, 0x6c, 0x22, 0x2f,
-	0x0a, 0x11, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x48, 0x61, 0x6c,
-	0x74, 0x65, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x22,
-	0x30, 0x0a, 0x12, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65,
-	0x73, 0x75, 0x6d, 0x65, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
-	0x64, 0x22, 0x29, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65,
-	0x12, 0x1a, 0x0a, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x22, 0x6e, 0x0a, 0x17,
-	0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x73, 0x73, 0x6f,
-	0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x53, 0x0a, 0x12, 0x61, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x73, 0x73,
-	0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x12, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x62, 0x0a, 0x14,
-	0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x63, 0x74, 0x69,
-	0x76, 0x69, 0x74, 0x79, 0x12, 0x4a, 0x0a, 0x0f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41,
-	0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x52,
-	0x0f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79,
-	0x22, 0x87, 0x01, 0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42,
-	0x61, 0x6e, 0x6b, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x6e, 0x0a, 0x1b, 0x65, 0x76,
-	0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x41, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b,
-	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x1b, 0x65,
-	0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x41, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x8d, 0x01, 0x0a, 0x1b, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x41, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x24, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x73, 0x74,
+	0x61, 0x6b, 0x69, 0x6e, 0x67, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x73, 0x74,
+	0x61, 0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1d, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x67, 0x72, 0x65,
+	0x65, 0x6d, 0x65, 0x6e, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x6c, 0x6c,
+	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x66,
+	0x6c, 0x65, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x72, 0x69, 0x64,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2f, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2f, 0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
+	0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2f, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
+	0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70,
+	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1d, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x72,
+	0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x27, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x72, 0x65,
+	0x61, 0x63, 0x74, 0x6f, 0x72, 0x5f, 0x64, 0x69, 0x76, 0x65, 0x72, 0x73, 0x69, 0x74, 0x79, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x23, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x5f, 0x76, 0x65, 0x73,
+	0x74, 0x69, 0x6e, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x62, 0x0a, 0x1a, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x44,
+	0x69, 0x76, 0x65, 0x72, 0x73, 0x69, 0x74, 0x79, 0x12, 0x44, 0x0a, 0x09, 0x64, 0x69, 0x76, 0x65,
+	0x72, 0x73, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4f, 0x77,
+	0x6e, 0x65, 0x72, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x44, 0x69, 0x76, 0x65, 0x72, 0x73,
+	0x69, 0x74, 0x79, 0x52, 0x09, 0x64, 0x69, 0x76, 0x65, 0x72, 0x73, 0x69, 0x74, 0x79, 0x22, 0x21,
+	0x0a, 0x1f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x52, 0x65, 0x61, 0x63,
+	0x74, 0x6f, 0x72, 0x44, 0x69, 0x76, 0x65, 0x72, 0x73, 0x69, 0x74, 0x79, 0x52, 0x65, 0x73, 0x65,
+	0x74, 0x22, 0x25, 0x0a, 0x23, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f,
+	0x72, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x76, 0x69, 0x73,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x65, 0x74, 0x22, 0x9e, 0x01, 0x0a, 0x1e, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x1c, 0x0a, 0x09, 0x72,
+	0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09,
+	0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x49, 0x64, 0x12, 0x24, 0x0a, 0x0d, 0x73, 0x6c, 0x61,
+	0x73, 0x68, 0x52, 0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0d, 0x73, 0x6c, 0x61, 0x73, 0x68, 0x52, 0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x12,
+	0x38, 0x0a, 0x17, 0x72, 0x65, 0x63, 0x6f, 0x6e, 0x63, 0x69, 0x6c, 0x65, 0x64, 0x53, 0x6c, 0x61,
+	0x73, 0x68, 0x52, 0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x17, 0x72, 0x65, 0x63, 0x6f, 0x6e, 0x63, 0x69, 0x6c, 0x65, 0x64, 0x53, 0x6c, 0x61, 0x73,
+	0x68, 0x52, 0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x83, 0x01, 0x0a, 0x1a, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x56, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x67, 0x4d,
+	0x69, 0x67, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3a, 0x0a, 0x05, 0x76, 0x61, 0x75, 0x6c,
+	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x56,
+	0x65, 0x73, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x52, 0x05, 0x76,
+	0x61, 0x75, 0x6c, 0x74, 0x12, 0x29, 0x0a, 0x10, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f, 0x61,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0f,
+	0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x65, 0x73, 0x22,
+	0xca, 0x01, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x61,
+	0x6e, 0x6b, 0x50, 0x75, 0x72, 0x63, 0x68, 0x61, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75,
 	0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69,
-	0x6c, 0x64, 0x49, 0x64, 0x12, 0x2e, 0x0a, 0x12, 0x62, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6c, 0x6c,
-	0x61, 0x74, 0x65, 0x72, 0x61, 0x6c, 0x50, 0x6f, 0x6f, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x12, 0x62, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6c, 0x6c, 0x61, 0x74, 0x65, 0x72, 0x61, 0x6c,
-	0x50, 0x6f, 0x6f, 0x6c, 0x12, 0x24, 0x0a, 0x0d, 0x62, 0x61, 0x6e, 0x6b, 0x54, 0x6f, 0x6b, 0x65,
-	0x6e, 0x50, 0x6f, 0x6f, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x62, 0x61, 0x6e,
-	0x6b, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x50, 0x6f, 0x6f, 0x6c, 0x22, 0x7b, 0x0a, 0x12, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x4d, 0x69, 0x6e, 0x74,
-	0x12, 0x65, 0x0a, 0x18, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61,
-	0x6e, 0x6b, 0x4d, 0x69, 0x6e, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42,
-	0x61, 0x6e, 0x6b, 0x4d, 0x69, 0x6e, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x18, 0x65,
-	0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x4d, 0x69, 0x6e,
-	0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x94, 0x01, 0x0a, 0x18, 0x45, 0x76, 0x65, 0x6e,
-	0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x4d, 0x69, 0x6e, 0x74, 0x44, 0x65,
-	0x74, 0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x20,
-	0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61,
-	0x12, 0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b,
-	0x65, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x04,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x22, 0x83,
-	0x01, 0x0a, 0x14, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e,
-	0x6b, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x12, 0x6b, 0x0a, 0x1a, 0x65, 0x76, 0x65, 0x6e, 0x74,
-	0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x44,
-	0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2b, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x52, 0x65, 0x64, 0x65,
-	0x65, 0x6d, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x1a, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47,
-	0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x44, 0x65,
-	0x74, 0x61, 0x69, 0x6c, 0x22, 0xa8, 0x01, 0x0a, 0x1a, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x44, 0x65, 0x74,
+	0x6c, 0x64, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64,
+	0x12, 0x22, 0x0a, 0x0c, 0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x52, 0x61, 0x6e, 0x6b,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0c, 0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73,
+	0x52, 0x61, 0x6e, 0x6b, 0x12, 0x12, 0x0a, 0x04, 0x72, 0x61, 0x6e, 0x6b, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x04, 0x72, 0x61, 0x6e, 0x6b, 0x12, 0x14, 0x0a, 0x05, 0x70, 0x72, 0x69, 0x63,
+	0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x70, 0x72, 0x69, 0x63, 0x65, 0x12, 0x14,
+	0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x64,
+	0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x16, 0x0a, 0x06, 0x6a, 0x6f, 0x69, 0x6e, 0x65, 0x64, 0x18, 0x07,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x6a, 0x6f, 0x69, 0x6e, 0x65, 0x64, 0x22, 0x4e, 0x0a, 0x0f,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12,
+	0x3b, 0x0a, 0x0a, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x52, 0x0a, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x4a, 0x0a, 0x0e,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x67, 0x72, 0x65, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x38,
+	0x0a, 0x09, 0x61, 0x67, 0x72, 0x65, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x1a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x41, 0x67, 0x72, 0x65, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x09, 0x61,
+	0x67, 0x72, 0x65, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x22, 0x3a, 0x0a, 0x0a, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x46, 0x6c, 0x65, 0x65, 0x74, 0x12, 0x2c, 0x0a, 0x05, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x46, 0x6c, 0x65, 0x65, 0x74, 0x52, 0x05, 0x66,
+	0x6c, 0x65, 0x65, 0x74, 0x22, 0x3a, 0x0a, 0x0a, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69,
+	0x6c, 0x64, 0x12, 0x2c, 0x0a, 0x05, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x05, 0x67, 0x75, 0x69, 0x6c, 0x64,
+	0x22, 0x46, 0x0a, 0x0d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f,
+	0x6e, 0x12, 0x35, 0x0a, 0x08, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x08,
+	0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x3e, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x12, 0x2f, 0x0a, 0x06, 0x70, 0x6c, 0x61, 0x6e, 0x65,
+	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74,
+	0x52, 0x06, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x22, 0x74, 0x0a, 0x14, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65,
+	0x12, 0x5c, 0x0a, 0x15, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62,
+	0x75, 0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
+	0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x15, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x41,
+	0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x22, 0x3e,
+	0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x2f, 0x0a,
+	0x06, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x06, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x22, 0x46,
+	0x0a, 0x0d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x12,
+	0x35, 0x0a, 0x08, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x19, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x08, 0x70, 0x72,
+	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x22, 0x42, 0x0a, 0x0c, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52,
+	0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x32, 0x0a, 0x07, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f,
+	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f,
+	0x72, 0x52, 0x07, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x22, 0x44, 0x0a, 0x0b, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x12, 0x35, 0x0a, 0x09, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x75, 0x72, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x09, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x75, 0x72, 0x65,
+	0x22, 0x74, 0x0a, 0x14, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41,
+	0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x12, 0x5c, 0x0a, 0x15, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x52,
+	0x15, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65,
+	0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x22, 0x5e, 0x0a, 0x13, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x12, 0x47, 0x0a,
+	0x0e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65,
+	0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x52, 0x0e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65,
+	0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x22, 0x4e, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x3b, 0x0a, 0x0a, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0a, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x22, 0x4e, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53,
+	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3b, 0x0a, 0x0a, 0x73, 0x75, 0x62,
+	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x73, 0x75, 0x62, 0x73,
+	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x57, 0x0a, 0x09, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x54,
+	0x69, 0x6d, 0x65, 0x12, 0x4a, 0x0a, 0x0f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x54, 0x69, 0x6d, 0x65,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x54, 0x69, 0x6d, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x0f,
+	0x65, 0x76, 0x65, 0x6e, 0x74, 0x54, 0x69, 0x6d, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22,
+	0x77, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x54, 0x69, 0x6d, 0x65, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x12, 0x20, 0x0a, 0x0b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68,
+	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65,
+	0x69, 0x67, 0x68, 0x74, 0x12, 0x42, 0x0a, 0x09, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x54, 0x69, 0x6d,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,
+	0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x09, 0x62,
+	0x6c, 0x6f, 0x63, 0x6b, 0x54, 0x69, 0x6d, 0x65, 0x22, 0x60, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x4d, 0x0a, 0x10, 0x70,
+	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x10, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x22, 0x84, 0x01, 0x0a, 0x18, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x50, 0x65, 0x72,
+	0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x68, 0x0a, 0x19, 0x67, 0x75, 0x69, 0x6c, 0x64,
+	0x52, 0x61, 0x6e, 0x6b, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65,
+	0x63, 0x6f, 0x72, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2a, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x75, 0x69,
+	0x6c, 0x64, 0x52, 0x61, 0x6e, 0x6b, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x19, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x61, 0x6e,
+	0x6b, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72,
+	0x64, 0x22, 0x48, 0x0a, 0x09, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x72, 0x69, 0x64, 0x12, 0x3b,
+	0x0a, 0x0a, 0x67, 0x72, 0x69, 0x64, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x72, 0x69, 0x64, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x52,
+	0x0a, 0x67, 0x72, 0x69, 0x64, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x22, 0x83, 0x01, 0x0a, 0x14,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x41, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x12, 0x6b, 0x0a, 0x1a, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f,
+	0x76, 0x69, 0x64, 0x65, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74,
+	0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x1a, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76,
+	0x69, 0x64, 0x65, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x22, 0x86, 0x01, 0x0a, 0x1a, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69,
+	0x64, 0x65, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
+	0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64,
+	0x12, 0x26, 0x0a, 0x0e, 0x63, 0x6f, 0x6c, 0x6c, 0x61, 0x74, 0x65, 0x72, 0x61, 0x6c, 0x50, 0x6f,
+	0x6f, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x63, 0x6f, 0x6c, 0x6c, 0x61, 0x74,
+	0x65, 0x72, 0x61, 0x6c, 0x50, 0x6f, 0x6f, 0x6c, 0x12, 0x20, 0x0a, 0x0b, 0x65, 0x61, 0x72, 0x6e,
+	0x69, 0x6e, 0x67, 0x50, 0x6f, 0x6f, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x65,
+	0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67, 0x50, 0x6f, 0x6f, 0x6c, 0x22, 0x8f, 0x01, 0x0a, 0x17, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x47, 0x72, 0x61, 0x6e,
+	0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x12, 0x74, 0x0a, 0x1d, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x50,
+	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c,
+	0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2e, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x47, 0x72, 0x61,
+	0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x1d, 0x65,
+	0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x47, 0x72, 0x61, 0x6e,
+	0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x59, 0x0a, 0x1d,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x47, 0x72, 0x61,
+	0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1e, 0x0a,
+	0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x12, 0x18, 0x0a,
+	0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
+	0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x22, 0x93, 0x01, 0x0a, 0x18, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x47,
+	0x75, 0x69, 0x6c, 0x64, 0x12, 0x77, 0x0a, 0x1e, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f,
+	0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x47, 0x75, 0x69, 0x6c, 0x64,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x6f,
+	0x6b, 0x65, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x1e, 0x65,
+	0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x6f,
+	0x6b, 0x65, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x5a, 0x0a,
+	0x1e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65,
+	0x76, 0x6f, 0x6b, 0x65, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12,
+	0x1e, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x12,
+	0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x22, 0xa8, 0x01, 0x0a, 0x1d, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x65, 0x6e,
+	0x75, 0x65, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x66, 0x61, 0x6c, 0x6c, 0x12, 0x86, 0x01, 0x0a, 0x23,
+	0x65, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x76,
+	0x65, 0x6e, 0x75, 0x65, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x66, 0x61, 0x6c, 0x6c, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x34, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x65, 0x6e, 0x75, 0x65,
+	0x53, 0x68, 0x6f, 0x72, 0x74, 0x66, 0x61, 0x6c, 0x6c, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52,
+	0x23, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65,
+	0x76, 0x65, 0x6e, 0x75, 0x65, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x66, 0x61, 0x6c, 0x6c, 0x44, 0x65,
+	0x74, 0x61, 0x69, 0x6c, 0x22, 0xcd, 0x01, 0x0a, 0x23, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x72,
+	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x76, 0x65, 0x6e, 0x75, 0x65, 0x53, 0x68, 0x6f,
+	0x72, 0x74, 0x66, 0x61, 0x6c, 0x6c, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1e, 0x0a, 0x0a,
+	0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x12, 0x20, 0x0a, 0x0b,
+	0x61, 0x67, 0x72, 0x65, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0b, 0x61, 0x67, 0x72, 0x65, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x14,
+	0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x64,
+	0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x1c, 0x0a, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x65,
+	0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x65, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x70, 0x61, 0x69, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x04, 0x70, 0x61, 0x69, 0x64, 0x12, 0x1c, 0x0a, 0x09, 0x73, 0x68, 0x6f, 0x72, 0x74, 0x66,
+	0x61, 0x6c, 0x6c, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x73, 0x68, 0x6f, 0x72, 0x74,
+	0x66, 0x61, 0x6c, 0x6c, 0x22, 0x2f, 0x0a, 0x11, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x48, 0x61, 0x6c, 0x74, 0x65, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x49, 0x64, 0x22, 0x30, 0x0a, 0x12, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x73, 0x75, 0x6d, 0x65, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x22, 0x29, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74,
+	0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
+	0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
+	0x49, 0x64, 0x22, 0x6e, 0x0a, 0x17, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x53, 0x0a,
+	0x12, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x12,
+	0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x22, 0x62, 0x0a, 0x14, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x12, 0x4a, 0x0a, 0x0f, 0x61, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x63, 0x74,
+	0x69, 0x76, 0x69, 0x74, 0x79, 0x52, 0x0f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x63,
+	0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x22, 0x77, 0x0a, 0x11, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x56,
+	0x61, 0x75, 0x6c, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x62, 0x0a, 0x17, 0x65,
+	0x76, 0x65, 0x6e, 0x74, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x28, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x17, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x56, 0x61, 0x75,
+	0x6c, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22,
+	0xa5, 0x01, 0x0a, 0x17, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x41, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x6f,
+	0x77, 0x6e, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6f, 0x77,
+	0x6e, 0x65, 0x72, 0x49, 0x64, 0x12, 0x22, 0x0a, 0x0c, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x41, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x76, 0x61, 0x75,
+	0x6c, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x24, 0x0a, 0x0d, 0x61, 0x63, 0x63,
+	0x6f, 0x75, 0x6e, 0x74, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0d, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x12,
+	0x26, 0x0a, 0x0e, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0e, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74,
+	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x22, 0xff, 0x01, 0x0a, 0x1d, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x6f, 0x77, 0x6e,
+	0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6f, 0x77, 0x6e, 0x65,
+	0x72, 0x49, 0x64, 0x12, 0x24, 0x0a, 0x0d, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x41, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x73, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x22, 0x0a, 0x0c, 0x76, 0x61, 0x75,
+	0x6c, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0c, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x2a, 0x0a,
+	0x10, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
+	0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74,
+	0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x20, 0x0a, 0x0b, 0x73, 0x68, 0x61,
+	0x72, 0x65, 0x73, 0x4d, 0x6f, 0x76, 0x65, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b,
+	0x73, 0x68, 0x61, 0x72, 0x65, 0x73, 0x4d, 0x6f, 0x76, 0x65, 0x64, 0x12, 0x2c, 0x0a, 0x11, 0x64,
+	0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x68, 0x61, 0x72, 0x65, 0x73,
+	0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x53, 0x68, 0x61, 0x72, 0x65, 0x73, 0x22, 0xb7, 0x01, 0x0a, 0x1c, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x55, 0x6e, 0x62, 0x6f, 0x6e, 0x64, 0x69, 0x6e,
+	0x67, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x6f, 0x77,
+	0x6e, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6f, 0x77, 0x6e,
+	0x65, 0x72, 0x49, 0x64, 0x12, 0x28, 0x0a, 0x0f, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x41, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0f, 0x73,
+	0x6f, 0x75, 0x72, 0x63, 0x65, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x65, 0x73, 0x12, 0x53,
+	0x0a, 0x0b, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x2b, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x73, 0x74, 0x61,
+	0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x55, 0x6e, 0x62,
+	0x6f, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0b, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x22, 0xb3, 0x01, 0x0a, 0x1f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x56, 0x61, 0x75,
+	0x6c, 0x74, 0x52, 0x65, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x69,
+	0x67, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x6f, 0x77, 0x6e, 0x65, 0x72,
+	0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x49,
+	0x64, 0x12, 0x28, 0x0a, 0x0f, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x41, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0f, 0x73, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x65, 0x73, 0x12, 0x4c, 0x0a, 0x0b, 0x64,
+	0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x24, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x73, 0x74, 0x61, 0x6b, 0x69, 0x6e,
+	0x67, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x52, 0x65, 0x64, 0x65, 0x6c, 0x65,
+	0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0b, 0x64, 0x65,
+	0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x87, 0x01, 0x0a, 0x15, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x12, 0x6e, 0x0a, 0x1b, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c,
+	0x64, 0x42, 0x61, 0x6e, 0x6b, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74,
+	0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x1b, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69,
+	0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x22, 0x8d, 0x01, 0x0a, 0x1b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69,
+	0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74,
 	0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x20, 0x0a,
-	0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x12,
-	0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65,
-	0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x10, 0x0a,
-	0x03, 0x66, 0x65, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x03, 0x66, 0x65, 0x65, 0x22,
-	0xb0, 0x01, 0x0a, 0x1f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61,
-	0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x73, 0x63, 0x61, 0x74, 0x65, 0x41, 0x6e, 0x64, 0x42,
-	0x75, 0x72, 0x6e, 0x12, 0x8c, 0x01, 0x0a, 0x25, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69,
-	0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x73, 0x63, 0x61, 0x74, 0x65,
-	0x41, 0x6e, 0x64, 0x42, 0x75, 0x72, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x36, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64,
-	0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x73, 0x63, 0x61, 0x74, 0x65, 0x41, 0x6e,
-	0x64, 0x42, 0x75, 0x72, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x25, 0x65, 0x76, 0x65,
-	0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x66, 0x69,
-	0x73, 0x63, 0x61, 0x74, 0x65, 0x41, 0x6e, 0x64, 0x42, 0x75, 0x72, 0x6e, 0x44, 0x65, 0x74, 0x61,
-	0x69, 0x6c, 0x22, 0x9f, 0x01, 0x0a, 0x25, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c,
-	0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x73, 0x63, 0x61, 0x74, 0x65, 0x41,
-	0x6e, 0x64, 0x42, 0x75, 0x72, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x2e, 0x0a,
+	0x12, 0x62, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6c, 0x6c, 0x61, 0x74, 0x65, 0x72, 0x61, 0x6c, 0x50,
+	0x6f, 0x6f, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x12, 0x62, 0x61, 0x6e, 0x6b, 0x43,
+	0x6f, 0x6c, 0x6c, 0x61, 0x74, 0x65, 0x72, 0x61, 0x6c, 0x50, 0x6f, 0x6f, 0x6c, 0x12, 0x24, 0x0a,
+	0x0d, 0x62, 0x61, 0x6e, 0x6b, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x50, 0x6f, 0x6f, 0x6c, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x62, 0x61, 0x6e, 0x6b, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x50,
+	0x6f, 0x6f, 0x6c, 0x22, 0x7b, 0x0a, 0x12, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c,
+	0x64, 0x42, 0x61, 0x6e, 0x6b, 0x4d, 0x69, 0x6e, 0x74, 0x12, 0x65, 0x0a, 0x18, 0x65, 0x76, 0x65,
+	0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x4d, 0x69, 0x6e, 0x74, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x29, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x4d, 0x69, 0x6e, 0x74,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x18, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69,
+	0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x4d, 0x69, 0x6e, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
+	0x22, 0x94, 0x01, 0x0a, 0x18, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42,
+	0x61, 0x6e, 0x6b, 0x4d, 0x69, 0x6e, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a,
+	0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
+	0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e,
+	0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x61, 0x6d,
+	0x6f, 0x75, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f,
+	0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b,
+	0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x22, 0x83, 0x01, 0x0a, 0x14, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d,
+	0x12, 0x6b, 0x0a, 0x1a, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61,
+	0x6e, 0x6b, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c,
+	0x64, 0x42, 0x61, 0x6e, 0x6b, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x44, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x52, 0x1a, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e,
+	0x6b, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xa8, 0x01,
+	0x0a, 0x1a, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b,
+	0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07,
 	0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67,
 	0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74,
 	0x41, 0x6c, 0x70, 0x68, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x61, 0x6d, 0x6f,
 	0x75, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75,
 	0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x61,
-	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x22, 0x87, 0x01, 0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x12, 0x6e,
-	0x0a, 0x1b, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b,
-	0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64,
-	0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69,
-	0x6c, 0x52, 0x1b, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e,
-	0x6b, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xa9,
-	0x01, 0x0a, 0x1b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e,
-	0x6b, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x18,
-	0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75,
-	0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x61,
-	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x12, 0x10, 0x0a, 0x03, 0x66, 0x65,
-	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x03, 0x66, 0x65, 0x65, 0x12, 0x20, 0x0a, 0x0b,
-	0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x1a,
-	0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x22, 0x9b, 0x01, 0x0a, 0x1a, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e,
-	0x76, 0x65, 0x72, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x7d, 0x0a, 0x20, 0x65, 0x76, 0x65,
-	0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x76, 0x65,
-	0x72, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64,
-	0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e,
-	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x20, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69,
-	0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x54, 0x6f, 0x6b,
-	0x65, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xfa, 0x01, 0x0a, 0x20, 0x45, 0x76, 0x65,
-	0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x76, 0x65,
-	0x72, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x24, 0x0a,
-	0x0d, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x47, 0x75, 0x69, 0x6c,
-	0x64, 0x49, 0x64, 0x12, 0x24, 0x0a, 0x0d, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x47, 0x75, 0x69,
-	0x6c, 0x64, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x74, 0x61, 0x72, 0x67,
-	0x65, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x24, 0x0a, 0x0d, 0x61, 0x6d, 0x6f,
-	0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x0d, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x6e, 0x12,
-	0x20, 0x0a, 0x0b, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x18, 0x04,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x41, 0x6c, 0x70, 0x68,
-	0x61, 0x12, 0x26, 0x0a, 0x0e, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e,
-	0x4f, 0x75, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x61, 0x6d, 0x6f, 0x75, 0x6e,
-	0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x4f, 0x75, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x49, 0x64, 0x22, 0x8e, 0x01, 0x0a, 0x1f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47,
-	0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x41, 0x70,
-	0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x6b, 0x0a, 0x1a, 0x67, 0x75, 0x69,
-	0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x41, 0x70, 0x70, 0x6c,
-	0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2b, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x41,
-	0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x1a, 0x67, 0x75, 0x69, 0x6c,
-	0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x41, 0x70, 0x70, 0x6c, 0x69,
-	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x63, 0x0a, 0x0c, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f,
-	0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x12, 0x53, 0x0a, 0x12, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f,
-	0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e,
-	0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x12, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72,
-	0x65, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x70, 0x0a, 0x12, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69,
-	0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x26, 0x0a,
-	0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x73, 0x0a,
-	0x10, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x52, 0x65, 0x66, 0x69, 0x6e,
-	0x65, 0x12, 0x5f, 0x0a, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x52,
-	0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x52, 0x65,
-	0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x16, 0x65, 0x76, 0x65, 0x6e,
-	0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61,
-	0x69, 0x6c, 0x22, 0x74, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61,
-	0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1a, 0x0a, 0x08,
-	0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
-	0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69, 0x6d,
-	0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x73, 0x0a, 0x10, 0x45, 0x76, 0x65, 0x6e,
-	0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x16,
-	0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65,
-	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x73,
+	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x66, 0x65, 0x65, 0x18, 0x05, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x03, 0x66, 0x65, 0x65, 0x22, 0xb0, 0x01, 0x0a, 0x1f, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x66, 0x69,
+	0x73, 0x63, 0x61, 0x74, 0x65, 0x41, 0x6e, 0x64, 0x42, 0x75, 0x72, 0x6e, 0x12, 0x8c, 0x01, 0x0a,
+	0x25, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43,
+	0x6f, 0x6e, 0x66, 0x69, 0x73, 0x63, 0x61, 0x74, 0x65, 0x41, 0x6e, 0x64, 0x42, 0x75, 0x72, 0x6e,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x36, 0x2e, 0x73,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x44,
-	0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68,
-	0x61, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x74, 0x0a,
-	0x16, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73,
-	0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65,
-	0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65,
-	0x72, 0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x69,
-	0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x61,
-	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f,
-	0x75, 0x6e, 0x74, 0x22, 0x73, 0x0a, 0x10, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68,
-	0x61, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74,
-	0x41, 0x6c, 0x70, 0x68, 0x61, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69,
-	0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41,
-	0x6c, 0x70, 0x68, 0x61, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x52, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x44, 0x65, 0x66, 0x75,
-	0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x58, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e,
-	0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61,
-	0x69, 0x6c, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x69, 0x6d,
-	0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d,
-	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75,
-	0x6e, 0x74, 0x22, 0x67, 0x0a, 0x0d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x54, 0x68,
-	0x65, 0x66, 0x74, 0x12, 0x56, 0x0a, 0x13, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x54,
-	0x68, 0x65, 0x66, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x54, 0x68, 0x65, 0x66, 0x74,
-	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x13, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65,
-	0x54, 0x68, 0x65, 0x66, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xe1, 0x01, 0x0a, 0x13,
-	0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x54, 0x68, 0x65, 0x66, 0x74, 0x44, 0x65, 0x74,
-	0x61, 0x69, 0x6c, 0x12, 0x32, 0x0a, 0x14, 0x76, 0x69, 0x63, 0x74, 0x69, 0x6d, 0x50, 0x72, 0x69,
-	0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x14, 0x76, 0x69, 0x63, 0x74, 0x69, 0x6d, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79,
-	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x26, 0x0a, 0x0e, 0x76, 0x69, 0x63, 0x74, 0x69,
-	0x6d, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x0e, 0x76, 0x69, 0x63, 0x74, 0x69, 0x6d, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12,
-	0x30, 0x0a, 0x13, 0x74, 0x68, 0x69, 0x65, 0x66, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x13, 0x74, 0x68,
-	0x69, 0x65, 0x66, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x12, 0x24, 0x0a, 0x0d, 0x74, 0x68, 0x69, 0x65, 0x66, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
-	0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x74, 0x68, 0x69, 0x65, 0x66, 0x50,
-	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e,
-	0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22,
-	0x6f, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x67, 0x72, 0x61,
-	0x74, 0x65, 0x12, 0x5c, 0x0a, 0x15, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69,
-	0x67, 0x72, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x67, 0x72,
-	0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x15, 0x65, 0x76, 0x65, 0x6e, 0x74,
-	0x4f, 0x72, 0x65, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x22, 0xa1, 0x01, 0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x67,
-	0x72, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c,
+	0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e,
+	0x66, 0x69, 0x73, 0x63, 0x61, 0x74, 0x65, 0x41, 0x6e, 0x64, 0x42, 0x75, 0x72, 0x6e, 0x44, 0x65,
+	0x74, 0x61, 0x69, 0x6c, 0x52, 0x25, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64,
+	0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x73, 0x63, 0x61, 0x74, 0x65, 0x41, 0x6e,
+	0x64, 0x42, 0x75, 0x72, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x9f, 0x01, 0x0a, 0x25,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f,
+	0x6e, 0x66, 0x69, 0x73, 0x63, 0x61, 0x74, 0x65, 0x41, 0x6e, 0x64, 0x42, 0x75, 0x72, 0x6e, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12,
+	0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68,
+	0x61, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f,
+	0x6b, 0x65, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x22, 0x87, 0x01,
+	0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b,
+	0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x12, 0x6e, 0x0a, 0x1b, 0x65, 0x76, 0x65, 0x6e, 0x74,
+	0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2c, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e,
+	0x76, 0x65, 0x72, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x1b, 0x65, 0x76, 0x65, 0x6e,
+	0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72,
+	0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xa9, 0x01, 0x0a, 0x1b, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72,
+	0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64,
+	0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49,
+	0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x41, 0x6c,
+	0x70, 0x68, 0x61, 0x12, 0x10, 0x0a, 0x03, 0x66, 0x65, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x03, 0x66, 0x65, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54,
+	0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x61, 0x6d, 0x6f, 0x75,
+	0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x49, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x49, 0x64, 0x22, 0x9b, 0x01, 0x0a, 0x1a, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69,
+	0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x54, 0x6f, 0x6b,
+	0x65, 0x6e, 0x12, 0x7d, 0x0a, 0x20, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64,
+	0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x31, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e,
+	0x76, 0x65, 0x72, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52,
+	0x20, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43,
+	0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x22, 0xfa, 0x01, 0x0a, 0x20, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64,
+	0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x24, 0x0a, 0x0d, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
+	0x47, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x73,
+	0x6f, 0x75, 0x72, 0x63, 0x65, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x24, 0x0a, 0x0d,
+	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0d, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64,
+	0x49, 0x64, 0x12, 0x24, 0x0a, 0x0d, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65,
+	0x6e, 0x49, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x61, 0x6d, 0x6f, 0x75, 0x6e,
+	0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x6e, 0x12, 0x20, 0x0a, 0x0b, 0x62, 0x72, 0x69, 0x64,
+	0x67, 0x65, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x62,
+	0x72, 0x69, 0x64, 0x67, 0x65, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x12, 0x26, 0x0a, 0x0e, 0x61, 0x6d,
+	0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x4f, 0x75, 0x74, 0x18, 0x05, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x0e, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x4f,
+	0x75, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x06,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x22, 0x8e,
+	0x01, 0x0a, 0x1f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d,
+	0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x41, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x6b, 0x0a, 0x1a, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65,
+	0x72, 0x73, 0x68, 0x69, 0x70, 0x41, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65,
+	0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x41, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x52, 0x1a, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72,
+	0x73, 0x68, 0x69, 0x70, 0x41, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22,
+	0x63, 0x0a, 0x0c, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x12,
+	0x53, 0x0a, 0x12, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x23, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
+	0x52, 0x12, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65,
+	0x74, 0x61, 0x69, 0x6c, 0x22, 0x70, 0x0a, 0x12, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65,
+	0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c,
 	0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c,
 	0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72,
 	0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e,
-	0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x2c,
-	0x0a, 0x11, 0x6f, 0x6c, 0x64, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x6f, 0x6c, 0x64, 0x50, 0x72,
-	0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06,
-	0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d,
-	0x6f, 0x75, 0x6e, 0x74, 0x22, 0x89, 0x01, 0x0a, 0x18, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6c, 0x65, 0x61,
-	0x72, 0x12, 0x6d, 0x0a, 0x19, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e,
-	0x64, 0x65, 0x72, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x44,
-	0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x19, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66,
-	0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x22, 0x4e, 0x0a, 0x1e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44,
-	0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x44, 0x65, 0x74, 0x61,
-	0x69, 0x6c, 0x12, 0x2c, 0x0a, 0x11, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x64,
-	0x65, 0x66, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64,
-	0x22, 0x5f, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x12,
-	0x50, 0x0a, 0x11, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65,
-	0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x73, 0x74, 0x72,
+	0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16,
+	0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06,
+	0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x73, 0x0a, 0x10, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41,
+	0x6c, 0x70, 0x68, 0x61, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x12, 0x5f, 0x0a, 0x16, 0x65, 0x76,
+	0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65,
+	0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x73, 0x74, 0x72,
 	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65,
-	0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x11,
-	0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61, 0x69,
-	0x6c, 0x22, 0xf6, 0x0a, 0x0a, 0x11, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63,
-	0x6b, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x2a, 0x0a, 0x10, 0x61, 0x74, 0x74, 0x61, 0x63,
-	0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x10, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x49, 0x64, 0x12, 0x32, 0x0a, 0x14, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x14, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x54, 0x79, 0x70, 0x65, 0x49, 0x64, 0x12, 0x2e, 0x0a, 0x12, 0x61, 0x74, 0x74, 0x61, 0x63,
-	0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x12, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x62, 0x0a, 0x1a, 0x61, 0x74, 0x74, 0x61, 0x63,
-	0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62,
-	0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
-	0x1a, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c,
-	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x3a, 0x0a, 0x18, 0x61,
-	0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x18, 0x61,
-	0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x61, 0x0a, 0x1c, 0x61, 0x74, 0x74, 0x61, 0x63,
-	0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69,
-	0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e,
+	0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x52, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x52,
+	0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x98, 0x01, 0x0a, 0x16,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x69, 0x6d,
+	0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d,
+	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75,
+	0x6e, 0x74, 0x12, 0x22, 0x0a, 0x0c, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x41,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x22, 0x73, 0x0a, 0x10, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41,
+	0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x16, 0x65, 0x76,
+	0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65,
+	0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x52, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x49,
+	0x6e, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x98, 0x01, 0x0a, 0x16,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x69, 0x6d,
+	0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d,
+	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75,
+	0x6e, 0x74, 0x12, 0x22, 0x0a, 0x0c, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x41,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x22, 0x73, 0x0a, 0x10, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41,
+	0x6c, 0x70, 0x68, 0x61, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x16, 0x65, 0x76,
+	0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65,
+	0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x52, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x44,
+	0x65, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x58, 0x0a, 0x16, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79,
+	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x70,
+	0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a,
+	0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61,
+	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x67, 0x0a, 0x0d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72,
+	0x65, 0x54, 0x68, 0x65, 0x66, 0x74, 0x12, 0x56, 0x0a, 0x13, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f,
+	0x72, 0x65, 0x54, 0x68, 0x65, 0x66, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x54, 0x68,
+	0x65, 0x66, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x13, 0x65, 0x76, 0x65, 0x6e, 0x74,
+	0x4f, 0x72, 0x65, 0x54, 0x68, 0x65, 0x66, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xe1,
+	0x01, 0x0a, 0x13, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x54, 0x68, 0x65, 0x66, 0x74,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x32, 0x0a, 0x14, 0x76, 0x69, 0x63, 0x74, 0x69, 0x6d,
+	0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x14, 0x76, 0x69, 0x63, 0x74, 0x69, 0x6d, 0x50, 0x72, 0x69, 0x6d,
+	0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x26, 0x0a, 0x0e, 0x76, 0x69,
+	0x63, 0x74, 0x69, 0x6d, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0e, 0x76, 0x69, 0x63, 0x74, 0x69, 0x6d, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x49, 0x64, 0x12, 0x30, 0x0a, 0x13, 0x74, 0x68, 0x69, 0x65, 0x66, 0x50, 0x72, 0x69, 0x6d, 0x61,
+	0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x13, 0x74, 0x68, 0x69, 0x65, 0x66, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x12, 0x24, 0x0a, 0x0d, 0x74, 0x68, 0x69, 0x65, 0x66, 0x50, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x74, 0x68, 0x69,
+	0x65, 0x66, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d,
+	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75,
+	0x6e, 0x74, 0x22, 0x6f, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69,
+	0x67, 0x72, 0x61, 0x74, 0x65, 0x12, 0x5c, 0x0a, 0x15, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72,
+	0x65, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d,
+	0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x15, 0x65, 0x76,
+	0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x22, 0xa1, 0x01, 0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65,
+	0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1a, 0x0a,
+	0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69,
+	0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
+	0x73, 0x12, 0x2c, 0x0a, 0x11, 0x6f, 0x6c, 0x64, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x6f, 0x6c,
+	0x64, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12,
+	0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x89, 0x01, 0x0a, 0x18, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43,
+	0x6c, 0x65, 0x61, 0x72, 0x12, 0x6d, 0x0a, 0x19, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65,
+	0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6c, 0x65,
+	0x61, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x19, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x22, 0x4e, 0x0a, 0x1e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x2c, 0x0a, 0x11, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x69,
+	0x6e, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x11, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x49, 0x64, 0x22, 0x5f, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61,
+	0x63, 0x6b, 0x12, 0x50, 0x0a, 0x11, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63,
+	0x6b, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x22, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x61, 0x6d, 0x62, 0x69, 0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1c, 0x61, 0x74,
-	0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72,
-	0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x2e, 0x0a, 0x12, 0x61, 0x74,
-	0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74,
-	0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x12, 0x45, 0x0a, 0x0c, 0x77, 0x65,
-	0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0e,
-	0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73,
-	0x74, 0x65, 0x6d, 0x52, 0x0c, 0x77, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74, 0x65,
-	0x6d, 0x12, 0x48, 0x0a, 0x0d, 0x77, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72,
-	0x6f, 0x6c, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x57,
-	0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x52, 0x0d, 0x77, 0x65,
-	0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x12, 0x4b, 0x0a, 0x0e, 0x61,
-	0x63, 0x74, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x18, 0x0a, 0x20,
-	0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65,
-	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x52, 0x0e, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65,
-	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x12, 0x5c, 0x0a, 0x15, 0x65, 0x76, 0x65, 0x6e,
-	0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69,
-	0x6c, 0x18, 0x0b, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41,
-	0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52,
-	0x15, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f, 0x74,
-	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x36, 0x0a, 0x16, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c,
-	0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
-	0x18, 0x0c, 0x20, 0x01, 0x28, 0x08, 0x52, 0x16, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61,
-	0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x22,
-	0x0a, 0x0c, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x0d,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x0c, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61,
-	0x67, 0x65, 0x12, 0x44, 0x0a, 0x1d, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61,
-	0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63,
-	0x6b, 0x65, 0x72, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x08, 0x52, 0x1d, 0x72, 0x65, 0x63, 0x6f, 0x69,
-	0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64,
-	0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x56, 0x0a, 0x26, 0x70, 0x6c, 0x61, 0x6e,
-	0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e,
-	0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b,
-	0x65, 0x72, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x08, 0x52, 0x26, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74,
-	0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e,
-	0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
-	0x12, 0x42, 0x0a, 0x1c, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66,
-	0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65,
-	0x18, 0x10, 0x20, 0x01, 0x28, 0x04, 0x52, 0x1c, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72,
-	0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61,
-	0x6d, 0x61, 0x67, 0x65, 0x12, 0x64, 0x0a, 0x2d, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72,
-	0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61,
-	0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74,
-	0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x11, 0x20, 0x01, 0x28, 0x08, 0x52, 0x2d, 0x70, 0x6c, 0x61,
-	0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e,
-	0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79,
-	0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x2a, 0x0a, 0x10, 0x61, 0x74,
-	0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x12,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x50, 0x6c,
-	0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x32, 0x0a, 0x14, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b,
-	0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x42, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x18, 0x14,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x14, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65,
-	0x61, 0x6c, 0x74, 0x68, 0x42, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x12, 0x30, 0x0a, 0x13, 0x61, 0x74,
-	0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74, 0x65,
-	0x72, 0x18, 0x15, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65,
-	0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x12, 0x2c, 0x0a, 0x11,
-	0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x4d, 0x61,
-	0x78, 0x18, 0x16, 0x20, 0x01, 0x28, 0x04, 0x52, 0x11, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65,
-	0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x4d, 0x61, 0x78, 0x22, 0xdd, 0x16, 0x0a, 0x15, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f, 0x74, 0x44, 0x65,
-	0x74, 0x61, 0x69, 0x6c, 0x12, 0x26, 0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x61,
-	0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e,
-	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x2c,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x49, 0x64, 0x12, 0x2e, 0x0a, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79,
-	0x70, 0x65, 0x49, 0x64, 0x12, 0x2a, 0x0a, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10,
-	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65,
-	0x12, 0x5e, 0x0a, 0x18, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x04, 0x20, 0x01,
-	0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x42,
-	0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x18, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65,
-	0x12, 0x36, 0x0a, 0x16, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x16, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f,
-	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x5d, 0x0a, 0x1a, 0x74, 0x61, 0x72, 0x67,
-	0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e,
-	0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61,
-	0x6d, 0x62, 0x69, 0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1a, 0x74, 0x61, 0x72,
-	0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69,
-	0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x2a, 0x0a, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65,
-	0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53,
-	0x6c, 0x6f, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x18, 0x08, 0x20,
-	0x01, 0x28, 0x08, 0x52, 0x06, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x12, 0x43, 0x0a, 0x0b, 0x65,
-	0x76, 0x61, 0x64, 0x65, 0x64, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0e,
-	0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x55, 0x6e, 0x69, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e,
-	0x73, 0x65, 0x73, 0x52, 0x0b, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x43, 0x61, 0x75, 0x73, 0x65,
-	0x12, 0x3c, 0x0a, 0x19, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x6e,
-	0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x18, 0x0a, 0x20,
-	0x01, 0x28, 0x08, 0x52, 0x19, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50, 0x6c, 0x61,
-	0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x12, 0x6e,
-	0x0a, 0x1e, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74,
-	0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x43, 0x61, 0x75, 0x73, 0x65,
-	0x18, 0x0b, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x6c, 0x61,
-	0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x52, 0x1e,
-	0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72,
-	0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x18,
-	0x0a, 0x07, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x08, 0x52,
-	0x07, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x12, 0x2c, 0x0a, 0x11, 0x62, 0x6c, 0x6f, 0x63,
-	0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x0d, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x11, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65,
-	0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x0e, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x34, 0x0a, 0x15, 0x62, 0x6c, 0x6f, 0x63,
-	0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x49,
-	0x64, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64,
-	0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x49, 0x64, 0x12, 0x64,
-	0x0a, 0x1b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x10, 0x20,
-	0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65,
-	0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64,
-	0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x54, 0x79, 0x70, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42,
-	0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
-	0x64, 0x18, 0x11, 0x20, 0x01, 0x28, 0x09, 0x52, 0x19, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64,
-	0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x49, 0x64, 0x12, 0x63, 0x0a, 0x1d, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d,
-	0x62, 0x69, 0x74, 0x18, 0x12, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69,
-	0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1d, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65,
-	0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69,
-	0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b,
-	0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x18, 0x13,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x12, 0x2a, 0x0a, 0x10, 0x62, 0x6c, 0x6f,
-	0x63, 0x6b, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x18, 0x14, 0x20,
-	0x01, 0x28, 0x08, 0x52, 0x10, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74,
-	0x72, 0x6f, 0x79, 0x65, 0x64, 0x12, 0x7d, 0x0a, 0x20, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74,
-	0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e,
-	0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x15, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x66,
-	0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61,
-	0x69, 0x6c, 0x52, 0x20, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44,
-	0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65,
-	0x74, 0x61, 0x69, 0x6c, 0x12, 0x20, 0x0a, 0x0b, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65,
-	0x61, 0x6c, 0x74, 0x18, 0x16, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x64, 0x61, 0x6d, 0x61, 0x67,
-	0x65, 0x44, 0x65, 0x61, 0x6c, 0x74, 0x12, 0x28, 0x0a, 0x0f, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65,
-	0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x17, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x0f, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e,
-	0x12, 0x55, 0x0a, 0x14, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74,
-	0x69, 0x6f, 0x6e, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x18, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x52, 0x11, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65,
+	0x74, 0x61, 0x69, 0x6c, 0x22, 0xf6, 0x0a, 0x0a, 0x11, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74,
+	0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x2a, 0x0a, 0x10, 0x61, 0x74,
+	0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x32, 0x0a, 0x14, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b,
+	0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x49, 0x64, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x14, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x49, 0x64, 0x12, 0x2e, 0x0a, 0x12, 0x61, 0x74,
+	0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x12, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x62, 0x0a, 0x1a, 0x61, 0x74,
+	0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x74, 0x65, 0x63, 0x68, 0x55, 0x6e, 0x69, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65,
-	0x73, 0x52, 0x14, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69,
-	0x6f, 0x6e, 0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x64, 0x61, 0x6d, 0x61, 0x67,
-	0x65, 0x18, 0x19, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12,
-	0x28, 0x0a, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72,
-	0x65, 0x64, 0x18, 0x1a, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
-	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x12, 0x34, 0x0a, 0x15, 0x74, 0x61, 0x72,
-	0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x44, 0x61, 0x6d, 0x61,
-	0x67, 0x65, 0x18, 0x1b, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
-	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12,
-	0x46, 0x0a, 0x1e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72,
-	0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65,
-	0x72, 0x18, 0x1c, 0x20, 0x01, 0x28, 0x08, 0x52, 0x1e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43,
-	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41,
-	0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x6f, 0x0a, 0x1c, 0x74, 0x61, 0x72, 0x67, 0x65,
-	0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57,
-	0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x18, 0x1d, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x74, 0x65, 0x63, 0x68, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f,
-	0x6e, 0x72, 0x79, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1c, 0x74, 0x61, 0x72, 0x67,
-	0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65,
-	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x12, 0x66, 0x0a, 0x19, 0x74, 0x61, 0x72, 0x67,
-	0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53,
-	0x79, 0x73, 0x74, 0x65, 0x6d, 0x18, 0x1e, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65,
-	0x63, 0x68, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x42, 0x05,
-	0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x19, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75,
-	0x6e, 0x74, 0x65, 0x72, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d,
-	0x12, 0x69, 0x0a, 0x1a, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65,
-	0x72, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x18, 0x1f,
-	0x20, 0x01, 0x28, 0x0e, 0x32, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x57, 0x65, 0x61, 0x70, 0x6f,
-	0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
-	0x1a, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x57, 0x65,
-	0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x12, 0x6c, 0x0a, 0x1b, 0x74,
-	0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x63, 0x74, 0x69,
-	0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x18, 0x20, 0x20, 0x01, 0x28, 0x0e,
-	0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61,
-	0x70, 0x6f, 0x6e, 0x72, 0x79, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1b, 0x74, 0x61,
-	0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x63, 0x74, 0x69, 0x76,
-	0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x12, 0x28, 0x0a, 0x0f, 0x74, 0x61, 0x72,
-	0x67, 0x65, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x18, 0x21, 0x20, 0x01,
-	0x28, 0x08, 0x52, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f,
-	0x79, 0x65, 0x64, 0x12, 0x48, 0x0a, 0x1f, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74,
-	0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x22, 0x20, 0x01, 0x28, 0x08, 0x52, 0x1f, 0x70, 0x6f,
-	0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d,
-	0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x34, 0x0a,
-	0x15, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e,
-	0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x23, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x70, 0x6f,
-	0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d,
-	0x61, 0x67, 0x65, 0x12, 0x56, 0x0a, 0x26, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74,
-	0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x24, 0x20,
-	0x01, 0x28, 0x08, 0x52, 0x26, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f,
-	0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x7f, 0x0a, 0x24, 0x70,
-	0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61,
-	0x6d, 0x61, 0x67, 0x65, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f,
-	0x6e, 0x72, 0x79, 0x18, 0x25, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68,
-	0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x42,
-	0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x24, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x50, 0x61, 0x73,
-	0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x12, 0x2e, 0x0a, 0x12,
-	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x42, 0x65, 0x66, 0x6f,
-	0x72, 0x65, 0x18, 0x26, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
-	0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x42, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x12, 0x2c, 0x0a, 0x11,
-	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74, 0x65,
-	0x72, 0x18, 0x27, 0x20, 0x01, 0x28, 0x04, 0x52, 0x11, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x48,
-	0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x12, 0x28, 0x0a, 0x0f, 0x74, 0x61,
-	0x72, 0x67, 0x65, 0x74, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x4d, 0x61, 0x78, 0x18, 0x28, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x48, 0x65, 0x61, 0x6c, 0x74,
-	0x68, 0x4d, 0x61, 0x78, 0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x48,
-	0x65, 0x61, 0x6c, 0x74, 0x68, 0x42, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x18, 0x29, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68,
-	0x42, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x12, 0x2e, 0x0a, 0x12, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65,
-	0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x18, 0x2a, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x12, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74,
-	0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x12, 0x2a, 0x0a, 0x10, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65,
-	0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x4d, 0x61, 0x78, 0x18, 0x2b, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x10, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x4d,
-	0x61, 0x78, 0x12, 0x26, 0x0a, 0x0e, 0x61, 0x72, 0x6d, 0x6f, 0x75, 0x72, 0x50, 0x69, 0x65, 0x72,
-	0x63, 0x69, 0x6e, 0x67, 0x18, 0x2d, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0e, 0x61, 0x72, 0x6d, 0x6f,
-	0x75, 0x72, 0x50, 0x69, 0x65, 0x72, 0x63, 0x69, 0x6e, 0x67, 0x22, 0x8d, 0x07, 0x0a, 0x20, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64,
-	0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12,
-	0x2c, 0x0a, 0x11, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x63, 0x6f, 0x75, 0x6e,
-	0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x34, 0x0a,
-	0x15, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x54, 0x79, 0x70, 0x65, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x63, 0x6f,
-	0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70,
-	0x65, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x13, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x13, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x64, 0x0a, 0x1b, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72,
-	0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x54, 0x79, 0x70, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a,
-	0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1b,
-	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c,
-	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x63,
-	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f,
-	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x19,
-	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c,
-	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x63, 0x0a, 0x1d, 0x63, 0x6f, 0x75,
-	0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72,
+	0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0,
+	0x2a, 0x01, 0x52, 0x1a, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x3a,
+	0x0a, 0x18, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x18, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x61, 0x0a, 0x1c, 0x61, 0x74,
+	0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72,
 	0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0e,
 	0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
-	0x1d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x30,
-	0x0a, 0x13, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x53, 0x6c, 0x6f, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x63, 0x6f, 0x75,
-	0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74,
-	0x12, 0x63, 0x0a, 0x1b, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x18,
-	0x08, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x57, 0x65, 0x61, 0x70,
-	0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x52, 0x1b, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65,
-	0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53,
-	0x79, 0x73, 0x74, 0x65, 0x6d, 0x12, 0x66, 0x0a, 0x1c, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72,
-	0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f,
+	0x1c, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f,
+	0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x2e, 0x0a,
+	0x12, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53,
+	0x6c, 0x6f, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x61, 0x74, 0x74, 0x61, 0x63,
+	0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x12, 0x45, 0x0a,
+	0x0c, 0x77, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x18, 0x08, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e,
+	0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x52, 0x0c, 0x77, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79,
+	0x73, 0x74, 0x65, 0x6d, 0x12, 0x48, 0x0a, 0x0d, 0x77, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f,
 	0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x22, 0x2e, 0x73, 0x74,
 	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65,
 	0x63, 0x68, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x52,
-	0x1c, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x12, 0x69, 0x0a,
-	0x1d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x18, 0x0a,
-	0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76,
-	0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x52, 0x1d, 0x63, 0x6f, 0x75, 0x6e, 0x74,
-	0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65,
-	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x12, 0x24, 0x0a, 0x0d, 0x63, 0x6f, 0x75, 0x6e,
-	0x74, 0x65, 0x72, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x0d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x3a,
-	0x0a, 0x18, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79,
-	0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x08,
-	0x52, 0x18, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79,
-	0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x22, 0x57, 0x0a, 0x09, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x12, 0x4a, 0x0a, 0x0f, 0x65, 0x76, 0x65, 0x6e, 0x74,
-	0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74, 0x61,
-	0x69, 0x6c, 0x52, 0x0f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74,
-	0x61, 0x69, 0x6c, 0x22, 0x9b, 0x01, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69,
-	0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x66, 0x6c, 0x65, 0x65, 0x74,
-	0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x49,
-	0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x12, 0x33, 0x0a,
-	0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e,
+	0x0d, 0x77, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x12, 0x4b,
+	0x0a, 0x0e, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79,
+	0x18, 0x0a, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x41, 0x63, 0x74,
+	0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x52, 0x0e, 0x61, 0x63, 0x74,
+	0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x12, 0x5c, 0x0a, 0x15, 0x65,
+	0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f, 0x74, 0x44, 0x65,
+	0x74, 0x61, 0x69, 0x6c, 0x18, 0x0b, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f, 0x74, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x52, 0x15, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53,
+	0x68, 0x6f, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x36, 0x0a, 0x16, 0x72, 0x65, 0x63,
+	0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63,
+	0x6b, 0x65, 0x72, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x08, 0x52, 0x16, 0x72, 0x65, 0x63, 0x6f, 0x69,
+	0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65,
+	0x72, 0x12, 0x22, 0x0a, 0x0c, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67,
+	0x65, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0c, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44,
+	0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x44, 0x0a, 0x1d, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44,
+	0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74,
+	0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x08, 0x52, 0x1d, 0x72, 0x65,
+	0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f,
+	0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x56, 0x0a, 0x26, 0x70,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43,
+	0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74,
+	0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x08, 0x52, 0x26, 0x70, 0x6c, 0x61,
+	0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e,
+	0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63,
+	0x6b, 0x65, 0x72, 0x12, 0x42, 0x0a, 0x1c, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79,
+	0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d,
+	0x61, 0x67, 0x65, 0x18, 0x10, 0x20, 0x01, 0x28, 0x04, 0x52, 0x1c, 0x70, 0x6c, 0x61, 0x6e, 0x65,
+	0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f,
+	0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x64, 0x0a, 0x2d, 0x70, 0x6c, 0x61, 0x6e, 0x65,
+	0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f,
+	0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64,
+	0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x11, 0x20, 0x01, 0x28, 0x08, 0x52, 0x2d,
+	0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65,
+	0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74,
+	0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x2a, 0x0a,
+	0x10, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
+	0x64, 0x18, 0x12, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65,
+	0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x32, 0x0a, 0x14, 0x61, 0x74, 0x74,
+	0x61, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x42, 0x65, 0x66, 0x6f, 0x72,
+	0x65, 0x18, 0x14, 0x20, 0x01, 0x28, 0x04, 0x52, 0x14, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65,
+	0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x42, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x12, 0x30, 0x0a,
+	0x13, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41,
+	0x66, 0x74, 0x65, 0x72, 0x18, 0x15, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x61, 0x74, 0x74, 0x61,
+	0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x12,
+	0x2c, 0x0a, 0x11, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74,
+	0x68, 0x4d, 0x61, 0x78, 0x18, 0x16, 0x20, 0x01, 0x28, 0x04, 0x52, 0x11, 0x61, 0x74, 0x74, 0x61,
+	0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x4d, 0x61, 0x78, 0x22, 0xdd, 0x16,
+	0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f,
+	0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x26, 0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65,
+	0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12,
+	0x26, 0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
+	0x64, 0x18, 0x2c, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x50,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x2e, 0x0a, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65,
+	0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x49, 0x64, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x54, 0x79, 0x70, 0x65, 0x49, 0x64, 0x12, 0x2a, 0x0a, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65,
+	0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54,
+	0x79, 0x70, 0x65, 0x12, 0x5e, 0x0a, 0x18, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79,
+	0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x18, 0x74, 0x61, 0x72, 0x67, 0x65,
+	0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54,
+	0x79, 0x70, 0x65, 0x12, 0x36, 0x0a, 0x16, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x05, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x16, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x5d, 0x0a, 0x1a, 0x74,
+	0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61,
+	0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0e, 0x32,
+	0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1a,
+	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72,
+	0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x2a, 0x0a, 0x10, 0x74, 0x61,
+	0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x18, 0x07,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64,
+	0x18, 0x08, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x12, 0x43,
+	0x0a, 0x0b, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x09, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x55, 0x6e, 0x69, 0x74, 0x44, 0x65,
+	0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x52, 0x0b, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x43, 0x61,
+	0x75, 0x73, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73,
+	0x18, 0x0a, 0x20, 0x01, 0x28, 0x08, 0x52, 0x19, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79,
+	0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65,
+	0x73, 0x12, 0x6e, 0x0a, 0x1e, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50, 0x6c, 0x61,
+	0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x43, 0x61,
+	0x75, 0x73, 0x65, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68,
+	0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65,
+	0x73, 0x52, 0x1e, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x6e, 0x65,
+	0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x43, 0x61, 0x75, 0x73,
+	0x65, 0x12, 0x18, 0x0a, 0x07, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x18, 0x0c, 0x20, 0x01,
+	0x28, 0x08, 0x52, 0x07, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x12, 0x2c, 0x0a, 0x11, 0x62,
+	0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64,
+	0x18, 0x0d, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42,
+	0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f,
+	0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65,
+	0x18, 0x0e, 0x20, 0x01, 0x28, 0x09, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42,
+	0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x34, 0x0a, 0x15, 0x62,
+	0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79,
+	0x70, 0x65, 0x49, 0x64, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x62, 0x6c, 0x6f, 0x63,
+	0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x49,
+	0x64, 0x12, 0x64, 0x0a, 0x1b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65,
+	0x18, 0x10, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54,
+	0x79, 0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1b, 0x62, 0x6c, 0x6f, 0x63,
+	0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x62, 0x6c, 0x6f, 0x63, 0x6b,
+	0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x49, 0x64, 0x18, 0x11, 0x20, 0x01, 0x28, 0x09, 0x52, 0x19, 0x62, 0x6c, 0x6f, 0x63,
+	0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x63, 0x0a, 0x1d, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64,
+	0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e,
+	0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x12, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61,
+	0x6d, 0x62, 0x69, 0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1d, 0x62, 0x6c, 0x6f,
+	0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72,
+	0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c,
+	0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f,
+	0x74, 0x18, 0x13, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64,
+	0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x12, 0x2a, 0x0a, 0x10,
+	0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64,
+	0x18, 0x14, 0x20, 0x01, 0x28, 0x08, 0x52, 0x10, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x44,
+	0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x12, 0x7d, 0x0a, 0x20, 0x65, 0x76, 0x65, 0x6e,
+	0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43,
+	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x15, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b,
+	0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x20, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61,
+	0x63, 0x6b, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65,
+	0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x20, 0x0a, 0x0b, 0x64, 0x61, 0x6d, 0x61, 0x67,
+	0x65, 0x44, 0x65, 0x61, 0x6c, 0x74, 0x18, 0x16, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x64, 0x61,
+	0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x61, 0x6c, 0x74, 0x12, 0x28, 0x0a, 0x0f, 0x64, 0x61, 0x6d,
+	0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x17, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x0f, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x12, 0x55, 0x0a, 0x14, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64,
+	0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x18, 0x20, 0x01, 0x28,
+	0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x55, 0x6e, 0x69, 0x74, 0x44, 0x65, 0x66, 0x65,
+	0x6e, 0x73, 0x65, 0x73, 0x52, 0x14, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75,
+	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x64, 0x61,
+	0x6d, 0x61, 0x67, 0x65, 0x18, 0x19, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x64, 0x61, 0x6d, 0x61,
+	0x67, 0x65, 0x12, 0x28, 0x0a, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e,
+	0x74, 0x65, 0x72, 0x65, 0x64, 0x18, 0x1a, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0f, 0x74, 0x61, 0x72,
+	0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x12, 0x34, 0x0a, 0x15,
+	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x44,
+	0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x1b, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x74, 0x61, 0x72,
+	0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x44, 0x61, 0x6d, 0x61,
+	0x67, 0x65, 0x12, 0x46, 0x0a, 0x1e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e,
+	0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61,
+	0x63, 0x6b, 0x65, 0x72, 0x18, 0x1c, 0x20, 0x01, 0x28, 0x08, 0x52, 0x1e, 0x74, 0x61, 0x72, 0x67,
+	0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79,
+	0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x6f, 0x0a, 0x1c, 0x74, 0x61,
+	0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x50, 0x61, 0x73, 0x73, 0x69,
+	0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x18, 0x1d, 0x20, 0x01, 0x28, 0x0e,
+	0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65,
+	0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1c, 0x74,
+	0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x50, 0x61, 0x73, 0x73,
+	0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x12, 0x66, 0x0a, 0x19, 0x74,
+	0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x57, 0x65, 0x61, 0x70,
+	0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x18, 0x1e, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x74, 0x65, 0x63, 0x68, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74, 0x65,
+	0x6d, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x19, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
+	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73,
+	0x74, 0x65, 0x6d, 0x12, 0x69, 0x0a, 0x1a, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75,
+	0x6e, 0x74, 0x65, 0x72, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f,
+	0x6c, 0x18, 0x1f, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x57, 0x65,
+	0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x42, 0x05, 0xa8, 0xe7, 0xb0,
+	0x2a, 0x01, 0x52, 0x1a, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65,
+	0x72, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x12, 0x6c,
+	0x0a, 0x1b, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41,
+	0x63, 0x74, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x18, 0x20, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65,
+	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
+	0x1b, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x63,
+	0x74, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x12, 0x28, 0x0a, 0x0f,
+	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x18,
+	0x21, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x44, 0x65, 0x73,
+	0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x12, 0x48, 0x0a, 0x1f, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54,
+	0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x22, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x1f, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
+	0x12, 0x34, 0x0a, 0x15, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x23, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x15, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x56, 0x0a, 0x26, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44,
+	0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
+	0x18, 0x24, 0x20, 0x01, 0x28, 0x08, 0x52, 0x26, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73,
+	0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x7f,
+	0x0a, 0x24, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65,
+	0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x18, 0x25, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74,
+	0x65, 0x63, 0x68, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e,
+	0x72, 0x79, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x24, 0x70, 0x6f, 0x73, 0x74, 0x44,
+	0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65,
+	0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x12,
+	0x2e, 0x0a, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x42,
+	0x65, 0x66, 0x6f, 0x72, 0x65, 0x18, 0x26, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x74, 0x61, 0x72,
+	0x67, 0x65, 0x74, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x42, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x12,
+	0x2c, 0x0a, 0x11, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41,
+	0x66, 0x74, 0x65, 0x72, 0x18, 0x27, 0x20, 0x01, 0x28, 0x04, 0x52, 0x11, 0x74, 0x61, 0x72, 0x67,
+	0x65, 0x74, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x12, 0x28, 0x0a,
+	0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x4d, 0x61, 0x78,
+	0x18, 0x28, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x48, 0x65,
+	0x61, 0x6c, 0x74, 0x68, 0x4d, 0x61, 0x78, 0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b,
+	0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x42, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x18, 0x29,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61,
+	0x6c, 0x74, 0x68, 0x42, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x12, 0x2e, 0x0a, 0x12, 0x62, 0x6c, 0x6f,
+	0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x18,
+	0x2a, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65,
+	0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x12, 0x2a, 0x0a, 0x10, 0x62, 0x6c, 0x6f,
+	0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x4d, 0x61, 0x78, 0x18, 0x2b, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x10, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c,
+	0x74, 0x68, 0x4d, 0x61, 0x78, 0x12, 0x26, 0x0a, 0x0e, 0x61, 0x72, 0x6d, 0x6f, 0x75, 0x72, 0x50,
+	0x69, 0x65, 0x72, 0x63, 0x69, 0x6e, 0x67, 0x18, 0x2d, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0e, 0x61,
+	0x72, 0x6d, 0x6f, 0x75, 0x72, 0x50, 0x69, 0x65, 0x72, 0x63, 0x69, 0x6e, 0x67, 0x22, 0x8d, 0x07,
+	0x0a, 0x20, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x66,
+	0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x12, 0x2c, 0x0a, 0x11, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x63,
+	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64,
+	0x12, 0x34, 0x0a, 0x15, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x15, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x54, 0x79, 0x70, 0x65, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x13, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65,
+	0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x13, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x64, 0x0a, 0x1b, 0x63, 0x6f, 0x75, 0x6e,
+	0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x72, 0x61, 0x69, 0x64, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74,
-	0x75, 0x73, 0x12, 0x1d, 0x0a, 0x0a, 0x73, 0x65, 0x69, 0x7a, 0x65, 0x64, 0x5f, 0x6f, 0x72, 0x65,
-	0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x73, 0x65, 0x69, 0x7a, 0x65, 0x64, 0x4f, 0x72,
-	0x65, 0x22, 0x73, 0x0a, 0x10, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x53, 0x75,
-	0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x5f, 0x0a, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x48, 0x61,
-	0x73, 0x68, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73,
-	0x68, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x16,
-	0x65, 0x76, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73,
-	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xb2, 0x01, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e, 0x74,
+	0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a,
+	0x01, 0x52, 0x1b, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x3c,
+	0x0a, 0x19, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x19, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x63, 0x0a, 0x1d,
+	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f,
+	0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x06, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0,
+	0x2a, 0x01, 0x52, 0x1d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69,
+	0x74, 0x12, 0x30, 0x0a, 0x13, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13,
+	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53,
+	0x6c, 0x6f, 0x74, 0x12, 0x63, 0x0a, 0x1b, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74,
+	0x65, 0x6d, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x57,
+	0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x52, 0x1b, 0x63, 0x6f, 0x75,
+	0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x57, 0x65, 0x61, 0x70,
+	0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x12, 0x66, 0x0a, 0x1c, 0x63, 0x6f, 0x75, 0x6e,
+	0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x57, 0x65, 0x61, 0x70, 0x6f,
+	0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x22,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x74, 0x65, 0x63, 0x68, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72,
+	0x6f, 0x6c, 0x52, 0x1c, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c,
+	0x12, 0x69, 0x0a, 0x1d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72,
+	0x79, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x41, 0x63,
+	0x74, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x52, 0x1d, 0x63, 0x6f,
+	0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x63, 0x74,
+	0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x12, 0x24, 0x0a, 0x0d, 0x63,
+	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x0b, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x0d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x61, 0x6d, 0x61, 0x67,
+	0x65, 0x12, 0x3a, 0x0a, 0x18, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74,
+	0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x0c, 0x20,
+	0x01, 0x28, 0x08, 0x52, 0x18, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74,
+	0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x22, 0x57, 0x0a,
+	0x09, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x12, 0x4a, 0x0a, 0x0f, 0x65, 0x76,
+	0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x0f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x9b, 0x01, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74,
+	0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x66, 0x6c,
+	0x65, 0x65, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x66, 0x6c, 0x65,
+	0x65, 0x74, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64,
+	0x12, 0x33, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e,
+	0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x72, 0x61, 0x69, 0x64, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x06, 0x73,
+	0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x1d, 0x0a, 0x0a, 0x73, 0x65, 0x69, 0x7a, 0x65, 0x64, 0x5f,
+	0x6f, 0x72, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x73, 0x65, 0x69, 0x7a, 0x65,
+	0x64, 0x4f, 0x72, 0x65, 0x22, 0x73, 0x0a, 0x10, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73,
+	0x68, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x5f, 0x0a, 0x16, 0x65, 0x76, 0x65, 0x6e,
+	0x74, 0x48, 0x61, 0x73, 0x68, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74,
 	0x48, 0x61, 0x73, 0x68, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69,
-	0x6c, 0x12, 0x24, 0x0a, 0x0d, 0x63, 0x61, 0x6c, 0x6c, 0x65, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x63, 0x61, 0x6c, 0x6c, 0x65, 0x72,
-	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x63, 0x61, 0x74, 0x65, 0x67,
-	0x6f, 0x72, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x63, 0x61, 0x74, 0x65, 0x67,
-	0x6f, 0x72, 0x79, 0x12, 0x1e, 0x0a, 0x0a, 0x64, 0x69, 0x66, 0x66, 0x69, 0x63, 0x75, 0x6c, 0x74,
-	0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x64, 0x69, 0x66, 0x66, 0x69, 0x63, 0x75,
-	0x6c, 0x74, 0x79, 0x12, 0x1a, 0x0a, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x18,
-	0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x12,
-	0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x42, 0xa1, 0x01, 0x0a, 0x13,
-	0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f,
-	0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f,
-	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02,
-	0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6c, 0x52, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x53, 0x75, 0x63, 0x63,
+	0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xb2, 0x01, 0x0a, 0x16, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x44, 0x65,
+	0x74, 0x61, 0x69, 0x6c, 0x12, 0x24, 0x0a, 0x0d, 0x63, 0x61, 0x6c, 0x6c, 0x65, 0x72, 0x41, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x63, 0x61, 0x6c,
+	0x6c, 0x65, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x63, 0x61,
+	0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x63, 0x61,
+	0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x12, 0x1e, 0x0a, 0x0a, 0x64, 0x69, 0x66, 0x66, 0x69, 0x63,
+	0x75, 0x6c, 0x74, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x64, 0x69, 0x66, 0x66,
+	0x69, 0x63, 0x75, 0x6c, 0x74, 0x79, 0x12, 0x1a, 0x0a, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
+	0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
+	0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x18, 0x05,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x22, 0x6c,
+	0x0a, 0x14, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x53, 0x74,
+	0x61, 0x6b, 0x65, 0x43, 0x61, 0x70, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x12, 0x16,
+	0x0a, 0x06, 0x63, 0x61, 0x70, 0x42, 0x70, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06,
+	0x63, 0x61, 0x70, 0x42, 0x70, 0x73, 0x12, 0x24, 0x0a, 0x0d, 0x6d, 0x69, 0x6e, 0x56, 0x61, 0x6c,
+	0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x6d,
+	0x69, 0x6e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x42, 0xa1, 0x01, 0x0a,
+	0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74,
+	0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69,
+	0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2,
+	0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -40594,182 +47941,203 @@ func file_structs_structs_events_proto_rawDescGZIP() []byte {
 	return file_structs_structs_events_proto_rawDescData
 }
 
-var file_structs_structs_events_proto_msgTypes = make([]protoimpl.MessageInfo, 68)
+var file_structs_structs_events_proto_msgTypes = make([]protoimpl.MessageInfo, 80)
 var file_structs_structs_events_proto_goTypes = []interface{}{
-	(*EventAllocation)(nil),                       // 0: structs.structs.EventAllocation
-	(*EventAgreement)(nil),                        // 1: structs.structs.EventAgreement
-	(*EventFleet)(nil),                            // 2: structs.structs.EventFleet
-	(*EventGuild)(nil),                            // 3: structs.structs.EventGuild
-	(*EventInfusion)(nil),                         // 4: structs.structs.EventInfusion
-	(*EventPlanet)(nil),                           // 5: structs.structs.EventPlanet
-	(*EventPlanetAttribute)(nil),                  // 6: structs.structs.EventPlanetAttribute
-	(*EventPlayer)(nil),                           // 7: structs.structs.EventPlayer
-	(*EventProvider)(nil),                         // 8: structs.structs.EventProvider
-	(*EventReactor)(nil),                          // 9: structs.structs.EventReactor
-	(*EventStruct)(nil),                           // 10: structs.structs.EventStruct
-	(*EventStructAttribute)(nil),                  // 11: structs.structs.EventStructAttribute
-	(*EventStructDefender)(nil),                   // 12: structs.structs.EventStructDefender
-	(*EventStructType)(nil),                       // 13: structs.structs.EventStructType
-	(*EventSubstation)(nil),                       // 14: structs.structs.EventSubstation
-	(*EventTime)(nil),                             // 15: structs.structs.EventTime
-	(*EventTimeDetail)(nil),                       // 16: structs.structs.EventTimeDetail
-	(*EventPermission)(nil),                       // 17: structs.structs.EventPermission
-	(*EventGuildRankPermission)(nil),              // 18: structs.structs.EventGuildRankPermission
-	(*EventGrid)(nil),                             // 19: structs.structs.EventGrid
-	(*EventProviderAddress)(nil),                  // 20: structs.structs.EventProviderAddress
-	(*EventProviderAddressDetail)(nil),            // 21: structs.structs.EventProviderAddressDetail
-	(*EventProviderGrantGuild)(nil),               // 22: structs.structs.EventProviderGrantGuild
-	(*EventProviderGrantGuildDetail)(nil),         // 23: structs.structs.EventProviderGrantGuildDetail
-	(*EventProviderRevokeGuild)(nil),              // 24: structs.structs.EventProviderRevokeGuild
-	(*EventProviderRevokeGuildDetail)(nil),        // 25: structs.structs.EventProviderRevokeGuildDetail
-	(*EventProviderRevenueShortfall)(nil),         // 26: structs.structs.EventProviderRevenueShortfall
-	(*EventProviderRevenueShortfallDetail)(nil),   // 27: structs.structs.EventProviderRevenueShortfallDetail
-	(*EventPlayerHalted)(nil),                     // 28: structs.structs.EventPlayerHalted
-	(*EventPlayerResumed)(nil),                    // 29: structs.structs.EventPlayerResumed
-	(*EventDelete)(nil),                           // 30: structs.structs.EventDelete
-	(*EventAddressAssociation)(nil),               // 31: structs.structs.EventAddressAssociation
-	(*EventAddressActivity)(nil),                  // 32: structs.structs.EventAddressActivity
-	(*EventGuildBankAddress)(nil),                 // 33: structs.structs.EventGuildBankAddress
-	(*EventGuildBankAddressDetail)(nil),           // 34: structs.structs.EventGuildBankAddressDetail
-	(*EventGuildBankMint)(nil),                    // 35: structs.structs.EventGuildBankMint
-	(*EventGuildBankMintDetail)(nil),              // 36: structs.structs.EventGuildBankMintDetail
-	(*EventGuildBankRedeem)(nil),                  // 37: structs.structs.EventGuildBankRedeem
-	(*EventGuildBankRedeemDetail)(nil),            // 38: structs.structs.EventGuildBankRedeemDetail
-	(*EventGuildBankConfiscateAndBurn)(nil),       // 39: structs.structs.EventGuildBankConfiscateAndBurn
-	(*EventGuildBankConfiscateAndBurnDetail)(nil), // 40: structs.structs.EventGuildBankConfiscateAndBurnDetail
-	(*EventGuildBankConvert)(nil),                 // 41: structs.structs.EventGuildBankConvert
-	(*EventGuildBankConvertDetail)(nil),           // 42: structs.structs.EventGuildBankConvertDetail
-	(*EventGuildBankConvertToken)(nil),            // 43: structs.structs.EventGuildBankConvertToken
-	(*EventGuildBankConvertTokenDetail)(nil),      // 44: structs.structs.EventGuildBankConvertTokenDetail
-	(*EventGuildMembershipApplication)(nil),       // 45: structs.structs.EventGuildMembershipApplication
-	(*EventOreMine)(nil),                          // 46: structs.structs.EventOreMine
-	(*EventOreMineDetail)(nil),                    // 47: structs.structs.EventOreMineDetail
-	(*EventAlphaRefine)(nil),                      // 48: structs.structs.EventAlphaRefine
-	(*EventAlphaRefineDetail)(nil),                // 49: structs.structs.EventAlphaRefineDetail
-	(*EventAlphaInfuse)(nil),                      // 50: structs.structs.EventAlphaInfuse
-	(*EventAlphaInfuseDetail)(nil),                // 51: structs.structs.EventAlphaInfuseDetail
-	(*EventAlphaDefuse)(nil),                      // 52: structs.structs.EventAlphaDefuse
-	(*EventAlphaDefuseDetail)(nil),                // 53: structs.structs.EventAlphaDefuseDetail
-	(*EventOreTheft)(nil),                         // 54: structs.structs.EventOreTheft
-	(*EventOreTheftDetail)(nil),                   // 55: structs.structs.EventOreTheftDetail
-	(*EventOreMigrate)(nil),                       // 56: structs.structs.EventOreMigrate
-	(*EventOreMigrateDetail)(nil),                 // 57: structs.structs.EventOreMigrateDetail
-	(*EventStructDefenderClear)(nil),              // 58: structs.structs.EventStructDefenderClear
-	(*EventStructDefenderClearDetail)(nil),        // 59: structs.structs.EventStructDefenderClearDetail
-	(*EventAttack)(nil),                           // 60: structs.structs.EventAttack
-	(*EventAttackDetail)(nil),                     // 61: structs.structs.EventAttackDetail
-	(*EventAttackShotDetail)(nil),                 // 62: structs.structs.EventAttackShotDetail
-	(*EventAttackDefenderCounterDetail)(nil),      // 63: structs.structs.EventAttackDefenderCounterDetail
-	(*EventRaid)(nil),                             // 64: structs.structs.EventRaid
-	(*EventRaidDetail)(nil),                       // 65: structs.structs.EventRaidDetail
-	(*EventHashSuccess)(nil),                      // 66: structs.structs.EventHashSuccess
-	(*EventHashSuccessDetail)(nil),                // 67: structs.structs.EventHashSuccessDetail
-	(*Allocation)(nil),                            // 68: structs.structs.Allocation
-	(*Agreement)(nil),                             // 69: structs.structs.Agreement
-	(*Fleet)(nil),                                 // 70: structs.structs.Fleet
-	(*Guild)(nil),                                 // 71: structs.structs.Guild
-	(*Infusion)(nil),                              // 72: structs.structs.Infusion
-	(*Planet)(nil),                                // 73: structs.structs.Planet
-	(*PlanetAttributeRecord)(nil),                 // 74: structs.structs.PlanetAttributeRecord
-	(*Player)(nil),                                // 75: structs.structs.Player
-	(*Provider)(nil),                              // 76: structs.structs.Provider
-	(*Reactor)(nil),                               // 77: structs.structs.Reactor
-	(*Struct)(nil),                                // 78: structs.structs.Struct
-	(*StructAttributeRecord)(nil),                 // 79: structs.structs.StructAttributeRecord
-	(*StructDefender)(nil),                        // 80: structs.structs.StructDefender
-	(*StructType)(nil),                            // 81: structs.structs.StructType
-	(*Substation)(nil),                            // 82: structs.structs.Substation
-	(*timestamppb.Timestamp)(nil),                 // 83: google.protobuf.Timestamp
-	(*PermissionRecord)(nil),                      // 84: structs.structs.PermissionRecord
-	(*GuildRankPermissionRecord)(nil),             // 85: structs.structs.GuildRankPermissionRecord
-	(*GridRecord)(nil),                            // 86: structs.structs.GridRecord
-	(*AddressAssociation)(nil),                    // 87: structs.structs.AddressAssociation
-	(*AddressActivity)(nil),                       // 88: structs.structs.AddressActivity
-	(*GuildMembershipApplication)(nil),            // 89: structs.structs.GuildMembershipApplication
-	(ObjectType)(0),                               // 90: structs.structs.objectType
-	(Ambit)(0),                                    // 91: structs.structs.ambit
-	(TechWeaponSystem)(0),                         // 92: structs.structs.techWeaponSystem
-	(TechWeaponControl)(0),                        // 93: structs.structs.techWeaponControl
-	(TechActiveWeaponry)(0),                       // 94: structs.structs.techActiveWeaponry
-	(TechUnitDefenses)(0),                         // 95: structs.structs.techUnitDefenses
-	(TechPlanetaryDefenses)(0),                    // 96: structs.structs.techPlanetaryDefenses
-	(TechPassiveWeaponry)(0),                      // 97: structs.structs.techPassiveWeaponry
-	(RaidStatus)(0),                               // 98: structs.structs.raidStatus
+	(*EventOwnerReactorDiversity)(nil),            // 0: structs.structs.EventOwnerReactorDiversity
+	(*EventOwnerReactorDiversityReset)(nil),       // 1: structs.structs.EventOwnerReactorDiversityReset
+	(*EventReactorCommissionRevisionReset)(nil),   // 2: structs.structs.EventReactorCommissionRevisionReset
+	(*EventReactorCommissionRevision)(nil),        // 3: structs.structs.EventReactorCommissionRevision
+	(*EventVaultVestingMigration)(nil),            // 4: structs.structs.EventVaultVestingMigration
+	(*EventGuildRankPurchase)(nil),                // 5: structs.structs.EventGuildRankPurchase
+	(*EventAllocation)(nil),                       // 6: structs.structs.EventAllocation
+	(*EventAgreement)(nil),                        // 7: structs.structs.EventAgreement
+	(*EventFleet)(nil),                            // 8: structs.structs.EventFleet
+	(*EventGuild)(nil),                            // 9: structs.structs.EventGuild
+	(*EventInfusion)(nil),                         // 10: structs.structs.EventInfusion
+	(*EventPlanet)(nil),                           // 11: structs.structs.EventPlanet
+	(*EventPlanetAttribute)(nil),                  // 12: structs.structs.EventPlanetAttribute
+	(*EventPlayer)(nil),                           // 13: structs.structs.EventPlayer
+	(*EventProvider)(nil),                         // 14: structs.structs.EventProvider
+	(*EventReactor)(nil),                          // 15: structs.structs.EventReactor
+	(*EventStruct)(nil),                           // 16: structs.structs.EventStruct
+	(*EventStructAttribute)(nil),                  // 17: structs.structs.EventStructAttribute
+	(*EventStructDefender)(nil),                   // 18: structs.structs.EventStructDefender
+	(*EventStructType)(nil),                       // 19: structs.structs.EventStructType
+	(*EventSubstation)(nil),                       // 20: structs.structs.EventSubstation
+	(*EventTime)(nil),                             // 21: structs.structs.EventTime
+	(*EventTimeDetail)(nil),                       // 22: structs.structs.EventTimeDetail
+	(*EventPermission)(nil),                       // 23: structs.structs.EventPermission
+	(*EventGuildRankPermission)(nil),              // 24: structs.structs.EventGuildRankPermission
+	(*EventGrid)(nil),                             // 25: structs.structs.EventGrid
+	(*EventProviderAddress)(nil),                  // 26: structs.structs.EventProviderAddress
+	(*EventProviderAddressDetail)(nil),            // 27: structs.structs.EventProviderAddressDetail
+	(*EventProviderGrantGuild)(nil),               // 28: structs.structs.EventProviderGrantGuild
+	(*EventProviderGrantGuildDetail)(nil),         // 29: structs.structs.EventProviderGrantGuildDetail
+	(*EventProviderRevokeGuild)(nil),              // 30: structs.structs.EventProviderRevokeGuild
+	(*EventProviderRevokeGuildDetail)(nil),        // 31: structs.structs.EventProviderRevokeGuildDetail
+	(*EventProviderRevenueShortfall)(nil),         // 32: structs.structs.EventProviderRevenueShortfall
+	(*EventProviderRevenueShortfallDetail)(nil),   // 33: structs.structs.EventProviderRevenueShortfallDetail
+	(*EventPlayerHalted)(nil),                     // 34: structs.structs.EventPlayerHalted
+	(*EventPlayerResumed)(nil),                    // 35: structs.structs.EventPlayerResumed
+	(*EventDelete)(nil),                           // 36: structs.structs.EventDelete
+	(*EventAddressAssociation)(nil),               // 37: structs.structs.EventAddressAssociation
+	(*EventAddressActivity)(nil),                  // 38: structs.structs.EventAddressActivity
+	(*EventVaultAddress)(nil),                     // 39: structs.structs.EventVaultAddress
+	(*EventVaultAddressDetail)(nil),               // 40: structs.structs.EventVaultAddressDetail
+	(*EventVaultDelegationMigration)(nil),         // 41: structs.structs.EventVaultDelegationMigration
+	(*EventVaultUnbondingMigration)(nil),          // 42: structs.structs.EventVaultUnbondingMigration
+	(*EventVaultRedelegationMigration)(nil),       // 43: structs.structs.EventVaultRedelegationMigration
+	(*EventGuildBankAddress)(nil),                 // 44: structs.structs.EventGuildBankAddress
+	(*EventGuildBankAddressDetail)(nil),           // 45: structs.structs.EventGuildBankAddressDetail
+	(*EventGuildBankMint)(nil),                    // 46: structs.structs.EventGuildBankMint
+	(*EventGuildBankMintDetail)(nil),              // 47: structs.structs.EventGuildBankMintDetail
+	(*EventGuildBankRedeem)(nil),                  // 48: structs.structs.EventGuildBankRedeem
+	(*EventGuildBankRedeemDetail)(nil),            // 49: structs.structs.EventGuildBankRedeemDetail
+	(*EventGuildBankConfiscateAndBurn)(nil),       // 50: structs.structs.EventGuildBankConfiscateAndBurn
+	(*EventGuildBankConfiscateAndBurnDetail)(nil), // 51: structs.structs.EventGuildBankConfiscateAndBurnDetail
+	(*EventGuildBankConvert)(nil),                 // 52: structs.structs.EventGuildBankConvert
+	(*EventGuildBankConvertDetail)(nil),           // 53: structs.structs.EventGuildBankConvertDetail
+	(*EventGuildBankConvertToken)(nil),            // 54: structs.structs.EventGuildBankConvertToken
+	(*EventGuildBankConvertTokenDetail)(nil),      // 55: structs.structs.EventGuildBankConvertTokenDetail
+	(*EventGuildMembershipApplication)(nil),       // 56: structs.structs.EventGuildMembershipApplication
+	(*EventOreMine)(nil),                          // 57: structs.structs.EventOreMine
+	(*EventOreMineDetail)(nil),                    // 58: structs.structs.EventOreMineDetail
+	(*EventAlphaRefine)(nil),                      // 59: structs.structs.EventAlphaRefine
+	(*EventAlphaRefineDetail)(nil),                // 60: structs.structs.EventAlphaRefineDetail
+	(*EventAlphaInfuse)(nil),                      // 61: structs.structs.EventAlphaInfuse
+	(*EventAlphaInfuseDetail)(nil),                // 62: structs.structs.EventAlphaInfuseDetail
+	(*EventAlphaDefuse)(nil),                      // 63: structs.structs.EventAlphaDefuse
+	(*EventAlphaDefuseDetail)(nil),                // 64: structs.structs.EventAlphaDefuseDetail
+	(*EventOreTheft)(nil),                         // 65: structs.structs.EventOreTheft
+	(*EventOreTheftDetail)(nil),                   // 66: structs.structs.EventOreTheftDetail
+	(*EventOreMigrate)(nil),                       // 67: structs.structs.EventOreMigrate
+	(*EventOreMigrateDetail)(nil),                 // 68: structs.structs.EventOreMigrateDetail
+	(*EventStructDefenderClear)(nil),              // 69: structs.structs.EventStructDefenderClear
+	(*EventStructDefenderClearDetail)(nil),        // 70: structs.structs.EventStructDefenderClearDetail
+	(*EventAttack)(nil),                           // 71: structs.structs.EventAttack
+	(*EventAttackDetail)(nil),                     // 72: structs.structs.EventAttackDetail
+	(*EventAttackShotDetail)(nil),                 // 73: structs.structs.EventAttackShotDetail
+	(*EventAttackDefenderCounterDetail)(nil),      // 74: structs.structs.EventAttackDefenderCounterDetail
+	(*EventRaid)(nil),                             // 75: structs.structs.EventRaid
+	(*EventRaidDetail)(nil),                       // 76: structs.structs.EventRaidDetail
+	(*EventHashSuccess)(nil),                      // 77: structs.structs.EventHashSuccess
+	(*EventHashSuccessDetail)(nil),                // 78: structs.structs.EventHashSuccessDetail
+	(*EventReactorStakeCap)(nil),                  // 79: structs.structs.EventReactorStakeCap
+	(*OwnerReactorDiversity)(nil),                 // 80: structs.structs.OwnerReactorDiversity
+	(*VaultVestingAccount)(nil),                   // 81: structs.structs.VaultVestingAccount
+	(*Allocation)(nil),                            // 82: structs.structs.Allocation
+	(*Agreement)(nil),                             // 83: structs.structs.Agreement
+	(*Fleet)(nil),                                 // 84: structs.structs.Fleet
+	(*Guild)(nil),                                 // 85: structs.structs.Guild
+	(*Infusion)(nil),                              // 86: structs.structs.Infusion
+	(*Planet)(nil),                                // 87: structs.structs.Planet
+	(*PlanetAttributeRecord)(nil),                 // 88: structs.structs.PlanetAttributeRecord
+	(*Player)(nil),                                // 89: structs.structs.Player
+	(*Provider)(nil),                              // 90: structs.structs.Provider
+	(*Reactor)(nil),                               // 91: structs.structs.Reactor
+	(*Struct)(nil),                                // 92: structs.structs.Struct
+	(*StructAttributeRecord)(nil),                 // 93: structs.structs.StructAttributeRecord
+	(*StructDefender)(nil),                        // 94: structs.structs.StructDefender
+	(*StructType)(nil),                            // 95: structs.structs.StructType
+	(*Substation)(nil),                            // 96: structs.structs.Substation
+	(*timestamppb.Timestamp)(nil),                 // 97: google.protobuf.Timestamp
+	(*PermissionRecord)(nil),                      // 98: structs.structs.PermissionRecord
+	(*GuildRankPermissionRecord)(nil),             // 99: structs.structs.GuildRankPermissionRecord
+	(*GridRecord)(nil),                            // 100: structs.structs.GridRecord
+	(*AddressAssociation)(nil),                    // 101: structs.structs.AddressAssociation
+	(*AddressActivity)(nil),                       // 102: structs.structs.AddressActivity
+	(*v1beta1.UnbondingDelegation)(nil),           // 103: cosmos.staking.v1beta1.UnbondingDelegation
+	(*v1beta1.Redelegation)(nil),                  // 104: cosmos.staking.v1beta1.Redelegation
+	(*GuildMembershipApplication)(nil),            // 105: structs.structs.GuildMembershipApplication
+	(ObjectType)(0),                               // 106: structs.structs.objectType
+	(Ambit)(0),                                    // 107: structs.structs.ambit
+	(TechWeaponSystem)(0),                         // 108: structs.structs.techWeaponSystem
+	(TechWeaponControl)(0),                        // 109: structs.structs.techWeaponControl
+	(TechActiveWeaponry)(0),                       // 110: structs.structs.techActiveWeaponry
+	(TechUnitDefenses)(0),                         // 111: structs.structs.techUnitDefenses
+	(TechPlanetaryDefenses)(0),                    // 112: structs.structs.techPlanetaryDefenses
+	(TechPassiveWeaponry)(0),                      // 113: structs.structs.techPassiveWeaponry
+	(RaidStatus)(0),                               // 114: structs.structs.raidStatus
 }
 var file_structs_structs_events_proto_depIdxs = []int32{
-	68, // 0: structs.structs.EventAllocation.allocation:type_name -> structs.structs.Allocation
-	69, // 1: structs.structs.EventAgreement.agreement:type_name -> structs.structs.Agreement
-	70, // 2: structs.structs.EventFleet.fleet:type_name -> structs.structs.Fleet
-	71, // 3: structs.structs.EventGuild.guild:type_name -> structs.structs.Guild
-	72, // 4: structs.structs.EventInfusion.infusion:type_name -> structs.structs.Infusion
-	73, // 5: structs.structs.EventPlanet.planet:type_name -> structs.structs.Planet
-	74, // 6: structs.structs.EventPlanetAttribute.planetAttributeRecord:type_name -> structs.structs.PlanetAttributeRecord
-	75, // 7: structs.structs.EventPlayer.player:type_name -> structs.structs.Player
-	76, // 8: structs.structs.EventProvider.provider:type_name -> structs.structs.Provider
-	77, // 9: structs.structs.EventReactor.reactor:type_name -> structs.structs.Reactor
-	78, // 10: structs.structs.EventStruct.structure:type_name -> structs.structs.Struct
-	79, // 11: structs.structs.EventStructAttribute.structAttributeRecord:type_name -> structs.structs.StructAttributeRecord
-	80, // 12: structs.structs.EventStructDefender.structDefender:type_name -> structs.structs.StructDefender
-	81, // 13: structs.structs.EventStructType.structType:type_name -> structs.structs.StructType
-	82, // 14: structs.structs.EventSubstation.substation:type_name -> structs.structs.Substation
-	16, // 15: structs.structs.EventTime.eventTimeDetail:type_name -> structs.structs.EventTimeDetail
-	83, // 16: structs.structs.EventTimeDetail.blockTime:type_name -> google.protobuf.Timestamp
-	84, // 17: structs.structs.EventPermission.permissionRecord:type_name -> structs.structs.PermissionRecord
-	85, // 18: structs.structs.EventGuildRankPermission.guildRankPermissionRecord:type_name -> structs.structs.GuildRankPermissionRecord
-	86, // 19: structs.structs.EventGrid.gridRecord:type_name -> structs.structs.GridRecord
-	21, // 20: structs.structs.EventProviderAddress.eventProviderAddressDetail:type_name -> structs.structs.EventProviderAddressDetail
-	23, // 21: structs.structs.EventProviderGrantGuild.eventProviderGrantGuildDetail:type_name -> structs.structs.EventProviderGrantGuildDetail
-	25, // 22: structs.structs.EventProviderRevokeGuild.eventProviderRevokeGuildDetail:type_name -> structs.structs.EventProviderRevokeGuildDetail
-	27, // 23: structs.structs.EventProviderRevenueShortfall.eventProviderRevenueShortfallDetail:type_name -> structs.structs.EventProviderRevenueShortfallDetail
-	87, // 24: structs.structs.EventAddressAssociation.addressAssociation:type_name -> structs.structs.AddressAssociation
-	88, // 25: structs.structs.EventAddressActivity.addressActivity:type_name -> structs.structs.AddressActivity
-	34, // 26: structs.structs.EventGuildBankAddress.eventGuildBankAddressDetail:type_name -> structs.structs.EventGuildBankAddressDetail
-	36, // 27: structs.structs.EventGuildBankMint.eventGuildBankMintDetail:type_name -> structs.structs.EventGuildBankMintDetail
-	38, // 28: structs.structs.EventGuildBankRedeem.eventGuildBankRedeemDetail:type_name -> structs.structs.EventGuildBankRedeemDetail
-	40, // 29: structs.structs.EventGuildBankConfiscateAndBurn.eventGuildBankConfiscateAndBurnDetail:type_name -> structs.structs.EventGuildBankConfiscateAndBurnDetail
-	42, // 30: structs.structs.EventGuildBankConvert.eventGuildBankConvertDetail:type_name -> structs.structs.EventGuildBankConvertDetail
-	44, // 31: structs.structs.EventGuildBankConvertToken.eventGuildBankConvertTokenDetail:type_name -> structs.structs.EventGuildBankConvertTokenDetail
-	89, // 32: structs.structs.EventGuildMembershipApplication.guildMembershipApplication:type_name -> structs.structs.GuildMembershipApplication
-	47, // 33: structs.structs.EventOreMine.eventOreMineDetail:type_name -> structs.structs.EventOreMineDetail
-	49, // 34: structs.structs.EventAlphaRefine.eventAlphaRefineDetail:type_name -> structs.structs.EventAlphaRefineDetail
-	51, // 35: structs.structs.EventAlphaInfuse.eventAlphaInfuseDetail:type_name -> structs.structs.EventAlphaInfuseDetail
-	53, // 36: structs.structs.EventAlphaDefuse.eventAlphaDefuseDetail:type_name -> structs.structs.EventAlphaDefuseDetail
-	55, // 37: structs.structs.EventOreTheft.eventOreTheftDetail:type_name -> structs.structs.EventOreTheftDetail
-	57, // 38: structs.structs.EventOreMigrate.eventOreMigrateDetail:type_name -> structs.structs.EventOreMigrateDetail
-	59, // 39: structs.structs.EventStructDefenderClear.structDefenderClearDetail:type_name -> structs.structs.EventStructDefenderClearDetail
-	61, // 40: structs.structs.EventAttack.eventAttackDetail:type_name -> structs.structs.EventAttackDetail
-	90, // 41: structs.structs.EventAttackDetail.attackerStructLocationType:type_name -> structs.structs.objectType
-	91, // 42: structs.structs.EventAttackDetail.attackerStructOperatingAmbit:type_name -> structs.structs.ambit
-	92, // 43: structs.structs.EventAttackDetail.weaponSystem:type_name -> structs.structs.techWeaponSystem
-	93, // 44: structs.structs.EventAttackDetail.weaponControl:type_name -> structs.structs.techWeaponControl
-	94, // 45: structs.structs.EventAttackDetail.activeWeaponry:type_name -> structs.structs.techActiveWeaponry
-	62, // 46: structs.structs.EventAttackDetail.eventAttackShotDetail:type_name -> structs.structs.EventAttackShotDetail
-	90, // 47: structs.structs.EventAttackShotDetail.targetStructLocationType:type_name -> structs.structs.objectType
-	91, // 48: structs.structs.EventAttackShotDetail.targetStructOperatingAmbit:type_name -> structs.structs.ambit
-	95, // 49: structs.structs.EventAttackShotDetail.evadedCause:type_name -> structs.structs.techUnitDefenses
-	96, // 50: structs.structs.EventAttackShotDetail.evadedByPlanetaryDefensesCause:type_name -> structs.structs.techPlanetaryDefenses
-	90, // 51: structs.structs.EventAttackShotDetail.blockedByStructLocationType:type_name -> structs.structs.objectType
-	91, // 52: structs.structs.EventAttackShotDetail.blockedByStructOperatingAmbit:type_name -> structs.structs.ambit
-	63, // 53: structs.structs.EventAttackShotDetail.eventAttackDefenderCounterDetail:type_name -> structs.structs.EventAttackDefenderCounterDetail
-	95, // 54: structs.structs.EventAttackShotDetail.damageReductionCause:type_name -> structs.structs.techUnitDefenses
-	97, // 55: structs.structs.EventAttackShotDetail.targetCounterPassiveWeaponry:type_name -> structs.structs.techPassiveWeaponry
-	92, // 56: structs.structs.EventAttackShotDetail.targetCounterWeaponSystem:type_name -> structs.structs.techWeaponSystem
-	93, // 57: structs.structs.EventAttackShotDetail.targetCounterWeaponControl:type_name -> structs.structs.techWeaponControl
-	94, // 58: structs.structs.EventAttackShotDetail.targetCounterActiveWeaponry:type_name -> structs.structs.techActiveWeaponry
-	97, // 59: structs.structs.EventAttackShotDetail.postDestructionDamagePassiveWeaponry:type_name -> structs.structs.techPassiveWeaponry
-	90, // 60: structs.structs.EventAttackDefenderCounterDetail.counterByStructLocationType:type_name -> structs.structs.objectType
-	91, // 61: structs.structs.EventAttackDefenderCounterDetail.counterByStructOperatingAmbit:type_name -> structs.structs.ambit
-	92, // 62: structs.structs.EventAttackDefenderCounterDetail.counterByStructWeaponSystem:type_name -> structs.structs.techWeaponSystem
-	93, // 63: structs.structs.EventAttackDefenderCounterDetail.counterByStructWeaponControl:type_name -> structs.structs.techWeaponControl
-	94, // 64: structs.structs.EventAttackDefenderCounterDetail.counterByStructActiveWeaponry:type_name -> structs.structs.techActiveWeaponry
-	65, // 65: structs.structs.EventRaid.eventRaidDetail:type_name -> structs.structs.EventRaidDetail
-	98, // 66: structs.structs.EventRaidDetail.status:type_name -> structs.structs.raidStatus
-	67, // 67: structs.structs.EventHashSuccess.eventHashSuccessDetail:type_name -> structs.structs.EventHashSuccessDetail
-	68, // [68:68] is the sub-list for method output_type
-	68, // [68:68] is the sub-list for method input_type
-	68, // [68:68] is the sub-list for extension type_name
-	68, // [68:68] is the sub-list for extension extendee
-	0,  // [0:68] is the sub-list for field type_name
+	80,  // 0: structs.structs.EventOwnerReactorDiversity.diversity:type_name -> structs.structs.OwnerReactorDiversity
+	81,  // 1: structs.structs.EventVaultVestingMigration.vault:type_name -> structs.structs.VaultVestingAccount
+	82,  // 2: structs.structs.EventAllocation.allocation:type_name -> structs.structs.Allocation
+	83,  // 3: structs.structs.EventAgreement.agreement:type_name -> structs.structs.Agreement
+	84,  // 4: structs.structs.EventFleet.fleet:type_name -> structs.structs.Fleet
+	85,  // 5: structs.structs.EventGuild.guild:type_name -> structs.structs.Guild
+	86,  // 6: structs.structs.EventInfusion.infusion:type_name -> structs.structs.Infusion
+	87,  // 7: structs.structs.EventPlanet.planet:type_name -> structs.structs.Planet
+	88,  // 8: structs.structs.EventPlanetAttribute.planetAttributeRecord:type_name -> structs.structs.PlanetAttributeRecord
+	89,  // 9: structs.structs.EventPlayer.player:type_name -> structs.structs.Player
+	90,  // 10: structs.structs.EventProvider.provider:type_name -> structs.structs.Provider
+	91,  // 11: structs.structs.EventReactor.reactor:type_name -> structs.structs.Reactor
+	92,  // 12: structs.structs.EventStruct.structure:type_name -> structs.structs.Struct
+	93,  // 13: structs.structs.EventStructAttribute.structAttributeRecord:type_name -> structs.structs.StructAttributeRecord
+	94,  // 14: structs.structs.EventStructDefender.structDefender:type_name -> structs.structs.StructDefender
+	95,  // 15: structs.structs.EventStructType.structType:type_name -> structs.structs.StructType
+	96,  // 16: structs.structs.EventSubstation.substation:type_name -> structs.structs.Substation
+	22,  // 17: structs.structs.EventTime.eventTimeDetail:type_name -> structs.structs.EventTimeDetail
+	97,  // 18: structs.structs.EventTimeDetail.blockTime:type_name -> google.protobuf.Timestamp
+	98,  // 19: structs.structs.EventPermission.permissionRecord:type_name -> structs.structs.PermissionRecord
+	99,  // 20: structs.structs.EventGuildRankPermission.guildRankPermissionRecord:type_name -> structs.structs.GuildRankPermissionRecord
+	100, // 21: structs.structs.EventGrid.gridRecord:type_name -> structs.structs.GridRecord
+	27,  // 22: structs.structs.EventProviderAddress.eventProviderAddressDetail:type_name -> structs.structs.EventProviderAddressDetail
+	29,  // 23: structs.structs.EventProviderGrantGuild.eventProviderGrantGuildDetail:type_name -> structs.structs.EventProviderGrantGuildDetail
+	31,  // 24: structs.structs.EventProviderRevokeGuild.eventProviderRevokeGuildDetail:type_name -> structs.structs.EventProviderRevokeGuildDetail
+	33,  // 25: structs.structs.EventProviderRevenueShortfall.eventProviderRevenueShortfallDetail:type_name -> structs.structs.EventProviderRevenueShortfallDetail
+	101, // 26: structs.structs.EventAddressAssociation.addressAssociation:type_name -> structs.structs.AddressAssociation
+	102, // 27: structs.structs.EventAddressActivity.addressActivity:type_name -> structs.structs.AddressActivity
+	40,  // 28: structs.structs.EventVaultAddress.eventVaultAddressDetail:type_name -> structs.structs.EventVaultAddressDetail
+	103, // 29: structs.structs.EventVaultUnbondingMigration.destination:type_name -> cosmos.staking.v1beta1.UnbondingDelegation
+	104, // 30: structs.structs.EventVaultRedelegationMigration.destination:type_name -> cosmos.staking.v1beta1.Redelegation
+	45,  // 31: structs.structs.EventGuildBankAddress.eventGuildBankAddressDetail:type_name -> structs.structs.EventGuildBankAddressDetail
+	47,  // 32: structs.structs.EventGuildBankMint.eventGuildBankMintDetail:type_name -> structs.structs.EventGuildBankMintDetail
+	49,  // 33: structs.structs.EventGuildBankRedeem.eventGuildBankRedeemDetail:type_name -> structs.structs.EventGuildBankRedeemDetail
+	51,  // 34: structs.structs.EventGuildBankConfiscateAndBurn.eventGuildBankConfiscateAndBurnDetail:type_name -> structs.structs.EventGuildBankConfiscateAndBurnDetail
+	53,  // 35: structs.structs.EventGuildBankConvert.eventGuildBankConvertDetail:type_name -> structs.structs.EventGuildBankConvertDetail
+	55,  // 36: structs.structs.EventGuildBankConvertToken.eventGuildBankConvertTokenDetail:type_name -> structs.structs.EventGuildBankConvertTokenDetail
+	105, // 37: structs.structs.EventGuildMembershipApplication.guildMembershipApplication:type_name -> structs.structs.GuildMembershipApplication
+	58,  // 38: structs.structs.EventOreMine.eventOreMineDetail:type_name -> structs.structs.EventOreMineDetail
+	60,  // 39: structs.structs.EventAlphaRefine.eventAlphaRefineDetail:type_name -> structs.structs.EventAlphaRefineDetail
+	62,  // 40: structs.structs.EventAlphaInfuse.eventAlphaInfuseDetail:type_name -> structs.structs.EventAlphaInfuseDetail
+	64,  // 41: structs.structs.EventAlphaDefuse.eventAlphaDefuseDetail:type_name -> structs.structs.EventAlphaDefuseDetail
+	66,  // 42: structs.structs.EventOreTheft.eventOreTheftDetail:type_name -> structs.structs.EventOreTheftDetail
+	68,  // 43: structs.structs.EventOreMigrate.eventOreMigrateDetail:type_name -> structs.structs.EventOreMigrateDetail
+	70,  // 44: structs.structs.EventStructDefenderClear.structDefenderClearDetail:type_name -> structs.structs.EventStructDefenderClearDetail
+	72,  // 45: structs.structs.EventAttack.eventAttackDetail:type_name -> structs.structs.EventAttackDetail
+	106, // 46: structs.structs.EventAttackDetail.attackerStructLocationType:type_name -> structs.structs.objectType
+	107, // 47: structs.structs.EventAttackDetail.attackerStructOperatingAmbit:type_name -> structs.structs.ambit
+	108, // 48: structs.structs.EventAttackDetail.weaponSystem:type_name -> structs.structs.techWeaponSystem
+	109, // 49: structs.structs.EventAttackDetail.weaponControl:type_name -> structs.structs.techWeaponControl
+	110, // 50: structs.structs.EventAttackDetail.activeWeaponry:type_name -> structs.structs.techActiveWeaponry
+	73,  // 51: structs.structs.EventAttackDetail.eventAttackShotDetail:type_name -> structs.structs.EventAttackShotDetail
+	106, // 52: structs.structs.EventAttackShotDetail.targetStructLocationType:type_name -> structs.structs.objectType
+	107, // 53: structs.structs.EventAttackShotDetail.targetStructOperatingAmbit:type_name -> structs.structs.ambit
+	111, // 54: structs.structs.EventAttackShotDetail.evadedCause:type_name -> structs.structs.techUnitDefenses
+	112, // 55: structs.structs.EventAttackShotDetail.evadedByPlanetaryDefensesCause:type_name -> structs.structs.techPlanetaryDefenses
+	106, // 56: structs.structs.EventAttackShotDetail.blockedByStructLocationType:type_name -> structs.structs.objectType
+	107, // 57: structs.structs.EventAttackShotDetail.blockedByStructOperatingAmbit:type_name -> structs.structs.ambit
+	74,  // 58: structs.structs.EventAttackShotDetail.eventAttackDefenderCounterDetail:type_name -> structs.structs.EventAttackDefenderCounterDetail
+	111, // 59: structs.structs.EventAttackShotDetail.damageReductionCause:type_name -> structs.structs.techUnitDefenses
+	113, // 60: structs.structs.EventAttackShotDetail.targetCounterPassiveWeaponry:type_name -> structs.structs.techPassiveWeaponry
+	108, // 61: structs.structs.EventAttackShotDetail.targetCounterWeaponSystem:type_name -> structs.structs.techWeaponSystem
+	109, // 62: structs.structs.EventAttackShotDetail.targetCounterWeaponControl:type_name -> structs.structs.techWeaponControl
+	110, // 63: structs.structs.EventAttackShotDetail.targetCounterActiveWeaponry:type_name -> structs.structs.techActiveWeaponry
+	113, // 64: structs.structs.EventAttackShotDetail.postDestructionDamagePassiveWeaponry:type_name -> structs.structs.techPassiveWeaponry
+	106, // 65: structs.structs.EventAttackDefenderCounterDetail.counterByStructLocationType:type_name -> structs.structs.objectType
+	107, // 66: structs.structs.EventAttackDefenderCounterDetail.counterByStructOperatingAmbit:type_name -> structs.structs.ambit
+	108, // 67: structs.structs.EventAttackDefenderCounterDetail.counterByStructWeaponSystem:type_name -> structs.structs.techWeaponSystem
+	109, // 68: structs.structs.EventAttackDefenderCounterDetail.counterByStructWeaponControl:type_name -> structs.structs.techWeaponControl
+	110, // 69: structs.structs.EventAttackDefenderCounterDetail.counterByStructActiveWeaponry:type_name -> structs.structs.techActiveWeaponry
+	76,  // 70: structs.structs.EventRaid.eventRaidDetail:type_name -> structs.structs.EventRaidDetail
+	114, // 71: structs.structs.EventRaidDetail.status:type_name -> structs.structs.raidStatus
+	78,  // 72: structs.structs.EventHashSuccess.eventHashSuccessDetail:type_name -> structs.structs.EventHashSuccessDetail
+	73,  // [73:73] is the sub-list for method output_type
+	73,  // [73:73] is the sub-list for method input_type
+	73,  // [73:73] is the sub-list for extension type_name
+	73,  // [73:73] is the sub-list for extension extendee
+	0,   // [0:73] is the sub-list for field type_name
 }
 
 func init() { file_structs_structs_events_proto_init() }
@@ -40791,11 +48159,13 @@ func file_structs_structs_events_proto_init() {
 	file_structs_structs_planet_proto_init()
 	file_structs_structs_provider_proto_init()
 	file_structs_structs_reactor_proto_init()
+	file_structs_structs_reactor_diversity_proto_init()
 	file_structs_structs_struct_proto_init()
 	file_structs_structs_substation_proto_init()
+	file_structs_structs_vault_vesting_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_structs_structs_events_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAllocation); i {
+			switch v := v.(*EventOwnerReactorDiversity); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40807,7 +48177,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAgreement); i {
+			switch v := v.(*EventOwnerReactorDiversityReset); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40819,7 +48189,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventFleet); i {
+			switch v := v.(*EventReactorCommissionRevisionReset); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40831,7 +48201,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuild); i {
+			switch v := v.(*EventReactorCommissionRevision); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40843,7 +48213,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventInfusion); i {
+			switch v := v.(*EventVaultVestingMigration); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40855,7 +48225,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventPlanet); i {
+			switch v := v.(*EventGuildRankPurchase); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40867,7 +48237,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventPlanetAttribute); i {
+			switch v := v.(*EventAllocation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40879,7 +48249,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventPlayer); i {
+			switch v := v.(*EventAgreement); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40891,7 +48261,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventProvider); i {
+			switch v := v.(*EventFleet); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40903,7 +48273,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventReactor); i {
+			switch v := v.(*EventGuild); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40915,7 +48285,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventStruct); i {
+			switch v := v.(*EventInfusion); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40927,7 +48297,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventStructAttribute); i {
+			switch v := v.(*EventPlanet); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40939,7 +48309,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventStructDefender); i {
+			switch v := v.(*EventPlanetAttribute); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40951,7 +48321,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventStructType); i {
+			switch v := v.(*EventPlayer); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40963,7 +48333,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventSubstation); i {
+			switch v := v.(*EventProvider); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40975,7 +48345,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventTime); i {
+			switch v := v.(*EventReactor); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40987,7 +48357,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventTimeDetail); i {
+			switch v := v.(*EventStruct); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -40999,7 +48369,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventPermission); i {
+			switch v := v.(*EventStructAttribute); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41011,7 +48381,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildRankPermission); i {
+			switch v := v.(*EventStructDefender); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41023,7 +48393,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGrid); i {
+			switch v := v.(*EventStructType); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41035,7 +48405,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventProviderAddress); i {
+			switch v := v.(*EventSubstation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41047,7 +48417,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventProviderAddressDetail); i {
+			switch v := v.(*EventTime); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41059,7 +48429,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventProviderGrantGuild); i {
+			switch v := v.(*EventTimeDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41071,7 +48441,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventProviderGrantGuildDetail); i {
+			switch v := v.(*EventPermission); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41083,7 +48453,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventProviderRevokeGuild); i {
+			switch v := v.(*EventGuildRankPermission); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41095,7 +48465,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[25].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventProviderRevokeGuildDetail); i {
+			switch v := v.(*EventGrid); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41107,7 +48477,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[26].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventProviderRevenueShortfall); i {
+			switch v := v.(*EventProviderAddress); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41119,7 +48489,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[27].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventProviderRevenueShortfallDetail); i {
+			switch v := v.(*EventProviderAddressDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41131,7 +48501,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[28].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventPlayerHalted); i {
+			switch v := v.(*EventProviderGrantGuild); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41143,7 +48513,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[29].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventPlayerResumed); i {
+			switch v := v.(*EventProviderGrantGuildDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41155,7 +48525,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[30].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventDelete); i {
+			switch v := v.(*EventProviderRevokeGuild); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41167,7 +48537,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[31].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAddressAssociation); i {
+			switch v := v.(*EventProviderRevokeGuildDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41179,7 +48549,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[32].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAddressActivity); i {
+			switch v := v.(*EventProviderRevenueShortfall); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41191,7 +48561,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[33].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildBankAddress); i {
+			switch v := v.(*EventProviderRevenueShortfallDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41203,7 +48573,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[34].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildBankAddressDetail); i {
+			switch v := v.(*EventPlayerHalted); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41215,7 +48585,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[35].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildBankMint); i {
+			switch v := v.(*EventPlayerResumed); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41227,7 +48597,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[36].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildBankMintDetail); i {
+			switch v := v.(*EventDelete); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41239,7 +48609,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[37].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildBankRedeem); i {
+			switch v := v.(*EventAddressAssociation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41251,7 +48621,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[38].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildBankRedeemDetail); i {
+			switch v := v.(*EventAddressActivity); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41263,7 +48633,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[39].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildBankConfiscateAndBurn); i {
+			switch v := v.(*EventVaultAddress); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41275,7 +48645,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[40].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildBankConfiscateAndBurnDetail); i {
+			switch v := v.(*EventVaultAddressDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41287,7 +48657,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[41].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildBankConvert); i {
+			switch v := v.(*EventVaultDelegationMigration); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41299,7 +48669,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[42].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildBankConvertDetail); i {
+			switch v := v.(*EventVaultUnbondingMigration); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41311,7 +48681,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[43].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildBankConvertToken); i {
+			switch v := v.(*EventVaultRedelegationMigration); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41323,7 +48693,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[44].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildBankConvertTokenDetail); i {
+			switch v := v.(*EventGuildBankAddress); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41335,7 +48705,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[45].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildMembershipApplication); i {
+			switch v := v.(*EventGuildBankAddressDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41347,7 +48717,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[46].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventOreMine); i {
+			switch v := v.(*EventGuildBankMint); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41359,7 +48729,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[47].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventOreMineDetail); i {
+			switch v := v.(*EventGuildBankMintDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41371,7 +48741,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[48].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAlphaRefine); i {
+			switch v := v.(*EventGuildBankRedeem); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41383,7 +48753,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[49].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAlphaRefineDetail); i {
+			switch v := v.(*EventGuildBankRedeemDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41395,7 +48765,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[50].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAlphaInfuse); i {
+			switch v := v.(*EventGuildBankConfiscateAndBurn); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41407,7 +48777,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[51].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAlphaInfuseDetail); i {
+			switch v := v.(*EventGuildBankConfiscateAndBurnDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41419,7 +48789,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[52].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAlphaDefuse); i {
+			switch v := v.(*EventGuildBankConvert); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41431,7 +48801,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[53].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAlphaDefuseDetail); i {
+			switch v := v.(*EventGuildBankConvertDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41443,7 +48813,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[54].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventOreTheft); i {
+			switch v := v.(*EventGuildBankConvertToken); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41455,7 +48825,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[55].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventOreTheftDetail); i {
+			switch v := v.(*EventGuildBankConvertTokenDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41467,7 +48837,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[56].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventOreMigrate); i {
+			switch v := v.(*EventGuildMembershipApplication); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41479,7 +48849,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[57].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventOreMigrateDetail); i {
+			switch v := v.(*EventOreMine); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41491,7 +48861,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[58].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventStructDefenderClear); i {
+			switch v := v.(*EventOreMineDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41503,7 +48873,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[59].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventStructDefenderClearDetail); i {
+			switch v := v.(*EventAlphaRefine); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41515,7 +48885,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[60].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAttack); i {
+			switch v := v.(*EventAlphaRefineDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41527,7 +48897,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[61].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAttackDetail); i {
+			switch v := v.(*EventAlphaInfuse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41539,7 +48909,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[62].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAttackShotDetail); i {
+			switch v := v.(*EventAlphaInfuseDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41551,7 +48921,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[63].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAttackDefenderCounterDetail); i {
+			switch v := v.(*EventAlphaDefuse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41563,7 +48933,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[64].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventRaid); i {
+			switch v := v.(*EventAlphaDefuseDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41575,7 +48945,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[65].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventRaidDetail); i {
+			switch v := v.(*EventOreTheft); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41587,7 +48957,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[66].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventHashSuccess); i {
+			switch v := v.(*EventOreTheftDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41599,7 +48969,151 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[67].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventOreMigrate); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[68].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventOreMigrateDetail); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[69].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventStructDefenderClear); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[70].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventStructDefenderClearDetail); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[71].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventAttack); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[72].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventAttackDetail); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[73].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventAttackShotDetail); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[74].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventAttackDefenderCounterDetail); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[75].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventRaid); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[76].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventRaidDetail); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[77].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventHashSuccess); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[78].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*EventHashSuccessDetail); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[79].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventReactorStakeCap); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -41617,7 +49131,7 @@ func file_structs_structs_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_structs_structs_events_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   68,
+			NumMessages:   80,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

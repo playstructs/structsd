@@ -89,7 +89,8 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 	if err := cdc.UnmarshalJSON(bz, &genState); err != nil {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", types.ModuleName, err)
 	}
-	return genState.Validate()
+	if err := genState.Validate(); err != nil { return err }
+	return nil
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.
@@ -181,8 +182,8 @@ func (am AppModule) BeginBlock(ctx context.Context) error {
 // The end block implementation is optional.
 func (am AppModule) EndBlock(ctx context.Context) error {
 	c := sdk.UnwrapSDKContext(ctx)
-	am.keeper.EndBlocker(c)
-	return nil
+	_, err := am.keeper.EndBlocker(c)
+	return err
 }
 
 // IsOnePerModuleType implements the depinject.OnePerModuleType interface.

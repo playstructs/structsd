@@ -39,6 +39,7 @@ import (
 func TestArch_StakingMutationsRequireAnAssetBit(t *testing.T) {
 	// Staking keeper calls that move a delegator's bonded stake.
 	mutations := map[string]string{
+		"Delegate":                 "delegates funds or restores unbonding stake",
 		"BeginRedelegation":         "redelegates the delegator's stake to another validator",
 		"Undelegate":                "unbonds the delegator's stake",
 		"CancelUnbondingDelegation": "returns the delegator's unbonding stake to a validator",
@@ -50,6 +51,10 @@ func TestArch_StakingMutationsRequireAnAssetBit(t *testing.T) {
 		"CanMigrateTokensBy": true,
 		"CanDefuseTokensBy":  true,
 		"CanInfuseTokensBy":  true,
+	}
+	reactorPermissions := map[string]string{
+		"ReactorInfuse": "PermTokenInfuse", "ReactorCancelDefusion": "PermTokenInfuse",
+		"ReactorDefuse": "PermTokenDefuse", "ReactorBeginMigration": "PermTokenMigrate",
 	}
 
 	wd, err := os.Getwd()
@@ -82,6 +87,13 @@ func TestArch_StakingMutationsRequireAnAssetBit(t *testing.T) {
 			var guarded bool
 
 			ast.Inspect(fn.Body, func(n ast.Node) bool {
+				if call, ok := n.(*ast.CallExpr); ok {
+					if method, ok := call.Fun.(*ast.SelectorExpr); ok && method.Sel.Name == "resolveReactorDelegator" && len(call.Args) == 4 {
+						if bit, ok := call.Args[3].(*ast.SelectorExpr); ok && reactorPermissions[fn.Name.Name] == bit.Sel.Name {
+							guarded = true
+						}
+					}
+				}
 				sel, ok := n.(*ast.SelectorExpr)
 				if !ok {
 					return true

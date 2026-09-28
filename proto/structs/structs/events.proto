@@ -8,6 +8,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "structs/structs/params.proto";
 import "google/protobuf/timestamp.proto";
+import "cosmos/staking/v1beta1/staking.proto";
 
 import "structs/structs/address.proto";
 import "structs/structs/agreement.proto";
@@ -22,10 +23,56 @@ import "structs/structs/player.proto";
 import "structs/structs/planet.proto";
 import "structs/structs/provider.proto";
 import "structs/structs/reactor.proto";
+import "structs/structs/reactor_diversity.proto";
 import "structs/structs/struct.proto";
 import "structs/structs/substation.proto";
+import "structs/structs/vault_vesting.proto";
 
 option go_package = "structs/x/structs/types";
+
+// Replace this owner's current applied diversity accounting. A zero row clears
+// the previous value, including when its empty summary is removed from storage.
+message EventOwnerReactorDiversity {
+  OwnerReactorDiversity diversity = 1;
+}
+// Genesis replay replaces the entire derived owner-diversity projection.
+message EventOwnerReactorDiversityReset {}
+
+
+
+
+
+// Begin complete replacement of indexed commission-repair revisions during
+// genesis replay or upgrade. Clear prior revisions; reactors absent from the
+// following EventReactorCommissionRevision rows have the initial 0/0 state.
+// Consume the reset and subsequent rows in block event order, atomically.
+message EventReactorCommissionRevisionReset {}
+
+// Replace one reactor's slash-repair revisions, not its power or validator
+// health. Unequal revisions gate commission admission. Equality only removes
+// that gate. Manual restart never advances slashRevision.
+message EventReactorCommissionRevision {
+  string reactorId = 1;
+  uint64 slashRevision = 2;
+  uint64 reconciledSlashRevision = 3;
+}
+
+// Source accounts retain their BaseAccount identity and become ordinary accounts.
+// The complete destination schedules/counters allow indexers to preserve locks.
+message EventVaultVestingMigration {
+  VaultVestingAccount vault = 1;
+  repeated string source_addresses = 2;
+}
+
+message EventGuildRankPurchase {
+  string guildId = 1;
+  string playerId = 2;
+  uint64 previousRank = 3;
+  uint64 rank = 4;
+  uint64 price = 5;
+  string denom = 6;
+  bool joined = 7;
+}
 
 
 /*
@@ -92,6 +139,37 @@ option go_package = "structs/x/structs/types";
   message EventAddressAssociation { AddressAssociation addressAssociation = 1; }
   message EventAddressActivity { AddressActivity addressActivity = 1; }
 
+  // A protocol vault is an asset owner association, never a player signing key.
+  message EventVaultAddress { EventVaultAddressDetail eventVaultAddressDetail = 1; }
+  message EventVaultAddressDetail {
+    string ownerId = 1;
+    string vaultAddress = 2;
+    uint64 accountNumber = 3;
+    bool accountCreated = 4;
+  }
+
+  // Migration events describe relocation, not a new stake or unbond operation.
+  message EventVaultDelegationMigration {
+    string ownerId = 1;
+    string sourceAddress = 2;
+    string vaultAddress = 3;
+    string validatorAddress = 4;
+    string sharesMoved = 5;
+    string destinationShares = 6;
+  }
+  // One event per merged destination record preserves all original entry IDs,
+  // amounts, shares, heights, times and hold counts without quadratic payloads.
+  message EventVaultUnbondingMigration {
+    string ownerId = 1;
+    repeated string sourceAddresses = 2;
+    cosmos.staking.v1beta1.UnbondingDelegation destination = 3 [(gogoproto.nullable) = false];
+  }
+  message EventVaultRedelegationMigration {
+    string ownerId = 1;
+    repeated string sourceAddresses = 2;
+    cosmos.staking.v1beta1.Redelegation destination = 3 [(gogoproto.nullable) = false];
+  }
+
   message EventGuildBankAddress { EventGuildBankAddressDetail eventGuildBankAddressDetail = 1;}
   message EventGuildBankAddressDetail { string guildId = 1; string bankCollateralPool = 2; string bankTokenPool = 3;}
 
@@ -125,10 +203,10 @@ option go_package = "structs/x/structs/types";
   message EventOreMineDetail { string playerId = 1; string primaryAddress = 2; uint64 amount = 3;}
 
   message EventAlphaRefine { EventAlphaRefineDetail eventAlphaRefineDetail = 1;}
-  message EventAlphaRefineDetail { string playerId = 1; string primaryAddress = 2; uint64 amount = 3;}
+  message EventAlphaRefineDetail { string playerId = 1; string primaryAddress = 2; uint64 amount = 3; string vaultAddress = 4;}
 
   message EventAlphaInfuse { EventAlphaInfuseDetail eventAlphaInfuseDetail = 1;}
-  message EventAlphaInfuseDetail { string playerId = 1; string primaryAddress = 2; uint64 amount = 3;}
+  message EventAlphaInfuseDetail { string playerId = 1; string primaryAddress = 2; uint64 amount = 3; string vaultAddress = 4;}
 
   message EventAlphaDefuse { EventAlphaDefuseDetail eventAlphaDefuseDetail = 1;}
   message EventAlphaDefuseDetail { string primaryAddress = 1; uint64 amount = 2;}
@@ -276,3 +354,10 @@ option go_package = "structs/x/structs/types";
     string objectId         = 4;
     string planetId         = 5;
   }
+
+// Current cap activation/configuration, replayed at genesis and upgrade.
+message EventReactorStakeCap {
+  bool active = 1;
+  uint64 capBps = 2;
+  uint64 minValidators = 3;
+}

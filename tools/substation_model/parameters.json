@@ -1,0 +1,22 @@
+{
+  "blocks_per_day": 15500,
+  "nominal_seconds_per_block": 5.55,
+  "wear_days": 30,
+  "buffer_days": 7,
+  "prepay_cap_days": 7,
+  "durable_bps": 7000,
+  "tier_boundaries_kw": [100, 10000],
+  "tier_rates_ualpha_per_kw_day": [9500, 5900, 3800],
+  "initial_collateral_ualpha": 500000,
+  "dust_threshold_ualpha": 10000,
+  "grid_work_budget": 256,
+  "seed": 20260925,
+  "audit_trials": 2000,
+  "notes": {
+    "confirmed": "Health declines during prepaid upkeep; no age-triggered cascade; exclusive automated outputs; numeric oldest-first; migration mints a minimum reserve; upkeep burns ualpha; player audits enforce neglect.",
+    "candidate_values": "Rates, reserve, dust threshold, block-day convention and repair price are not approved consensus parameters. Reserve=0.5 Alpha and dust=0.01 Alpha are sensitivity inputs.",
+    "implementation": "Standalone economic model, not production Cosmos code. Accepted edges are explicitly built by scenarios. Unaccepted supply is excluded. Full upkeep purchases use authorized liquid ualpha, not guild tokens.",
+    "not_included": "Distribution accounting, vesting, combat execution, admission signatures, bank failure, gas timings, claim queues, development upgrade formulas and actual testnet graph export.",
+    "audit_curve": "The range interpolation table was not supplied. Race experiments use only the supplied exact endpoint ranges (65380 and 1387) with the repository integer difficulty formula. No invented interior table."
+  }
+}

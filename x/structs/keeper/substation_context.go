@@ -78,7 +78,7 @@ func (cc *CurrentContext) GenesisImportSubstation(substation types.Substation) {
  * invariant is already spelled out on AllocationTransfer, which refuses a
  * connected allocation for the same reason.
  */
-func (cc *CurrentContext) NewSubstation(creatorAddress string, owner *PlayerCache, allocation *AllocationCache) (*SubstationCache, error) {
+func (cc *CurrentContext) NewSubstation(creatorAddress string, owner AssetOwner, allocation *AllocationCache) (*SubstationCache, error) {
     if destinationId := allocation.GetAllocation().DestinationId; destinationId != "" {
         return nil, types.NewAllocationError(allocation.GetAllocation().SourceObjectId, "already_connected").WithAllocation(allocation.ID()).WithDestination(destinationId)
     }
@@ -113,8 +113,10 @@ func (cc *CurrentContext) NewSubstation(creatorAddress string, owner *PlayerCach
         return cc.substations[substationId], allocationDestinationError
     }
 
-    permissionId := GetObjectPermissionIDBytes(substationId, owner.ID())
-    cc.PermissionAdd(permissionId, types.PermSubstationAll)
+    if _, playerOwned := owner.(*PlayerCache); playerOwned {
+        permissionId := GetObjectPermissionIDBytes(substationId, owner.ID())
+        cc.PermissionAdd(permissionId, types.PermSubstationAll)
+    }
 
     return cc.substations[substationId], nil
 }

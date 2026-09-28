@@ -9,22 +9,44 @@ import (
 	"structs/x/structs/types"
 )
 
-// reactorEnergyRatio fails closed when a validator is missing or jailed while
-// leaving the infusion's stake-backed fuel untouched.
+// reactorEnergyRatio permits output only from a live, bonded, unjailed validator.
 func reactorEnergyRatio(validator stakingtypes.Validator, err error) uint64 {
 	if err != nil {
 		return 0
 	}
 
-	if validator.IsJailed() {
+	if validator.IsJailed() || !validator.IsBonded() {
 		return 0
 	}
 
 	return types.ReactorFuelToEnergyConversion
 }
 
-/* ReactorGateEnergy zeroes every stored infusion's ratio without changing its
- * fuel, defusing balance, or underlying delegation.
+// reactorSourceEligible checks current validator health without walking its
+// infusions or changing stored commission capacity. Queue membership is not a
+// health signal: a permissionless restart must not disable a healthy source.
+// A real slash gates commission until accounting commits for its latest revision.
+func (cc *CurrentContext) reactorSourceEligible(reactorID string) bool {
+
+	revision, err := cc.k.GetReactorCommissionRevision(cc.ctx, reactorID)
+	if err != nil || revision.Issued != revision.Certified {
+		return false
+	}
+	reactor := cc.GetReactor(reactorID)
+	if reactor.Deleted || reactor.CheckReactor() != nil {
+		return false
+	}
+	address, err := sdk.ValAddressFromBech32(reactor.GetReactor().Validator)
+	if err != nil {
+		return false
+	}
+	validator, err := cc.k.stakingKeeper.GetValidator(cc.ctx, address)
+	return err == nil && validator.IsBonded() && !validator.IsJailed()
+}
+
+/* ReactorGateEnergy is the legacy synchronous gate. Active-economy staking
+ * hooks must queue cleanup instead. This helper also supports explicit fixture
+ * setup; it zeroes stored ratios without changing fuel or the delegation.
  */
 func (k Keeper) ReactorGateEnergy(ctx context.Context, validatorAddress sdk.ValAddress) {
 	cc := k.NewCurrentContext(ctx)
@@ -55,6 +77,29 @@ func (k Keeper) ReactorGateEnergy(ctx context.Context, validatorAddress sdk.ValA
 	}
 }
 
+// QueueReactorRestoreEnergy records a real bonding transition with constant
+// work. A new transition must reset the infusion cursor: an intervening gate
+// can have zeroed positions that an earlier pass already restored. Cross-reactor
+// scheduling is independent, so that reset cannot monopolize the queue.
+func (k Keeper) QueueReactorRestoreEnergy(ctx context.Context, validatorAddress sdk.ValAddress) {
+	k.queueReactorEnergyReconcile(ctx, validatorAddress)
+}
+
+// Both departure and return reset the finite interval: either transition can
+// affect rows already visited by an earlier pass. The worker always reads live
+// health, so a delayed shutdown job cannot switch off a subsequently bonded row.
+func (k Keeper) queueReactorEnergyReconcile(ctx context.Context, validatorAddress sdk.ValAddress) {
+	reactorBytes, found := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
+	if !found {
+		return
+	}
+	reactor, found := k.GetReactorByBytes(ctx, reactorBytes)
+	if !found {
+		return
+	}
+	k.EnqueueReactorSlashReconcile(ctx, reactor.Id)
+}
+
 /* ReactorRestoreEnergy reconciles against live staking state instead of
  * blindly restoring a ratio that could relight stale fuel.
  */
@@ -79,6 +124,8 @@ func (k Keeper) ReactorRestoreEnergy(ctx context.Context, validatorAddress sdk.V
 			continue
 		}
 
-		k.reconcileInfusionForDelegation(ctx, cc, playerAddress, validatorAddress)
+		if _, _, err := k.reconcileInfusionForDelegation(ctx, cc, playerAddress, validatorAddress); err != nil {
+			k.logger.Error("ReactorRestoreEnergy: reconcile failed", "reactorId", reactor.Id, "address", playerAddress.String(), "error", err)
+		}
 	}
 }

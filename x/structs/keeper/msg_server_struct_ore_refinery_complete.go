@@ -58,11 +58,16 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
        return emptyResponse, types.NewWorkFailureError("refine", structure.StructId, hashInput)
     }
 
+    vault, vaultErr := cc.GetVault(structure.GetOwnerId())
+    if vaultErr != nil {
+        return emptyResponse, vaultErr
+    }
+
     if err := structure.OreRefine(); err != nil {
         return emptyResponse, err
     }
 
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaRefine{&types.EventAlphaRefineDetail{PlayerId: structure.GetOwnerId(), PrimaryAddress: structure.GetOwner().GetPrimaryAddress(), Amount: 1}})
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaRefine{&types.EventAlphaRefineDetail{PlayerId: structure.GetOwnerId(), PrimaryAddress: structure.GetOwner().GetPrimaryAddress(), Amount: 1, VaultAddress: vault.Address().String()}})
     _ = ctx.EventManager().EmitTypedEvent(&types.EventHashSuccess{&types.EventHashSuccessDetail{CallerAddress: msg.Creator, Category: "refine", Difficulty: achievedDifficulty, ObjectId: msg.StructId }})
 
 	cc.CommitAll()

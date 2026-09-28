@@ -10,15 +10,42 @@ import (
 	"google.golang.org/grpc/status"
 
 	keepertest "structs/testutil/keeper"
+	keeperlib "structs/x/structs/keeper"
 	"structs/testutil/nullify"
 	"structs/x/structs/types"
 )
 
 func TestSubstationQuerySingle(t *testing.T) {
-	t.Skip("requires allocation-based grid attribute setup")
 	keeper, ctx := keepertest.StructsKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNSubstation(t, keeper, ctx, 2)
+	// Query fixtures explicitly persist both healthy and brownout snapshots.
+	// Querying them must report stored state, not recalculate or normalize it.
+	address := sdk.AccAddress("substation-query-key")
+	owner := testAppendPlayer(keeper, ctx, types.Player{Creator: address.String(), PrimaryAddress: address.String()})
+	reactor := keeper.AppendReactor(ctx, types.Reactor{RawAddress: sdk.ValAddress(address).Bytes()})
+	guild := keeper.AppendGuild(ctx, "query-test", "", reactor, owner, "")
+	msgs := []types.Substation{
+		{Id: "4-1", Creator: address.String(), Owner: owner.Id},
+		{Id: "4-10", Creator: address.String(), Owner: guild.Id},
+	}
+	grids := []types.GridAttributes{
+		{Capacity: 100, Load: 25, ConnectionCount: 3, ConnectionCapacity: 25},
+		{Capacity: 80, Load: 100, ConnectionCount: 4, ConnectionCapacity: 0},
+	}
+	for i, substation := range msgs {
+		keeper.SetSubstation(ctx, substation)
+		for _, attribute := range []struct {
+			kind types.GridAttributeType
+			value uint64
+		}{
+			{types.GridAttributeType_capacity, grids[i].Capacity},
+			{types.GridAttributeType_load, grids[i].Load},
+			{types.GridAttributeType_connectionCount, grids[i].ConnectionCount},
+			{types.GridAttributeType_connectionCapacity, grids[i].ConnectionCapacity},
+		} {
+			keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(attribute.kind, substation.Id), attribute.value)
+		}
+	}
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryGetSubstationRequest
@@ -26,19 +53,19 @@ func TestSubstationQuerySingle(t *testing.T) {
 		err      error
 	}{
 		{
-			desc:    "First",
+			desc:    "PlayerOwnedHealthy",
 			request: &types.QueryGetSubstationRequest{Id: msgs[0].Id},
 			response: &types.QueryGetSubstationResponse{
 				Substation:     msgs[0],
-				GridAttributes: &types.GridAttributes{Capacity: 100, ConnectionCapacity: 100},
+				GridAttributes: &grids[0],
 			},
 		},
 		{
-			desc:    "Second",
+			desc:    "GuildOwnedBrownout",
 			request: &types.QueryGetSubstationRequest{Id: msgs[1].Id},
 			response: &types.QueryGetSubstationResponse{
 				Substation:     msgs[1],
-				GridAttributes: &types.GridAttributes{Capacity: 100, ConnectionCapacity: 100},
+				GridAttributes: &grids[1],
 			},
 		},
 		{
@@ -52,7 +79,9 @@ func TestSubstationQuerySingle(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
+			eventsBefore := len(ctx.EventManager().Events())
 			response, err := keeper.Substation(wctx, tc.request)
+			require.Len(t, ctx.EventManager().Events(), eventsBefore, "queries must not emit mutation events")
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {
@@ -82,30 +111,37 @@ func TestSubstationQueryPaginated(t *testing.T) {
 		}
 	}
 	t.Run("ByOffset", func(t *testing.T) {
+		var collected []types.Substation
 		step := 2
 		for i := 0; i < len(msgs); i += step {
 			resp, err := keeper.SubstationAll(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.Substation), step)
+			require.Len(t, resp.Substation, min(step, len(msgs)-i))
+			collected = append(collected, resp.Substation...)
 			require.Subset(t,
 				nullify.Fill(msgs),
 				nullify.Fill(resp.Substation),
 			)
 		}
+		require.ElementsMatch(t, msgs, collected, "offset pages must return every substation exactly once")
 	})
 	t.Run("ByKey", func(t *testing.T) {
+		var collected []types.Substation
 		step := 2
 		var next []byte
 		for i := 0; i < len(msgs); i += step {
 			resp, err := keeper.SubstationAll(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.Substation), step)
+			require.Len(t, resp.Substation, min(step, len(msgs)-i))
+			collected = append(collected, resp.Substation...)
 			require.Subset(t,
 				nullify.Fill(msgs),
 				nullify.Fill(resp.Substation),
 			)
 			next = resp.Pagination.NextKey
 		}
+		require.Empty(t, next, "the final key page must terminate")
+		require.ElementsMatch(t, msgs, collected, "key pages must return every substation exactly once")
 	})
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.SubstationAll(wctx, request(nil, 0, 0, true))

@@ -64,6 +64,14 @@ func TestArch_HandlersResolveMessageObjectIdsThroughAnExistenceCheck(t *testing.
 			},
 			resolver: "cc.GetExistingProvider",
 		},
+		{
+			takers: []string{"GetAgreement", "GetExistingAgreement"},
+			guards: map[string]bool{
+				"GetExistingAgreement": true,
+				"LoadAgreement":        true,
+			},
+			resolver: "cc.GetExistingAgreement",
+		},
 	}
 
 	wd, err := os.Getwd()
@@ -153,8 +161,8 @@ func TestArch_HandlersResolveMessageObjectIdsThroughAnExistenceCheck(t *testing.
 	}
 
 	// If the scan stops matching handlers the guard passes while checking nothing.
-	require.GreaterOrEqual(t, handlersChecked, 16,
-		"expected to find the substation and provider handlers; the source scan is probably broken")
+	require.GreaterOrEqual(t, handlersChecked, 20,
+		"expected to find the substation, provider and agreement handlers; the source scan is probably broken")
 
 	require.Empty(t, failures,
 		"an object id a transaction chose has to be resolved, not merely allocated:\n  - %s",

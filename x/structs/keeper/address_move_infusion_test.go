@@ -152,7 +152,9 @@ func TestAddressRevokePreservesInfusionCapacity(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	assertDelegationMoved(t, f, secondaryAcc, primaryAcc)
+	vault, err := types.VaultAddress(f.player.Id)
+	require.NoError(t, err)
+	assertDelegationMoved(t, f, secondaryAcc, vault)
 	require.Equal(t, uint64(0), f.k.GetPlayerIndexFromAddress(f.sdkCtx, secondaryAcc.String()),
 		"the address is still revoked")
 }
@@ -178,7 +180,9 @@ func TestPlayerUpdatePrimaryAddressPreservesInfusionCapacity(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	assertDelegationMoved(t, f, oldPrimaryAcc, newPrimaryAcc)
+	vault, err := types.VaultAddress(f.player.Id)
+	require.NoError(t, err)
+	assertDelegationMoved(t, f, oldPrimaryAcc, vault)
 }
 
 // TestAddressRegisterSweepPreservesInfusionCapacity covers the third mover,
@@ -315,6 +319,14 @@ func TestGuildMembershipJoinRefusesReassignedInfusionAddress(t *testing.T) {
 // names it, still works. Without this the test above would pass just as well
 // against a check that refuses everybody.
 func TestGuildMembershipJoinAcceptsOwnedInfusionAddress(t *testing.T) {
+	t.Run("registered-key", func(t *testing.T) { testJoinInfusionOwner(t, "key") })
+	t.Run("player-vault", func(t *testing.T) { testJoinInfusionOwner(t, "vault") })
+	t.Run("another-player-vault", func(t *testing.T) { testJoinInfusionOwner(t, "other") })
+	t.Run("guild-vault", func(t *testing.T) { testJoinInfusionOwner(t, "guild") })
+}
+
+func testJoinInfusionOwner(t *testing.T, source string) {
+	t.Helper()
 	k, ms, ctx := setupMsgServer(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
@@ -331,6 +343,20 @@ func TestGuildMembershipJoinAcceptsOwnedInfusionAddress(t *testing.T) {
 		PrimaryAddress: joinerAcc.String(),
 	})
 
+	infusionAddress := joinerAcc
+	if source != "key" {
+		ownerID := joiner.Id
+		if source == "other" {
+			other := testAppendPlayer(k, ctx, types.Player{Creator: sdk.AccAddress("other_vault_owner1234").String(), PrimaryAddress: sdk.AccAddress("other_vault_owner1234").String()})
+			ownerID = other.Id
+		} else if source == "guild" {
+			ownerID = gs.Guild.Id
+		}
+		addresses, err := k.NewCurrentContext(sdkCtx).EnsureVaults(ownerID)
+		require.NoError(t, err)
+		infusionAddress = addresses[0]
+	}
+
 	sourceValAddr := sdk.ValAddress(fmt.Sprintf("%-36s", "joinownedsourceval")[:36])
 	testAddValidator(k, sourceValAddr, math.NewInt(1000))
 	sourceReactor := testAppendReactor(k, ctx, types.Reactor{
@@ -341,7 +367,7 @@ func TestGuildMembershipJoinAcceptsOwnedInfusionAddress(t *testing.T) {
 
 	mock := k.StakingKeeper().(*keepertest.MockStakingKeeper)
 	require.NoError(t, mock.SetDelegation(ctx, stakingtypes.Delegation{
-		DelegatorAddress: joinerAcc.String(),
+		DelegatorAddress: infusionAddress.String(),
 		ValidatorAddress: sourceValAddr.String(),
 		Shares:           math.LegacyNewDecFromInt(math.NewInt(1000)),
 	}))
@@ -349,7 +375,7 @@ func TestGuildMembershipJoinAcceptsOwnedInfusionAddress(t *testing.T) {
 	testAppendInfusion(k, ctx, types.Infusion{
 		DestinationId:   sourceReactor.Id,
 		DestinationType: types.ObjectType_reactor,
-		Address:         joinerAcc.String(),
+		Address:         infusionAddress.String(),
 		PlayerId:        joiner.Id,
 		Fuel:            1000,
 		Commission:      math.LegacyZeroDec(),
@@ -359,8 +385,16 @@ func TestGuildMembershipJoinAcceptsOwnedInfusionAddress(t *testing.T) {
 		Creator:    joiner.Creator,
 		GuildId:    gs.Guild.Id,
 		PlayerId:   joiner.Id,
-		InfusionId: []string{sourceReactor.Id + "-" + joinerAcc.String()},
+		InfusionId: []string{sourceReactor.Id + "-" + infusionAddress.String()},
 	})
+	if source == "other" || source == "guild" {
+		require.Error(t, err, "a forged infusion PlayerId cannot authorize another owner's stake")
+		require.ErrorContains(t, err, "infusion_address_ownership")
+		unchanged, found := k.GetPlayer(sdkCtx, joiner.Id)
+		require.True(t, found)
+		require.Equal(t, joiner.GuildId, unchanged.GuildId)
+		return
+	}
 	require.NoError(t, err)
 
 	joined, found := k.GetPlayer(sdkCtx, joiner.Id)

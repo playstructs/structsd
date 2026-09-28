@@ -1,0 +1,69 @@
+diff --git a/deploy/table-ledger-20260921-denomination-identity.sql b/deploy/table-ledger-20260921-denomination-identity.sql
+new file mode 100644
+index 0000000..943f492
+--- /dev/null
++++ b/deploy/table-ledger-20260921-denomination-identity.sql
+@@ -0,0 +1,12 @@
++-- Deploy structs-pg:table-ledger-20260921-denomination-identity to pg
++-- Stop the indexer while applying this migration and its paired writer update.
++-- Preserve the established leg encoding; denomination distinguishes coin rows.
++BEGIN;
++ALTER TABLE structs.ledger ADD CONSTRAINT ledger_source_denom_required_chk
++    CHECK (chain_id IS NULL OR (denom IS NOT NULL AND denom <> ''));
++DROP INDEX structs.ledger_source_event_uidx;
++CREATE UNIQUE INDEX ledger_source_event_uidx
++    ON structs.ledger (time, chain_id, tx_index, msg_index, event_index, denom);
++COMMENT ON INDEX structs.ledger_source_event_uidx IS
++    'Replay identity includes denomination; the encoded event/leg is unchanged for existing coins.';
++COMMIT;
+diff --git a/revert/table-ledger-20260921-denomination-identity.sql b/revert/table-ledger-20260921-denomination-identity.sql
+new file mode 100644
+index 0000000..b63892e
+--- /dev/null
++++ b/revert/table-ledger-20260921-denomination-identity.sql
+@@ -0,0 +1,9 @@
++-- Revert structs-pg:table-ledger-20260921-denomination-identity from pg
++-- Intentionally refuses if multiple coin rows already share the old identity.
++-- Never discard those assets just to make a rollback succeed.
++BEGIN;
++DROP INDEX structs.ledger_source_event_uidx;
++CREATE UNIQUE INDEX ledger_source_event_uidx
++    ON structs.ledger (time, chain_id, tx_index, msg_index, event_index);
++ALTER TABLE structs.ledger DROP CONSTRAINT ledger_source_denom_required_chk;
++COMMIT;
+diff --git a/sqitch.plan b/sqitch.plan
+index af4ce62..06dc62f 100644
+--- a/sqitch.plan
++++ b/sqitch.plan
+@@ -242,3 +242,5 @@ table-stat-rollup-20260915-hourly [table-stat-20260820-api-read-indexes table-gr
+ table-permission-20260915-idx-player-object [table-permission] 2026-09-15T00:08:00Z Abstrct <josh@slow.ninja> # Index permission (player_id) and (object_id)
+ index-planet-activity-20260915-drop-time-idx [table-planet-activity-20260820-api-cursor-unique] 2026-09-15T00:09:00Z Abstrct <josh@slow.ninja> # Drop planet_activity_time_idx, covered by time_planet_seq_uidx
+ index-catalog-20260915-updated-at-id [table-struct-attribute-20260810-idx-object-id-attribute-type table-planet-attribute-20260914-idx-object-id-attribute-type table-grid-20260820-api-read-indexes table-struct table-planet] 2026-09-15T16:20:00Z Abstrct <josh@slow.ninja> # (updated_at DESC NULLS LAST, id) indexes for the webapp catalog list endpoints; removes the per-page whole-table sort and temp spills
++
++table-ledger-20260921-denomination-identity [table-ledger-20260914-source-event-identity] 2026-09-21T18:00:00Z Structs Release <release@local.invalid> # Include denomination in ledger replay identity without changing existing event indexes
+diff --git a/verify/table-ledger-20260921-denomination-identity.sql b/verify/table-ledger-20260921-denomination-identity.sql
+new file mode 100644
+index 0000000..2757289
+--- /dev/null
++++ b/verify/table-ledger-20260921-denomination-identity.sql
+@@ -0,0 +1,20 @@
++-- Verify structs-pg:table-ledger-20260921-denomination-identity on pg
++BEGIN;
++DO $$
++DECLARE columns text[];
++BEGIN
++ SELECT array_agg(a.attname::text ORDER BY key.ordinality) INTO columns
++ FROM pg_index i
++ CROSS JOIN LATERAL unnest(i.indkey) WITH ORDINALITY AS key(attnum, ordinality)
++ JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = key.attnum
++ WHERE i.indexrelid = 'structs.ledger_source_event_uidx'::regclass
++   AND i.indrelid = 'structs.ledger'::regclass AND i.indisunique AND i.indisvalid;
++ IF columns IS DISTINCT FROM ARRAY['time','chain_id','tx_index','msg_index','event_index','denom'] THEN
++  RAISE EXCEPTION 'incorrect ledger replay index: %', columns;
++ END IF;
++ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid = 'structs.ledger'::regclass
++   AND conname = 'ledger_source_denom_required_chk' AND convalidated) THEN
++  RAISE EXCEPTION 'missing validated ledger denomination constraint';
++ END IF;
++END $$;
++ROLLBACK;

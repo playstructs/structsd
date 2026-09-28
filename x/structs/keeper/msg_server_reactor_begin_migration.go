@@ -23,16 +23,9 @@ func (k msgServer) ReactorBeginMigration(goCtx context.Context, msg *types.MsgRe
        return emptyResponse, err
     }
 
-    // Load the player related to the specified address
-    // Normally the address specified should be the PrimaryAddress
-    player, err := cc.GetPlayerByAddress(msg.DelegatorAddress)
+    delegatorAddress, err := cc.resolveReactorDelegator(msg.DelegatorAddress, msg.OwnerId, callingPlayer, types.PermTokenMigrate)
     if err != nil {
-       return emptyResponse, err
-    }
-
-    err = player.CanMigrateTokensBy(callingPlayer)
-    if err != nil {
-       return emptyResponse, err
+        return emptyResponse, err
     }
 
     valSrcAddr, valSrcErr := sdk.ValAddressFromBech32(msg.ValidatorSrcAddress)
@@ -45,10 +38,7 @@ func (k msgServer) ReactorBeginMigration(goCtx context.Context, msg *types.MsgRe
 		return emptyResponse, types.NewAddressValidationError(msg.ValidatorDstAddress, "invalid_validator")
 	}
 
-    delegatorAddress, delegatorAddressErr := sdk.AccAddressFromBech32(msg.DelegatorAddress)
- 	if delegatorAddressErr != nil {
- 		return emptyResponse, types.NewAddressValidationError(msg.DelegatorAddress, "invalid_delegator")
- 	}
+
 
 	if !msg.Amount.IsValid() || !msg.Amount.Amount.IsPositive() {
 		return emptyResponse, types.NewReactorError("begin_migration", "invalid_amount")
@@ -84,7 +74,7 @@ func (k msgServer) ReactorBeginMigration(goCtx context.Context, msg *types.MsgRe
 			staking.EventTypeRedelegate,
 			sdk.NewAttribute(staking.AttributeKeySrcValidator, msg.ValidatorSrcAddress),
 			sdk.NewAttribute(staking.AttributeKeyDstValidator, msg.ValidatorDstAddress),
-			sdk.NewAttribute(staking.AttributeKeyDelegator, msg.DelegatorAddress),
+			sdk.NewAttribute(staking.AttributeKeyDelegator, delegatorAddress.String()),
 			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Amount.String()),
 			sdk.NewAttribute(staking.AttributeKeyCompletionTime, completionTime.Format(time.RFC3339)),
 		),

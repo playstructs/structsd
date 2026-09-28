@@ -113,3 +113,18 @@ func TestZeroHeightRebase_ProviderCheckpointFollows(t *testing.T) {
 	require.Equal(t, uint64(0), provider.GetCheckpointBlock(),
 		"the checkpoint clock must restart with the windows it bills against")
 }
+
+func TestZeroHeightRebaseReleasesServedProviderPenalty(t *testing.T) {
+ f := setupTeardownFixture(t, 10, "0.5", "0.25")
+ f.openAgreement(t, 100, 50)
+ advanceBlocks(f, 20)
+ cc := f.k.NewCurrentContext(f.ctx)
+ require.NoError(t, cc.RebaseAgreementsForZeroHeightGenesis())
+ cc.CommitAll()
+ require.Equal(t, int64(20000), f.balance(f.earningsAcc).Int64(), "all served revenue, including held cancellation penalty, must remain accessible")
+ require.Equal(t, int64(30000), f.balance(f.collateralAcc).Int64(), "unserved consumer collateral remains reserved")
+ again := f.k.NewCurrentContext(sdk.UnwrapSDKContext(f.ctx).WithBlockHeight(0))
+ require.NoError(t, again.RebaseAgreementsForZeroHeightGenesis())
+ again.CommitAll()
+ require.Equal(t, int64(20000), f.balance(f.earningsAcc).Int64(), "rebasing again at zero must not pay twice")
+}

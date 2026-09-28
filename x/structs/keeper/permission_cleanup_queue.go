@@ -34,14 +34,18 @@ func (k Keeper) ClearPermissionCleanup(ctx context.Context, objectId string) {
 	permissionCleanupStore(k, ctx).Delete([]byte(objectId))
 }
 
-// GetPermissionCleanupQueue lists the objects still being cleaned. One row per
-// destroyed object that outgrew a single pass, so it is short by construction.
+// GetPermissionCleanupQueue lists the whole queue for diagnostics and tests.
+// Block processing must use the bounded batch helper.
 func (k Keeper) GetPermissionCleanupQueue(ctx context.Context) (queue []string) {
+	return k.getPermissionCleanupQueueBatch(ctx, int(^uint(0)>>1))
+}
+
+func (k Keeper) getPermissionCleanupQueueBatch(ctx context.Context, limit int) (queue []string) {
 	store := permissionCleanupStore(k, ctx)
 	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 	defer iterator.Close()
 
-	for ; iterator.Valid(); iterator.Next() {
+	for ; iterator.Valid() && len(queue) < limit; iterator.Next() {
 		queue = append(queue, string(iterator.Key()))
 	}
 
@@ -56,7 +60,7 @@ func (k Keeper) GetPermissionCleanupQueue(ctx context.Context) (queue []string) 
  * that is its expiry, a height the consumer chose when they opened it.
  */
 func (k Keeper) ProcessPermissionCleanupQueue(ctx context.Context) {
-	queue := k.GetPermissionCleanupQueue(ctx)
+	queue := k.getPermissionCleanupQueueBatch(ctx, types.PermissionCleanupBudget)
 	if len(queue) == 0 {
 		return
 	}
@@ -68,12 +72,21 @@ func (k Keeper) ProcessPermissionCleanupQueue(ctx context.Context) {
 			return
 		}
 
+		// Even an already-empty object consumes a queue visit. If this uses
+		// the final unit, leave it queued for a later pass with row budget.
+		budget--
+		if budget == 0 {
+			return
+		}
+
 		deleted, morePermissions := k.ClearPermissionByObject(ctx, objectId, budget)
 		budget -= len(deleted)
 
 		moreGuildRanks := false
 		if budget > 0 {
-			moreGuildRanks = k.ClearPermissionGuildRankByObject(ctx, objectId, budget)
+			var deletedRegisters int
+			moreGuildRanks, deletedRegisters = k.clearPermissionGuildRankByObjectCount(ctx, objectId, budget)
+			budget -= deletedRegisters
 		} else {
 			// Out of budget before the register rows were looked at, so whether
 			// any remain is unknown. Assume they do rather than dropping the

@@ -52,8 +52,22 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
         return emptyResponse, permissionError
     }
 
+    ownerId := msg.OwnerId
+    if ownerId == "" {
+        ownerId = activePlayer.ID()
+    }
+    owner, ownerErr := cc.GetExistingAssetOwner(ownerId)
+    if ownerErr != nil {
+        return emptyResponse, ownerErr
+    }
+    if _, guildOwned := owner.(*GuildCache); guildOwned {
+        if err := cc.PermissionCheck(owner, activePlayer, types.PermSourceAllocation); err != nil {
+            return emptyResponse, err
+        }
+    }
+
     // Create a Provider Object
-    provider := types.CreateBaseProvider(msg.Creator, activePlayer.GetPlayerId())
+    provider := types.CreateBaseProvider(msg.Creator, owner.ID())
 
     provider.SetSubstationId(msg.SubstationId)
 
@@ -98,8 +112,10 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
 
     newProvider := cc.NewProvider(provider)
 
-    providerPermissionId := GetObjectPermissionIDBytes(newProvider.ID(), activePlayer.ID())
-    cc.SetPermissions(providerPermissionId, types.PermProviderAll)
+    if _, playerOwned := owner.(*PlayerCache); playerOwned {
+        providerPermissionId := GetObjectPermissionIDBytes(newProvider.ID(), owner.ID())
+        cc.SetPermissions(providerPermissionId, types.PermProviderAll)
+    }
 
 	cc.CommitAll()
 	return &types.MsgProviderResponse{}, nil

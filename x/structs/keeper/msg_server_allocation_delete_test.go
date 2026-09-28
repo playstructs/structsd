@@ -11,120 +11,66 @@ import (
 )
 
 func TestMsgAllocationDelete(t *testing.T) {
-	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
-
-	// Create a player first
-	playerAcc := sdk.AccAddress("creator123456789012345678901234567890")
-	player := types.Player{
-		Creator:        playerAcc.String(),
-		PrimaryAddress: playerAcc.String(),
-	}
-	player = testAppendPlayer(k, ctx, player)
-
-	// Set up source capacity
-	sourceObjectId := "source-object"
-	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceObjectId)
-	k.SetGridAttribute(ctx, capacityAttrId, uint64(1000))
-
-	// Grant permissions
-	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
-
-	// Grant object permissions on source object
-	sourceObjectPermissionId := keeperlib.GetObjectPermissionIDBytes(sourceObjectId, player.Id)
-	testPermissionAdd(k, ctx, sourceObjectPermissionId, types.PermAssetsAll)
-
-	// Create a dynamic allocation (required for deletion)
-	allocation := types.Allocation{
-		SourceObjectId: sourceObjectId,
-		DestinationId:  "",
-		Type:           types.AllocationType_dynamic,
-		Controller: player.Id,
-	}
-	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
-	require.NoError(t, err)
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgAllocationDelete
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid allocation deletion",
-			input: &types.MsgAllocationDelete{
-				Creator:      player.Creator,
-				AllocationId: createdAllocation.Id,
-			},
-			expErr: false,
-		},
-		{
-			name: "allocation not found",
-			input: &types.MsgAllocationDelete{
-				Creator:      player.Creator,
-				AllocationId: "invalid-allocation",
-			},
-			expErr:    true,
-			expErrMsg: "allocation not found",
-			skip:      true, // Skip - cache system doesn't validate existence before permission check
-		},
-		{
-			name: "invalid creator - no player",
-			input: &types.MsgAllocationDelete{
-				Creator:      sdk.AccAddress("invalid123456789012345678901234567890").String(),
-				AllocationId: createdAllocation.Id,
-			},
-			expErr:    true,
-			expErrMsg: "non-player address",
-			skip:      true, // Skip - cache system validation order makes this hard to test
-		},
-		{
-			name: "static allocation cannot be deleted",
-			input: &types.MsgAllocationDelete{
-				Creator:      player.Creator,
-				AllocationId: createdAllocation.Id, // This will be replaced with static allocation ID
-			},
-			expErr:    true,
-			expErrMsg: "Allocation Type must be Dynamic",
-			skip:      true, // Skip - validation may not work as expected in test setup
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
+	for _, name := range []string{"dynamic allocation", "missing allocation", "unregistered signer", "static allocation", "unprivileged player", "signing key lacks delete authority"} {
+		t.Run(name, func(t *testing.T) {
+			k, ms, goCtx := setupMsgServer(t)
+			ctx := sdk.UnwrapSDKContext(goCtx)
+			ownerAddress := sdk.AccAddress("allocation_owner_001")
+			owner := testAppendPlayer(k, ctx, types.Player{Creator: ownerAddress.String(), PrimaryAddress: ownerAddress.String()})
+			otherAddress := sdk.AccAddress("allocation_other_001")
+			other := testAppendPlayer(k, ctx, types.Player{Creator: otherAddress.String(), PrimaryAddress: otherAddress.String()})
+			allocationType := types.AllocationType_dynamic
+			if name == "static allocation" {
+				allocationType = types.AllocationType_static
 			}
-
-			// For the static allocation test, create a static one
-			if tc.name == "static allocation cannot be deleted" {
-				staticAllocation := types.Allocation{
-					SourceObjectId: sourceObjectId,
-					DestinationId:  "",
-					Type:           types.AllocationType_static,
-					Controller: player.Id,
+			allocation, err := testAppendAllocation(k, ctx, types.Allocation{
+				SourceObjectId: owner.Id, Controller: owner.Id, Type: allocationType,
+			}, 100)
+			require.NoError(t, err)
+			// Exercise the allocation's explicit delete permission, independently of
+			// permission to modify allocations on its source.
+			permissionID := keeperlib.GetObjectPermissionIDBytes(allocation.Id, owner.Id)
+			k.SetPermissionsByBytes(ctx, permissionID, types.PermDelete)
+			k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(owner.Creator), types.PermDelete)
+			msg := &types.MsgAllocationDelete{Creator: owner.Creator, AllocationId: allocation.Id}
+			wantError := ""
+			switch name {
+			case "missing allocation":
+				msg.AllocationId = "6-999999"
+				wantError = "not found"
+			case "unregistered signer":
+				msg.Creator = sdk.AccAddress("allocation_unknown01").String()
+				wantError = "player"
+			case "static allocation":
+				wantError = "allocation type (static vs dynamic)"
+			case "unprivileged player":
+				msg.Creator = other.Creator
+				wantError = "permission"
+			case "signing key lacks delete authority":
+				k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(owner.Creator), types.Permissionless)
+				wantError = "permission"
+			}
+			powerID := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id)
+			beforePower := k.GetGridAttribute(ctx, powerID)
+			beforePermissions := k.GetPermissionsByObject(ctx, allocation.Id)
+			ctx = ctx.WithEventManager(sdk.NewEventManager())
+			resp, err := ms.AllocationDelete(ctx, msg)
+			require.NotNil(t, resp)
+			stored, found := k.GetAllocation(ctx, allocation.Id)
+			if wantError != "" {
+				require.ErrorContains(t, err, wantError)
+				require.True(t, found)
+				require.Equal(t, allocation, stored)
+				require.Equal(t, beforePower, k.GetGridAttribute(ctx, powerID))
+				require.Equal(t, beforePermissions, k.GetPermissionsByObject(ctx, allocation.Id))
+				for _, event := range ctx.EventManager().ABCIEvents() {
+					require.NotContains(t, []string{"structs.structs.EventDelete", "structs.structs.EventAllocation", "structs.structs.EventPermission"}, event.Type)
 				}
-				staticAlloc, err := testAppendAllocation(k, ctx, staticAllocation, 100)
-				require.NoError(t, err)
-				tc.input.AllocationId = staticAlloc.Id
-			}
-
-			resp, err := ms.AllocationDelete(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
 			} else {
 				require.NoError(t, err)
-				require.NotNil(t, resp)
-				require.Equal(t, tc.input.AllocationId, resp.AllocationId)
-
-				// Verify allocation was deleted
-				_, found := k.GetAllocation(ctx, tc.input.AllocationId)
+				require.Equal(t, allocation.Id, resp.AllocationId)
 				require.False(t, found)
+				require.Empty(t, k.GetPermissionsByObject(ctx, allocation.Id))
 			}
 		})
 	}

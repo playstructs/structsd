@@ -20,19 +20,25 @@ func (k msgServer) PlayerSend(goCtx context.Context, msg *types.MsgPlayerSend) (
         return emptyResponse, err
     }
 
-    player, err := cc.GetPlayerByAddress(msg.FromAddress)
-    if err != nil {
-       return emptyResponse, err
-    }
-
-    err = player.CanTransferTokensBy(callingPlayer)
-    if err != nil {
-       return emptyResponse, err
-    }
-
     fromAcc, addressValidationError := sdk.AccAddressFromBech32(msg.FromAddress)
-    if (addressValidationError != nil){
+    if addressValidationError != nil {
         return emptyResponse, types.NewAddressValidationError(msg.FromAddress, "invalid_format")
+    }
+
+    // A vault is an asset source, never a signing identity. Resolve its live
+    // owner before applying the same token-key ceiling as other vault spends.
+    if ownerID, found := k.GetVaultOwner(ctx, fromAcc); found {
+        vault, err := cc.GetVault(ownerID)
+        if err != nil { return emptyResponse, err }
+        if err := vault.CanUseBy(callingPlayer, types.PermTokenTransfer); err != nil {
+            return emptyResponse, err
+        }
+    } else {
+        player, err := cc.GetPlayerByAddress(msg.FromAddress)
+        if err != nil { return emptyResponse, err }
+        if err := player.CanTransferTokensBy(callingPlayer); err != nil {
+            return emptyResponse, err
+        }
     }
 
     // The recipient is the one address in this module a transaction gets to

@@ -1,0 +1,307 @@
+diff --git a/deploy/table-ledger-20260921-denomination-identity.sql b/deploy/table-ledger-20260921-denomination-identity.sql
+new file mode 100644
+index 0000000..943f492
+--- /dev/null
++++ b/deploy/table-ledger-20260921-denomination-identity.sql
+@@ -0,0 +1,12 @@
++-- Deploy structs-pg:table-ledger-20260921-denomination-identity to pg
++-- Stop the indexer while applying this migration and its paired writer update.
++-- Preserve the established leg encoding; denomination distinguishes coin rows.
++BEGIN;
++ALTER TABLE structs.ledger ADD CONSTRAINT ledger_source_denom_required_chk
++    CHECK (chain_id IS NULL OR (denom IS NOT NULL AND denom <> ''));
++DROP INDEX structs.ledger_source_event_uidx;
++CREATE UNIQUE INDEX ledger_source_event_uidx
++    ON structs.ledger (time, chain_id, tx_index, msg_index, event_index, denom);
++COMMENT ON INDEX structs.ledger_source_event_uidx IS
++    'Replay identity includes denomination; the encoded event/leg is unchanged for existing coins.';
++COMMIT;
+diff --git a/deploy/table-vault-20260921-asset-owners.sql b/deploy/table-vault-20260921-asset-owners.sql
+new file mode 100644
+index 0000000..f6552ed
+--- /dev/null
++++ b/deploy/table-vault-20260921-asset-owners.sql
+@@ -0,0 +1,113 @@
++-- Deploy structs-pg:table-vault-20260921-asset-owners to pg
++BEGIN;
++CREATE TABLE structs.vault (
++ owner_id varchar PRIMARY KEY,
++ owner_type structs.object_type NOT NULL CHECK (owner_type IN ('player','guild')),
++ address varchar NOT NULL UNIQUE CHECK (address <> ''),
++ account_number numeric(20,0) NOT NULL UNIQUE CHECK (account_number BETWEEN 0 AND 18446744073709551615),
++ account_created boolean NOT NULL,
++ created_at timestamptz NOT NULL,
++ updated_at timestamptz NOT NULL,
++ CHECK ((owner_type='player' AND owner_id ~ '^1-[1-9][0-9]*$')
++     OR (owner_type='guild' AND owner_id ~ '^0-[1-9][0-9]*$'))
++);
++COMMENT ON TABLE structs.vault IS 'Protocol asset-owner association. Never a signing-key registration.';
++COMMENT ON COLUMN structs.vault.account_created IS 'Whether the most recently applied association event provisioned its auth account.';
++CREATE VIEW structs.asset_owner_address AS
++ SELECT 'player'::structs.object_type AS owner_type, p.player_id AS owner_id, p.address
++ FROM structs.player_address p
++ WHERE p.player_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM structs.vault v WHERE v.address=p.address)
++ UNION ALL
++ SELECT owner_type,owner_id,address FROM structs.vault;
++CREATE VIEW view.guild_vault_inventory AS
++ SELECT owner_id AS guild_id,denom,balance FROM structs.api_inventory WHERE owner_type='guild';
++CREATE OR REPLACE VIEW view.guild_inventory AS
++ SELECT p.guild_id,SUM(i.balance) AS balance,i.denom
++ FROM structs.player p JOIN view.player_inventory i ON i.player_id=p.id
++ GROUP BY p.guild_id,i.denom;
++GRANT SELECT,INSERT,UPDATE,DELETE ON structs.vault TO structs_indexer;
++GRANT SELECT ON structs.asset_owner_address TO structs_indexer;
++GRANT SELECT ON structs.vault,structs.asset_owner_address,view.guild_vault_inventory TO structs_webapp;
++    CREATE OR REPLACE FUNCTION structs.api_inventory_reconcile(p_log BOOLEAN DEFAULT TRUE)
++    RETURNS TABLE (
++        owner_type     structs.object_type,
++        owner_id       CHARACTER VARYING,
++        denom          TEXT,
++        api_balance    NUMERIC,
++        ledger_balance NUMERIC
++    )
++    LANGUAGE plpgsql
++    SET max_parallel_workers_per_gather = 0
++    AS
++    $BODY$
++    #variable_conflict use_column
++    DECLARE
++        v_checked_at    TIMESTAMPTZ := clock_timestamp();
++        v_source_height BIGINT;
++    BEGIN
++        SELECT rs.source_height INTO v_source_height
++          FROM structs.api_refresh_state rs
++         WHERE rs.model = 'inventory';
++
++        DROP TABLE IF EXISTS pg_temp.api_inventory_reconcile_tmp;
++
++        CREATE TEMP TABLE api_inventory_reconcile_tmp ON COMMIT DROP AS
++        WITH addr AS (
++            SELECT l.address,
++                   l.denom,
++                   SUM(CASE l.direction
++                           WHEN 'credit' THEN l.amount_p
++                           ELSE -l.amount_p
++                       END) AS balance
++              FROM structs.ledger l
++             WHERE l.address IS NOT NULL
++               AND l.denom IS NOT NULL
++             GROUP BY l.address, l.denom
++        ), expected AS (
++            SELECT 'address'::structs.object_type AS owner_type,
++                   a.address AS owner_id,
++                   a.denom,
++                   a.balance
++              FROM addr a
++            UNION ALL
++            SELECT pa.owner_type,
++                   pa.owner_id,
++                   a.denom,
++                   SUM(a.balance)
++              FROM addr a
++              JOIN structs.asset_owner_address pa ON pa.address = a.address
++             GROUP BY pa.owner_type, pa.owner_id, a.denom
++        )
++        SELECT COALESCE(e.owner_type, i.owner_type) AS owner_type,
++               COALESCE(e.owner_id,   i.owner_id)   AS owner_id,
++               COALESCE(e.denom,      i.denom)      AS denom,
++               i.balance                            AS api_balance,
++               e.balance                            AS ledger_balance
++          FROM expected e
++          FULL OUTER JOIN structs.api_inventory i
++            ON i.owner_type = e.owner_type
++           AND i.owner_id   = e.owner_id
++           AND i.denom      = e.denom
++         WHERE COALESCE(i.balance, 0) <> COALESCE(e.balance, 0);
++
++        IF p_log THEN
++            INSERT INTO structs.api_inventory_drift
++                (checked_at, owner_type, owner_id, denom,
++                 api_balance, ledger_balance, source_height)
++            SELECT v_checked_at, t.owner_type, t.owner_id, t.denom,
++                   t.api_balance, t.ledger_balance, v_source_height
++              FROM api_inventory_reconcile_tmp t;
++
++            DELETE FROM structs.api_inventory_drift d
++             WHERE d.checked_at < v_checked_at - INTERVAL '90 days';
++        END IF;
++
++        RETURN QUERY
++            SELECT t.owner_type, t.owner_id, t.denom, t.api_balance, t.ledger_balance
++              FROM api_inventory_reconcile_tmp t
++             ORDER BY t.owner_type, t.owner_id, t.denom;
++    END
++    $BODY$;
++
++
++COMMIT;
+diff --git a/revert/table-ledger-20260921-denomination-identity.sql b/revert/table-ledger-20260921-denomination-identity.sql
+new file mode 100644
+index 0000000..b63892e
+--- /dev/null
++++ b/revert/table-ledger-20260921-denomination-identity.sql
+@@ -0,0 +1,9 @@
++-- Revert structs-pg:table-ledger-20260921-denomination-identity from pg
++-- Intentionally refuses if multiple coin rows already share the old identity.
++-- Never discard those assets just to make a rollback succeed.
++BEGIN;
++DROP INDEX structs.ledger_source_event_uidx;
++CREATE UNIQUE INDEX ledger_source_event_uidx
++    ON structs.ledger (time, chain_id, tx_index, msg_index, event_index);
++ALTER TABLE structs.ledger DROP CONSTRAINT ledger_source_denom_required_chk;
++COMMIT;
+diff --git a/revert/table-vault-20260921-asset-owners.sql b/revert/table-vault-20260921-asset-owners.sql
+new file mode 100644
+index 0000000..ff5b621
+--- /dev/null
++++ b/revert/table-vault-20260921-asset-owners.sql
+@@ -0,0 +1,94 @@
++-- Revert structs-pg:table-vault-20260921-asset-owners from pg
++-- A populated vault projection must not be silently discarded.
++BEGIN;
++DO $$ BEGIN IF EXISTS(SELECT 1 FROM structs.vault) THEN RAISE EXCEPTION 'vault associations present; refuse destructive revert'; END IF; END $$;
++    CREATE OR REPLACE FUNCTION structs.api_inventory_reconcile(p_log BOOLEAN DEFAULT TRUE)
++    RETURNS TABLE (
++        owner_type     structs.object_type,
++        owner_id       CHARACTER VARYING,
++        denom          TEXT,
++        api_balance    NUMERIC,
++        ledger_balance NUMERIC
++    )
++    LANGUAGE plpgsql
++    SET max_parallel_workers_per_gather = 0
++    AS
++    $BODY$
++    #variable_conflict use_column
++    DECLARE
++        v_checked_at    TIMESTAMPTZ := clock_timestamp();
++        v_source_height BIGINT;
++    BEGIN
++        SELECT rs.source_height INTO v_source_height
++          FROM structs.api_refresh_state rs
++         WHERE rs.model = 'inventory';
++
++        DROP TABLE IF EXISTS pg_temp.api_inventory_reconcile_tmp;
++
++        CREATE TEMP TABLE api_inventory_reconcile_tmp ON COMMIT DROP AS
++        WITH addr AS (
++            SELECT l.address,
++                   l.denom,
++                   SUM(CASE l.direction
++                           WHEN 'credit' THEN l.amount_p
++                           ELSE -l.amount_p
++                       END) AS balance
++              FROM structs.ledger l
++             WHERE l.address IS NOT NULL
++               AND l.denom IS NOT NULL
++             GROUP BY l.address, l.denom
++        ), expected AS (
++            SELECT 'address'::structs.object_type AS owner_type,
++                   a.address AS owner_id,
++                   a.denom,
++                   a.balance
++              FROM addr a
++            UNION ALL
++            SELECT 'player'::structs.object_type,
++                   pa.player_id,
++                   a.denom,
++                   SUM(a.balance)
++              FROM addr a
++              JOIN structs.player_address pa ON pa.address = a.address
++             GROUP BY pa.player_id, a.denom
++        )
++        SELECT COALESCE(e.owner_type, i.owner_type) AS owner_type,
++               COALESCE(e.owner_id,   i.owner_id)   AS owner_id,
++               COALESCE(e.denom,      i.denom)      AS denom,
++               i.balance                            AS api_balance,
++               e.balance                            AS ledger_balance
++          FROM expected e
++          FULL OUTER JOIN structs.api_inventory i
++            ON i.owner_type = e.owner_type
++           AND i.owner_id   = e.owner_id
++           AND i.denom      = e.denom
++         WHERE COALESCE(i.balance, 0) <> COALESCE(e.balance, 0);
++
++        IF p_log THEN
++            INSERT INTO structs.api_inventory_drift
++                (checked_at, owner_type, owner_id, denom,
++                 api_balance, ledger_balance, source_height)
++            SELECT v_checked_at, t.owner_type, t.owner_id, t.denom,
++                   t.api_balance, t.ledger_balance, v_source_height
++              FROM api_inventory_reconcile_tmp t;
++
++            DELETE FROM structs.api_inventory_drift d
++             WHERE d.checked_at < v_checked_at - INTERVAL '90 days';
++        END IF;
++
++        RETURN QUERY
++            SELECT t.owner_type, t.owner_id, t.denom, t.api_balance, t.ledger_balance
++              FROM api_inventory_reconcile_tmp t
++             ORDER BY t.owner_type, t.owner_id, t.denom;
++    END
++    $BODY$;
++
++
++CREATE OR REPLACE VIEW view.guild_inventory AS
++ SELECT p.guild_id,SUM(i.balance) AS balance,i.denom
++ FROM structs.player_address p JOIN view.address_inventory i ON i.address=p.address
++ GROUP BY p.guild_id,i.denom;
++DROP VIEW view.guild_vault_inventory;
++DROP VIEW structs.asset_owner_address;
++DROP TABLE structs.vault;
++COMMIT;
+diff --git a/sqitch.plan b/sqitch.plan
+index af4ce62..fb1ee19 100644
+--- a/sqitch.plan
++++ b/sqitch.plan
+@@ -242,3 +242,7 @@ table-stat-rollup-20260915-hourly [table-stat-20260820-api-read-indexes table-gr
+ table-permission-20260915-idx-player-object [table-permission] 2026-09-15T00:08:00Z Abstrct <josh@slow.ninja> # Index permission (player_id) and (object_id)
+ index-planet-activity-20260915-drop-time-idx [table-planet-activity-20260820-api-cursor-unique] 2026-09-15T00:09:00Z Abstrct <josh@slow.ninja> # Drop planet_activity_time_idx, covered by time_planet_seq_uidx
+ index-catalog-20260915-updated-at-id [table-struct-attribute-20260810-idx-object-id-attribute-type table-planet-attribute-20260914-idx-object-id-attribute-type table-grid-20260820-api-read-indexes table-struct table-planet] 2026-09-15T16:20:00Z Abstrct <josh@slow.ninja> # (updated_at DESC NULLS LAST, id) indexes for the webapp catalog list endpoints; removes the per-page whole-table sort and temp spills
++
++table-ledger-20260921-denomination-identity [table-ledger-20260914-source-event-identity] 2026-09-21T18:00:00Z Structs Release <release@local.invalid> # Include denomination in ledger replay identity without changing existing event indexes
++
++table-vault-20260921-asset-owners [table-player table-stat table-api-inventory-20260914-reconciliation view-inventory-20260914-read-api-current-state view-guild-20260525-add-chain-ugc role-structs-indexer-20260820-api-read] 2026-09-21T18:30:00Z Structs Release <release@local.invalid> # Vault associations, owner inventories and reconciliation without signing-key rows
+diff --git a/verify/table-ledger-20260921-denomination-identity.sql b/verify/table-ledger-20260921-denomination-identity.sql
+new file mode 100644
+index 0000000..2757289
+--- /dev/null
++++ b/verify/table-ledger-20260921-denomination-identity.sql
+@@ -0,0 +1,20 @@
++-- Verify structs-pg:table-ledger-20260921-denomination-identity on pg
++BEGIN;
++DO $$
++DECLARE columns text[];
++BEGIN
++ SELECT array_agg(a.attname::text ORDER BY key.ordinality) INTO columns
++ FROM pg_index i
++ CROSS JOIN LATERAL unnest(i.indkey) WITH ORDINALITY AS key(attnum, ordinality)
++ JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = key.attnum
++ WHERE i.indexrelid = 'structs.ledger_source_event_uidx'::regclass
++   AND i.indrelid = 'structs.ledger'::regclass AND i.indisunique AND i.indisvalid;
++ IF columns IS DISTINCT FROM ARRAY['time','chain_id','tx_index','msg_index','event_index','denom'] THEN
++  RAISE EXCEPTION 'incorrect ledger replay index: %', columns;
++ END IF;
++ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid = 'structs.ledger'::regclass
++   AND conname = 'ledger_source_denom_required_chk' AND convalidated) THEN
++  RAISE EXCEPTION 'missing validated ledger denomination constraint';
++ END IF;
++END $$;
++ROLLBACK;
+diff --git a/verify/table-vault-20260921-asset-owners.sql b/verify/table-vault-20260921-asset-owners.sql
+new file mode 100644
+index 0000000..f07cd57
+--- /dev/null
++++ b/verify/table-vault-20260921-asset-owners.sql
+@@ -0,0 +1,11 @@
++-- Verify structs-pg:table-vault-20260921-asset-owners on pg
++BEGIN;
++SELECT owner_id,owner_type,address,account_number,account_created FROM structs.vault WHERE FALSE;
++SELECT owner_type,owner_id,address FROM structs.asset_owner_address WHERE FALSE;
++SELECT guild_id,denom,balance FROM view.guild_vault_inventory WHERE FALSE;
++DO $$ BEGIN
++ IF EXISTS (SELECT 1 FROM unnest(ARRAY['INSERT','UPDATE','DELETE','SELECT']) AS p(privilege) WHERE NOT has_table_privilege('structs_indexer','structs.vault',p.privilege))
++ OR NOT has_table_privilege('structs_webapp','view.guild_vault_inventory','SELECT') THEN
++ RAISE EXCEPTION 'missing vault grants'; END IF;
++END $$;
++ROLLBACK;

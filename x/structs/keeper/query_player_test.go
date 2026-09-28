@@ -16,19 +16,18 @@ import (
 )
 
 func TestPlayerQuery(t *testing.T) {
-	t.Skip("requires allocation-based grid attribute setup")
 	keeper, ctx := keepertest.StructsKeeper(t)
 	ctxSDK := ctx
 	wctx := sdk.WrapSDKContext(ctx)
 
 	// Create test players
 	player1 := types.Player{
-		Creator:        "cosmos1creator1",
-		PrimaryAddress: "cosmos1creator1",
+		Creator:        sdk.AccAddress("queryplayer-primary1").String(),
+		PrimaryAddress: sdk.AccAddress("queryplayer-primary1").String(),
 	}
 	player2 := types.Player{
-		Creator:        "cosmos1creator2",
-		PrimaryAddress: "cosmos1creator2",
+		Creator:        sdk.AccAddress("queryplayer-primary2").String(),
+		PrimaryAddress: sdk.AccAddress("queryplayer-primary2").String(),
 	}
 
 	created1 := testAppendPlayer(keeper, ctxSDK, player1)
@@ -36,14 +35,31 @@ func TestPlayerQuery(t *testing.T) {
 
 	// Set grid attributes and inventory for testing
 	gridAttr1 := types.GridAttributes{
-		Ore: 100,
+		Ore: 100, StructsLoad: 123, Capacity: 1000, Load: 50,
 	}
 	gridAttr2 := types.GridAttributes{
-		Ore: 200,
+		Ore: 200, StructsLoad: 789, Capacity: 2000, Load: 75,
 	}
 
-	keeper.SetGridAttribute(ctxSDK, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_ore, created1.Id), gridAttr1.Ore)
-	keeper.SetGridAttribute(ctxSDK, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_ore, created2.Id), gridAttr2.Ore)
+	// This is a query fixture: seed distinct stored attributes explicitly rather
+	// than depending on an obsolete automatic player-load reservation.
+	for _, fixture := range []struct { player types.Player; grid types.GridAttributes; alpha int64 }{
+		{created1, gridAttr1, 50}, {created2, gridAttr2, 75},
+	} {
+		for attribute, amount := range map[types.GridAttributeType]uint64{
+			types.GridAttributeType_ore: fixture.grid.Ore,
+			types.GridAttributeType_structsLoad: fixture.grid.StructsLoad,
+			types.GridAttributeType_capacity: fixture.grid.Capacity,
+			types.GridAttributeType_load: fixture.grid.Load,
+		} {
+			keeper.SetGridAttribute(ctxSDK, keeperlib.GetGridAttributeIDByObjectId(attribute, fixture.player.Id), amount)
+		}
+		vault, err := types.VaultAddress(fixture.player.Id)
+		require.NoError(t, err)
+		coins := sdk.NewCoins(sdk.NewInt64Coin("ualpha", fixture.alpha))
+		require.NoError(t, keeper.BankKeeper().MintCoins(ctxSDK, types.ModuleName, coins))
+		require.NoError(t, keeper.BankKeeper().SendCoinsFromModuleToAccount(ctxSDK, types.ModuleName, vault, coins))
+	}
 
 	tests := []struct {
 		desc     string
@@ -59,9 +75,8 @@ func TestPlayerQuery(t *testing.T) {
 			response: &types.QueryGetPlayerResponse{
 				Player:          created1,
 				GridAttributes:  &gridAttr1,
-				PlayerInventory: &types.PlayerInventory{},
+				PlayerInventory: &types.PlayerInventory{Rocks: sdk.NewInt64Coin("ualpha", 50)},
 			},
-			// Note: StructsLoad will be PlayerPassiveDraw (25000) by default, so we don't check it exactly
 		},
 		{
 			desc: "Second",
@@ -71,7 +86,7 @@ func TestPlayerQuery(t *testing.T) {
 			response: &types.QueryGetPlayerResponse{
 				Player:          created2,
 				GridAttributes:  &gridAttr2,
-				PlayerInventory: &types.PlayerInventory{},
+				PlayerInventory: &types.PlayerInventory{Rocks: sdk.NewInt64Coin("ualpha", 75)},
 			},
 		},
 		{
@@ -94,12 +109,14 @@ func TestPlayerQuery(t *testing.T) {
 				require.ErrorIs(t, err, tc.err)
 			} else {
 				require.NoError(t, err)
-				// Check individual fields instead of full equality due to default StructsLoad
+				// Check the queried player, each seeded grid attribute and vault inventory.
 				require.Equal(t, tc.response.Player.Id, response.Player.Id)
 				require.Equal(t, tc.response.Player.Creator, response.Player.Creator)
 				require.Equal(t, tc.response.GridAttributes.Ore, response.GridAttributes.Ore)
-				// StructsLoad will be PlayerPassiveDraw (25000) by default
-				require.Equal(t, uint64(25000), response.GridAttributes.StructsLoad)
+				require.Equal(t, tc.response.GridAttributes.StructsLoad, response.GridAttributes.StructsLoad)
+				require.Equal(t, tc.response.GridAttributes.Capacity, response.GridAttributes.Capacity)
+				require.Equal(t, tc.response.GridAttributes.Load, response.GridAttributes.Load)
+				require.Equal(t, tc.response.PlayerInventory, response.PlayerInventory)
 			}
 		})
 	}

@@ -24,22 +24,12 @@ func (k msgServer) ReactorCancelDefusion(goCtx context.Context, msg *types.MsgRe
        return emptyResponse, err
     }
 
-    // Load the player related to the specified address
-    // Normally the address specified should be the PrimaryAddress
-    player, err := cc.GetPlayerByAddress(msg.DelegatorAddress)
+    delegatorAddress, err := cc.resolveReactorDelegator(msg.DelegatorAddress, msg.OwnerId, callingPlayer, types.PermTokenInfuse)
     if err != nil {
-       return emptyResponse, err
+        return emptyResponse, err
     }
 
-    err = player.CanInfuseTokensBy(callingPlayer)
-    if err != nil {
-       return emptyResponse, err
-    }
 
-    delegatorAddress, delegatorAddressErr := sdk.AccAddressFromBech32(msg.DelegatorAddress)
- 	if delegatorAddressErr != nil {
- 		return emptyResponse, types.NewReactorError("cancel_defusion", "invalid_address").WithAddress(msg.DelegatorAddress, "delegator")
- 	}
 
     valAddr, valErr := sdk.ValAddressFromBech32(msg.ValidatorAddress)
 	if valErr != nil {
@@ -135,12 +125,18 @@ func (k msgServer) ReactorCancelDefusion(goCtx context.Context, msg *types.MsgRe
 		return emptyResponse, err
 	}
 
+	// Delegate's hooks saw the old unbonding balance. Refresh only after the
+	// updated UBD is stored, using a fresh context as staking hooks do.
+	if err := k.ReactorUpdatePlayerInfusion(ctx, delegatorAddress, valAddr); err != nil {
+        return nil, err
+    }
+
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			staking.EventTypeCancelUnbondingDelegation,
 			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Amount.String()),
 			sdk.NewAttribute(staking.AttributeKeyValidator, msg.ValidatorAddress),
-			sdk.NewAttribute(staking.AttributeKeyDelegator, msg.DelegatorAddress),
+			sdk.NewAttribute(staking.AttributeKeyDelegator, delegatorAddress.String()),
 			sdk.NewAttribute(staking.AttributeKeyCreationHeight, strconv.FormatInt(msg.CreationHeight, 10)),
 		),
 	)

@@ -38,7 +38,11 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
 
     /* Got this far, make it so... */
     // Move Funds
-    primaryAcc, _   := sdk.AccAddressFromBech32(player.GetPrimaryAddress())
+    // Provision the owner index before staking hooks resolve the destination.
+    // The enclosing SDK transaction cache rolls this back on failure.
+    vaults, err := cc.EnsureVaults(player.ID())
+    if err != nil { return emptyResponse, err }
+    vaultAcc := vaults[0]
     oldAcc, _       := sdk.AccAddressFromBech32(msg.Address)
 
     // Move Reactor Infusions over.
@@ -52,7 +56,7 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
     // Disown rather than refuse. Revoking is what a player does about a key
     // they no longer trust, and a refusal is a state whoever holds that key
     // could sustain indefinitely.
-    err = k.MoveDelegationsToAddress(ctx, cc, oldAcc, player.GetPrimaryAddress(), DelegationTransferDisown)
+    err = k.MoveDelegationsToAddress(ctx, cc, oldAcc, vaultAcc.String(), DelegationTransferDisown)
     if err != nil {
         return emptyResponse, err
     }
@@ -61,7 +65,7 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
     balances := k.bankKeeper.SpendableCoins(ctx, oldAcc)
 
     // Transfer
-    err = k.bankKeeper.SendCoins(ctx, oldAcc, primaryAcc, balances)
+    err = k.bankKeeper.SendCoins(ctx, oldAcc, vaultAcc, balances)
     if err != nil {
         return emptyResponse, err
     }

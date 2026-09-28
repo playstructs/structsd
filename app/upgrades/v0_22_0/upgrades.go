@@ -14,31 +14,59 @@ import (
 
 // CreateUpgradeHandler returns the v0.22.0 upgrade handler.
 //
-// Most of v0.22.0 is binary-only (described in constants.go). The one piece of
-// stored state it has to repair is reactor infusion fuel, which was computed
-// with a per-delegation rounding that let a sharded stake outlive a slash.
+// Preserve the repair ordering below before the economy migration phases.
+// Repairs, asset relocation, power reconstruction, module migrations and replay events
+// share one cache. A failure publishes neither partial state nor phase events.
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
 	keepers *upgrades.Keepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		cache, commit := sdk.UnwrapSDKContext(ctx).CacheContext()
+		keepers.StructsKeeper.SuspendReactorDiversity(cache)
 		// Before anything that can enqueue: the re-key reads every row under
 		// the queue prefix as a legacy object-id key, which stops being true the
 		// moment a new-shape row exists.
-		if err := MigrateGridCascadeQueue(ctx, keepers); err != nil {
+		for _, phase := range []func(context.Context, *upgrades.Keepers) error{
+			MigrateGridCascadeQueue,
+			MigrateReactorParameters,
+			MigrateInfusionFuelRounding,
+			MigrateSelfDefenseRegistrations,
+			MigrateOrphanedAllocationPower,
+			MigrateLegacyAllocationTypes,
+			MigratePlanetOwnerIndex,
+			MigratePermissionPlayerIndex,
+			MigrateGuildEconomicPermissions,
+			MigrateVaultAssets,
+			MigrateReactorPower,
+			MigrateInfusionOwnerIndex,
+			MigrateReactorInfusionOrder,
+			MigrateSubstationConnectionCapacity,
+		} {
+			if err := phase(cache, keepers); err != nil {
+				return nil, err
+			}
+		}
+		versions, err := mm.RunMigrations(cache, configurator, fromVM)
+		if err != nil {
 			return nil, err
 		}
-
-		if err := MigrateInfusionFuelRounding(ctx, keepers); err != nil {
+		// Apply after module migrations so legacy ICA defaults cannot restore
+		// wildcard hosting. This shares the upgrade's atomic rollback boundary.
+		MigrateICAHostPolicy(cache, keepers)
+		keepers.StructsKeeper.RebuildAddressOwnerIndex(cache)
+		if err := keepers.StructsKeeper.RebuildReactorDiversity(cache); err != nil { return nil, err }
+        wasActive := keepers.StructsKeeper.ReactorStakeCapActive(cache)
+        if err := keepers.StructsKeeper.EvaluateReactorStakeCap(cache); err != nil { return nil, err }
+        if wasActive || !keepers.StructsKeeper.ReactorStakeCapActive(cache) {
+            if err := keepers.StructsKeeper.EmitReactorStakeCap(cache); err != nil { return nil, err }
+        }
+		if err := keepers.StructsKeeper.EmitReactorCommissionRevisionSnapshot(cache); err != nil {
 			return nil, err
 		}
-
-		if err := MigrateSelfDefenseRegistrations(ctx, keepers); err != nil {
-			return nil, err
-		}
-
-		return mm.RunMigrations(ctx, configurator, fromVM)
+		commit()
+		return versions, nil
 	}
 }
 
@@ -194,5 +222,38 @@ func MigrateSelfDefenseRegistrations(ctx context.Context, keepers *upgrades.Keep
 	}
 
 	logger.Info("self-defense registrations cleared", "count", cleared)
+	return nil
+}
+
+// MigratePlanetOwnerIndex installs the owner-scoped query index atomically
+// with the other v0.22 changes; no public planet records or events change.
+func MigratePlanetOwnerIndex(ctx context.Context, keepers *upgrades.Keepers) error {
+	keepers.StructsKeeper.RebuildPlanetOwnerIndex(ctx)
+	return nil
+}
+
+// MigratePermissionPlayerIndex backfills the derived permission lookup without
+// changing grants or emitting public permission events.
+func MigratePermissionPlayerIndex(ctx context.Context, keepers *upgrades.Keepers) error {
+	keepers.StructsKeeper.RebuildPermissionPlayerIndex(ctx)
+	return nil
+}
+
+// Rebuild after ownership repair, vault relocation and power reconstruction so
+// every index entry refers to its final canonical infusion owner and address.
+func MigrateInfusionOwnerIndex(ctx context.Context, keepers *upgrades.Keepers) error {
+	keepers.StructsKeeper.RebuildInfusionOwnerIndex(ctx)
+	return nil
+}
+
+func MigrateReactorInfusionOrder(ctx context.Context, keepers *upgrades.Keepers) error {
+	keepers.StructsKeeper.RebuildReactorInfusionOrder(ctx)
+	keepers.StructsKeeper.RebuildGeneratorPowerQueue(ctx)
+	return nil
+}
+
+func MigrateOrphanedAllocationPower(ctx context.Context, keepers *upgrades.Keepers) error {
+	removed := keepers.StructsKeeper.PruneOrphanedAllocationPower(ctx)
+	sdk.UnwrapSDKContext(ctx).Logger().Info("Removed orphaned allocation power", "upgrade", UpgradeName, "removed", removed)
 	return nil
 }

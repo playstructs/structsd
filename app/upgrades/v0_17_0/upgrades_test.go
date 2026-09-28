@@ -27,7 +27,7 @@ func TestMigrateDefusingInfusions_RecoversStuckInfusion(t *testing.T) {
 	playerAcc := sdk.AccAddress("upgrade1_padding___________________01")
 	playerObj := types.Player{Creator: playerAcc.String(), PrimaryAddress: playerAcc.String()}
 	playerObj.Index = k.GetPlayerCount(ctx)
-	playerObj.Id = "2-" + strconv.FormatUint(playerObj.Index, 10)
+	playerObj.Id = "1-" + strconv.FormatUint(playerObj.Index, 10)
 	k.SetPlayer(ctx, playerObj)
 	k.SetPlayerCount(ctx, playerObj.Index+1)
 	k.SetPlayerIndexForAddress(ctx, playerObj.PrimaryAddress, playerObj.Index)
@@ -70,7 +70,7 @@ func TestMigrateDefusingInfusions_BootstrapsQueueForLiveUBD(t *testing.T) {
 	playerAcc := sdk.AccAddress("upgrade2_padding___________________02")
 	playerObj := types.Player{Creator: playerAcc.String(), PrimaryAddress: playerAcc.String()}
 	playerObj.Index = k.GetPlayerCount(ctx)
-	playerObj.Id = "2-" + strconv.FormatUint(playerObj.Index, 10)
+	playerObj.Id = "1-" + strconv.FormatUint(playerObj.Index, 10)
 	k.SetPlayer(ctx, playerObj)
 	k.SetPlayerCount(ctx, playerObj.Index+1)
 	k.SetPlayerIndexForAddress(ctx, playerObj.PrimaryAddress, playerObj.Index)

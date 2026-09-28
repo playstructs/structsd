@@ -1,157 +1,87 @@
 package keeper_test
 
 import (
-	"testing"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-
 	keeperlib "structs/x/structs/keeper"
 	"structs/x/structs/types"
+	"testing"
 )
 
 func TestMsgGuildUpdateJoinInfusionMinimumBypassByInvite(t *testing.T) {
-	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
-
-	// Create a player and guild
-	playerAcc := sdk.AccAddress("creator123456789012345678901234567890")
-	player := types.Player{
-		Creator:        playerAcc.String(),
-		PrimaryAddress: playerAcc.String(),
-	}
-	player = testAppendPlayer(k, ctx, player)
-
-	// Create reactor for guild
-	validatorAddress := sdk.ValAddress(playerAcc.Bytes())
-	reactor := types.Reactor{
-		RawAddress: validatorAddress.Bytes(),
-	}
-	// AppendReactor already calls SetReactorValidatorBytes internally
-	reactor = k.AppendReactor(ctx, reactor)
-
-	// Create guild
-	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, player, "")
-	player.GuildId = guild.Id
-	k.SetPlayer(ctx, player)
-
-	// Grant permissions
-	guildPermissionId := keeperlib.GetObjectPermissionIDBytes(guild.Id, player.Id)
-	testPermissionAdd(k, ctx, guildPermissionId, types.PermUpdate)
-
-	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgGuildUpdateJoinInfusionMinimumBypassByInvite
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "permissioned bypass level update",
-			input: &types.MsgGuildUpdateJoinInfusionMinimumBypassByInvite{
-				Creator:              player.Creator,
-				GuildId:              guild.Id,
-				GuildJoinBypassLevel: types.GuildJoinBypassLevel_permissioned,
-			},
-			expErr: false,
-		},
-		{
-			name: "member bypass level update",
-			input: &types.MsgGuildUpdateJoinInfusionMinimumBypassByInvite{
-				Creator:              player.Creator,
-				GuildId:              guild.Id,
-				GuildJoinBypassLevel: types.GuildJoinBypassLevel_member,
-			},
-			expErr: false,
-		},
-		{
-			name: "closed bypass level update",
-			input: &types.MsgGuildUpdateJoinInfusionMinimumBypassByInvite{
-				Creator:              player.Creator,
-				GuildId:              guild.Id,
-				GuildJoinBypassLevel: types.GuildJoinBypassLevel_closed,
-			},
-			expErr: false,
-		},
-		{
-			// proto3 enums are open, so 500 decodes fine. Before v0.21.0 this
-			// case asserted that it persisted, and a stored 500 made
-			// CanInviteMembers fall through its switch and return nil.
-			name: "undeclared bypass level is rejected",
-			input: &types.MsgGuildUpdateJoinInfusionMinimumBypassByInvite{
-				Creator:              player.Creator,
-				GuildId:              guild.Id,
-				GuildJoinBypassLevel: 500,
-			},
-			expErr:    true,
-			expErrMsg: "invalid guild join bypass level",
-		},
-		{
-			name: "negative bypass level is rejected",
-			input: &types.MsgGuildUpdateJoinInfusionMinimumBypassByInvite{
-				Creator:              player.Creator,
-				GuildId:              guild.Id,
-				GuildJoinBypassLevel: -1,
-			},
-			expErr:    true,
-			expErrMsg: "invalid guild join bypass level",
-		},
-		{
-			name: "guild not found",
-			input: &types.MsgGuildUpdateJoinInfusionMinimumBypassByInvite{
-				Creator:              player.Creator,
-				GuildId:              "invalid-guild",
-				GuildJoinBypassLevel: types.GuildJoinBypassLevel_member,
-			},
-			expErr:    true,
-			expErrMsg: "wasn't found",
-			skip:      true, // Skip - cache system doesn't validate existence before permission check
-		},
-		{
-			name: "no update permissions",
-			input: &types.MsgGuildUpdateJoinInfusionMinimumBypassByInvite{
-				Creator:              sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				GuildId:              guild.Id,
-				GuildJoinBypassLevel: types.GuildJoinBypassLevel_member,
-			},
-			expErr:    true,
-			expErrMsg: "has no permissions",
-			skip:      true, // Skip - GetPlayerCacheFromAddress might create player
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
+	for _, name := range []string{"member level", "closed level", "undeclared level", "negative level", "unchanged corrupt level", "owner with exact key bit", "explicit delegate", "missing guild", "unregistered signer", "unprivileged player", "key lacks specific bit"} {
+		t.Run(name, func(t *testing.T) {
+			k, ms, goCtx := setupMsgServer(t)
+			ctx := sdk.UnwrapSDKContext(goCtx)
+			gs := testCreateGuild(k, ctx)
+			address := sdk.AccAddress("guild_setting_actor01")
+			other := testAppendPlayer(k, ctx, types.Player{Creator: address.String(), PrimaryAddress: address.String()})
+			creator, guildID, wantError := gs.GuildOwner.Creator, gs.Guild.Id, ""
+			level := types.GuildJoinBypassLevel_permissioned
+			k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(creator), types.PermGuildJoinConstraintsUpdate)
+			switch name {
+			case "member level":
+				level = types.GuildJoinBypassLevel_member
+			case "closed level":
+				level = types.GuildJoinBypassLevel_closed
+			case "undeclared level", "unchanged corrupt level":
+				level, wantError = 500, "invalid guild join bypass level"
+				if name == "unchanged corrupt level" {
+					gs.Guild.JoinInfusionMinimumBypassByInvite = level
+					k.SetGuild(ctx, gs.Guild)
+				}
+			case "negative level":
+				level, wantError = -1, "invalid guild join bypass level"
+			case "explicit delegate":
+				creator = other.Creator
+				k.SetPermissionsByBytes(ctx, keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id, other.Id), types.PermGuildJoinConstraintsUpdate)
+				k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(creator), types.PermGuildJoinConstraintsUpdate)
+			case "missing guild":
+				guildID, wantError = "0-999999", "not found"
+			case "unregistered signer":
+				creator, wantError = sdk.AccAddress("guild_setting_unknown").String(), "player"
+			case "unprivileged player":
+				creator, wantError = other.Creator, "permission"
+			case "key lacks specific bit":
+				k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(creator), types.PermAll&^types.PermGuildJoinConstraintsUpdate)
+				wantError = "permission"
 			}
-
-			before, _ := k.GetGuild(ctx, guild.Id)
-
-			resp, err := ms.GuildUpdateJoinInfusionMinimumBypassByInvite(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-
-				// A rejected level must not reach state. The handler validates
-				// ahead of GuildCache.SetJoinInfusionMinimumBypassByInvite, so
-				// there is nothing for the transaction rollback to undo.
-				after, found := k.GetGuild(ctx, guild.Id)
-				require.True(t, found)
-				require.Equal(t, before.JoinInfusionMinimumBypassByInvite, after.JoinInfusionMinimumBypassByInvite)
+			beforePermissions := k.GetPermissionsByObject(ctx, gs.Guild.Id)
+			ctx = ctx.WithEventManager(sdk.NewEventManager())
+			response, err := ms.GuildUpdateJoinInfusionMinimumBypassByInvite(ctx, &types.MsgGuildUpdateJoinInfusionMinimumBypassByInvite{Creator: creator, GuildId: guildID, GuildJoinBypassLevel: level})
+			require.NotNil(t, response)
+			actual, found := k.GetGuild(ctx, gs.Guild.Id)
+			require.True(t, found)
+			if wantError != "" {
+				require.ErrorContains(t, err, wantError)
+				require.Equal(t, gs.Guild, actual)
+				for _, event := range ctx.EventManager().ABCIEvents() {
+					require.NotContains(t, []string{"structs.structs.EventGuild", "structs.structs.EventPermission"}, event.Type)
+				}
 			} else {
 				require.NoError(t, err)
-				require.NotNil(t, resp)
-
-				// Verify bypass level was updated
-				updatedGuild, found := k.GetGuild(ctx, guild.Id)
-				require.True(t, found)
-				require.Equal(t, tc.input.GuildJoinBypassLevel, updatedGuild.JoinInfusionMinimumBypassByInvite)
+				expected := gs.Guild
+				expected.JoinInfusionMinimumBypassByInvite = level
+				require.Equal(t, expected, actual)
+				guildEvents := 0
+				for _, event := range ctx.EventManager().ABCIEvents() {
+					if event.Type == "structs.structs.EventGuild" {
+						decoded, decodeErr := sdk.ParseTypedEvent(event)
+						require.NoError(t, decodeErr)
+						require.Equal(t, &actual, decoded.(*types.EventGuild).Guild)
+						guildEvents++
+					}
+				}
+				expectedEvents := 1
+				if level == gs.Guild.JoinInfusionMinimumBypassByInvite {
+					expectedEvents = 0
+				}
+				require.Equal(t, expectedEvents, guildEvents)
 			}
+			require.Equal(t, beforePermissions, k.GetPermissionsByObject(ctx, gs.Guild.Id))
+			actor, found := k.GetPlayer(ctx, other.Id)
+			require.True(t, found)
+			require.Equal(t, other, actor, "settings do not implicitly enroll or promote a delegate")
 		})
 	}
 }

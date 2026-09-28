@@ -32,7 +32,7 @@ func (k msgServer) GuildUpdateEntryRank(goCtx context.Context, msg *types.MsgGui
 		return emptyResponse, types.NewObjectNotFoundError("guild", guildId)
 	}
 
-	guildPermissionErr := guild.CanUpdateBy(player)
+	guildPermissionErr := cc.PermissionAdministrationCheck(guild, player)
 	if guildPermissionErr != nil {
 		return emptyResponse, guildPermissionErr
 	}

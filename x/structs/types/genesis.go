@@ -14,6 +14,8 @@ const DefaultIndex uint64 = 1
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		PortId: PortID,
+		// Fresh v0.22 chains start with the new economy. Historical exports
+		// decode an absent field as false and activate through the upgrade.
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -22,8 +24,19 @@ func DefaultGenesis() *GenesisState {
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
+	if err := gs.ValidateGeneratorPowerQueue(); err != nil { return err }
+	if err := gs.ValidatePermissionCleanupQueue(); err != nil { return err }
+	if err := gs.ValidateVaultOwners(); err != nil { return err }
 	if err := host.PortIdentifierValidator(gs.PortId); err != nil {
 		return err
+	}
+
+	// Constructors reject undeclared proto3 enum values. Imports must do the
+	// same; legacy live state is normalized by the v0.22 upgrade before capture.
+	for _, allocation := range gs.AllocationList {
+		if _, valid := AllocationType_name[int32(allocation.Type)]; !valid {
+			return NewAllocationError(allocation.Id, "invalid_type")
+		}
 	}
 
 	// A genesis AddressList is the only way an unparseable address can reach
@@ -65,6 +78,9 @@ func (gs GenesisState) Validate() error {
 	// but failing `structsd genesis validate` on the file beats discovering it
 	// as a permanently closed guild.
 	for _, guild := range gs.GuildList {
+		if err := ValidateRankPurchaseSettings(guild.EntryRank, guild.RankPurchaseMinimumRank, guild.JoinByRankPurchaseEnabled); err != nil {
+			return err
+		}
 		if guild.EntryRank == 0 {
 			return NewParameterValidationError("guild.entryRank", guild.EntryRank, "must_be_positive")
 		}
@@ -100,6 +116,10 @@ func (gs GenesisState) Validate() error {
 	 * file should not carry one.
 	 */
 	for _, infusion := range gs.InfusionList {
+		if infusion.GeneratorDisabled { if err := infusion.ValidateGeneratorPower(); err != nil { return err } }
+		if err := infusion.ValidateAssetOwner(); err != nil {
+			return err
+		}
 		if !ValidInfusionParts(infusion.DestinationId, infusion.Address) {
 			return NewObjectNotFoundError("infusion", BuildInfusionKey(infusion.DestinationId, infusion.Address))
 		}
@@ -134,6 +154,9 @@ func (gs GenesisState) Validate() error {
 	 * covers records already on disk; this is what stops new ones.
 	 */
 	for _, provider := range gs.ProviderList {
+		if err := ValidateProviderRate(provider.Rate); err != nil {
+			return err
+		}
 		if provider.DurationMinimum == 0 {
 			return NewParameterValidationError("provider.durationMinimum", provider.DurationMinimum, "must_be_positive").WithProvider(provider.Id)
 		}

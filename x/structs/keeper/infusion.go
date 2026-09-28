@@ -30,10 +30,17 @@ func GetInfusionID(address string) []byte {
 
 // SetInfusion set a specific infusion in the store
 func (k Keeper) SetInfusion(ctx context.Context, infusion types.Infusion) {
+	previous, _ := k.GetInfusion(ctx, infusion.DestinationId, infusion.Address)
+	k.setInfusionWithPreviousOwner(ctx, infusion, previous.AssetOwnerID())
+}
+
+func (k Keeper) setInfusionWithPreviousOwner(ctx context.Context, infusion types.Infusion, previousOwner string) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), InfusionKeyPrefix(infusion.DestinationId))
 
 	b := k.cdc.MustMarshal(&infusion)
 	store.Set(GetInfusionID(infusion.Address), b)
+	k.changeInfusionOwnerIndex(ctx, previousOwner, infusion)
+	k.ensureReactorInfusionOrder(ctx, infusion)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventInfusion{Infusion: &infusion})
@@ -62,9 +69,16 @@ func (k Keeper) GetInfusionByID(ctx context.Context, infusionId string) (val typ
 
 // RemoveInfusion removes a infusion from the store
 func (k Keeper) RemoveInfusion(ctx context.Context, destinationId string, address string) {
+	previous, _ := k.GetInfusion(ctx, destinationId, address)
+	k.removeInfusionWithOwner(ctx, destinationId, address, previous.AssetOwnerID())
+}
+
+func (k Keeper) removeInfusionWithOwner(ctx context.Context, destinationId string, address string, owner string) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), InfusionKeyPrefix(destinationId))
 
 	store.Delete(GetInfusionID(address))
+	k.changeInfusionOwnerIndex(ctx, owner, types.Infusion{DestinationId: destinationId, Address: address})
+	k.removeReactorInfusionOrder(ctx, destinationId, address)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
 	infusionId := destinationId + "-" + address
@@ -232,12 +246,15 @@ func (k Keeper) EnqueueInfusionMaturitySweep(ctx context.Context, completionTime
 }
 
 // DequeueMatureInfusionSweeps returns the infusion keys whose recorded
-// CompletionTime is <= blockTime, deleting their queue rows. Caller is
+// CompletionTime is <= blockTime, deleting at most InfusionMaturitySweepBudget
+// queue rows. Older unprocessed rows remain eligible on later blocks. Caller is
 // expected to invoke ReconcileInfusionForDelegation for each returned key.
 //
 // Duplicate infusion keys are de-duplicated before return so a single sweep
 // pass reconciles each (delegator, validator) at most once even if multiple
-// UBD entries on that pair matured in the same block.
+// UBD entries on that pair matured in the same block. The budget counts raw
+// rows before deduplication or validation, so neither duplicates nor malformed
+// imported keys can turn one batch into an unbounded scan.
 func (k Keeper) DequeueMatureInfusionSweeps(ctx context.Context, blockTime time.Time) []string {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionMaturitySweepQueue))
 
@@ -258,7 +275,7 @@ func (k Keeper) DequeueMatureInfusionSweeps(ctx context.Context, blockTime time.
 		out          []string
 	)
 
-	for ; iter.Valid(); iter.Next() {
+	for ; len(keysToDelete) < types.InfusionMaturitySweepBudget && iter.Valid(); iter.Next() {
 		fullKey := iter.Key()
 		dup := make([]byte, len(fullKey))
 		copy(dup, fullKey)

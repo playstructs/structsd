@@ -24,7 +24,11 @@ func (k Keeper) PlanetAll(goCtx context.Context, req *types.QueryAllPlanetReques
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	planetStore := prefix.NewStore(store, types.KeyPrefix(types.PlanetKey))
 
-	pageRes, err := query.Paginate(planetStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
+	pagination, err := boundedPagination(req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+	pageRes, err := query.Paginate(planetStore, pagination, func(key []byte, value []byte) error {
 		var planet types.Planet
 		if err := k.cdc.Unmarshal(value, &planet); err != nil {
 			return err
@@ -67,19 +71,17 @@ func (k Keeper) PlanetAllByPlayer(goCtx context.Context, req *types.QueryAllPlan
 	var planets []types.Planet
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
-	planetStore := prefix.NewStore(store, types.KeyPrefix(types.PlanetKey))
-
-	pageRes, err := query.Paginate(planetStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
-		var planet types.Planet
-		if err := k.cdc.Unmarshal(value, &planet); err != nil {
-			return err
+	ownerStore := planetOwnerStore(k, ctx, req.PlayerId)
+	pagination, err := boundedPagination(req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+	pageRes, err := query.Paginate(ownerStore, pagination, func(key []byte, _ []byte) error {
+		planet, found := k.GetPlanet(ctx, string(key))
+		if !found || planet.Owner != req.PlayerId {
+			return status.Error(codes.Internal, "planet owner index is inconsistent")
 		}
-
-        if (req.PlayerId == planet.Owner) {
-            planets = append(planets, planet)
-        }
-
+		planets = append(planets, planet)
 		return nil
 	})
 
@@ -114,7 +116,11 @@ func (k Keeper) PlanetAttributeAll(goCtx context.Context, req *types.QueryAllPla
  	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
  	gridStore := prefix.NewStore(store, types.KeyPrefix(types.PlanetAttributeKey))
 
- 	pageRes, err := query.Paginate(gridStore, boundedPagination(req.Pagination), func(key []byte, value []byte) error {
+	pagination, err := boundedPagination(req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+	pageRes, err := query.Paginate(gridStore, pagination, func(key []byte, value []byte) error {
 
         planetAttributes = append(planetAttributes, &types.PlanetAttributeRecord{AttributeId: string(key), Value: binary.BigEndian.Uint64(value)})
 

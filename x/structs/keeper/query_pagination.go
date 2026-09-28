@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"github.com/cosmos/cosmos-sdk/types/query"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"structs/x/structs/types"
 )
@@ -14,6 +16,9 @@ import (
  * and a request with no Limit turns CountTotal on, which walks the entire prefix
  * after the page has been collected. None of these queries require
  * authorization.
+ *
+ * Offset is limited to QueryPageLimitMaximum; larger skips must use next_key
+ * so the SDK cannot walk an unbounded prefix before collecting a small page.
  *
  * Two clamps:
  *
@@ -31,12 +36,15 @@ import (
  * SDK's own defaults apply, and those are already bounded (limit 100). The
  * default's CountTotal is handled by the explicit page request built below.
  */
-func boundedPagination(pagination *query.PageRequest) *query.PageRequest {
+func boundedPagination(pagination *query.PageRequest) (*query.PageRequest, error) {
+	if pagination != nil && pagination.Offset > types.QueryPageLimitMaximum {
+		return nil, status.Error(codes.InvalidArgument, "pagination offset exceeds maximum; use pagination key")
+	}
 	if pagination == nil {
 		return &query.PageRequest{
 			Limit:      types.QueryPageLimitDefault,
 			CountTotal: false,
-		}
+		}, nil
 	}
 
 	limit := pagination.Limit
@@ -53,5 +61,5 @@ func boundedPagination(pagination *query.PageRequest) *query.PageRequest {
 		Limit:      limit,
 		CountTotal: false,
 		Reverse:    pagination.Reverse,
-	}
+	}, nil
 }

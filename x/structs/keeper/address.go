@@ -49,6 +49,9 @@ func (k Keeper) GetPlayerIndexFromAddress(ctx context.Context, address string) (
 // AccAddress.
 func (k Keeper) SetPlayerIndexForAddress(ctx context.Context, address string, playerIndex uint64) error {
     store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AddressPlayerKey))
+	previous := uint64(0)
+	if old := store.Get(types.KeyPrefix(address)); old != nil { previous = binary.BigEndian.Uint64(old) }
+	k.updateAddressOwnerIndex(ctx, address, previous, playerIndex)
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, playerIndex)
@@ -122,6 +125,7 @@ func (k Keeper) GetAllAddressProofNonceExport(ctx context.Context) (list []*type
 // back its validity at exactly the moment the address stops being watched.
 func (k Keeper) RevokePlayerIndexForAddress(ctx context.Context, address string, playerIndex uint64)  {
     store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AddressPlayerKey))
+	if old := store.Get(types.KeyPrefix(address)); old != nil { k.updateAddressOwnerIndex(ctx, address, binary.BigEndian.Uint64(old), 0) }
 	store.Delete(types.KeyPrefix(address))
 
     ctxSDK := sdk.UnwrapSDKContext(ctx)

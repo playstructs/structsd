@@ -100,12 +100,16 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
 
 
     // Move Funds
-    primaryAcc, _   := sdk.AccAddressFromBech32(player.GetPrimaryAddress())
+    // Provision the owner index before staking hooks resolve the destination.
+    // The enclosing SDK transaction cache rolls this back on failure.
+    vaults, err := cc.EnsureVaults(player.ID())
+    if err != nil { return emptyResponse, err }
+    vaultAcc := vaults[0]
     newAcc, _   := sdk.AccAddressFromBech32(msg.Address)
 
     // Move Reactor Infusions over.
     //
-    // Reassigns the player's delegations onto the newly registered address; the
+    // Moves transferable delegations into the player's vault; the
     // source infusion is wound down under its previous owner and reclaimed, and
     // the destination infusion is rebuilt for this player from live staking.
     // Ahead of the coin sweep so that the staking rewards the transfer settles
@@ -114,7 +118,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     // Strict: the incoming address belongs to the player either way, so a
     // refusal costs them nothing but a wait, and nobody else can create the
     // condition that triggers it.
-    err = k.MoveDelegationsToAddress(ctx, cc, newAcc, player.GetPrimaryAddress(), DelegationTransferStrict)
+    err = k.MoveDelegationsToAddress(ctx, cc, newAcc, vaultAcc.String(), DelegationTransferStrictRetainSelf)
     if err != nil {
         return emptyResponse, err
     }
@@ -123,7 +127,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     balances := k.bankKeeper.SpendableCoins(ctx, newAcc)
 
     // Transfer
-    err = k.bankKeeper.SendCoins(ctx, newAcc, primaryAcc, balances)
+    err = k.bankKeeper.SendCoins(ctx, newAcc, vaultAcc, balances)
     if err != nil {
         return emptyResponse, err
     }

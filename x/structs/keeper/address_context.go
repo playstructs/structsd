@@ -14,6 +14,7 @@ func (cc *CurrentContext) GetPlayerIndexFromAddress(address string) uint64 {
 	cache := cc.addressCache(address)
 	cache.PlayerIndex = playerIndex
 	cache.Loaded = true
+	cache.indexCachedPlayer()
 	return playerIndex
 }
 
@@ -76,6 +77,7 @@ func (cc *CurrentContext) GenesisImportAddress(address string, playerIndex uint6
 	cache.Loaded = true
 	cache.Changed = true
 	cache.Deleted = false
+	cache.indexCachedPlayer()
 }
 
 // SetPlayerIndexForAddress sets the player index for an address (commits during CommitAll).
@@ -87,6 +89,7 @@ func (cc *CurrentContext) SetPlayerIndexForAddress(address string, playerIndex u
 	cache.Loaded = true
 	cache.Changed = true
 	cache.Deleted = false
+	cache.indexCachedPlayer()
 }
 
 // RevokePlayerIndexForAddress marks an address as revoked (commits during CommitAll).
@@ -96,4 +99,5 @@ func (cc *CurrentContext) RevokePlayerIndexForAddress(address string, playerInde
 	cache.Loaded = true
 	cache.Changed = true
 	cache.Deleted = true
+	cache.indexCachedPlayer()
 }

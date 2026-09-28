@@ -106,7 +106,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	 * guild entry substation.
 	 *
 	 * Proxy player needs permissions on the override but the default
-	 * entry substation will always work.
+	 * entry substation needs no additional permission.
 	 */
 
 	if msg.SubstationId != "" {
@@ -129,6 +129,9 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 		if substation.CheckSubstation() != nil {
 			return emptyResponse, types.NewObjectNotFoundError("substation", guild.GetEntrySubstationId()).WithContext("guild entry substation for " + guild.GetGuildId())
 		}
+	}
+	if err := substation.CheckAcceptingConnections(); err != nil {
+		return emptyResponse, err
 	}
 
 	/* Onboarding an address nobody has registered is permissionless on purpose:

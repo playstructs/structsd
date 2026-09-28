@@ -3,8 +3,11 @@ package keeper_test
 import (
 	"fmt"
 	"testing"
+	"time"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -35,7 +38,11 @@ func TestReactorInfusionDelegationRemovedClearsFuel(t *testing.T) {
 
 	// Nothing of value remains, so the record is released to the destruction
 	// queue rather than deleted inline.
-	_, err := f.k.EndBlocker(f.ctx)
+	// Finish the SDK removal after verifying the pre-delete hook above.
+	delegation, err := f.mock.GetDelegation(f.ctx, f.playerAcc, f.valAddr)
+	require.NoError(t, err)
+	require.NoError(t, f.mock.RemoveDelegation(f.ctx, delegation))
+	_, err = f.k.EndBlocker(f.ctx)
 	require.NoError(t, err)
 
 	_, found := f.k.GetInfusion(f.ctx, f.reactor.Id, f.playerAcc.String())
@@ -78,8 +85,15 @@ func TestReactorInfusionDelegationRemovedPreservesDefusing(t *testing.T) {
 	require.Equal(t, uint64(0), after.Fuel)
 	require.Equal(t, uint64(0), after.Power)
 	require.Equal(t, uint64(500), after.Defusing, "the unbonding balance is not the hook's to clear")
+	delegation, err := f.mock.GetDelegation(f.ctx, f.playerAcc, f.valAddr)
+	require.NoError(t, err)
+	require.NoError(t, f.mock.RemoveDelegation(f.ctx, delegation))
+	require.NoError(t, f.mock.SetUnbondingDelegation(f.ctx, stakingtypes.UnbondingDelegation{
+		DelegatorAddress: f.playerAcc.String(), ValidatorAddress: f.valAddr.String(),
+		Entries: []stakingtypes.UnbondingDelegationEntry{{Balance: math.NewInt(500), InitialBalance: math.NewInt(500), CompletionTime: f.ctx.BlockTime().Add(time.Hour)}},
+	}))
 
-	_, err := f.k.EndBlocker(f.ctx)
+	_, err = f.k.EndBlocker(f.ctx)
 	require.NoError(t, err)
 
 	survived, found := f.k.GetInfusion(f.ctx, f.reactor.Id, f.playerAcc.String())

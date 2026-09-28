@@ -12,159 +12,59 @@ import (
 )
 
 func TestMsgAgreementDurationIncrease(t *testing.T) {
-	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
-
-	// Create a player first
-	playerAcc := sdk.AccAddress("creator123456789012345678901234567890")
-	player := types.Player{
-		Creator:        playerAcc.String(),
-		PrimaryAddress: playerAcc.String(),
-	}
-	player = testAppendPlayer(k, ctx, player)
-
-	// Create substation
-	sourceObjectId := "source-object"
-	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceObjectId)
-	k.SetGridAttribute(ctx, capacityAttrId, uint64(1000))
-
-	allocation := types.Allocation{
-		SourceObjectId: sourceObjectId,
-		DestinationId:  "",
-		Type:           types.AllocationType_static,
-		Controller:     player.Id,
-	}
-	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
-	require.NoError(t, err)
-
-	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, player)
-	require.NoError(t, err)
-
-	// Create a provider
-	provider := types.Provider{
-		Owner:                       player.Id,
-		Creator:                     player.Creator,
-		SubstationId:                substation.Id,
-		Rate:                        sdk.NewCoin("token", math.NewInt(100)),
-		AccessPolicy:                types.ProviderAccessPolicy_openMarket,
-		CapacityMinimum:             100,
-		CapacityMaximum:             1000,
-		DurationMinimum:             1,
-		DurationMaximum:             10,
-		ProviderCancellationPenalty: math.LegacyNewDec(1),
-		ConsumerCancellationPenalty: math.LegacyNewDec(1),
-	}
-	provider = testAppendProvider(k, ctx, provider)
-
-	// Create an agreement with initial duration of 5 (within max of 10)
-	// Use current block + 5 for endBlock
-	uctx := sdk.UnwrapSDKContext(ctx)
-	currentBlock := uint64(uctx.BlockHeight())
-	agreement := types.CreateBaseAgreement(player.Creator, player.Id, provider.Id, 100, currentBlock, currentBlock+5, "allocation-1")
-	agreement.Id = "agreement-1"
-	k.AppendAgreement(ctx, agreement)
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgAgreementDurationIncrease
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid duration increase",
-			input: &types.MsgAgreementDurationIncrease{
-				Creator:          player.Creator,
-				AgreementId:      agreement.Id,
-				DurationIncrease: 3, // Increase by 3, so total becomes 8 (within max of 10)
-			},
-			expErr: false,
-			skip:   true, // Skip - keeper code has bug: AgreementVerify parameters are swapped in DurationIncrease
-		},
-		{
-			name: "agreement not found",
-			input: &types.MsgAgreementDurationIncrease{
-				Creator:          player.Creator,
-				AgreementId:      "invalid-agreement",
-				DurationIncrease: 10,
-			},
-			expErr:    true,
-			expErrMsg: "not found",
-			skip:      true, // Skip - cache system doesn't validate existence before permission check
-		},
-		{
-			name: "no update permissions",
-			input: &types.MsgAgreementDurationIncrease{
-				Creator:          sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				AgreementId:      agreement.Id,
-				DurationIncrease: 10,
-			},
-			expErr:    true,
-			expErrMsg: "has no",
-			skip:      true, // Skip - GetPlayerCacheFromAddress might create player
-		},
-		{
-			name: "insufficient balance",
-			input: &types.MsgAgreementDurationIncrease{
-				Creator:          player.Creator,
-				AgreementId:      agreement.Id,
-				DurationIncrease: 10,
-			},
-			expErr:    true,
-			expErrMsg: "cannot afford",
-			skip:      true, // Skip - balance check may not work as expected in test setup
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - keeper code has bug: AgreementVerify parameters are swapped in DurationIncrease")
+	for _, scenario := range []string{"success", "missing_agreement", "no_update_permission", "unregistered_signer", "no_transfer_permission", "insufficient_funds", "zero", "above_maximum", "overflow"} {
+		t.Run(scenario, func(t *testing.T) {
+			f := setupTeardownFixture(t, 100, "0", "0")
+			f.provider.DurationMaximum = 10
+			f.k.SetProvider(f.ctx, f.provider)
+			agreement, _ := f.openAgreement(t, 100, 5)
+			// Capacity exceeds maximum duration deliberately: swapping those
+			// arguments would reject the successful three-block extension.
+			if scenario != "insufficient_funds" {
+				f.fund(t, f.consumerAcc, 30000)
 			}
-
-			// Recreate agreement if needed
-			if tc.name == "valid duration increase" {
-				uctx := sdk.UnwrapSDKContext(ctx)
-				currentBlock := uint64(uctx.BlockHeight())
-				agreement = types.CreateBaseAgreement(player.Creator, player.Id, provider.Id, 100, currentBlock, currentBlock+5, "allocation-1")
-				agreement.Id = "agreement-1"
-				k.AppendAgreement(ctx, agreement)
-				tc.input.AgreementId = agreement.Id
-				// Set up balance for collateral (for 5 more blocks)
-				collateralAmount := math.NewIntFromUint64(100).Mul(math.NewIntFromUint64(5)).Mul(math.NewInt(100))
-				collateralCoin := sdk.NewCoin("token", collateralAmount)
-				k.BankKeeper().MintCoins(ctx, types.ModuleName, sdk.NewCoins(collateralCoin))
-				k.BankKeeper().SendCoinsFromModuleToAccount(ctx, types.ModuleName, playerAcc, sdk.NewCoins(collateralCoin))
-			}
-
-			resp, err := ms.AgreementDurationIncrease(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
+			primary, err := sdk.AccAddressFromBech32(f.consumer.PrimaryAddress)
+			require.NoError(t, err)
+			f.fund(t, primary, 777)
+			msg := &types.MsgAgreementDurationIncrease{Creator: f.consumer.Creator, AgreementId: agreement.Id, DurationIncrease: 3}
+			switch scenario {
+			case "missing_agreement":
+				msg.AgreementId = "10-999999"
+			case "no_update_permission":
+				msg.Creator = f.provider.Creator
+			case "unregistered_signer":
+				msg.Creator = sdk.AccAddress("duration-unregistered").String()
+			case "no_transfer_permission":
+				testPermissionRemove(f.k, f.ctx, keeperlib.GetAddressPermissionIDBytes(msg.Creator), types.PermTokenTransfer)
+			case "zero":
+				msg.DurationIncrease = 0
+			case "above_maximum":
+				msg.DurationIncrease = 6
+			case "overflow":
+				agreement.EndBlock = ^uint64(0)
+				_, err := f.k.SetAgreement(f.ctx, agreement)
 				require.NoError(t, err)
-				require.NotNil(t, resp)
+				msg.DurationIncrease = 1
 			}
+			vaultBefore, collateralBefore := f.balance(f.consumerAcc), f.balance(f.collateralAcc)
+			loadBefore := f.agreementLoad()
+			_, err = f.ms.AgreementDurationIncrease(f.ctx, msg)
+			stored, found := f.k.GetAgreement(f.ctx, agreement.Id)
+			require.True(t, found)
+			if scenario == "success" {
+				require.NoError(t, err)
+				require.Equal(t, agreement.EndBlock+3, stored.EndBlock)
+				require.True(t, vaultBefore.SubRaw(30000).Equal(f.balance(f.consumerAcc)))
+				require.True(t, collateralBefore.AddRaw(30000).Equal(f.balance(f.collateralAcc)))
+				agreement.EndBlock = stored.EndBlock
+			} else {
+				require.Error(t, err)
+				require.Equal(t, vaultBefore, f.balance(f.consumerAcc))
+				require.Equal(t, collateralBefore, f.balance(f.collateralAcc))
+			}
+			require.Equal(t, agreement, stored, "extension may only change the end block")
+			require.Equal(t, loadBefore, f.agreementLoad())
+			require.Equal(t, math.NewInt(777), f.balance(primary), "extension must not spend signing-key funds")
 		})
 	}
-
-	cc := k.NewCurrentContext(ctx)
-	agreementCache := cc.GetAgreement(agreement.Id)
-	endBefore := agreementCache.GetEndBlock()
-	require.Error(t, agreementCache.DurationIncrease(0))
-	require.Equal(t, endBefore, agreementCache.GetEndBlock())
-
-	stored, found := k.GetAgreement(ctx, agreement.Id)
-	require.True(t, found)
-	stored.EndBlock = ^uint64(0)
-	_, err = k.SetAgreement(ctx, stored)
-	require.NoError(t, err)
-
-	cc = k.NewCurrentContext(ctx)
-	agreementCache = cc.GetAgreement(agreement.Id)
-	require.Error(t, agreementCache.DurationIncrease(1))
-	require.Equal(t, ^uint64(0), agreementCache.GetEndBlock(),
-		"checked addition must reject instead of wrapping the agreement window")
 }

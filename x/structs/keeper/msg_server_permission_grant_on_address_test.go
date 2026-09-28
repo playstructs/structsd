@@ -11,103 +11,69 @@ import (
 )
 
 func TestMsgPermissionGrantOnAddress(t *testing.T) {
-	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
+	for _, name := range []string{"primary signer", "exact secondary signer", "unregistered signer", "unregistered target", "other player target", "restricted secondary signer", "zero grant"} {
+		t.Run(name, func(t *testing.T) {
+			k, ms, goCtx := setupMsgServer(t)
+			ctx := sdk.UnwrapSDKContext(goCtx)
+			primary := sdk.AccAddress("permission_primary01")
+			player := testAppendPlayer(k, ctx, types.Player{Creator: primary.String(), PrimaryAddress: primary.String()})
+			target := sdk.AccAddress("permission_subject01")
+			signer := sdk.AccAddress("permission_signer001")
+			require.NoError(t, k.SetPlayerIndexForAddress(ctx, target.String(), player.Index))
+			require.NoError(t, k.SetPlayerIndexForAddress(ctx, signer.String(), player.Index))
+			foreign := sdk.AccAddress("permission_foreign01")
+			testAppendPlayer(k, ctx, types.Player{Creator: foreign.String(), PrimaryAddress: foreign.String()})
+			targetID := keeperlib.GetAddressPermissionIDBytes(target.String())
+			k.SetPermissionsByBytes(ctx, targetID, types.PermUpdate|types.PermDelete)
+			k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(signer.String()), types.PermPlay)
+			creator, subject, permissions := primary.String(), target.String(), types.PermPlay
+			rejected := false
+			switch name {
+			case "exact secondary signer":
+				creator = signer.String()
+			case "unregistered signer":
+				creator, rejected = sdk.AccAddress("permission_unknown01").String(), true
+			case "unregistered target":
+				subject, rejected = sdk.AccAddress("permission_unknown01").String(), true
+			case "other player target":
+				subject, rejected = foreign.String(), true
+			case "restricted secondary signer":
+				creator, rejected = signer.String(), true
+				k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(creator), types.Permissionless)
+			case "zero grant":
+				permissions, rejected = types.Permissionless, true
 
-	// Create a player first
-	playerAcc := sdk.AccAddress("creator123456789012345678901234567890")
-	player := types.Player{
-		Creator:        playerAcc.String(),
-		PrimaryAddress: playerAcc.String(),
-	}
-	player = testAppendPlayer(k, ctx, player)
-
-	secondaryAcc := sdk.AccAddress("secondary123456789012345678901234567890")
-	secondaryAddress := secondaryAcc.String()
-	k.SetPlayerIndexForAddress(ctx, secondaryAddress, player.Index)
-
-	creatorPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	testPermissionAdd(k, ctx, creatorPermissionId, types.PermAll)
-
-	secondaryPermissionId := keeperlib.GetAddressPermissionIDBytes(secondaryAddress)
-	testPermissionAdd(k, ctx, secondaryPermissionId, types.PermAll)
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgPermissionGrantOnAddress
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid permission grant",
-			input: &types.MsgPermissionGrantOnAddress{
-				Creator:     player.Creator,
-				Address:     secondaryAddress,
-				Permissions: uint64(types.PermPlay),
-			},
-			expErr: false,
-		},
-		{
-			name: "zero permissions",
-			input: &types.MsgPermissionGrantOnAddress{
-				Creator:     player.Creator,
-				Address:     secondaryAddress,
-				Permissions: 0,
-			},
-			expErr:    true,
-			expErrMsg: "Cannot Grant 0",
-			skip:      true, // Skip - validation may happen after address check
-		},
-		{
-			name: "address not associated with player",
-			input: &types.MsgPermissionGrantOnAddress{
-				Creator:     player.Creator,
-				Address:     sdk.AccAddress("notassociated123456789012345678901234567890").String(),
-				Permissions: uint64(types.PermPlay),
-			},
-			expErr:    true,
-			expErrMsg: "Non-player account",
-			skip:      true, // Skip - cache system validation order
-		},
-		{
-			name: "insufficient permissions to grant",
-			input: &types.MsgPermissionGrantOnAddress{
-				Creator:     sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				Address:     secondaryAddress,
-				Permissions: uint64(types.PermAll),
-			},
-			expErr:    true,
-			expErrMsg: "does not have the permissions needed",
-			skip:      true, // Skip - GetPlayerCacheFromAddress might create player
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
 			}
-
-			// Re-register address if needed
-			if tc.name == "valid permission grant" {
-				k.SetPlayerIndexForAddress(ctx, secondaryAddress, player.Index)
+			before := k.GetAllPermissionExport(ctx)
+			ctx = ctx.WithEventManager(sdk.NewEventManager())
+			response, err := ms.PermissionGrantOnAddress(ctx, &types.MsgPermissionGrantOnAddress{Creator: creator, Address: subject, Permissions: uint64(permissions)})
+			require.NotNil(t, response)
+			permissionEvents := 0
+			for _, event := range ctx.EventManager().ABCIEvents() {
+				if event.Type == "structs.structs.EventPermission" {
+					decoded, decodeErr := sdk.ParseTypedEvent(event)
+					require.NoError(t, decodeErr)
+					require.Equal(t, &types.PermissionRecord{PermissionId: string(targetID), Value: uint64(types.PermUpdate | types.PermDelete | types.PermPlay)}, decoded.(*types.EventPermission).PermissionRecord)
+					permissionEvents++
+				}
 			}
-
-			resp, err := ms.PermissionGrantOnAddress(wctx, tc.input)
-
-			if tc.expErr {
+			if rejected {
 				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
+				if name == "primary cannot be narrowed" {
+					require.ErrorContains(t, err, "must keep full access")
+				}
+				require.Equal(t, before, k.GetAllPermissionExport(ctx))
+				require.Zero(t, permissionEvents)
 			} else {
 				require.NoError(t, err)
-				require.NotNil(t, resp)
-
-				// Verify permission was granted
-				targetPermissionId := keeperlib.GetAddressPermissionIDBytes(tc.input.Address)
-				require.True(t, testPermissionHasOneOf(k, ctx, targetPermissionId, types.Permission(tc.input.Permissions)))
+				require.Equal(t, types.PermUpdate|types.PermDelete|types.PermPlay, k.GetPermissionsByBytes(ctx, targetID))
+				require.Equal(t, 1, permissionEvents)
 			}
+			require.Equal(t, types.PermAll, k.GetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(primary.String())))
+			require.Equal(t, types.PermAll, k.GetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(foreign.String())))
+			stored, found := k.GetPlayer(ctx, player.Id)
+			require.True(t, found)
+			require.Equal(t, player, stored)
 		})
 	}
 }

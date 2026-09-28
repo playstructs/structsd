@@ -102,15 +102,20 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
              * re-homes the record the next time staking touches it, a record
              * holding only a Defusing balance is never touched again.
              *
-             * A subject address, so the pure lookup: an unregistered one has no
-             * owner and is refused.
+             * Resolve the subject through its live asset owner: player vaults
+             * deliberately have no signing-address registration. Unknown
+             * addresses and vaults belonging to another owner are refused.
              */
-            infusionAddressOwner, infusionAddressOwnerErr := cc.GetPlayerByAddress(infusion.Address)
+            infusionAddress, infusionAddressErr := sdk.AccAddressFromBech32(infusion.Address)
+            if infusionAddressErr != nil {
+                return emptyResponse, types.NewAddressValidationError(infusion.Address, "invalid_format")
+            }
+            infusionAddressOwner, infusionAddressOwnerErr := cc.GetAssetOwnerByAddress(infusionAddress)
             if infusionAddressOwnerErr != nil {
                 return emptyResponse, infusionAddressOwnerErr
             }
 
-            if (infusionAddressOwner.GetPlayerId() != msg.PlayerId) {
+            if (infusionAddressOwner.ID() != msg.PlayerId) {
                 return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "infusion_address_ownership").WithInfusion(infusionId)
             }
 
@@ -123,7 +128,12 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
                 return emptyResponse, types.NewObjectNotFoundError("reactor", infusion.DestinationId)
             }
 
-            if (sourceReactor.GuildId != msg.GuildId) {
+            // A guild may select a primary reactor it does not own. An infusion
+            // already on that reactor is already at the intended destination;
+            // asking staking to move it would redelegate to the same validator.
+            // Other reactors associated with the guild retain their existing
+            // eligibility, while outside positions still require migration.
+            if sourceReactor.GuildId != msg.GuildId && sourceReactor.Id != destinationReactor.Id {
                 /*
                     Previously, this would fail at this point but now we'll be migrating the infusion
                     over to the new guilds reactor.
@@ -161,11 +171,17 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
                     migrationAuthorized = true
                 }
 
-                redelegateAmount := math.NewIntFromUint64(infusion.Fuel)
+                fuel, backingErr := cc.guildJoinInfusionFuel(infusion, sourceReactor, infusionAddress)
+                if backingErr != nil {
+                    return emptyResponse, backingErr
+                }
+                if fuel == 0 {
+                    continue
+                }
+                redelegateAmount := math.NewIntFromUint64(fuel)
                 infusionMigrationAmount = append(infusionMigrationAmount, redelegateAmount)
 
-                // The validation should never fail assuming there isn't a bug in the Infusion system
-                // but we can use this function to reliably calculate the shares
+                // Let staking validate the live amount and calculate its shares.
                 infusionAccount, _ := sdk.AccAddressFromBech32(infusion.Address)
                 sourceValidatorAccount, _ := sdk.ValAddressFromBech32(sourceReactor.Validator)
                 shares, validationErr := k.stakingKeeper.ValidateUnbondAmount(
@@ -187,7 +203,11 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
                 }
                 currentFuel = accumulatedFuel
             } else {
-                accumulatedFuel, fuelOverflow := addFuel(currentFuel, infusion.Fuel)
+                fuel, backingErr := cc.guildJoinInfusionFuel(infusion, sourceReactor, infusionAddress)
+                if backingErr != nil {
+                    return emptyResponse, backingErr
+                }
+                accumulatedFuel, fuelOverflow := addFuel(currentFuel, fuel)
                 if fuelOverflow {
                     return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "fuel_overflow").WithInfusion(infusionId)
                 }

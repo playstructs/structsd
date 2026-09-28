@@ -12,122 +12,91 @@ import (
 )
 
 func TestMsgProviderCreate(t *testing.T) {
-	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
-
-	// Create a player first
-	playerAcc := sdk.AccAddress("creator123456789012345678901234567890")
-	player := types.Player{
-		Creator:        playerAcc.String(),
-		PrimaryAddress: playerAcc.String(),
-	}
-	player = testAppendPlayer(k, ctx, player)
-
-	// Create a substation
-	sourceObjectId := "source-object"
-	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceObjectId)
-	k.SetGridAttribute(ctx, capacityAttrId, uint64(1000))
-
-	allocation := types.Allocation{
-		SourceObjectId: sourceObjectId,
-		DestinationId:  "",
-		Type:           types.AllocationType_static,
-		Controller:     player.Id,
-	}
-	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
-	require.NoError(t, err)
-
-	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, player)
-	require.NoError(t, err)
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgProviderCreate
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid provider creation",
-			input: &types.MsgProviderCreate{
-				Creator:                     player.Creator,
-				SubstationId:                substation.Id,
-				Rate:                        sdk.NewCoin("token", math.NewInt(100)),
-				AccessPolicy:                types.ProviderAccessPolicy_openMarket,
-				CapacityMinimum:             100,
-				CapacityMaximum:             1000,
-				DurationMinimum:             1,
-				DurationMaximum:             10,
-				ProviderCancellationPenalty: math.LegacyNewDec(1),
-				ConsumerCancellationPenalty: math.LegacyNewDec(1),
-			},
-			expErr: false,
-		},
-		{
-			name: "invalid substation",
-			input: &types.MsgProviderCreate{
-				Creator:                     player.Creator,
-				SubstationId:                "invalid-substation",
-				Rate:                        sdk.NewCoin("token", math.NewInt(100)),
-				AccessPolicy:                types.ProviderAccessPolicy_openMarket,
-				CapacityMinimum:             100,
-				CapacityMaximum:             1000,
-				DurationMinimum:             1,
-				DurationMaximum:             10,
-				ProviderCancellationPenalty: math.LegacyNewDec(1),
-				ConsumerCancellationPenalty: math.LegacyNewDec(1),
-			},
-			expErr:    true,
-			expErrMsg: "not found",
-			skip:      true, // Skip - cache system validation order
-		},
-		{
-			name: "no permissions on substation",
-			input: &types.MsgProviderCreate{
-				Creator:                     sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				SubstationId:                substation.Id,
-				Rate:                        sdk.NewCoin("token", math.NewInt(100)),
-				AccessPolicy:                types.ProviderAccessPolicy_openMarket,
-				CapacityMinimum:             100,
-				CapacityMaximum:             1000,
-				DurationMinimum:             1,
-				DurationMaximum:             10,
-				ProviderCancellationPenalty: math.LegacyNewDec(1),
-				ConsumerCancellationPenalty: math.LegacyNewDec(1),
-			},
-			expErr:    true,
-			expErrMsg: "has no",
-			skip:      true, // Skip - GetPlayerCacheFromAddress might create player
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
+	for _, name := range []string{"owner with exact key bit", "explicit delegate", "missing substation", "wrong object type", "unregistered signer", "unprivileged player", "owner key lacks source", "delegate key lacks source"} {
+		t.Run(name, func(t *testing.T) {
+			k, ms, goCtx := setupMsgServer(t)
+			ctx := sdk.UnwrapSDKContext(goCtx)
+			gs := testCreateGuild(k, ctx)
+			address := sdk.AccAddress("create_other_player_")
+			other := testAppendPlayer(k, ctx, types.Player{Creator: address.String(), PrimaryAddress: address.String()})
+			msg := &types.MsgProviderCreate{
+				Creator: gs.GuildOwner.Creator, SubstationId: gs.Substation.Id,
+				Rate: sdk.NewInt64Coin("ualpha", 100), AccessPolicy: types.ProviderAccessPolicy_openMarket,
+				CapacityMinimum: 100, CapacityMaximum: 1000, DurationMinimum: 1, DurationMaximum: 10,
+				ProviderCancellationPenalty: math.LegacyNewDec(1), ConsumerCancellationPenalty: math.LegacyNewDec(1),
 			}
-
-			resp, err := ms.ProviderCreate(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
+			k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(msg.Creator), types.PermSourceAllocation)
+			k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(other.Creator), types.PermSourceAllocation)
+			wantError, wantOwner := "", gs.GuildOwner.Id
+			switch name {
+			case "explicit delegate", "delegate key lacks source":
+				msg.Creator, wantOwner = other.Creator, other.Id
+				k.SetPermissionsByBytes(ctx, keeperlib.GetObjectPermissionIDBytes(gs.Substation.Id, other.Id), types.PermSourceAllocation)
+				if name == "delegate key lacks source" {
+					k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(msg.Creator), types.PermAll &^ types.PermSourceAllocation)
+					wantError = "permission"
+				}
+			case "missing substation":
+				msg.SubstationId, wantError = "4-999999", "not found"
+			case "wrong object type":
+				msg.SubstationId, wantError = gs.GuildOwner.Id, "not found"
+			case "unregistered signer":
+				msg.Creator, wantError = sdk.AccAddress("create_unknown_key__").String(), "player"
+			case "unprivileged player":
+				msg.Creator, wantError = other.Creator, "permission"
+			case "owner key lacks source":
+				k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(msg.Creator), types.PermAll &^ types.PermSourceAllocation)
+				wantError = "permission"
+			}
+			permissionsBefore := k.GetAllPermissionExport(ctx)
+			gridBefore := k.GetAllGridExport(ctx)
+			countBefore := k.GetProviderCount(ctx)
+			ctx = ctx.WithEventManager(sdk.NewEventManager())
+			response, err := ms.ProviderCreate(ctx, msg)
+			require.NotNil(t, response)
+			providers := k.GetAllProvider(ctx)
+			if wantError != "" {
+				require.ErrorContains(t, err, wantError)
+				require.Empty(t, providers)
+				require.Equal(t, countBefore, k.GetProviderCount(ctx))
+				require.Equal(t, permissionsBefore, k.GetAllPermissionExport(ctx))
+				require.Equal(t, gridBefore, k.GetAllGridExport(ctx))
 			} else {
 				require.NoError(t, err)
-				require.NotNil(t, resp)
-
-				// Verify provider was created by checking substation has providers
-				providers := k.GetAllProvider(ctx)
-				found := false
-				for _, p := range providers {
-					if p.SubstationId == substation.Id && p.Owner == player.Id {
-						found = true
-						break
-					}
-				}
-				require.True(t, found, "Provider should be created")
+				require.Len(t, providers, 1)
+				require.Equal(t, countBefore+1, k.GetProviderCount(ctx))
+				provider := providers[0]
+				require.Equal(t, wantOwner, provider.Owner)
+				require.Equal(t, msg.Creator, provider.Creator)
+				require.Equal(t, msg.SubstationId, provider.SubstationId)
+				require.Equal(t, msg.Rate, provider.Rate)
+				require.Equal(t, msg.AccessPolicy, provider.AccessPolicy)
+				require.Equal(t, msg.CapacityMinimum, provider.CapacityMinimum)
+				require.Equal(t, msg.CapacityMaximum, provider.CapacityMaximum)
+				require.Equal(t, msg.DurationMinimum, provider.DurationMinimum)
+				require.Equal(t, msg.DurationMaximum, provider.DurationMaximum)
+				require.Equal(t, msg.ProviderCancellationPenalty, provider.ProviderCancellationPenalty)
+				require.Equal(t, msg.ConsumerCancellationPenalty, provider.ConsumerCancellationPenalty)
+				require.Equal(t, types.PermProviderAll, k.GetPermissionsByBytes(ctx, keeperlib.GetObjectPermissionIDBytes(provider.Id, wantOwner)))
 			}
+			providerEvents := 0
+			for _, event := range ctx.EventManager().ABCIEvents() {
+				if event.Type == "structs.structs.EventProvider" {
+					decoded, err := sdk.ParseTypedEvent(event)
+					require.NoError(t, err)
+					require.Len(t, providers, 1)
+					require.Equal(t, &providers[0], decoded.(*types.EventProvider).Provider)
+					providerEvents++
+				}
+			}
+			if wantError == "" {
+				require.Equal(t, 1, providerEvents)
+			} else {
+				require.Zero(t, providerEvents)
+			}
+			substation, found := k.GetSubstation(ctx, gs.Substation.Id)
+			require.True(t, found)
+			require.Equal(t, gs.Substation, substation)
 		})
 	}
 }

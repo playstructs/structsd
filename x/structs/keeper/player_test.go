@@ -169,6 +169,8 @@ func TestPlayerGetAllBySubstation(t *testing.T) {
 
 	const substationId = "4-1"
 	const otherSubstationId = "4-2"
+    k.SetSubstation(ctx,types.Substation{Id:substationId})
+    k.SetSubstation(ctx,types.Substation{Id:otherSubstationId})
 
 	connect := func(creator string, substation string) *keeperlib.PlayerCache {
 		cc := k.NewCurrentContext(ctxSDK)

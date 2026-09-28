@@ -1,131 +1,80 @@
 package keeper_test
 
 import (
-	"testing"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-
 	keeperlib "structs/x/structs/keeper"
 	"structs/x/structs/types"
+	"testing"
 )
 
 func TestMsgPermissionGrantOnObject(t *testing.T) {
-	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
-
-	// Create two players
-	ownerAcc := sdk.AccAddress("owner123456789012345678901234567890")
-	owner := types.Player{
-		Creator:        ownerAcc.String(),
-		PrimaryAddress: ownerAcc.String(),
-	}
-	owner = testAppendPlayer(k, ctx, owner)
-
-	targetAcc := sdk.AccAddress("target123456789012345678901234567890")
-	targetPlayer := types.Player{
-		Creator:        targetAcc.String(),
-		PrimaryAddress: targetAcc.String(),
-	}
-	targetPlayer = testAppendPlayer(k, ctx, targetPlayer)
-
-	// Create an object (struct) owned by owner
-	structObj := types.Struct{
-		Creator: owner.Creator,
-		Owner:   owner.Id,
-		Type:    1,
-	}
-	structObj = testAppendStruct(k, ctx, structObj)
-
-	// Grant owner permissions on the object
-	ownerPermissionId := keeperlib.GetObjectPermissionIDBytes(structObj.Id, owner.Id)
-	testPermissionAdd(k, ctx, ownerPermissionId, types.PermAll)
-
-	// Grant owner address permissions permission
-	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(owner.Creator)
-	testPermissionAdd(k, ctx, addressPermissionId, types.PermAdmin)
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgPermissionGrantOnObject
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid permission grant",
-			input: &types.MsgPermissionGrantOnObject{
-				Creator:     owner.Creator,
-				ObjectId:    structObj.Id,
-				PlayerId:    targetPlayer.Id,
-				Permissions: uint64(types.Permission(1)), // Use a valid permission value
-			},
-			expErr: false,
-		},
-		{
-			name: "zero permissions",
-			input: &types.MsgPermissionGrantOnObject{
-				Creator:     owner.Creator,
-				ObjectId:    structObj.Id,
-				PlayerId:    targetPlayer.Id,
-				Permissions: 0,
-			},
-			expErr:    true,
-			expErrMsg: "Cannot Grant 0",
-			skip:      true, // Skip - validation may happen after permission check
-		},
-		{
-			name: "no permissions permission",
-			input: &types.MsgPermissionGrantOnObject{
-				Creator:     sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				ObjectId:    structObj.Id,
-				PlayerId:    targetPlayer.Id,
-				Permissions: uint64(types.Permission(1)), // Use a valid permission value
-			},
-			expErr:    true,
-			expErrMsg: "has no permissions permission",
-			skip:      true, // Skip - GetPlayerCacheFromAddress might create player
-		},
-		{
-			name: "owner doesn't have authority",
-			input: &types.MsgPermissionGrantOnObject{
-				Creator:     owner.Creator,
-				ObjectId:    structObj.Id,
-				PlayerId:    targetPlayer.Id,
-				Permissions: uint64(types.PermAll),
-			},
-			expErr:    true,
-			expErrMsg: "does not have the authority",
-			skip:      true, // Skip - PermissionClearAll may not work as expected in test setup
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
+	for _, name := range []string{"owner", "explicit delegate", "missing player", "missing object", "unregistered signer", "unprivileged player", "restricted key", "zero grant"} {
+		t.Run(name, func(t *testing.T) {
+			k, ms, goCtx := setupMsgServer(t)
+			ctx := sdk.UnwrapSDKContext(goCtx)
+			gs := testCreateGuild(k, ctx)
+			address := sdk.AccAddress("permission_target_01")
+			target := testAppendPlayer(k, ctx, types.Player{Creator: address.String(), PrimaryAddress: address.String()})
+			delegateAddress := sdk.AccAddress("permission_delegate1")
+			delegate := testAppendPlayer(k, ctx, types.Player{Creator: delegateAddress.String(), PrimaryAddress: delegateAddress.String()})
+			targetID := keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id, target.Id)
+			k.SetPermissionsByBytes(ctx, targetID, types.PermUpdate|types.PermDelete)
+			creator, object, player := gs.GuildOwner.Creator, gs.Guild.Id, target.Id
+			permissions := types.PermPlay
+			needed := types.PermPlay
+			k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(creator), needed|types.PermAdmin)
+			wantError := ""
+			switch name {
+			case "explicit delegate":
+				creator = delegate.Creator
+				grant := needed
+				k.SetPermissionsByBytes(ctx, keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id, delegate.Id), grant|types.PermAdmin)
+				k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(creator), needed|types.PermAdmin)
+			case "missing player":
+				player, wantError = "1-999999", "not found"
+			case "missing object":
+				object, wantError = "6-999999", "permission"
+			case "unregistered signer":
+				creator, wantError = sdk.AccAddress("permission_unknown_1").String(), "player"
+			case "unprivileged player":
+				creator, wantError = delegate.Creator, "permission"
+			case "restricted key":
+				k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(creator), types.Permissionless)
+				wantError = "permission"
+			case "zero grant":
+				permissions, wantError = types.Permissionless, "permissions"
 			}
-
-			// Reset permissions for owner if needed
-			if tc.name == "owner doesn't have authority" {
-				k.PermissionClearAll(ctx, ownerPermissionId)
-				testPermissionAdd(k, ctx, ownerPermissionId, types.Permission(1)) // Only minimal permission, not all
+			before := k.GetPermissionsByObject(ctx, gs.Guild.Id)
+			ctx = ctx.WithEventManager(sdk.NewEventManager())
+			response, err := ms.PermissionGrantOnObject(ctx, &types.MsgPermissionGrantOnObject{
+				Creator: creator, ObjectId: object, PlayerId: player, Permissions: uint64(permissions)})
+			require.NotNil(t, response)
+			permissionEvents := 0
+			for _, event := range ctx.EventManager().ABCIEvents() {
+				if event.Type == "structs.structs.EventPermission" {
+					decoded, decodeErr := sdk.ParseTypedEvent(event)
+					require.NoError(t, decodeErr)
+					require.Equal(t, &types.PermissionRecord{PermissionId: string(targetID), Value: uint64(types.PermUpdate | types.PermDelete | types.PermPlay)}, decoded.(*types.EventPermission).PermissionRecord)
+					permissionEvents++
+				}
 			}
-
-			resp, err := ms.PermissionGrantOnObject(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
+			if wantError != "" {
+				require.ErrorContains(t, err, wantError)
+				require.Equal(t, before, k.GetPermissionsByObject(ctx, gs.Guild.Id))
+				require.Zero(t, permissionEvents)
+				require.Equal(t, types.Permissionless, k.GetPermissionsByBytes(ctx, keeperlib.GetObjectPermissionIDBytes(object, "1-999999")))
 			} else {
 				require.NoError(t, err)
-				require.NotNil(t, resp)
-
-				// Verify permission was granted
-				targetPermissionId := keeperlib.GetObjectPermissionIDBytes(structObj.Id, targetPlayer.Id)
-				require.True(t, testPermissionHasOneOf(k, ctx, targetPermissionId, types.Permission(tc.input.Permissions)))
+				require.Equal(t, types.PermUpdate|types.PermDelete|types.PermPlay, k.GetPermissionsByBytes(ctx, targetID))
+				require.Equal(t, 1, permissionEvents)
 			}
+			guild, found := k.GetGuild(ctx, gs.Guild.Id)
+			require.True(t, found)
+			require.Equal(t, gs.Guild, guild)
+			storedTarget, found := k.GetPlayer(ctx, target.Id)
+			require.True(t, found)
+			require.Equal(t, target, storedTarget)
 		})
 	}
 }

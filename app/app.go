@@ -323,6 +323,7 @@ func New(
 	// }
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
+	app.SetInitChainer(app.initChainerWithEconomyGenesis)
 
 	// Set custom ante handler (replaces the default SDK chain)
 	app.setAnteHandler(app.txConfig, appOpts)
@@ -406,6 +407,7 @@ func (app *App) RegisterUpgradeHandlers() {
 		BankKeeper:    app.BankKeeper,
 		StakingKeeper: app.StakingKeeper,
 		DistrKeeper:   app.DistrKeeper,
+		ICAHostKeeper: app.ICAHostKeeper,
 	}
 
 	upgradesList := []upgrades.Upgrade{

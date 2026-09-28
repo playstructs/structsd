@@ -169,20 +169,9 @@ func TestMsgGuildMembershipKick(t *testing.T) {
 	})
 }
 
-/* TestGuildMembershipKickClearsDirectGuildPermissions is the regression on a
- * dismissal that did not dismiss.
- *
- * Kick cleared the player's GuildId and rank and nothing else. PermissionCheck
- * reads a direct object grant with no membership predicate - only the
- * rank-derived branch is gated on being in a guild - so whatever the guild had
- * granted the player directly survived the kick. PermAdmin on a guild is all
- * GuildUpdateOwnerId requires, and it demands no membership either, so a
- * dismissed administrator could take the guild.
- *
- * The ownership path is asserted alongside because that is the escalation that
- * makes this worth a release rather than a tidy-up.
- */
-func TestGuildMembershipKickClearsDirectGuildPermissions(t *testing.T) {
+// Independent administration survives a kick. Removing membership is not
+// permission revocation; the administrator must be explicitly revoked.
+func TestGuildMembershipKickPreservesIndependentAdministration(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
 	wctx := sdk.UnwrapSDKContext(ctx)
 
@@ -211,8 +200,15 @@ func TestGuildMembershipKickClearsDirectGuildPermissions(t *testing.T) {
 	require.True(t, found)
 	require.Equal(t, "", kicked.GuildId, "the kick itself should have landed")
 
-	require.Equal(t, types.Permissionless, k.GetPermissionsByBytes(ctx, adminPermId),
-		"a kicked member must keep no direct grant on the guild that dismissed them")
+	require.Equal(t, types.PermAdmin|types.PermUpdate|types.PermGuildMembership, k.GetPermissionsByBytes(ctx, adminPermId),
+        "membership changes must not erase independent administration")
+    // The owner can explicitly revoke independent authority before dismissing
+    // an administrator. A membership operator alone has no right to do so.
+    _, err = ms.PermissionRevokeOnObject(wctx, &types.MsgPermissionRevokeOnObject{
+        Creator: gs.GuildOwner.Creator, ObjectId: gs.Guild.Id, PlayerId: admin.Id,
+        Permissions: uint64(types.PermAdmin|types.PermUpdate|types.PermGuildMembership),
+    })
+    require.NoError(t, err)
 
 	// The escalation the grant enabled: PermAdmin is the whole of what
 	// GuildUpdateOwnerId asks for, and it never checks membership.
@@ -221,7 +217,7 @@ func TestGuildMembershipKickClearsDirectGuildPermissions(t *testing.T) {
 		GuildId: gs.Guild.Id,
 		Owner:   admin.Id,
 	})
-	require.Error(t, err, "a dismissed administrator must not be able to seize the guild")
+	require.Error(t, err, "an explicitly revoked administrator must not be able to seize the guild")
 
 	guild, guildFound := k.GetGuild(ctx, gs.Guild.Id)
 	require.True(t, guildFound)
@@ -250,4 +246,19 @@ func TestGuildMembershipKickCannotReachTheOwnersGrants(t *testing.T) {
 
 	require.NotEqual(t, types.Permissionless, k.GetPermissionsByBytes(ctx, ownerPermId),
 		"the owner's grants are their ownership and must survive")
+}
+
+func TestGuildMembershipRankKickCannotEraseDirectAdministrator(t *testing.T) {
+ k,ms,ctx:=setupMsgServer(t)
+ gs:=testCreateGuild(k,ctx)
+ actorAddress:=sdk.AccAddress("rank_kick_actor_addr_")
+ actor:=testAppendPlayer(k,ctx,types.Player{Creator:actorAddress.String(),PrimaryAddress:actorAddress.String(),GuildId:gs.Guild.Id,GuildRank:2})
+ targetAddress:=sdk.AccAddress("rank_kick_admin_addr_")
+ target:=testAppendPlayer(k,ctx,types.Player{Creator:targetAddress.String(),PrimaryAddress:targetAddress.String(),GuildId:gs.Guild.Id,GuildRank:3})
+ k.SetGuildRankPermissionStoreOnly(ctx,gs.Guild.Id,gs.Guild.Id,types.PermGuildMembership,2)
+ direct:=keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id,target.Id)
+ k.SetPermissionsByBytes(ctx,direct,types.PermAdmin|types.PermUpdate)
+ _,err:=ms.GuildMembershipKick(ctx,&types.MsgGuildMembershipKick{Creator:actor.Creator,GuildId:gs.Guild.Id,PlayerId:target.Id});require.NoError(t,err)
+ updated,found:=k.GetPlayer(ctx,target.Id);require.True(t,found);require.Empty(t,updated.GuildId)
+ require.Equal(t,types.PermAdmin|types.PermUpdate,k.GetPermissionsByBytes(ctx,direct))
 }

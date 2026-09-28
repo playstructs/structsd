@@ -38,11 +38,11 @@ func TestMsgGuildBankConvert(t *testing.T) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	gs := testCreateGuild(k, ctx)
-	ownerAcc, _ := sdk.AccAddressFromBech32(gs.GuildOwner.Creator)
+	ownerAcc, _ := types.VaultAddress(gs.GuildOwner.Id)
 
 	// Bootstrap the bank at a 2:1 collateral:token ratio (1000 alpha / 500 token).
 	fundAlpha(t, k, ctx, ownerAcc, 5000)
-	_, err := ms.GuildBankMint(goCtx, &types.MsgGuildBankMint{Creator: gs.GuildOwner.Creator, AmountAlpha: 1000, AmountToken: 500})
+	_, err := bootstrapGuildVaultTokens(t, k, ms, goCtx, &types.MsgGuildBankMint{Creator: gs.GuildOwner.Creator, AmountAlpha: 1000, AmountToken: 500})
 	require.NoError(t, err)
 	require.Equal(t, int64(1000), collateralBalance(k, ctx, gs.Guild.Id).Int64())
 
@@ -81,7 +81,7 @@ func TestMsgGuildBankConvert(t *testing.T) {
 
 	// --- zero-supply bank rejects convert (ratio undefined) ---
 	gs2 := testCreateGuild(k, ctx)
-	owner2, _ := sdk.AccAddressFromBech32(gs2.GuildOwner.Creator)
+	owner2, _ := types.VaultAddress(gs2.GuildOwner.Id)
 	fundAlpha(t, k, ctx, owner2, 500)
 	_, err = ms.GuildBankConvert(goCtx, &types.MsgGuildBankConvert{Creator: gs2.GuildOwner.Creator, GuildId: gs2.Guild.Id, AmountAlpha: 100, MinAmountToken: 1})
 	require.Error(t, err)
@@ -95,10 +95,10 @@ func TestMsgGuildBankRedeemWithFee(t *testing.T) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	gs := testCreateGuild(k, ctx)
-	ownerAcc, _ := sdk.AccAddressFromBech32(gs.GuildOwner.Creator)
+	ownerAcc, _ := types.VaultAddress(gs.GuildOwner.Id)
 
 	fundAlpha(t, k, ctx, ownerAcc, 2000)
-	_, err := ms.GuildBankMint(goCtx, &types.MsgGuildBankMint{Creator: gs.GuildOwner.Creator, AmountAlpha: 1000, AmountToken: 500})
+	_, err := bootstrapGuildVaultTokens(t, k, ms, goCtx, &types.MsgGuildBankMint{Creator: gs.GuildOwner.Creator, AmountAlpha: 1000, AmountToken: 500})
 	require.NoError(t, err)
 
 	require.NoError(t, setBankConvertOutFee(t, ms, ctx, gs, "0.1"))
@@ -133,16 +133,16 @@ func TestMsgGuildBankConvertToken(t *testing.T) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	gsA := testCreateGuild(k, ctx)
-	ownerA, _ := sdk.AccAddressFromBech32(gsA.GuildOwner.Creator)
+	ownerA, _ := types.VaultAddress(gsA.GuildOwner.Id)
 	gsB := testCreateGuild(k, ctx)
-	ownerB, _ := sdk.AccAddressFromBech32(gsB.GuildOwner.Creator)
+	ownerB, _ := types.VaultAddress(gsB.GuildOwner.Id)
 
 	// Bootstrap both banks 2:1.
 	fundAlpha(t, k, ctx, ownerA, 2000)
-	_, err := ms.GuildBankMint(goCtx, &types.MsgGuildBankMint{Creator: gsA.GuildOwner.Creator, AmountAlpha: 1000, AmountToken: 500})
+	_, err := bootstrapGuildVaultTokens(t, k, ms, goCtx, &types.MsgGuildBankMint{Creator: gsA.GuildOwner.Creator, AmountAlpha: 1000, AmountToken: 500})
 	require.NoError(t, err)
 	fundAlpha(t, k, ctx, ownerB, 2000)
-	_, err = ms.GuildBankMint(goCtx, &types.MsgGuildBankMint{Creator: gsB.GuildOwner.Creator, AmountAlpha: 1000, AmountToken: 500})
+	_, err = bootstrapGuildVaultTokens(t, k, ms, goCtx, &types.MsgGuildBankMint{Creator: gsB.GuildOwner.Creator, AmountAlpha: 1000, AmountToken: 500})
 	require.NoError(t, err)
 
 	require.NoError(t, setBankConvertOutFee(t, ms, ctx, gsA, "0.1"))
@@ -238,11 +238,11 @@ func TestGuildBankRoundingInvariant(t *testing.T) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	gs := testCreateGuild(k, ctx)
-	ownerAcc, _ := sdk.AccAddressFromBech32(gs.GuildOwner.Creator)
+	ownerAcc, _ := types.VaultAddress(gs.GuildOwner.Id)
 
 	// Tiny supply, then donate a large collateral to make one token expensive.
 	fundAlpha(t, k, ctx, ownerAcc, 5_000_000)
-	_, err := ms.GuildBankMint(goCtx, &types.MsgGuildBankMint{Creator: gs.GuildOwner.Creator, AmountAlpha: 3, AmountToken: 7})
+	_, err := bootstrapGuildVaultTokens(t, k, ms, goCtx, &types.MsgGuildBankMint{Creator: gs.GuildOwner.Creator, AmountAlpha: 3, AmountToken: 7})
 	require.NoError(t, err)
 	// Donate directly to the collateral pool (permissionless, the attack vector).
 	donation := sdk.NewCoins(sdk.NewCoin("ualpha", math.NewInt(1_000_000)))
@@ -294,9 +294,9 @@ func TestGuildBankSafetyBoundaries(t *testing.T) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	gs := testCreateGuild(k, ctx)
-	ownerAcc, _ := sdk.AccAddressFromBech32(gs.GuildOwner.Creator)
+	ownerAcc, _ := types.VaultAddress(gs.GuildOwner.Id)
 	fundAlpha(t, k, ctx, ownerAcc, 2_000)
-	_, err := ms.GuildBankMint(goCtx, &types.MsgGuildBankMint{Creator: gs.GuildOwner.Creator, AmountAlpha: 1_000, AmountToken: 500})
+	_, err := bootstrapGuildVaultTokens(t, k, ms, goCtx, &types.MsgGuildBankMint{Creator: gs.GuildOwner.Creator, AmountAlpha: 1_000, AmountToken: 500})
 	require.NoError(t, err)
 
 	t.Run("minimum output is mandatory", func(t *testing.T) {
@@ -355,7 +355,7 @@ func TestGuildBankRedeemRejectsZeroCollateral(t *testing.T) {
 	k, ms, goCtx := setupMsgServer(t)
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	gs := testCreateGuild(k, ctx)
-	ownerAcc, _ := sdk.AccAddressFromBech32(gs.GuildOwner.Creator)
+	ownerAcc, _ := types.VaultAddress(gs.GuildOwner.Id)
 
 	token := sdk.NewCoin("uguild."+gs.Guild.Id, math.NewInt(10))
 	require.NoError(t, k.BankKeeper().MintCoins(ctx, types.ModuleName, sdk.NewCoins(token)))

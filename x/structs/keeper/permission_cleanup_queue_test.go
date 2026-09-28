@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
@@ -60,6 +61,69 @@ func TestPermissionCleanup_ExactCountIsNotTruncation(t *testing.T) {
 	require.Len(t, deleted, 10)
 	require.False(t, more, "clearing exactly what is there is not truncation")
 	require.Empty(t, k.GetPermissionsByObject(ctx, objectId))
+}
+
+func TestPermissionCleanup_RankOnlyQueueSharesOneBlockBudget(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	const objects = 3
+	for i := 0; i < objects; i++ {
+		objectId := fmt.Sprintf("5-%d", i+1)
+		for j := 0; j < types.PermissionCleanupBudget; j++ {
+			k.SetGuildRankPermissionStoreOnly(ctx, objectId, fmt.Sprintf("0-%d", j+1), types.PermPlay, 3)
+		}
+		k.EnqueuePermissionCleanup(ctx, objectId)
+	}
+	k.ProcessPermissionCleanupQueue(ctx)
+	// Each deleted register emits one event in this fixture. A queue visit
+	// also costs budget, so the first pass cannot delete a full block's rows.
+	deleted := 0
+	for _, event := range ctx.EventManager().Events() {
+		if event.Type == "structs.structs.EventGuildRankPermission" {
+			deleted++
+		}
+	}
+	require.Equal(t, types.PermissionCleanupBudget-1, deleted)
+	require.Len(t, k.GetPermissionCleanupQueue(ctx), objects)
+	for pass := 0; pass < objects+3; pass++ {
+		k.ProcessPermissionCleanupQueue(ctx)
+	}
+	require.Empty(t, k.GetPermissionCleanupQueue(ctx))
+	for i := 0; i < objects; i++ {
+		for j := 0; j < types.PermissionCleanupBudget; j++ {
+			register := k.ReadGuildRankRegister(ctx, fmt.Sprintf("5-%d", i+1), fmt.Sprintf("0-%d", j+1))
+			require.Equal(t, [types.PermissionBitCount]uint64{}, register)
+		}
+	}
+}
+
+func TestPermissionCleanup_EmptyQueueEntriesStillConsumeBudget(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	for i := 0; i < types.PermissionCleanupBudget*2; i++ {
+		k.EnqueuePermissionCleanup(ctx, fmt.Sprintf("5-%08d", i+1))
+	}
+	k.ProcessPermissionCleanupQueue(ctx)
+	require.GreaterOrEqual(t, len(k.GetPermissionCleanupQueue(ctx)), types.PermissionCleanupBudget)
+	for pass := 0; pass < 4; pass++ {
+		k.ProcessPermissionCleanupQueue(ctx)
+	}
+	require.Empty(t, k.GetPermissionCleanupQueue(ctx))
+}
+
+func TestPermissionCleanup_BacklogDoesNotIncreaseBatchCost(t *testing.T) {
+	var costs []uint64
+	for _, size := range []int{types.PermissionCleanupBudget * 2, types.PermissionCleanupBudget * 16} {
+		k, ctx := keepertest.StructsKeeper(t)
+		for i := 0; i < size; i++ {
+			k.EnqueuePermissionCleanup(ctx, fmt.Sprintf("5-%08d", i))
+		}
+		grantMany(t, k, ctx, "5-00000000", types.PermissionCleanupBudget*2)
+		metered := ctx.WithGasMeter(storetypes.NewInfiniteGasMeter())
+		k.ProcessPermissionCleanupQueue(metered)
+		costs = append(costs, metered.GasMeter().GasConsumed())
+		require.Len(t, k.GetPermissionCleanupQueue(ctx), size)
+	}
+	require.Less(t, costs[1], costs[0]*5/4,
+		"the worker must not load the entire permission cleanup queue: narrow=%d wide=%d", costs[0], costs[1])
 }
 
 /* TestPermissionCleanup_QueueDrainsAcrossBlocks is the regression itself: an

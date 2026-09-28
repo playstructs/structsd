@@ -415,3 +415,20 @@ func TestStructsDecorator_RecoveryMessagesSurviveAnExhaustedQuota(t *testing.T) 
 		require.Zero(t, mk.msgCounts[playerId], "no recovery message may touch the counter")
 	})
 }
+
+func TestCheckTxThrottleDoesNotCountLaterAnteFailures(t *testing.T) {
+ dec := sante.NewCheckTxThrottleDecorator(1)
+ ctx := newTestCtx().WithIsCheckTx(true)
+ tx := mixedTx(&types.MsgFleetMove{Creator: "structs1alice", FleetId: "2-1", DestinationLocationId: "7-1"})
+ for i := 0; i < 3; i++ {
+  _, err := dec.AnteHandle(ctx, tx, false, func(ctx sdk.Context, _ sdk.Tx, _ bool) (sdk.Context, error) {
+   return ctx, fmt.Errorf("later validation refused")
+  })
+  require.ErrorContains(t, err, "later validation refused")
+ }
+ next, _ := identityHandler()
+ _, err := dec.AnteHandle(ctx, tx, false, next)
+ require.NoError(t, err)
+ _, err = dec.AnteHandle(ctx, tx, false, next)
+ require.True(t, sante.ErrCheckTxAddrCapExceeded.Is(err))
+}

@@ -11,130 +11,76 @@ import (
 )
 
 func TestMsgPermissionSetOnAddress(t *testing.T) {
-	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
+	for _, name := range []string{"primary signer", "exact secondary signer", "unregistered signer", "unregistered target", "other player target", "restricted secondary signer", "primary cannot be narrowed", "key lacks erased bits"} {
+		t.Run(name, func(t *testing.T) {
+			k, ms, goCtx := setupMsgServer(t)
+			ctx := sdk.UnwrapSDKContext(goCtx)
+			primary := sdk.AccAddress("permission_primary01")
+			player := testAppendPlayer(k, ctx, types.Player{Creator: primary.String(), PrimaryAddress: primary.String()})
+			target := sdk.AccAddress("permission_subject01")
+			signer := sdk.AccAddress("permission_signer001")
+			require.NoError(t, k.SetPlayerIndexForAddress(ctx, target.String(), player.Index))
+			require.NoError(t, k.SetPlayerIndexForAddress(ctx, signer.String(), player.Index))
+			foreign := sdk.AccAddress("permission_foreign01")
+			testAppendPlayer(k, ctx, types.Player{Creator: foreign.String(), PrimaryAddress: foreign.String()})
+			targetID := keeperlib.GetAddressPermissionIDBytes(target.String())
+			k.SetPermissionsByBytes(ctx, targetID, types.PermUpdate|types.PermDelete)
+			k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(signer.String()), types.PermPlay|types.PermUpdate|types.PermDelete)
+			creator, subject, permissions := primary.String(), target.String(), types.PermPlay
+			rejected := false
+			switch name {
+			case "exact secondary signer":
+				creator = signer.String()
+			case "unregistered signer":
+				creator, rejected = sdk.AccAddress("permission_unknown01").String(), true
+			case "unregistered target":
+				subject, rejected = sdk.AccAddress("permission_unknown01").String(), true
+			case "other player target":
+				subject, rejected = foreign.String(), true
+			case "restricted secondary signer":
+				creator, rejected = signer.String(), true
+				k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(creator), types.Permissionless)
+			case "primary cannot be narrowed":
+				subject, rejected = primary.String(), true
+			case "key lacks erased bits":
+				creator, rejected = signer.String(), true
+				k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(creator), types.PermPlay)
 
-	// Create a player first
-	playerAcc := sdk.AccAddress("creator123456789012345678901234567890")
-	player := types.Player{
-		Creator:        playerAcc.String(),
-		PrimaryAddress: playerAcc.String(),
-	}
-	player = testAppendPlayer(k, ctx, player)
-
-	secondaryAcc := sdk.AccAddress("secondary123456789012345678901234567890")
-	secondaryAddress := secondaryAcc.String()
-	k.SetPlayerIndexForAddress(ctx, secondaryAddress, player.Index)
-
-	creatorPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	testPermissionAdd(k, ctx, creatorPermissionId, types.PermAll)
-
-	secondaryPermissionId := keeperlib.GetAddressPermissionIDBytes(secondaryAddress)
-	testPermissionAdd(k, ctx, secondaryPermissionId, types.PermAll)
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgPermissionSetOnAddress
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid permission set",
-			input: &types.MsgPermissionSetOnAddress{
-				Creator:     player.Creator,
-				Address:     secondaryAddress,
-				Permissions: uint64(types.PermPlay),
-			},
-			expErr: false,
-		},
-		{
-			name: "address not associated with player",
-			input: &types.MsgPermissionSetOnAddress{
-				Creator:     player.Creator,
-				Address:     sdk.AccAddress("notassociated123456789012345678901234567890").String(),
-				Permissions: uint64(types.PermPlay),
-			},
-			expErr:    true,
-			expErrMsg: "Non-player account",
-			skip:      true, // Skip - cache system validation order
-		},
-		{
-			name: "different player",
-			input: &types.MsgPermissionSetOnAddress{
-				Creator:     player.Creator,
-				Address:     secondaryAddress,
-				Permissions: uint64(types.PermPlay),
-			},
-			expErr:    true,
-			expErrMsg: "Can only",
-			skip:      true, // Skip - cache system validation order
-		},
-		{
-			name: "insufficient permissions",
-			input: &types.MsgPermissionSetOnAddress{
-				Creator:     sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				Address:     secondaryAddress,
-				Permissions: uint64(types.PermAll),
-			},
-			expErr:    true,
-			expErrMsg: "does not have the permissions needed",
-			skip:      true, // Skip - GetPlayerCacheFromAddress might create player
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
 			}
-
-			// Re-register address if needed
-			if tc.name == "valid permission set" {
-				k.SetPlayerIndexForAddress(ctx, secondaryAddress, player.Index)
-			} else if tc.name == "different player" {
-				// Create another player and associate address with them
-				otherPlayer := types.Player{
-					Creator:        "cosmos1other",
-					PrimaryAddress: "cosmos1other",
+			before := k.GetAllPermissionExport(ctx)
+			ctx = ctx.WithEventManager(sdk.NewEventManager())
+			response, err := ms.PermissionSetOnAddress(ctx, &types.MsgPermissionSetOnAddress{Creator: creator, Address: subject, Permissions: uint64(permissions)})
+			require.NotNil(t, response)
+			permissionEvents := 0
+			for _, event := range ctx.EventManager().ABCIEvents() {
+				if event.Type == "structs.structs.EventPermission" {
+					decoded, decodeErr := sdk.ParseTypedEvent(event)
+					require.NoError(t, decodeErr)
+					require.Equal(t, &types.PermissionRecord{PermissionId: string(targetID), Value: uint64(types.PermPlay)}, decoded.(*types.EventPermission).PermissionRecord)
+					permissionEvents++
 				}
-				otherPlayer = testAppendPlayer(k, ctx, otherPlayer)
-				k.SetPlayerIndexForAddress(ctx, secondaryAddress, otherPlayer.Index)
 			}
-
-			resp, err := ms.PermissionSetOnAddress(wctx, tc.input)
-
-			if tc.expErr {
+			if rejected {
 				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
+				if name == "primary cannot be narrowed" {
+					require.ErrorContains(t, err, "must keep full access")
+				}
+				require.Equal(t, before, k.GetAllPermissionExport(ctx))
+				require.Zero(t, permissionEvents)
 			} else {
 				require.NoError(t, err)
-				require.NotNil(t, resp)
-
-				// Verify permission was set
-				targetPermissionId := keeperlib.GetAddressPermissionIDBytes(tc.input.Address)
-				permissions := k.GetPermissionsByBytes(ctx, targetPermissionId)
-				require.Equal(t, types.Permission(tc.input.Permissions), permissions)
+				require.Equal(t, types.PermPlay, k.GetPermissionsByBytes(ctx, targetID))
+				require.Equal(t, 1, permissionEvents)
 			}
+			require.Equal(t, types.PermAll, k.GetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(primary.String())))
+			require.Equal(t, types.PermAll, k.GetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(foreign.String())))
+			stored, found := k.GetPlayer(ctx, player.Id)
+			require.True(t, found)
+			require.Equal(t, player, stored)
 		})
 	}
 }
 
-/* TestPermissionOnAddressCannotLockOutThePrimary covers the recovery half of the
- * full-mask overwrite report.
- *
- * Refusing an unauthorized bit removal closes the attack, but not the footgun:
- * a player's own PermAll key acting on its own primary address passes every
- * check precisely because it still holds the rights it is about to destroy. And
- * the resulting state is unrecoverable rather than merely reduced - every route
- * back runs through the primary, since PlayerUpdatePrimaryAddress needs PermAll
- * to rotate away and a grant can only hand over bits the granting address itself
- * holds.
- *
- * The rotate-then-narrow path is asserted alongside, because a guard that also
- * blocked the legitimate way to get a narrow key would be the wrong trade.
- */
 func TestPermissionOnAddressCannotLockOutThePrimary(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
 	wctx := sdk.UnwrapSDKContext(ctx)

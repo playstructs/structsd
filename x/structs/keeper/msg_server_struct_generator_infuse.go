@@ -49,7 +49,9 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 		return emptyResponse, types.NewStructStateError(msg.StructId, "offline", "online", "generator_infuse")
 	}
 
-	if structure.GetStructType().PowerGeneration == types.TechPowerGeneration_noPowerGeneration {
+	switch structure.GetStructType().PowerGeneration {
+	case types.TechPowerGeneration_smallGenerator, types.TechPowerGeneration_mediumGenerator, types.TechPowerGeneration_largeGenerator:
+	default:
 		return emptyResponse, types.NewStructCapabilityError(msg.StructId, "generation")
 	}
 
@@ -73,7 +75,7 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 	 *
 	 * That crossed an authorization boundary as well as an accounting one. The
 	 * only permission this handler asks for is PermTokenInfuse, and it spends the
-	 * player's primary account - so a delegate scoped to infusion alone could
+	 * player's vault account - so a delegate scoped to infusion alone could
 	 * destroy asset classes that PermGuildTokenBurn exists to protect.
 	 */
 	if len(infusionAmount) != 1 {
@@ -94,8 +96,31 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 	// parsed value the message asked for.
 	fuelCoins := sdk.NewCoins(sdk.NewCoin("ualpha", fuelAmount))
 
-	// Transfer the refined Alpha from the player
-	playerAcc, _ := sdk.AccAddressFromBech32(callingPlayer.GetPrimaryAddress())
+	// Provision through the shared context before bank movement or infusion
+	// ownership resolution. The SDK transaction cache rolls this back on failure.
+	vaults, vaultErr := cc.EnsureVaults(callingPlayer.ID())
+	if vaultErr != nil {
+		return emptyResponse, vaultErr
+	}
+	playerAcc := vaults[0]
+	// Reject an unrepresentable total before moving or burning coins. A
+	// poisoned row would otherwise prevent the bounded worker from completing.
+	previous := cc.GetInfusion(msg.StructId, playerAcc.String())
+	previousFuel := uint64(0)
+	if previous.CheckInfusion() == nil {
+		if err := previous.GetInfusion().ValidateGeneratorPower(); err != nil {
+			return emptyResponse, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "invalid_existing_power").WithDetails(err.Error())
+		}
+		previousFuel = previous.GetFuel()
+	}
+	if !fuelAmount.IsUint64() || fuelAmount.Uint64() > ^uint64(0)-previousFuel {
+		return emptyResponse, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "fuel_overflow")
+	}
+	newFuel := previousFuel + fuelAmount.Uint64()
+	rate := structure.GetStructType().GeneratingRate
+	if rate != 0 && newFuel > ^uint64(0)/rate {
+		return emptyResponse, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "power_overflow")
+	}
 	sendError := k.bankKeeper.SendCoinsFromAccountToModule(ctx, playerAcc, types.ModuleName, fuelCoins)
 
 	if sendError != nil {
@@ -108,13 +133,16 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 		return emptyResponse, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "burn_failed").WithDetails(burnError.Error())
 	}
 
-	infusion := cc.UpsertInfusion(types.ObjectType_struct, structure.GetStructId(), callingPlayer.GetPrimaryAddress(), callingPlayer.GetPlayerId())
+	infusion := cc.UpsertInfusion(types.ObjectType_struct, structure.GetStructId(), playerAcc.String(), callingPlayer.GetPlayerId())
 
 	infusion.SetRatio(structure.GetStructType().GeneratingRate)
 	infusion.SetCommission(math.LegacyZeroDec())
 	infusion.AddFuel(fuelAmount.Uint64())
+	if err := infusion.SetGeneratorPowerEnabled(true); err != nil {
+		return emptyResponse, err
+	}
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaInfuse{&types.EventAlphaInfuseDetail{PlayerId: callingPlayer.GetPlayerId(), PrimaryAddress: callingPlayer.GetPrimaryAddress(), Amount: fuelAmount.Uint64()}})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaInfuse{&types.EventAlphaInfuseDetail{PlayerId: callingPlayer.GetPlayerId(), PrimaryAddress: callingPlayer.GetPrimaryAddress(), Amount: fuelAmount.Uint64(), VaultAddress: playerAcc.String()}})
 
 	cc.CommitAll()
 	return &types.MsgStructGeneratorStatusResponse{}, nil

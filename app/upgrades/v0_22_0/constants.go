@@ -105,24 +105,22 @@ package v0_22_0
 //     the bit. A primary address holds PermAll, so ordinary players are
 //     unaffected.
 //
-//   - GuildMembershipKick now clears the kicked player's direct permission row on
-//     the guild. Kick previously cleared only GuildId and the rank, and
-//     PermissionCheck reads a direct object grant with no membership predicate -
-//     only the rank-derived branch is gated on being in a guild. So a dismissed
-//     administrator kept whatever the guild had granted them directly, and
-//     PermAdmin is the whole of what GuildUpdateOwnerId requires, which checks no
-//     membership either: the dismissal handed the guild over.
+//   - Guild membership and explicit administration have separate lifecycles.
+//     Kick, departure and demotion remove rank authority immediately, but leave
+//     independent direct grants intact. A membership operator must not be able
+//     to erase another administrator's direct grant. Dismissing an administrator
+//     therefore requires explicit PermissionRevokeOnObject as well as a kick.
+//     This supersedes the earlier v0.22 kick-specific whole-row cleanup.
 //
-//     The whole row is cleared rather than one bit, because it is keyed
-//     (guild, player) and holds nothing but what that guild granted that player.
-//     The owner's row is left alone - SetOwner stores ownership as PermGuildAll,
-//     and ownership survives leaving because guilds are property and an owner
-//     need not be a member. The kick loader already refuses to kick the owner, so
-//     the exclusion is a backstop.
+//     Rank registers no longer supply PermAdmin. Existing register entries are
+//     retained as data; owners must directly grant administration to officers
+//     who should keep it. Entry-rank updates, rank management, grants and owner
+//     transfer demand explicit administration and the signing key's own bits.
 //
-//     Scoped to kick, which is the guild explicitly withdrawing standing. A
-//     player who leaves by joining another guild still keeps a direct grant on
-//     the old one; the guild can withdraw it with PermissionRevokeOnObject.
+//     Ownership transfer is the exception to retaining independent guild grants:
+//     SetOwner clears the outgoing owner's entire direct guild row, including
+//     treasury transfer rights. Independently granted child-object rights are
+//     unchanged. Owners remain independent of guild membership.
 //
 //   - The guild join bypass level `member` no longer waives the signing key's own
 //     permission ceiling. PermissionCheck has two independent layers - the key
@@ -1143,7 +1141,8 @@ package v0_22_0
 //   cosmos-sdk v0.53.8, cometbft v0.38.25) so a later bump that resolves any of
 //   them lower fails the suite rather than reintroducing the incident.
 //
-// This upgrade carries three state migrations.
+// This upgrade includes the repair phases below and the full vault/economy
+// migration. CreateUpgradeHandler in upgrades.go defines their required order.
 //
 // MigrateGridCascadeQueue re-keys the pending cascade queue by sequence. It runs
 // first, before anything else in the upgrade can enqueue: the re-key reads every
@@ -1173,10 +1172,12 @@ package v0_22_0
 // touched. Capacity moves down where it moves at all, and the grid cascade that
 // follows sheds the allocations that were only ever powered by rounding.
 //
-// Everything else in this upgrade is binary-only, and the cascade queue re-key
-// is the only store-key change. The address nonce store starts empty and every
-// address correctly begins at 0, because the sign-byte change invalidates every
-// previously issued proof regardless. The upgrade exists so validators adopt the
-// new ante and handler behaviour at a coordinated height - nodes running a mix
-// of the old and new binaries would accept different transactions and diverge.
+// The same coordinated upgrade also provisions player and guild vault accounts,
+// migrates eligible balances, rewards and staking/queue records, preserves native
+// vesting obligations and accessible validator self-stake, clears previously inert
+// guild economic grants, rebuilds flat reactor power from live staking,
+// rebuilds owner/permission/allocation indices and recalculates connection shares.
+// Every phase and its events share one rollback cache. See the economy plan and
+// security remediation report under docs/upgrades for operator rehearsal evidence.
+// The address nonce store starts empty: the changed sign bytes invalidate old proofs.
 const UpgradeName = "v0.22.0"

@@ -29,6 +29,10 @@ func (k msgServer) PermissionRevokeOnObject(goCtx context.Context, msg *types.Ms
         return  &types.MsgPermissionResponse{},  types.NewPermissionError("player", player.GetPlayerId(), "object", msg.ObjectId, uint64(msg.Permissions), "permission_grant")
     }
 
+    if err := cc.PermissionAdministrationCheck(permissionedObject, player); err != nil {
+        return emptyResponse, err
+    }
+
     permissionErr := cc.PermissionCheck(permissionedObject, player, types.Permission(msg.Permissions))
     if permissionErr != nil {
         return  &types.MsgPermissionResponse{}, permissionErr

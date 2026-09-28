@@ -19,6 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	Query_OwnerReactorDiversity_FullMethodName               = "/structs.structs.Query/OwnerReactorDiversity"
+	Query_ReactorStakeShare_FullMethodName                   = "/structs.structs.Query/ReactorStakeShare"
+	Query_Vault_FullMethodName                               = "/structs.structs.Query/Vault"
 	Query_GetBlockHeight_FullMethodName                      = "/structs.structs.Query/GetBlockHeight"
 	Query_GuildCharter_FullMethodName                        = "/structs.structs.Query/GuildCharter"
 	Query_Params_FullMethodName                              = "/structs.structs.Query/Params"
@@ -84,6 +87,9 @@ const (
 //
 // Query defines the gRPC querier service.
 type QueryClient interface {
+	OwnerReactorDiversity(ctx context.Context, in *QueryOwnerReactorDiversityRequest, opts ...grpc.CallOption) (*QueryOwnerReactorDiversityResponse, error)
+	ReactorStakeShare(ctx context.Context, in *QueryReactorStakeShareRequest, opts ...grpc.CallOption) (*QueryReactorStakeShareResponse, error)
+	Vault(ctx context.Context, in *QueryVaultRequest, opts ...grpc.CallOption) (*QueryVaultResponse, error)
 	GetBlockHeight(ctx context.Context, in *QueryBlockHeight, opts ...grpc.CallOption) (*QueryBlockHeightResponse, error)
 	// State of the global guild charter puzzle.
 	GuildCharter(ctx context.Context, in *QueryGuildCharter, opts ...grpc.CallOption) (*QueryGuildCharterResponse, error)
@@ -178,6 +184,36 @@ type queryClient struct {
 
 func NewQueryClient(cc grpc.ClientConnInterface) QueryClient {
 	return &queryClient{cc}
+}
+
+func (c *queryClient) OwnerReactorDiversity(ctx context.Context, in *QueryOwnerReactorDiversityRequest, opts ...grpc.CallOption) (*QueryOwnerReactorDiversityResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryOwnerReactorDiversityResponse)
+	err := c.cc.Invoke(ctx, Query_OwnerReactorDiversity_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ReactorStakeShare(ctx context.Context, in *QueryReactorStakeShareRequest, opts ...grpc.CallOption) (*QueryReactorStakeShareResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryReactorStakeShareResponse)
+	err := c.cc.Invoke(ctx, Query_ReactorStakeShare_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Vault(ctx context.Context, in *QueryVaultRequest, opts ...grpc.CallOption) (*QueryVaultResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryVaultResponse)
+	err := c.cc.Invoke(ctx, Query_Vault_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *queryClient) GetBlockHeight(ctx context.Context, in *QueryBlockHeight, opts ...grpc.CallOption) (*QueryBlockHeightResponse, error) {
@@ -756,6 +792,9 @@ func (c *queryClient) ValidateSignature(ctx context.Context, in *QueryValidateSi
 //
 // Query defines the gRPC querier service.
 type QueryServer interface {
+	OwnerReactorDiversity(context.Context, *QueryOwnerReactorDiversityRequest) (*QueryOwnerReactorDiversityResponse, error)
+	ReactorStakeShare(context.Context, *QueryReactorStakeShareRequest) (*QueryReactorStakeShareResponse, error)
+	Vault(context.Context, *QueryVaultRequest) (*QueryVaultResponse, error)
 	GetBlockHeight(context.Context, *QueryBlockHeight) (*QueryBlockHeightResponse, error)
 	// State of the global guild charter puzzle.
 	GuildCharter(context.Context, *QueryGuildCharter) (*QueryGuildCharterResponse, error)
@@ -852,6 +891,15 @@ type QueryServer interface {
 // pointer dereference when methods are called.
 type UnimplementedQueryServer struct{}
 
+func (UnimplementedQueryServer) OwnerReactorDiversity(context.Context, *QueryOwnerReactorDiversityRequest) (*QueryOwnerReactorDiversityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OwnerReactorDiversity not implemented")
+}
+func (UnimplementedQueryServer) ReactorStakeShare(context.Context, *QueryReactorStakeShareRequest) (*QueryReactorStakeShareResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReactorStakeShare not implemented")
+}
+func (UnimplementedQueryServer) Vault(context.Context, *QueryVaultRequest) (*QueryVaultResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Vault not implemented")
+}
 func (UnimplementedQueryServer) GetBlockHeight(context.Context, *QueryBlockHeight) (*QueryBlockHeightResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBlockHeight not implemented")
 }
@@ -1042,6 +1090,60 @@ func RegisterQueryServer(s grpc.ServiceRegistrar, srv QueryServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&Query_ServiceDesc, srv)
+}
+
+func _Query_OwnerReactorDiversity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOwnerReactorDiversityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).OwnerReactorDiversity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_OwnerReactorDiversity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).OwnerReactorDiversity(ctx, req.(*QueryOwnerReactorDiversityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ReactorStakeShare_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryReactorStakeShareRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ReactorStakeShare(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ReactorStakeShare_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ReactorStakeShare(ctx, req.(*QueryReactorStakeShareRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Vault_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryVaultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Vault(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Vault_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Vault(ctx, req.(*QueryVaultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Query_GetBlockHeight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -2077,6 +2179,18 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "structs.structs.Query",
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "OwnerReactorDiversity",
+			Handler:    _Query_OwnerReactorDiversity_Handler,
+		},
+		{
+			MethodName: "ReactorStakeShare",
+			Handler:    _Query_ReactorStakeShare_Handler,
+		},
+		{
+			MethodName: "Vault",
+			Handler:    _Query_Vault_Handler,
+		},
 		{
 			MethodName: "GetBlockHeight",
 			Handler:    _Query_GetBlockHeight_Handler,

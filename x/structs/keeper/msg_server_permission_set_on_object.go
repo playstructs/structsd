@@ -50,6 +50,10 @@ func (k msgServer) PermissionSetOnObject(goCtx context.Context, msg *types.MsgPe
     targetPlayerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, msg.PlayerId)
     requiredPermissions := types.Permission(msg.Permissions) | cc.GetPermissions(targetPlayerPermissionId)
 
+    if err := cc.PermissionAdministrationCheck(permissionedObject, player); err != nil {
+        return emptyResponse, err
+    }
+
     permissionErr := cc.PermissionCheck(permissionedObject, player, requiredPermissions)
     if permissionErr != nil {
         return emptyResponse, permissionErr

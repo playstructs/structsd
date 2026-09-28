@@ -84,8 +84,8 @@ var dependencyFloors = []dependencyFloor{
 		// fixes the setRecheckFull/setDone race that produced spurious
 		// ErrRecheckFull - the shape of this repo's stuck-mempool incidents.
 		// Engine-only, no app-state effect.
-		path:  "github.com/cometbft/cometbft",
-		floor: "v0.38.25",
+		path:   "github.com/cometbft/cometbft",
+		floor:  "v0.38.25",
 		reason: "mempool heap-amplification filter and the ErrRecheckFull race (CometBFT v0.38.25)",
 	},
 }
@@ -103,6 +103,10 @@ func TestArch_DependencyFloors(t *testing.T) {
 		resolved[req.Mod.Path] = req.Mod.Version
 	}
 	for _, rep := range mod.Replace {
+		if rep.Old.Version != "" && rep.Old.Version != resolved[rep.Old.Path] {
+			continue
+		}
+		require.NotEmpty(t, rep.New.Version, "local replacement %s bypasses dependency version checks", rep.Old.Path)
 		resolved[rep.Old.Path] = rep.New.Version
 	}
 
@@ -121,6 +125,18 @@ func TestArch_DependencyFloors(t *testing.T) {
 					"the module back down reintroduces the incident.",
 				floor.path, version, floor.floor, floor.reason)
 		})
+	}
+}
+
+// Staking fixes are adopted through upstream releases, not a local SDK fork.
+func TestArch_SDKUsesUpstreamModule(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join(moduleRoot(t), "go.mod"))
+	require.NoError(t, err)
+	mod, err := modfile.Parse("go.mod", data, nil)
+	require.NoError(t, err)
+	for _, rep := range mod.Replace {
+		require.NotEqual(t, "github.com/cosmos/cosmos-sdk", rep.Old.Path,
+			"use a verified upstream SDK release instead of a replacement")
 	}
 }
 

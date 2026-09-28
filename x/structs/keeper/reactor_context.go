@@ -3,7 +3,6 @@ package keeper
 import (
 	"structs/x/structs/types"
 
-	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -32,56 +31,27 @@ func (cc *CurrentContext) GenesisImportReactor(reactor types.Reactor) {
 	cc.k.SetReactorValidatorBytes(cc.ctx, reactor.Id, reactor.RawAddress)
 }
 
-func (cc *CurrentContext) GenesisImportReactorInfusions(reactor types.Reactor) {
-	valAddr, err := sdk.ValAddressFromBech32(reactor.Validator)
-	if err != nil {
-		return
-	}
-
-	validator, validatorErr := cc.k.stakingKeeper.GetValidator(cc.ctx, valAddr)
-	if validatorErr != nil {
-		return
-	}
-
-	// A jailed validator imports at a zero ratio, so a chain restarted while a
-	// validator sits in jail does not hand back energy the gate had removed.
-	ratio := reactorEnergyRatio(validator, validatorErr)
-
-	delegations, err := cc.k.stakingKeeper.GetValidatorDelegations(cc.ctx, valAddr)
-	if err != nil {
-		return
-	}
-
+// Discover live positions absent from the exported infusion list. Imported
+// associations are passed explicitly because vault indexes commit afterwards.
+func (cc *CurrentContext) GenesisImportReactorInfusions(reactor types.Reactor, owners map[string]string) error {
+	validator, err := sdk.ValAddressFromBech32(reactor.Validator)
+	if err != nil { return err }
+	delegations, err := cc.k.stakingKeeper.GetValidatorDelegations(cc.ctx, validator)
+	if err != nil { return err }
 	for _, delegation := range delegations {
-		playerIndex := cc.GetPlayerIndexFromAddress(delegation.DelegatorAddress)
-		if playerIndex == 0 {
-			continue
+		ownerID, found := owners[delegation.DelegatorAddress]
+		if !found {
+			// Genutil hooks can register a new operator before module genesis.
+			index := cc.GetPlayerIndexFromAddress(delegation.DelegatorAddress)
+			if index == 0 { continue }
+			ownerID = GetObjectID(types.ObjectType_player, index)
 		}
-
-		player := cc.GetPlayerByIndex(playerIndex)
-
-		infusion := cc.UpsertInfusion(
-			types.ObjectType_reactor, reactor.Id,
-			delegation.DelegatorAddress, player.GetPlayerId())
-
-		delegationShare := delegationShareValue(delegation.Shares, validator)
-
-		infusion.SetRatio(ratio)
-		infusion.SetFuelAndCommission(delegationShare.Uint64(), reactor.DefaultCommission)
-
-		delegatorAddr, err := sdk.AccAddressFromBech32(delegation.DelegatorAddress)
-		if err != nil {
-			continue
-		}
-		unbondingDelegation, err := cc.k.stakingKeeper.GetUnbondingDelegation(cc.ctx, delegatorAddr, valAddr)
-		if err == nil {
-			defusingAmount := math.ZeroInt()
-			for _, entry := range unbondingDelegation.Entries {
-				defusingAmount = defusingAmount.Add(entry.Balance)
-			}
-			if defusingAmount.IsPositive() {
-				infusion.SetDefusing(defusingAmount.Uint64())
-			}
-		}
+		key := types.BuildInfusionKey(reactor.Id, delegation.DelegatorAddress)
+		if cached, imported := cc.infusions[key]; imported && cached.InfusionLoaded { continue }
+		row := types.Infusion{DestinationId: reactor.Id, DestinationType: types.ObjectType_reactor,
+			Address: delegation.DelegatorAddress, OwnerId: ownerID, Commission: reactor.DefaultCommission}
+		if ObjectIdHasType(ownerID, types.ObjectType_player) { row.PlayerId = ownerID }
+		if err := cc.GenesisImportReactorInfusion(row, ownerID); err != nil { return err }
 	}
+	return nil
 }

@@ -22,6 +22,11 @@ option go_package = "structs/x/structs/types";
 service Msg {
   option (cosmos.msg.v1.service) = true;
 
+  rpc VaultSend (MsgVaultSend) returns (MsgVaultSendResponse);
+  rpc GuildUpdateRankPurchase (MsgGuildUpdateRankPurchase) returns (MsgGuildUpdateResponse);
+  rpc GuildRankPurchase (MsgGuildRankPurchase) returns (MsgGuildRankPurchaseResponse);
+  rpc GuildMembershipJoinByRankPurchase (MsgGuildMembershipJoinByRankPurchase) returns (MsgGuildRankPurchaseResponse);
+
   // UpdateParams defines a (governance) operation for updating the module
   // parameters. The authority defaults to the x/gov module account.
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
@@ -347,35 +352,23 @@ message MsgGuildBankConvertTokenResponse { }
 
 
 
-// MsgGuildCreate founds a guild, either by solving the chain-global charter
-// proof-of-work or by spending a reactor's one-time entitlement.
-//
-// The signer is the solver, not necessarily the owner. Work is bound to the
-// (solver, founder) pair so a pool searches disjoint spaces and nobody can be
-// robbed of credit or have the guild redirected. When founderPlayerId names
-// somebody else, the founder's consent is proved by an offline signature over a
-// preimage the chain rebuilds, collected before the grind starts so the solver
-// can broadcast the instant they win.
+// MsgGuildCreate pays two Alpha from the signing player's vault to found a guild.
+// One Alpha is burned; one backs the initial guild token issued into its vault.
+// The primary reactor must exist but need not be owned or controlled by the founder.
 message MsgGuildCreate {
   option (cosmos.msg.v1.signer) = "creator";
-
-  string creator            = 1;
-  string reactorId          = 2;
-  string endpoint           = 3;
-  string entrySubstationId  = 4;
-
-  string proof              = 5;
-  string nonce              = 6;
-
-  // founderPlayerId is who ends up owning the guild. Empty means the signer.
-  string founderPlayerId    = 7;
-
-  // address, proofPubKey and proofSignature carry the founder's consent and are
-  // all empty when the signer is the founder. The names satisfy the ante's
-  // pubKeyMessage interface; see OptionalSignatureMessages.
-  string address            = 8;
-  string proofPubKey        = 9;
-  string proofSignature     = 10;
+  string creator = 1;
+  string reactorId = 2;
+  string endpoint = 3;
+  string entrySubstationId = 4;
+  // Legacy charter fields remain decodable but nonempty proofs/consent are rejected.
+  string proof = 5 [deprecated = true];
+  string nonce = 6 [deprecated = true];
+  // Empty or the signing player's ID; third-party founding is no longer supported.
+  string founderPlayerId = 7 [deprecated = true];
+  string address = 8 [deprecated = true];
+  string proofPubKey = 9 [deprecated = true];
+  string proofSignature = 10 [deprecated = true];
 }
 
 message MsgGuildCreateResponse { string guildId = 1; }
@@ -756,6 +749,41 @@ message MsgPlayerUpdateGuildRank {
 
 message MsgPlayerUpdateGuildRankResponse {}
 
+message MsgGuildUpdateRankPurchase {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string guildId = 2;
+  uint64 basePrice = 3;
+  uint64 stepIncrease = 4;
+  uint64 minimumRank = 5;
+  bool joinByRankPurchaseEnabled = 6;
+}
+
+message MsgGuildRankPurchase {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string guildId = 2;
+  uint64 targetRank = 3;
+  uint64 maxPrice = 4;
+  uint64 expectedRank = 5;
+}
+
+message MsgGuildMembershipJoinByRankPurchase {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string guildId = 2;
+  uint64 targetRank = 3;
+  uint64 maxPrice = 4;
+  // Empty means the player expects to be guildless.
+  string expectedGuildId = 5;
+}
+
+message MsgGuildRankPurchaseResponse {
+  uint64 price = 1;
+  string denom = 2;
+  uint64 rank = 3;
+}
+
 message MsgPlayerUpdateName {
   option (cosmos.msg.v1.signer) = "creator";
 
@@ -795,6 +823,9 @@ message MsgReactorInfuse {
   string                   delegator_address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   string                   validator_address = 3 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
   cosmos.base.v1beta1.Coin amount            = 4 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  // Select this player or guild vault; an explicit delegator must match it.
+  string ownerId = 5;
+
 }
 
 // MsgReactorInfuseResponse defines the Msg/Delegate response type.
@@ -813,6 +844,9 @@ message MsgReactorBeginMigration {
   string                   validator_src_address = 3 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
   string                   validator_dst_address = 4 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
   cosmos.base.v1beta1.Coin amount                = 5 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  // Select this player or guild vault; an explicit delegator must match it.
+  string ownerId = 6;
+
 }
 
 // MsgBeginMigrationResponse defines the Msg/BeginRedelegate response type.
@@ -833,6 +867,9 @@ message MsgReactorDefuse {
   string                   delegator_address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   string                   validator_address = 3 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
   cosmos.base.v1beta1.Coin amount            = 4 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  // Select this player or guild vault; an explicit delegator must match it.
+  string ownerId = 5;
+
 }
 
 // MsgReactorDefuseResponse defines the Msg/Undelegate response type.
@@ -861,6 +898,9 @@ message MsgReactorCancelDefusion {
   cosmos.base.v1beta1.Coin amount = 4 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
   // creation_height is the height which the unbonding took place.
   int64 creation_height = 5;
+  // Select this player or guild vault; an explicit delegator must match it.
+  string ownerId = 6;
+
 }
 
 // MsgReactorCancelDefusionResponse
@@ -1179,6 +1219,8 @@ message MsgAgreementOpen {
   string providerId         = 2;
   uint64 duration           = 3;
   uint64 capacity           = 4;
+  // Existing player or guild consumer; empty defaults to the signing player.
+  string ownerId            = 5;
 }
 
 message MsgAgreementClose {
@@ -1245,6 +1287,8 @@ message MsgProviderCreate {
   uint64 capacityMaximum                  = 8;
   uint64 durationMinimum                  = 9;
   uint64 durationMaximum                  = 10;
+  // Existing player or guild owner; empty defaults to the signing player.
+  string ownerId                          = 11;
 }
 
 message MsgProviderWithdrawBalance {
@@ -1322,3 +1366,18 @@ message MsgPlayerSend {
 message MsgPlayerSendResponse {
   // This message has no fields.
 }
+
+// Moves assets between existing player or guild vaults on the signing player's authority.
+message MsgVaultSend {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string ownerId = 2;
+  string recipientOwnerId = 3;
+  repeated cosmos.base.v1beta1.Coin amount = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (amino.encoding) = "legacy_coins",
+    (amino.dont_omitempty) = true
+  ];
+}
+message MsgVaultSendResponse {}

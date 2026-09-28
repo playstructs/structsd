@@ -66,6 +66,8 @@ func (cache *AgreementCache) Commit() {
     	}
 
         cache.Changed = false
+        cache.EndBlockChanged = false
+        cache.PreviousEndBlock = 0
 
     }
 
@@ -189,7 +191,12 @@ func (cache *AgreementCache) GetOwnerId() string {
 	return cache.Agreement.Owner
 }
 func (cache *AgreementCache) GetOwner() *PlayerCache {
-    return cache.CC.GetPlayer(cache.GetOwnerId())
+    owner, err := cache.CC.GetExistingAssetOwner(cache.GetOwnerId())
+    if err != nil {
+        return nil
+    }
+    player, _ := owner.(*PlayerCache)
+    return player
 }
 
 // Get the Provider data
@@ -296,22 +303,17 @@ func (cache *AgreementCache) GetRemainingCollateralDec() math.LegacyDec {
 
 /* Committing Setters */
 
-// consumerAccount resolves where this agreement's consumer is paid. The
-// PlayerCache accessor drops the bech32 error and hands back an empty address,
-// which SendCoins would reject with the error every payout used to discard, so
-// the collateral would vanish with the agreement. Resolve it explicitly instead.
+// consumerAccount resolves the consumer vault before settlement. Signing-key
+// changes cannot redirect collateral or invalidate the payout destination.
 func (cache *AgreementCache) consumerAccount() (sdk.AccAddress, error) {
-	address := cache.GetOwner().GetPrimaryAddress()
-
-	account, err := sdk.AccAddressFromBech32(address)
+	accounts, err := cache.CC.EnsureVaults(cache.GetOwnerId())
 	if err != nil {
-		return nil, types.NewAgreementSettlementError(cache.GetAgreementId(), "invalid_payout_address").
+		return nil, types.NewAgreementSettlementError(cache.GetAgreementId(), "invalid_payout_owner").
 			WithProvider(cache.GetProviderId()).
-			WithPlayer(cache.GetOwnerId()).
-			WithAddress(address)
+			WithPlayer(cache.GetOwnerId())
 	}
 
-	return account, nil
+	return accounts[0], nil
 }
 
 // payConsumer moves collateral the consumer is owed out of the provider's pool.
@@ -321,7 +323,6 @@ func (cache *AgreementCache) payConsumer(amount math.Int) error {
 	if !amount.IsPositive() {
 		return nil
 	}
-
 	account, err := cache.consumerAccount()
 	if err != nil {
 		return err
@@ -470,10 +471,15 @@ func (cache *AgreementCache) assertConsumerPayable() error {
 	return err
 }
 
-func (cache *AgreementCache) PrematureCloseByProvider() error {
+func (cache *AgreementCache) PrematureCloseByProvider() (err error) {
 	if !cache.beginTeardown() {
 		return nil
 	}
+	// A failed attempt is retryable in this same context. Only a completed
+	// settlement may keep the recursion guard claimed.
+	defer func() {
+		if err != nil { cache.TearingDown = false }
+	}()
 
 	if err := cache.assertConsumerPayable(); err != nil {
 		return err
@@ -506,10 +512,15 @@ func (cache *AgreementCache) PrematureCloseByProvider() error {
 	return nil
 }
 
-func (cache *AgreementCache) PrematureCloseByConsumer() error {
+func (cache *AgreementCache) PrematureCloseByConsumer() (err error) {
 	if !cache.beginTeardown() {
 		return nil
 	}
+	// A failed attempt is retryable in this same context. Only a completed
+	// settlement may keep the recursion guard claimed.
+	defer func() {
+		if err != nil { cache.TearingDown = false }
+	}()
 
 	if err := cache.assertConsumerPayable(); err != nil {
 		return err
@@ -529,6 +540,10 @@ func (cache *AgreementCache) PrematureCloseByConsumer() error {
 		return err
 	}
 
+	// The provider did not cancel. Release the earned holdback only after the
+	// consumer is whole, before deleting the agreement that prices that revenue.
+	cache.PayoutVoidedProviderCancellationPenalty()
+
 	// Decrease the Load on the Provider
 	cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
 
@@ -539,17 +554,22 @@ func (cache *AgreementCache) PrematureCloseByConsumer() error {
 
 }
 
-// PrematureCloseByAllocation settles an agreement whose allocation has already
-// been torn down. It must not destroy the allocation itself: AllocationCache.Destroy
+// PrematureCloseByAllocation settles an agreement before its allocation is
+// torn down. It must not destroy the allocation itself: AllocationCache.Destroy
 // is the only caller.
 //
 // This is the teardown that runs in block hooks — grid brownout, struct
 // destruction, batched allocation teardown — so it is the one that most needs its
 // fallible work done before it mutates anything.
-func (cache *AgreementCache) PrematureCloseByAllocation() error {
+func (cache *AgreementCache) PrematureCloseByAllocation() (err error) {
 	if !cache.beginTeardown() {
 		return nil
 	}
+	// A failed attempt is retryable in this same context. Only a completed
+	// settlement may keep the recursion guard claimed.
+	defer func() {
+		if err != nil { cache.TearingDown = false }
+	}()
 
 	if err := cache.assertConsumerPayable(); err != nil {
 		return err
@@ -585,10 +605,15 @@ func (cache *AgreementCache) PrematureCloseByAllocation() error {
 // allocation is destroyed first: it is the one step that can fail, and doing it
 // before the settlement means a failure cannot leave revenue swept and load
 // released against an agreement that is still in the store.
-func (cache *AgreementCache) Expire() error {
+func (cache *AgreementCache) Expire() (err error) {
 	if !cache.beginTeardown() {
 		return nil
 	}
+	// A failed attempt is retryable in this same context. Only a completed
+	// settlement may keep the recursion guard claimed.
+	defer func() {
+		if err != nil { cache.TearingDown = false }
+	}()
 
 	// Destroy the Allocation
 	if err := cache.destroyAllocation(); err != nil {
@@ -644,7 +669,11 @@ func (cache *AgreementCache) SetEndBlock(endBlock uint64) {
 		cache.LoadAgreement()
 	}
 
-	cache.PreviousEndBlock = cache.Agreement.EndBlock
+	// Retain the height actually indexed in storage, even when this context
+	// changes the end more than once before committing.
+	if !cache.EndBlockChanged {
+		cache.PreviousEndBlock = cache.Agreement.EndBlock
+	}
 	cache.Agreement.EndBlock = endBlock
     cache.EndBlockChanged = true
 
@@ -894,6 +923,7 @@ func (cache *AgreementCache) DurationIncrease(amount uint64) error {
 	if err := cache.verifyExpirationHeight(newEndBlock); err != nil {
 		return err
 	}
+
 
 	cache.SetEndBlock(newEndBlock)
 	cache.Changed = true

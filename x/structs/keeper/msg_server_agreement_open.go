@@ -42,6 +42,18 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
         return emptyResponse, permissionError
     }
 
+    ownerId := msg.OwnerId
+    if ownerId == "" {
+        ownerId = activePlayer.ID()
+    }
+    owner, ownerErr := cc.GetExistingAssetOwner(ownerId)
+    if ownerErr != nil {
+        return emptyResponse, ownerErr
+    }
+    if err := cc.PermissionCheck(owner, activePlayer, types.PermTokenTransfer); err != nil {
+        return emptyResponse, err
+    }
+
     // Are agreement details valid?
     // Does the substation have enough capacity?
     paramError := provider.AgreementVerify(msg.Capacity, msg.Duration)
@@ -81,17 +93,17 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     //balanceError := activePlayer.CanAffordAgreement(collateralAmount, provider.GetRate().Denom)
     collateralAmountCoin := sdk.NewCoin(provider.GetRate().Denom, collateralAmount)
     collateralAmountCoins := sdk.NewCoins(collateralAmountCoin)
-    sourceAcc, errParam := sdk.AccAddressFromBech32(activePlayer.GetPrimaryAddress())
+    sources, errParam := cc.EnsureVaults(owner.ID())
     if errParam != nil {
         return emptyResponse, errParam
     }
 
-    if !k.bankKeeper.HasBalance(ctx, sourceAcc, collateralAmountCoin) {
+    if !k.bankKeeper.HasBalance(ctx, sources[0], collateralAmountCoin) {
         return emptyResponse, types.NewPlayerAffordabilityError(activePlayer.GetPlayerId(), "agreement_open", collateralAmountCoin.String())
     }
 
     // move the funds from user to provider collateral pool
-    errSend := k.bankKeeper.SendCoins(ctx, sourceAcc, provider.GetCollateralPoolLocation(), collateralAmountCoins)
+    errSend := k.bankKeeper.SendCoins(ctx, sources[0], provider.GetCollateralPoolLocation(), collateralAmountCoins)
     if errSend != nil {
         return emptyResponse, errSend
     }
@@ -107,15 +119,17 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
         provider.GetSubstationId(),
         "",
         msg.Creator,
-        activePlayer.GetPlayerId(),
+        owner.ID(),
         msg.Capacity,
     )
     if allocationErr != nil {
         return emptyResponse, allocationErr
     }
 
-    allocationPermissionId := GetObjectPermissionIDBytes(allocation.ID(), activePlayer.ID())
-    cc.SetPermissions(allocationPermissionId, types.PermAllocationConnection)
+    if _, playerOwned := owner.(*PlayerCache); playerOwned {
+        allocationPermissionId := GetObjectPermissionIDBytes(allocation.ID(), owner.ID())
+        cc.SetPermissions(allocationPermissionId, types.PermAllocationConnection)
+    }
 
     // Build the Agreement through context.
     //
@@ -129,7 +143,7 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
 
     agreementRecord := types.CreateBaseAgreement(
         msg.Creator,
-        activePlayer.GetPlayerId(),
+        owner.ID(),
         msg.ProviderId,
         msg.Capacity,
         startBlock,
@@ -139,10 +153,16 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     agreementRecord.Id = GetObjectID(types.ObjectType_agreement, allocation.GetAllocation().Index)
     agreement := cc.NewAgreement(agreementRecord)
 
-    agreementPermissionId := GetObjectPermissionIDBytes(agreement.ID(), activePlayer.ID())
-    cc.SetPermissions(agreementPermissionId, types.PermAgreementAll)
+    if _, playerOwned := owner.(*PlayerCache); playerOwned {
+        agreementPermissionId := GetObjectPermissionIDBytes(agreement.ID(), owner.ID())
+        cc.SetPermissions(agreementPermissionId, types.PermAgreementAll)
+    }
 
     provider.AgreementLoadIncrease(msg.Capacity)
+
+    // Once historical capture is initialized, every new agreement reserves its
+    // principal and joins the bounded settlement queue in this same context.
+    // The upgrade must enroll older balances with their own earned baseline.
 
 	cc.CommitAll()
 	return &types.MsgAgreementResponse{}, nil

@@ -15,9 +15,13 @@ import (
 )
 
 var (
-	md_Params                             protoreflect.MessageDescriptor
-	fd_Params_guildCharterDifficultyRange protoreflect.FieldDescriptor
-	fd_Params_guildCharterReactorAge      protoreflect.FieldDescriptor
+	md_Params                              protoreflect.MessageDescriptor
+	fd_Params_guildCharterDifficultyRange  protoreflect.FieldDescriptor
+	fd_Params_guildCharterReactorAge       protoreflect.FieldDescriptor
+	fd_Params_reactorStakeCapBps           protoreflect.FieldDescriptor
+	fd_Params_reactorStakeCapMinValidators protoreflect.FieldDescriptor
+	fd_Params_diversityMaxBonusBps         protoreflect.FieldDescriptor
+	fd_Params_diversityTargetExtraReactors protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -25,6 +29,10 @@ func init() {
 	md_Params = File_structs_structs_params_proto.Messages().ByName("Params")
 	fd_Params_guildCharterDifficultyRange = md_Params.Fields().ByName("guildCharterDifficultyRange")
 	fd_Params_guildCharterReactorAge = md_Params.Fields().ByName("guildCharterReactorAge")
+	fd_Params_reactorStakeCapBps = md_Params.Fields().ByName("reactorStakeCapBps")
+	fd_Params_reactorStakeCapMinValidators = md_Params.Fields().ByName("reactorStakeCapMinValidators")
+	fd_Params_diversityMaxBonusBps = md_Params.Fields().ByName("diversityMaxBonusBps")
+	fd_Params_diversityTargetExtraReactors = md_Params.Fields().ByName("diversityTargetExtraReactors")
 }
 
 var _ protoreflect.Message = (*fastReflection_Params)(nil)
@@ -104,6 +112,30 @@ func (x *fastReflection_Params) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
+	if x.ReactorStakeCapBps != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.ReactorStakeCapBps)
+		if !f(fd_Params_reactorStakeCapBps, value) {
+			return
+		}
+	}
+	if x.ReactorStakeCapMinValidators != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.ReactorStakeCapMinValidators)
+		if !f(fd_Params_reactorStakeCapMinValidators, value) {
+			return
+		}
+	}
+	if x.DiversityMaxBonusBps != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.DiversityMaxBonusBps)
+		if !f(fd_Params_diversityMaxBonusBps, value) {
+			return
+		}
+	}
+	if x.DiversityTargetExtraReactors != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.DiversityTargetExtraReactors)
+		if !f(fd_Params_diversityTargetExtraReactors, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -123,6 +155,14 @@ func (x *fastReflection_Params) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.GuildCharterDifficultyRange != uint64(0)
 	case "structs.structs.Params.guildCharterReactorAge":
 		return x.GuildCharterReactorAge != uint64(0)
+	case "structs.structs.Params.reactorStakeCapBps":
+		return x.ReactorStakeCapBps != uint64(0)
+	case "structs.structs.Params.reactorStakeCapMinValidators":
+		return x.ReactorStakeCapMinValidators != uint64(0)
+	case "structs.structs.Params.diversityMaxBonusBps":
+		return x.DiversityMaxBonusBps != uint64(0)
+	case "structs.structs.Params.diversityTargetExtraReactors":
+		return x.DiversityTargetExtraReactors != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Params"))
@@ -143,6 +183,14 @@ func (x *fastReflection_Params) Clear(fd protoreflect.FieldDescriptor) {
 		x.GuildCharterDifficultyRange = uint64(0)
 	case "structs.structs.Params.guildCharterReactorAge":
 		x.GuildCharterReactorAge = uint64(0)
+	case "structs.structs.Params.reactorStakeCapBps":
+		x.ReactorStakeCapBps = uint64(0)
+	case "structs.structs.Params.reactorStakeCapMinValidators":
+		x.ReactorStakeCapMinValidators = uint64(0)
+	case "structs.structs.Params.diversityMaxBonusBps":
+		x.DiversityMaxBonusBps = uint64(0)
+	case "structs.structs.Params.diversityTargetExtraReactors":
+		x.DiversityTargetExtraReactors = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Params"))
@@ -164,6 +212,18 @@ func (x *fastReflection_Params) Get(descriptor protoreflect.FieldDescriptor) pro
 		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.Params.guildCharterReactorAge":
 		value := x.GuildCharterReactorAge
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.Params.reactorStakeCapBps":
+		value := x.ReactorStakeCapBps
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.Params.reactorStakeCapMinValidators":
+		value := x.ReactorStakeCapMinValidators
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.Params.diversityMaxBonusBps":
+		value := x.DiversityMaxBonusBps
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.Params.diversityTargetExtraReactors":
+		value := x.DiversityTargetExtraReactors
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
@@ -189,6 +249,14 @@ func (x *fastReflection_Params) Set(fd protoreflect.FieldDescriptor, value proto
 		x.GuildCharterDifficultyRange = value.Uint()
 	case "structs.structs.Params.guildCharterReactorAge":
 		x.GuildCharterReactorAge = value.Uint()
+	case "structs.structs.Params.reactorStakeCapBps":
+		x.ReactorStakeCapBps = value.Uint()
+	case "structs.structs.Params.reactorStakeCapMinValidators":
+		x.ReactorStakeCapMinValidators = value.Uint()
+	case "structs.structs.Params.diversityMaxBonusBps":
+		x.DiversityMaxBonusBps = value.Uint()
+	case "structs.structs.Params.diversityTargetExtraReactors":
+		x.DiversityTargetExtraReactors = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Params"))
@@ -213,6 +281,14 @@ func (x *fastReflection_Params) Mutable(fd protoreflect.FieldDescriptor) protore
 		panic(fmt.Errorf("field guildCharterDifficultyRange of message structs.structs.Params is not mutable"))
 	case "structs.structs.Params.guildCharterReactorAge":
 		panic(fmt.Errorf("field guildCharterReactorAge of message structs.structs.Params is not mutable"))
+	case "structs.structs.Params.reactorStakeCapBps":
+		panic(fmt.Errorf("field reactorStakeCapBps of message structs.structs.Params is not mutable"))
+	case "structs.structs.Params.reactorStakeCapMinValidators":
+		panic(fmt.Errorf("field reactorStakeCapMinValidators of message structs.structs.Params is not mutable"))
+	case "structs.structs.Params.diversityMaxBonusBps":
+		panic(fmt.Errorf("field diversityMaxBonusBps of message structs.structs.Params is not mutable"))
+	case "structs.structs.Params.diversityTargetExtraReactors":
+		panic(fmt.Errorf("field diversityTargetExtraReactors of message structs.structs.Params is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Params"))
@@ -229,6 +305,14 @@ func (x *fastReflection_Params) NewField(fd protoreflect.FieldDescriptor) protor
 	case "structs.structs.Params.guildCharterDifficultyRange":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.Params.guildCharterReactorAge":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.Params.reactorStakeCapBps":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.Params.reactorStakeCapMinValidators":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.Params.diversityMaxBonusBps":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.Params.diversityTargetExtraReactors":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
@@ -305,6 +389,18 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 		if x.GuildCharterReactorAge != 0 {
 			n += 1 + runtime.Sov(uint64(x.GuildCharterReactorAge))
 		}
+		if x.ReactorStakeCapBps != 0 {
+			n += 1 + runtime.Sov(uint64(x.ReactorStakeCapBps))
+		}
+		if x.ReactorStakeCapMinValidators != 0 {
+			n += 1 + runtime.Sov(uint64(x.ReactorStakeCapMinValidators))
+		}
+		if x.DiversityMaxBonusBps != 0 {
+			n += 1 + runtime.Sov(uint64(x.DiversityMaxBonusBps))
+		}
+		if x.DiversityTargetExtraReactors != 0 {
+			n += 1 + runtime.Sov(uint64(x.DiversityTargetExtraReactors))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -333,6 +429,26 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.DiversityTargetExtraReactors != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.DiversityTargetExtraReactors))
+			i--
+			dAtA[i] = 0x30
+		}
+		if x.DiversityMaxBonusBps != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.DiversityMaxBonusBps))
+			i--
+			dAtA[i] = 0x28
+		}
+		if x.ReactorStakeCapMinValidators != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ReactorStakeCapMinValidators))
+			i--
+			dAtA[i] = 0x20
+		}
+		if x.ReactorStakeCapBps != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ReactorStakeCapBps))
+			i--
+			dAtA[i] = 0x18
 		}
 		if x.GuildCharterReactorAge != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.GuildCharterReactorAge))
@@ -431,6 +547,82 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ReactorStakeCapBps", wireType)
+				}
+				x.ReactorStakeCapBps = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ReactorStakeCapBps |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ReactorStakeCapMinValidators", wireType)
+				}
+				x.ReactorStakeCapMinValidators = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ReactorStakeCapMinValidators |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 5:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DiversityMaxBonusBps", wireType)
+				}
+				x.DiversityMaxBonusBps = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.DiversityMaxBonusBps |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 6:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DiversityTargetExtraReactors", wireType)
+				}
+				x.DiversityTargetExtraReactors = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.DiversityTargetExtraReactors |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -493,6 +685,13 @@ type Params struct {
 	// guildCharterReactorAge is how many blocks after creation a reactor becomes
 	// eligible to found one guild without solving the puzzle.
 	GuildCharterReactorAge uint64 `protobuf:"varint,2,opt,name=guildCharterReactorAge,proto3" json:"guildCharterReactorAge,omitempty"`
+	// Admission limit for validator inflows, in basis points (1..10000).
+	ReactorStakeCapBps uint64 `protobuf:"varint,3,opt,name=reactorStakeCapBps,proto3" json:"reactorStakeCapBps,omitempty"`
+	// Sticky cap activation threshold, evaluated after validator-set updates.
+	ReactorStakeCapMinValidators uint64 `protobuf:"varint,4,opt,name=reactorStakeCapMinValidators,proto3" json:"reactorStakeCapMinValidators,omitempty"`
+	// Diversity pricing changes require an upgrade rebuilding derived power.
+	DiversityMaxBonusBps         uint64 `protobuf:"varint,5,opt,name=diversityMaxBonusBps,proto3" json:"diversityMaxBonusBps,omitempty"`
+	DiversityTargetExtraReactors uint64 `protobuf:"varint,6,opt,name=diversityTargetExtraReactors,proto3" json:"diversityTargetExtraReactors,omitempty"`
 }
 
 func (x *Params) Reset() {
@@ -529,6 +728,34 @@ func (x *Params) GetGuildCharterReactorAge() uint64 {
 	return 0
 }
 
+func (x *Params) GetReactorStakeCapBps() uint64 {
+	if x != nil {
+		return x.ReactorStakeCapBps
+	}
+	return 0
+}
+
+func (x *Params) GetReactorStakeCapMinValidators() uint64 {
+	if x != nil {
+		return x.ReactorStakeCapMinValidators
+	}
+	return 0
+}
+
+func (x *Params) GetDiversityMaxBonusBps() uint64 {
+	if x != nil {
+		return x.DiversityMaxBonusBps
+	}
+	return 0
+}
+
+func (x *Params) GetDiversityTargetExtraReactors() uint64 {
+	if x != nil {
+		return x.DiversityTargetExtraReactors
+	}
+	return 0
+}
+
 var File_structs_structs_params_proto protoreflect.FileDescriptor
 
 var file_structs_structs_params_proto_rawDesc = []byte{
@@ -537,7 +764,7 @@ var file_structs_structs_params_proto_rawDesc = []byte{
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x1a,
 	0x11, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2f, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f,
-	0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xa5, 0x01, 0x0a, 0x06, 0x50, 0x61, 0x72,
+	0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x91, 0x03, 0x0a, 0x06, 0x50, 0x61, 0x72,
 	0x61, 0x6d, 0x73, 0x12, 0x40, 0x0a, 0x1b, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x68, 0x61, 0x72,
 	0x74, 0x65, 0x72, 0x44, 0x69, 0x66, 0x66, 0x69, 0x63, 0x75, 0x6c, 0x74, 0x79, 0x52, 0x61, 0x6e,
 	0x67, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x1b, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x43,
@@ -545,20 +772,35 @@ var file_structs_structs_params_proto_rawDesc = []byte{
 	0x52, 0x61, 0x6e, 0x67, 0x65, 0x12, 0x36, 0x0a, 0x16, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x68,
 	0x61, 0x72, 0x74, 0x65, 0x72, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x41, 0x67, 0x65, 0x18,
 	0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x16, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x68, 0x61, 0x72,
-	0x74, 0x65, 0x72, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x41, 0x67, 0x65, 0x3a, 0x21, 0xe8,
-	0xa0, 0x1f, 0x01, 0x8a, 0xe7, 0xb0, 0x2a, 0x18, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
-	0x78, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73,
-	0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73,
-	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73,
-	0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa,
-	0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
-	0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x65, 0x72, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x41, 0x67, 0x65, 0x12, 0x2e, 0x0a,
+	0x12, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x6b, 0x65, 0x43, 0x61, 0x70,
+	0x42, 0x70, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x72, 0x65, 0x61, 0x63, 0x74,
+	0x6f, 0x72, 0x53, 0x74, 0x61, 0x6b, 0x65, 0x43, 0x61, 0x70, 0x42, 0x70, 0x73, 0x12, 0x42, 0x0a,
+	0x1c, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x6b, 0x65, 0x43, 0x61, 0x70,
+	0x4d, 0x69, 0x6e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x04, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x1c, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x6b,
+	0x65, 0x43, 0x61, 0x70, 0x4d, 0x69, 0x6e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72,
+	0x73, 0x12, 0x32, 0x0a, 0x14, 0x64, 0x69, 0x76, 0x65, 0x72, 0x73, 0x69, 0x74, 0x79, 0x4d, 0x61,
+	0x78, 0x42, 0x6f, 0x6e, 0x75, 0x73, 0x42, 0x70, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x14, 0x64, 0x69, 0x76, 0x65, 0x72, 0x73, 0x69, 0x74, 0x79, 0x4d, 0x61, 0x78, 0x42, 0x6f, 0x6e,
+	0x75, 0x73, 0x42, 0x70, 0x73, 0x12, 0x42, 0x0a, 0x1c, 0x64, 0x69, 0x76, 0x65, 0x72, 0x73, 0x69,
+	0x74, 0x79, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x45, 0x78, 0x74, 0x72, 0x61, 0x52, 0x65, 0x61,
+	0x63, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04, 0x52, 0x1c, 0x64, 0x69, 0x76,
+	0x65, 0x72, 0x73, 0x69, 0x74, 0x79, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x45, 0x78, 0x74, 0x72,
+	0x61, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x3a, 0x21, 0xe8, 0xa0, 0x1f, 0x01, 0x8a,
+	0xe7, 0xb0, 0x2a, 0x18, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x78, 0x2f, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0xa1, 0x01, 0x0a,
+	0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x50, 0x72, 0x6f, 0x74,
+	0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69,
+	0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2,
+	0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

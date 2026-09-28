@@ -317,3 +317,47 @@ func TestStructsDecorator_DefaultPlayerMsgCapApplied(t *testing.T) {
 	require.Error(t, err)
 	require.True(t, sante.ErrPlayerMsgCapExceeded.Is(err))
 }
+
+func TestStructsDecorator_RejectedDelegatedChargeSpamCannotSpendPlayerQuota(t *testing.T) {
+	mk := newMockAnteKeeper()
+	// Model the SDK's rollback of rejected CheckTx transient writes by testing
+	// the in-transaction duplicate gate without a persistent mock transient map.
+	mk.hasTransientStore = false
+	for _, address := range []string{"structs1primary", "structs1delegated"} {
+		mk.playerIndexes[address] = 1
+		mk.permissions[fmt.Sprintf("%d-%s@0", types.ObjectType_address, address)] = types.PermPlay
+	}
+	handler := sdk.ChainAnteDecorators(sante.NewCheckTxThrottleDecorator(5), sante.NewStructsDecorator(mk, 40), sante.NewThrottleDecorator(mk))
+	ctx := freeCtx().WithBlockHeight(100).WithIsCheckTx(true)
+	attack := mockTx{msgs: []sdk.Msg{
+		&types.MsgStructActivate{Creator: "structs1delegated", StructId: "5-1"},
+		&types.MsgStructActivate{Creator: "structs1delegated", StructId: "5-2"},
+	}}
+	for i := 0; i < 80; i++ {
+		_, err := handler(ctx, attack, false)
+		require.ErrorIs(t, err, sante.ErrDuplicateChargeInTx)
+	}
+	_, err := handler(ctx, mockTx{msgs: []sdk.Msg{&types.MsgStructActivate{Creator: "structs1primary", StructId: "5-1"}}}, false)
+	require.NoError(t, err, "a rejected delegated transaction cannot lock out the primary")
+}
+
+func TestStructsDecorator_RejectedMultiPlayerAdmissionIsAtomic(t *testing.T) {
+	mk := newMockAnteKeeper()
+	for i, address := range []string{"structs1one", "structs1two"} {
+		mk.playerIndexes[address] = uint64(i + 1)
+		mk.permissions[fmt.Sprintf("%d-%s@0", types.ObjectType_address, address)] = types.PermPlay
+	}
+	dec := sante.NewStructsDecorator(mk, 1)
+	ctx := freeCtx().WithBlockHeight(100).WithIsCheckTx(true)
+	next, _ := identityHandler()
+	one := &types.MsgFleetMove{Creator: "structs1one", FleetId: "2-1"}
+	two := &types.MsgFleetMove{Creator: "structs1two", FleetId: "2-2"}
+	_, err := dec.AnteHandle(ctx, mockTx{msgs: []sdk.Msg{two}}, false, next)
+	require.NoError(t, err)
+	for i := 0; i < 5; i++ {
+		_, err = dec.AnteHandle(ctx, mockTx{msgs: []sdk.Msg{one, two}}, false, next)
+		require.ErrorIs(t, err, sante.ErrPlayerMsgCapExceeded)
+	}
+	_, err = dec.AnteHandle(ctx, mockTx{msgs: []sdk.Msg{one}}, false, next)
+	require.NoError(t, err)
+}

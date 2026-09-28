@@ -10,7 +10,7 @@ import (
 
 // GuildBankConvertToken converts one guild token into another atomically:
 // source token -> ualpha (source out-fee) -> target token (target in-fee). It
-// composes BankRedeem and BankConvert through the player account, so each leg
+// composes BankRedeem and BankConvert through the player vault, so each leg
 // emits its own event and enforces its own guild's fee. The min-output guard
 // applies only to the final target-token amount (leg 1 runs unguarded); if
 // either leg fails the whole transaction reverts.

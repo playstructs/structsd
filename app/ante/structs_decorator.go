@@ -65,7 +65,7 @@ func NewStructsDecorator(keeper StructsAnteKeeper, playerMsgCap uint64) StructsD
  * simulate is a wallet-side estimate rather than admission - the same three
  * reasons CheckTxThrottleDecorator gives for its own counter.
  */
-func (d StructsDecorator) admitCheckTx(ctx sdk.Context, playerMsgCounts map[string]uint64) error {
+func (d StructsDecorator) admitCheckTx(ctx sdk.Context, tx sdk.Tx, simulate bool, playerMsgCounts map[string]uint64, next sdk.AnteHandler) (sdk.Context, error) {
 	d.checkTx.mu.Lock()
 	defer d.checkTx.mu.Unlock()
 
@@ -84,13 +84,21 @@ func (d StructsDecorator) admitCheckTx(ctx sdk.Context, playerMsgCounts map[stri
 	for _, playerId := range playerIds {
 		newTotal := d.checkTx.counts[playerId] + playerMsgCounts[playerId]
 		if newTotal > d.playerMsgCap {
-			return observeReject(ctx, "StructsDecorator",
+			return ctx, observeReject(ctx, "StructsDecorator",
 				errorsmod.Wrapf(ErrPlayerMsgCapExceeded, "player %s: %d/%d at admission", playerId, newTotal, d.playerMsgCap))
 		}
-		d.checkTx.counts[playerId] = newTotal
 	}
 
-	return nil
+	// A delegated key must not consume the player's quota on transactions a
+	// later decorator rejects. Preflight every player before admitting any.
+	newCtx, err := next(ctx, tx, simulate)
+	if err != nil {
+		return newCtx, err
+	}
+	for _, playerId := range playerIds {
+		d.checkTx.counts[playerId] += playerMsgCounts[playerId]
+	}
+	return newCtx, nil
 }
 
 func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
@@ -194,9 +202,7 @@ func (d StructsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, 
 	// and keeping them separate is what avoids the double-count the rationale
 	// below describes.
 	if ctx.IsCheckTx() && !ctx.IsReCheckTx() && !simulate {
-		if err := d.admitCheckTx(ctx, playerMsgCounts); err != nil {
-			return ctx, err
-		}
+		return d.admitCheckTx(ctx, tx, simulate, playerMsgCounts, next)
 	}
 
 	// SKIP_RATIONALE: the per-player-per-block message cap aggregates across

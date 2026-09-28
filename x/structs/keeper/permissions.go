@@ -51,6 +51,7 @@ func (k Keeper) SetPermissionsByBytes(ctx context.Context, permissionId []byte, 
 	binary.BigEndian.PutUint64(bz, uint64(permissions))
 
 	store.Set(permissionId, bz)
+	k.setPermissionPlayerIndex(ctx, permissionId)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPermission{&types.PermissionRecord{PermissionId: string(permissionId), Value: uint64(permissions)}})
@@ -62,6 +63,7 @@ func (k Keeper) PermissionClearAll(ctx context.Context, permissionId []byte) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PermissionKey))
 
 	store.Delete(permissionId)
+	k.removePermissionPlayerIndex(ctx, permissionId)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPermission{&types.PermissionRecord{PermissionId: string(permissionId), Value: 0}})
@@ -77,9 +79,7 @@ func (k Keeper) PermissionClearAll(ctx context.Context, permissionId []byte) {
 // chain. It used to iterate every permission and compare the split key, which is
 // the same traversal ClearPermissionByObject does correctly one screen below.
 //
-// There is no by-player counterpart, and there cannot be a cheap one: the player
-// is the key *suffix*, so answering that question means either a full scan or a
-// second index. Add the index if the question is ever worth asking.
+// Player queries use the separate derived index in permission_player_index.go.
 func (k Keeper) GetPermissionsByObject(ctx context.Context, objectId string) (list []types.PermissionRecord) {
 	if objectId == "" {
 		return
@@ -142,6 +142,7 @@ func (k Keeper) ClearPermissionByObject(ctx context.Context, objectId string, li
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
 	for _, key := range keysToDelete {
 		store.Delete(key)
+		k.removePermissionPlayerIndex(ctx, key)
 		list = append(list, string(key))
 		_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPermission{&types.PermissionRecord{PermissionId: string(key), Value: 0}})
 	}
@@ -239,6 +240,13 @@ func (k Keeper) SetGuildRankPermissionStoreOnly(ctx context.Context, objectId st
 // for an object and reports whether any remain. Each row can emit up to
 // PermissionBitCount events, which makes it the more expensive half per row.
 func (k Keeper) ClearPermissionGuildRankByObject(ctx context.Context, objectId string, limit int) (more bool) {
+	more, _ = k.clearPermissionGuildRankByObjectCount(ctx, objectId, limit)
+	return
+}
+
+// The cleanup worker needs the raw register count to share its block budget
+// with direct permission deletions and queue visits.
+func (k Keeper) clearPermissionGuildRankByObjectCount(ctx context.Context, objectId string, limit int) (more bool, deleted int) {
 	if objectId == "" || limit <= 0 {
 		return
 	}
@@ -292,7 +300,7 @@ func (k Keeper) ClearPermissionGuildRankByObject(ctx context.Context, objectId s
 		}
 	}
 
-	return
+	return more, len(entries)
 }
 
 // GetAllGuildRankPermissionExport iterates all guild rank registers for genesis export.

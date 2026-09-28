@@ -234,6 +234,7 @@ var (
 	ErrReactorInvalidDenom  = sdkerrors.Register(ModuleName, 1609, "invalid reactor denomination")
 	ErrReactorInvalidHeight = sdkerrors.Register(ModuleName, 1610, "invalid reactor height")
 	ErrReactorBalanceExceeded = sdkerrors.Register(ModuleName, 1611, "reactor balance exceeded")
+	ErrReactorStakeCapExceeded = sdkerrors.Register(ModuleName, 1613, "reactor stake cap exceeded")
 	ErrReactorAlreadyProcessed = sdkerrors.Register(ModuleName, 1612, "reactor unbonding already processed")
 )
 

@@ -45,6 +45,12 @@ message Guild {
   // mutated, so the credit survives a transfer. Empty on a guild founded
   // through the reactor entitlement, where nobody solved anything.
   string charterSolverId    = 16;
+
+  // Prices are in base units of this guild's token. Zero minimum disables sales.
+  uint64 rankPurchaseBasePrice = 17;
+  uint64 rankPurchaseStepIncrease = 18;
+  uint64 rankPurchaseMinimumRank = 19;
+  bool joinByRankPurchaseEnabled = 20;
 }
 
 

@@ -13,6 +13,30 @@ import (
 
 // InitGenesis initializes the module's state from a provided genesis state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
+    k.SuspendReactorDiversity(ctx)
+    genState.Params = genState.Params.WithReactorDefaults()
+    if err := genState.Params.ValidateReactorParams(); err != nil { panic(err) }
+	if err := genState.ValidatePermissionCleanupQueue(); err != nil { panic(err) }
+	if err := genState.ValidateGeneratorPowerQueue(); err != nil { panic(err) }
+	if err := genState.ValidateVaultOwners(); err != nil { panic(err) }
+	infusionOwners := map[string]string{}
+	for _, address := range genState.AddressList {
+		if address.PlayerIndex != 0 { infusionOwners[address.Address] = keeper.GetObjectID(types.ObjectType_player, address.PlayerIndex) }
+	}
+	for _, owner := range genState.VaultOwnerList {
+		address, err := types.VaultAddress(owner)
+		if err != nil { panic(err) }
+		infusionOwners[address.String()] = owner
+	}
+	infusionKeys := map[string]bool{}
+	for _, infusion := range genState.InfusionList {
+		if err := infusion.ValidateAssetOwner(); err != nil { panic(err) }
+		if infusion.DestinationType != types.ObjectType_reactor { continue }
+		key := types.BuildInfusionKey(infusion.DestinationId, infusion.Address)
+		if infusionKeys[key] { panic("duplicate reactor infusion in genesis") }
+		infusionKeys[key] = true
+		if owner, found := infusionOwners[infusion.Address]; !found || owner != infusion.AssetOwnerID() { panic("reactor infusion lacks its owner association") }
+	}
 
 	// =========================================================================
 	// Phase 0: Pre-processing lookup maps
@@ -80,18 +104,22 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	}
 	k.SetStructTypeCount(ctx, structTypeTop+1)
 
-	// Entity counts derived from max index in each list.
+	// Preserve exported next-ID counters even when their highest objects were
+	// deleted. Surviving rows and earlier staking hooks can only advance them.
 	// Use advanceCount to avoid resetting counts that staking hooks
 	// (ReactorInitialize) may have already advanced before this module's
 	// InitGenesis runs.
-	advanceCount := func(current uint64, genesis uint64) uint64 {
+	advanceCount := func(current uint64, genesis uint64, exported uint64) uint64 {
+		if exported > current {
+			current = exported
+		}
 		if genesis > current {
 			return genesis
 		}
 		return current
 	}
 
-	k.SetGuildCount(ctx, advanceCount(k.GetGuildCount(ctx), maxIndex(genState.GuildList, func(g types.Guild) uint64 { return g.Index })+1))
+	k.SetGuildCount(ctx, advanceCount(k.GetGuildCount(ctx), maxIndex(genState.GuildList, func(g types.Guild) uint64 { return g.Index })+1, genState.GuildCount))
 
 	/* The charter anchor cannot be rebuilt from anything else, so an unset one
 	 * falls back to the current height rather than to zero. Zero is not a
@@ -105,13 +133,13 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		k.SetGuildCharterAnchor(ctx, genState.GuildCharterAnchor)
 	}
 
-	k.SetReactorCount(ctx, advanceCount(k.GetReactorCount(ctx), maxIndexFromId(genState.ReactorList, func(r types.Reactor) string { return r.Id })+1))
-	k.SetSubstationCount(ctx, advanceCount(k.GetSubstationCount(ctx), maxIndexFromId(genState.SubstationList, func(s types.Substation) string { return s.Id })+1))
-	k.SetPlayerCount(ctx, advanceCount(k.GetPlayerCount(ctx), maxIndex(genState.PlayerList, func(p types.Player) uint64 { return p.Index })+1))
-	k.SetPlanetCount(ctx, advanceCount(k.GetPlanetCount(ctx), maxIndexFromId(genState.PlanetList, func(p types.Planet) string { return p.Id })+1))
-	k.SetStructCount(ctx, advanceCount(k.GetStructCount(ctx), maxIndex(genState.StructList, func(s types.Struct) uint64 { return s.Index })+1))
-	k.SetProviderCount(ctx, advanceCount(k.GetProviderCount(ctx), maxIndex(genState.ProviderList, func(p types.Provider) uint64 { return p.Index })+1))
-	k.SetAllocationCount(ctx, advanceCount(k.GetAllocationCount(ctx), maxIndex(genState.AllocationList, func(a types.Allocation) uint64 { return a.Index })+1))
+	k.SetReactorCount(ctx, advanceCount(k.GetReactorCount(ctx), maxIndexFromId(genState.ReactorList, func(r types.Reactor) string { return r.Id })+1, genState.ReactorCount))
+	k.SetSubstationCount(ctx, advanceCount(k.GetSubstationCount(ctx), maxIndexFromId(genState.SubstationList, func(s types.Substation) string { return s.Id })+1, genState.SubstationCount))
+	k.SetPlayerCount(ctx, advanceCount(k.GetPlayerCount(ctx), maxIndex(genState.PlayerList, func(p types.Player) uint64 { return p.Index })+1, genState.PlayerCount))
+	k.SetPlanetCount(ctx, advanceCount(k.GetPlanetCount(ctx), maxIndexFromId(genState.PlanetList, func(p types.Planet) string { return p.Id })+1, genState.PlanetCount))
+	k.SetStructCount(ctx, advanceCount(k.GetStructCount(ctx), maxIndex(genState.StructList, func(s types.Struct) uint64 { return s.Index })+1, genState.StructCount))
+	k.SetProviderCount(ctx, advanceCount(k.GetProviderCount(ctx), maxIndex(genState.ProviderList, func(p types.Provider) uint64 { return p.Index })+1, genState.ProviderCount))
+	k.SetAllocationCount(ctx, advanceCount(k.GetAllocationCount(ctx), maxIndex(genState.AllocationList, func(a types.Allocation) uint64 { return a.Index })+1, genState.AllocationCount))
 
 	// =========================================================================
 	// Phase 1: CC population
@@ -159,6 +187,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 			continue
 		}
 		k.SetGuildRankPermissionStoreOnly(ctx, rec.ObjectId, rec.GuildId, types.Permission(rec.Permissions), rec.Rank)
+	}
+
+	for _, objectId := range genState.PermissionCleanupQueue {
+		k.EnqueuePermissionCleanup(ctx, objectId)
 	}
 
 	// Addresses
@@ -228,7 +260,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		k.SetStructDestructionQueueAtHeight(ctx, sweepHeight, pending.StructId)
 	}
 
-	// Selective grid attribute import: player ore, proxyNonce, nonce only
+	// Restore non-derived grid values after object reconstruction, including
+	// remaining planetary ore over the default assigned by GenesisImportPlanet.
 	for _, attr := range genState.GridList {
 		if isGenesisGridImportable(attr.AttributeId) {
 			cc.SetGridAttribute(attr.AttributeId, attr.Value)
@@ -306,9 +339,15 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		cc.GetProvider(provider.Id).SetCheckpointBlock(genesisHeight)
 	}
 
-	// Reactor infusions (rebuild from staking delegations)
+	// Rebuild exported reactor positions, including UBD-only records. The
+	// validated association map covers vaults before their indexes commit.
+	for _, infusion := range genState.InfusionList {
+		if infusion.DestinationType == types.ObjectType_reactor {
+			if err := cc.GenesisImportReactorInfusion(infusion, infusionOwners[infusion.Address]); err != nil { panic(err) }
+		}
+	}
 	for _, reactor := range genState.ReactorList {
-		cc.GenesisImportReactorInfusions(reactor)
+		if err := cc.GenesisImportReactorInfusions(reactor, infusionOwners); err != nil { panic(err) }
 	}
 
 	/* Pending grid cascades.
@@ -328,12 +367,26 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 			panic(err)
 		}
 	}
+    // Restore work for closing or overloaded stations even when an export omitted
+    // their queue entries. Apply loss to raw reconstructed input exactly once.
+    for _, station := range genState.SubstationList {
+        cached := cc.GetSubstation(station.Id)
+        cc.UpdateSubstationConnectionCapacity(station.Id)
+        if station.DeletionPending || cached.GetLoad() > cached.GetUsableCapacity() {
+            if err := k.AppendGridCascadeQueue(ctx, station.Id); err != nil { panic(err) }
+        }
+    }
 
 	// =========================================================================
 	// Commit
 	// =========================================================================
 
 	cc.CommitAll()
+	// Owners and addresses must be committed before resolving provisioned vaults.
+	// Existing auth accounts keep their exported account numbers.
+	if _, err := k.NewCurrentContext(ctx).EnsureVaults(genState.VaultOwnerList...); err != nil {
+		panic(err)
+	}
 
 	// Guild names are stored on guild records, while the normalized lookup is
 	// derived state. Rebuild it on every import in list order; first wins is
@@ -377,14 +430,26 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, row := range genState.InfusionMaturitySweepQueue {
 		k.ImportInfusionMaturitySweepRow(ctx, row)
 	}
+
+	for _, id := range genState.GeneratorPowerQueue { k.EnqueueGeneratorPower(ctx, id) }
+	k.RebuildGeneratorPowerQueue(ctx)
+
+    k.SetReactorStakeCapActive(ctx, genState.ReactorStakeCapActive)
+    if err := k.EvaluateReactorStakeCap(ctx); err != nil { panic(err) }
+	if err := k.RebuildReactorDiversity(ctx); err != nil { panic(err) }
+	k.ScheduleReactorCommissionRevisionReplay(ctx)
 }
 
 // ExportGenesis returns the module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.Params = k.GetParams(ctx)
+	genesis.ReactorStakeCapActive = k.ReactorStakeCapActive(ctx)
 
 	genesis.PortId = k.GetPort(ctx)
+	var vaultErr error
+	genesis.VaultOwnerList, vaultErr = k.GetVaultOwnersForExport(ctx)
+	if vaultErr != nil { panic(vaultErr) }
 
 	genesis.AddressList = k.GetAllAddressExport(ctx)
 	genesis.AddressNonceList = k.GetAllAddressProofNonceExport(ctx)
@@ -431,6 +496,10 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.GridList = k.GetAllGridExport(ctx)
 	genesis.GridCascadeQueue = k.GetGridCascadeQueueExport(ctx)
 
+	genesis.PermissionCleanupQueue = k.GetPermissionCleanupQueue(ctx)
+	var generatorQueueErr error
+	genesis.GeneratorPowerQueue, generatorQueueErr = k.GetGeneratorPowerQueue(ctx)
+	if generatorQueueErr != nil { panic(generatorQueueErr) }
 	genesis.PermissionList = k.GetAllPermissionExport(ctx)
 	genesis.GuildRankPermissionList = k.GetAllGuildRankPermissionExport(ctx)
 
@@ -469,7 +538,10 @@ func isGenesisGridImportable(attributeId string) bool {
 		return true
 	case types.GridAttributeType_ore:
 		objectId := objectIdFromAttributeId(attributeId)
-		return strings.HasPrefix(objectId, fmt.Sprintf("%d-", types.ObjectType_player))
+		// Neither stored nor buried ore can be rebuilt from object records.
+		// Dropping the planet row replenishes every active world on restart.
+		return strings.HasPrefix(objectId, fmt.Sprintf("%d-", types.ObjectType_player)) ||
+			strings.HasPrefix(objectId, fmt.Sprintf("%d-", types.ObjectType_planet))
 	case types.GridAttributeType_checkpointBlock:
 		/* A provider's checkpoint block is the one grid attribute that is not
 		 * derivable from the objects around it. Load and capacity are rebuilt by

@@ -66,17 +66,32 @@ func (cc *CurrentContext) GenesisImportInfusion(infusion types.Infusion) {
 	if infusion.DestinationType == types.ObjectType_reactor {
 		return
 	}
-	if infusion.Power == 0 {
+	if infusion.Power == 0 && infusion.Fuel == 0 && infusion.Defusing == 0 {
 		return
 	}
 
 	cache := cc.GetInfusion(infusion.DestinationId, infusion.Address)
 	cache.Infusion = infusion
 	cache.InfusionLoaded = true
+	cache.indexCachedOwner()
 	cache.Changed = true
 
 	cache.Infusion.Recalculate()
 	cache.applyGridDeltas(0, 0, 0)
+}
+
+// UpsertOwnedInfusion is the asset-owner form used by vault staking hooks.
+func (cc *CurrentContext) UpsertOwnedInfusion(destinationType types.ObjectType, destinationId, address, ownerId string) (*InfusionCache, error) {
+    if _, err := cc.GetExistingAssetOwner(ownerId); err != nil { return nil, err }
+    infusion := cc.GetInfusion(destinationId, address)
+    if infusion.CheckInfusion() != nil {
+        infusion.Infusion = types.Infusion{DestinationId: destinationId, DestinationType: destinationType, Address: address, Commission: math.LegacyZeroDec()}
+        infusion.InfusionLoaded = true
+         infusion.indexCachedOwner()
+        infusion.Changed = true
+    }
+    if err := infusion.SetOwnerId(ownerId); err != nil { return nil, err }
+    return infusion, nil
 }
 
 func (cc *CurrentContext) GetAllInfusionByDestination(destinationId string) (infusions []*InfusionCache) {
@@ -118,6 +133,7 @@ func (cc *CurrentContext) UpsertInfusion(destinationType types.ObjectType, desti
          }
 
          infusion.InfusionLoaded = true
+         infusion.indexCachedOwner()
          infusion.Changed = true
     } else if infusion.GetInfusion().PlayerId != playerId {
         infusion.SetPlayerId(playerId)
@@ -127,32 +143,27 @@ func (cc *CurrentContext) UpsertInfusion(destinationType types.ObjectType, desti
 
 
 func (cc *CurrentContext) ProcessInfusionDestructionQueue() {
-    for {
-        queue := cc.k.GetInfusionDestructionQueue(cc.ctx, true)
-        if len(queue) == 0 {
-            break
+    queue := cc.k.dequeueInfusionDestructionBatch(cc.ctx)
+
+    for _, infusionId := range queue {
+        infusion, found := cc.GetInfusionById(infusionId)
+        if !found {
+            /* A key that cannot be parsed has no infusion behind it and
+             * never will. Dropping it is the whole repair: this runs in the
+             * EndBlocker, and calling through to the cache would dereference
+             * a nil CurrentContext and panic the block - taking the delete
+             * above down with it, so the same row would be read again next
+             * block, and every block after that.
+             *
+             * The read already cleared the row, so returning without
+             * re-queueing is what discards it.
+             */
+            cc.k.logger.Error("Discarding unparseable infusion destruction queue entry", "infusionKey", infusionId)
+            continue
         }
 
-        for _, infusionId := range queue {
-            infusion, found := cc.GetInfusionById(infusionId)
-            if !found {
-                /* A key that cannot be parsed has no infusion behind it and
-                 * never will. Dropping it is the whole repair: this runs in the
-                 * EndBlocker, and calling through to the cache would dereference
-                 * a nil CurrentContext and panic the block - taking the delete
-                 * above down with it, so the same row would be read again next
-                 * block, and every block after that.
-                 *
-                 * The read already cleared the row, so returning without
-                 * re-queueing is what discards it.
-                 */
-                cc.k.logger.Error("Discarding unparseable infusion destruction queue entry", "infusionKey", infusionId)
-                continue
-            }
-
-            if (infusion.CheckInfusion() == nil && infusion.IsEmpty()) {
-                infusion.Destroy()
-            }
+        if (infusion.CheckInfusion() == nil && infusion.IsEmpty()) {
+            infusion.Destroy()
         }
     }
 }

@@ -201,6 +201,17 @@ func TestEveryKnownMessageHasPermissionOrDynamic(t *testing.T) {
 	}
 }
 
+func TestAllocationDeletePreservesAlternativeAuthority(t *testing.T) {
+	const message = "/structs.structs.MsgAllocationDelete"
+	_, fixed := PermissionMap[message]
+	require.False(t, fixed, "neither SourceAllocation nor Delete is required on both handler authority paths")
+	require.True(t, DynamicPermissionMessages[message], "the handler must choose and enforce the complete source or object permission check")
+	for _, sourceOnly := range []string{"/structs.structs.MsgAllocationCreate", "/structs.structs.MsgAllocationUpdate"} {
+		require.Equal(t, types.PermSourceAllocation, PermissionMap[sourceOnly])
+		require.False(t, DynamicPermissionMessages[sourceOnly], "creation and resizing still require source authority")
+	}
+}
+
 func TestProofMessagesHaveCorrectPermissions(t *testing.T) {
 	expected := map[string]types.Permission{
 		"/structs.structs.MsgStructBuildComplete":       types.PermHashBuild,
@@ -255,15 +266,15 @@ func TestGuildBankMintRequiresTokenTransfer(t *testing.T) {
 
 // TestArch_PrimaryAddressDebitsRequireTokenBit is the standing guard for the whole
 // family of gaps the open-market bypass belonged to. A handler that debits the
-// player's primary address is spending the player's money on the signer's
+// player or guild asset account is spending that owner's money on the signer's
 // authority, and the only control on that is a token bit on the signing key. An
 // access or update permission is not a substitute: PermProviderOpen decides who
 // may contract with a provider and PermUpdate who may modify an agreement, and
 // neither says anything about whose coins may move.
 //
 // Rather than trusting review to notice the next one, this walks the handler
-// sources and requires any that pairs GetPrimaryAddress with SendCoins to demand
-// one of the asset bits in PermissionMap.
+// sources and requires an asset-account lookup paired with SendCoins to demand
+// one of the asset bits in PermissionMap, including vault debits.
 func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 	// Handlers where the primary address is the destination rather than the
 	// source. Sweeping another address of the same player into the primary is a
@@ -284,12 +295,14 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 	creditCalls := map[string]bool{
 		"SendCoinsFromModuleToAccount": true,
 	}
-	// These cache methods hide a primary-account debit from the handler AST.
+	// These cache methods hide an asset-account debit from the handler AST.
 	// Keep the list explicit so adding another such method requires classifying it.
-	primaryDebitHelpers := map[string]bool{
-		"BankConvert": true,
-		"BankMint":    true,
-		"BankRedeem":  true,
+	assetDebitHelpers := map[string]bool{
+		"BankConvert":     true,
+		"BankMint":        true,
+		"BankRedeem":      true,
+		"FundCreation":    true,
+		"payRankPurchase": true,
 	}
 	seenSendCalls := map[string]bool{}
 
@@ -300,6 +313,7 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 	fset := token.NewFileSet()
 	var failures []string
 	checked := 0
+	checkedMessages := map[string]bool{}
 
 	for _, e := range entries {
 		name := e.Name()
@@ -322,15 +336,15 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 				continue
 			}
 
-			var readsPrimary, debits bool
+			var readsAssetAccount, debits bool
 			ast.Inspect(fn.Body, func(n ast.Node) bool {
 				sel, ok := n.(*ast.SelectorExpr)
 				if !ok {
 					return true
 				}
 				called := sel.Sel.Name
-				if called == "GetPrimaryAddress" {
-					readsPrimary = true
+				if called == "GetPrimaryAddress" || called == "GetVault" || called == "EnsureVaults" {
+					readsAssetAccount = true
 				}
 				if strings.HasPrefix(called, "SendCoins") {
 					seenSendCalls[called] = true
@@ -338,14 +352,14 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 				if debitCalls[called] {
 					debits = true
 				}
-				if primaryDebitHelpers[called] {
-					readsPrimary = true
+				if assetDebitHelpers[called] {
+					readsAssetAccount = true
 					debits = true
 				}
 				return true
 			})
 
-			if !readsPrimary || !debits {
+			if !readsAssetAccount || !debits {
 				continue
 			}
 			if _, exempt := creditsPrimary[msgName]; exempt {
@@ -353,11 +367,12 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 			}
 
 			checked++
+			checkedMessages[msgName] = true
 			typeURL := "/structs.structs." + msgName
 
 			if DynamicPermissionMessages[typeURL] {
 				failures = append(failures, name+": "+msgName+
-					" debits the primary address but is in DynamicPermissionMessages, which makes"+
+					" debits an asset account but is in DynamicPermissionMessages, which makes"+
 					" StructsDecorator skip PermissionMap entirely")
 				continue
 			}
@@ -365,19 +380,19 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 			perm, found := PermissionMap[typeURL]
 			if !found {
 				failures = append(failures, name+": "+msgName+
-					" debits the primary address but has no PermissionMap entry")
+					" debits an asset account but has no PermissionMap entry")
 				continue
 			}
 			if perm&types.PermAssetsAll == 0 {
 				failures = append(failures, name+": "+msgName+
-					" debits the primary address but requires no asset bit (has "+
+					" debits an asset account but requires no asset bit (has "+
 					strconv.FormatUint(uint64(perm), 10)+")")
 			}
 		}
 	}
 
 	// A new way to move coins out of an account must be classified, or a handler
-	// could debit the primary through it and never reach the check above.
+	// could debit an asset account through it and never reach the check above.
 	for called := range seenSendCalls {
 		require.True(t, debitCalls[called] || creditCalls[called],
 			"handlers use bankKeeper.%s, which this guard does not classify as a debit or a credit", called)
@@ -385,10 +400,27 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 
 	// If the scan silently stops matching, the guard is worthless but still green.
 	require.GreaterOrEqual(t, checked, 4,
-		"expected to find the known primary-address debits; the source scan is probably broken")
+		"expected to find the known asset-account debits; the source scan is probably broken")
+
+	// Pin the new vault paths individually: a broad count stayed green when
+	// agreement funding stopped calling GetPrimaryAddress and fell out of the scan.
+	for _, message := range []string{
+		"MsgAgreementOpen", "MsgAgreementDurationIncrease", "MsgVaultSend",
+		"MsgGuildCreate", "MsgGuildRankPurchase", "MsgGuildMembershipJoinByRankPurchase",
+	} {
+		require.True(t, checkedMessages[message], "%s must be covered by the debit scan", message)
+		require.NotZero(t, PermissionMap["/structs.structs."+message]&types.PermTokenTransfer,
+			"%s must require the token-transfer bit, not a different asset bit", message)
+	}
+
+	// Generator fuel uses the vault too, but its specific authority is infusion,
+	// not generic transfer. Keep this path pinned as the spend-source code evolves.
+	require.True(t, checkedMessages["MsgStructGeneratorInfuse"])
+	require.Equal(t, types.PermTokenInfuse, PermissionMap["/structs.structs.MsgStructGeneratorInfuse"])
+	require.False(t, DynamicPermissionMessages["/structs.structs.MsgStructGeneratorInfuse"])
 
 	require.Empty(t, failures,
-		"handlers spending the player's primary address must require a token bit:\n  - %s",
+		"handlers spending the player or guild asset account must require a token bit:\n  - %s",
 		strings.Join(failures, "\n  - "))
 }
 
@@ -828,12 +860,20 @@ func TestArch_PaginatedQueriesAreBounded(t *testing.T) {
 		raw, err := os.ReadFile(filepath.Join(keeperDir, name))
 		require.NoError(t, err)
 
-		for i, line := range strings.Split(string(raw), "\n") {
+		lines := strings.Split(string(raw), "\n")
+		for i, line := range lines {
 			if !strings.Contains(line, "query.Paginate(") {
 				continue
 			}
 			checked++
-			if !strings.Contains(line, "boundedPagination(") {
+			// The validating helper now returns an error for excessive offsets.
+			// Require its checked result immediately before the pagination call.
+			validated := i >= 4 && strings.Contains(line, ", pagination,") &&
+				strings.TrimSpace(lines[i-4]) == "pagination, err := boundedPagination(req.Pagination)" &&
+				strings.TrimSpace(lines[i-3]) == "if err != nil {" &&
+				strings.TrimSpace(lines[i-2]) == "return nil, err" &&
+				strings.TrimSpace(lines[i-1]) == "}"
+			if !validated {
 				unbounded = append(unbounded, fmt.Sprintf("%s:%d", name, i+1))
 			}
 		}

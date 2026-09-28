@@ -62,6 +62,7 @@ func TestSlashDefersReconciliationToTheEndBlocker(t *testing.T) {
 
 	_, err = bApp.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
+	bApp.StructsKeeper.ProcessReactorSlashReconcileQueue(ctx)
 
 	reactorId := jailGateReactorId(t, bApp, ctx, valAddr)
 	_, fuelBefore := jailGateInfusion(t, bApp, ctx, reactorId, operatorAcc)

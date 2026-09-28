@@ -1,6 +1,7 @@
 package keeper
 
 import (
+    "strings"
 	"structs/x/structs/types"
 )
 
@@ -11,10 +12,10 @@ import (
  * in the map and its record is still in the store: Destroy defers both removals
  * to CommitAll. Reporting it as found hands the caller a live-looking handle to
  * something already torn down, and every mutator on it re-applies deltas that
- * were applied once - Destroy never zeroes the power attribute, so a second
- * Destroy decrements the source's load by the full power again, eating the load
- * of whichever allocations survived and manufacturing headroom the source does
- * not have.
+ * were applied once. Historically Destroy retained the power attribute too,
+ * letting a second teardown consume surviving allocations' load. Clearing that
+ * attribute now reclaims storage; the Deleted guard remains the authority that
+ * prevents stale handles from mutating an object that no longer exists.
  *
  * Every caller reads this boolean as existence and none checks Deleted, which is
  * the same shape as the phantom PlayerCache: a context getter is a cache
@@ -69,9 +70,7 @@ func (cc *CurrentContext) GenesisImportAllocation(allocation types.Allocation, i
 
 	if allocation.Type == types.AllocationType_automated {
 		cc.k.SetAutoResizeAllocationSource(cc.ctx, allocation.Id, allocation.SourceObjectId)
-		sourceCapAttrId := GetGridAttributeIDByObjectId(
-			types.GridAttributeType_capacity, allocation.SourceObjectId)
-		importedPower = cc.GetGridAttribute(sourceCapAttrId)
+		importedPower = cc.GetEffectiveGridCapacity(allocation.SourceObjectId)
 	}
 
 	if importedPower == 0 {
@@ -80,6 +79,7 @@ func (cc *CurrentContext) GenesisImportAllocation(allocation types.Allocation, i
 
 	cc.SetGridAttribute(cache.PowerAttributeId, importedPower)
 	cc.SetGridAttributeIncrement(cache.SourceLoadAttributeId, importedPower)
+	cc.UpdateSubstationConnectionCapacity(allocation.SourceObjectId)
 
 	destCapAttrId := GetGridAttributeIDByObjectId(
 		types.GridAttributeType_capacity, allocation.DestinationId)
@@ -89,7 +89,8 @@ func (cc *CurrentContext) GenesisImportAllocation(allocation types.Allocation, i
 }
 
 /* GetAllocationsBySourceUpTo loads at most limit allocations for a source, and
- * reports whether the source has more.
+ * reports whether the source has more and the number of index rows consumed.
+ * Charge rowsRead even when a stale index row produced no allocation cache.
  *
  * GetAllAllocationBySource below materializes every allocation on a source: one
  * index read, one store read and one retained cache object each, all before the
@@ -104,9 +105,9 @@ func (cc *CurrentContext) GenesisImportAllocation(allocation types.Allocation, i
  * conclusions: the first means the load cannot be shed, the second means come
  * back next block.
  */
-func (cc *CurrentContext) GetAllocationsBySourceUpTo(objectId string, limit int) (allocations []*AllocationCache, more bool) {
+func (cc *CurrentContext) GetAllocationsBySourceUpTo(objectId string, limit int) (allocations []*AllocationCache, more bool, rowsRead int) {
 	if limit <= 0 {
-		return nil, cc.k.SourceHasAllocations(cc.ctx, objectId)
+		return nil, cc.k.SourceHasAllocations(cc.ctx, objectId), 0
 	}
 
 	allocationList, more := cc.k.GetAllocationIdsBySourceIndexUpTo(cc.ctx, objectId, limit)
@@ -118,7 +119,7 @@ func (cc *CurrentContext) GetAllocationsBySourceUpTo(objectId string, limit int)
 		}
 	}
 
-	return allocations, more
+	return allocations, more, len(allocationList)
 }
 
 func (cc *CurrentContext) GetAllAllocationBySource(objectId string) (allocations []*AllocationCache) {
@@ -145,6 +146,20 @@ func (cc *CurrentContext) GetAllAllocationByDestination(objectId string) (alloca
     return
 }
 
+// GetAllocationsByDestinationUpTo resolves a bounded incoming-edge prefix
+// through this operation's caches. A stale, moved or deleted allocation still
+// consumes its raw index-row budget but cannot count as live incoming supply.
+func (cc *CurrentContext) GetAllocationsByDestinationUpTo(objectId string, limit int) (allocations []*AllocationCache, more bool, rowsRead int) {
+	ids, more := cc.k.GetAllocationIdsByDestinationIndexUpTo(cc.ctx, objectId, limit)
+	for _, id := range ids {
+		allocation, found := cc.GetAllocation(id)
+		if found && allocation.GetAllocation().DestinationId == objectId {
+			allocations = append(allocations, allocation)
+		}
+	}
+	return allocations, more, len(ids)
+}
+
 
 func (cc *CurrentContext) NewAllocation(
 	allocationType types.AllocationType,
@@ -154,15 +169,35 @@ func (cc *CurrentContext) NewAllocation(
 	controller string,
 	power uint64,
 ) (*AllocationCache, error) {
+    if strings.HasPrefix(sourceObjectId, "4-") {
+        if err := cc.GetSubstation(sourceObjectId).CheckAcceptingConnections(); err != nil { return nil, err }
+    }
+    // Proto3 enums accept arbitrary int32 values. Reject undeclared types
+    // before reserving an id, adding a cache, or changing load/index rows.
+    // Keeping this in the constructor also protects internal cache callers.
+    if _, valid := types.AllocationType_name[int32(allocationType)]; !valid {
+        return &AllocationCache{}, types.NewAllocationError(sourceObjectId, "invalid_type")
+    }
+    // Validate the destination before allocating an id or reserving source
+    // state. Ignoring SetDestination's refusal would create an allocation that
+    // consumes power but never reaches the requested destination.
+    if destinationId != "" && cc.GetSubstation(destinationId).CheckSubstation() != nil {
+        return &AllocationCache{}, types.NewAllocationError(sourceObjectId, "unacceptable_destination").WithDestination(destinationId)
+    }
     // Set the ID of the appended value
 
     allocation := types.Allocation{}
 
     allocation.Index = cc.k.GetAllocationCount(cc.ctx)
-    cc.k.SetAllocationCount(cc.ctx, allocation.Index + 1)
+    // Agreement IDs share this sequence. Wrapping would reuse retired IDs,
+    // including agreements whose completed accounting has been reclaimed.
+    if allocation.Index == ^uint64(0) {
+        return &AllocationCache{}, types.NewAllocationError(sourceObjectId, "allocation_id_exhausted")
+    }
 
     allocation.Id               = GetObjectID(types.ObjectType_allocation, allocation.Index)
     allocation.Type             = allocationType
+    allocation.SourceObjectId   = sourceObjectId
     allocation.Creator          = creator
     allocation.Controller       = controller
 
@@ -170,7 +205,7 @@ func (cc *CurrentContext) NewAllocation(
     sourceCapacityAttributeId   := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceObjectId)
     sourceLoadAttributeId       := GetGridAttributeIDByObjectId(types.GridAttributeType_load, sourceObjectId)
 
-    cc.allocations[allocation.Id] = &AllocationCache{
+    cache := &AllocationCache{
         CC: cc,
         AllocationId: allocation.Id,
         Allocation:  allocation,
@@ -182,12 +217,25 @@ func (cc *CurrentContext) NewAllocation(
         SourceLoadAttributeId: sourceLoadAttributeId,
     }
 
-    sourceErr := cc.allocations[allocation.Id].SetSource(sourceObjectId)
-    if sourceErr != nil {
-        return &AllocationCache{}, sourceErr
+    // Validate all refusal conditions before inserting a changed cache or
+    // reserving counters/indexes. A caller may continue after an error and
+    // eventually commit this CurrentContext.
+    if err := cache.validateSource(sourceObjectId); err != nil {
+        return &AllocationCache{}, err
+    }
+    if !cache.IsAutomated() {
+        if err := cache.validateInitialPower(power); err != nil {
+            return &AllocationCache{}, err
+        }
     }
 
-    cc.allocations[allocation.Id].SetDestination(destinationId)
+    cc.k.SetAllocationCount(cc.ctx, allocation.Index + 1)
+    cc.allocations[allocation.Id] = cache
+    cache.setValidatedSource(sourceObjectId)
+
+    if err := cc.allocations[allocation.Id].SetDestination(destinationId); err != nil {
+        return &AllocationCache{}, err
+    }
 
     var setPowerErr error
 
@@ -286,4 +334,16 @@ func (cc *CurrentContext) AutoResizeAllocation(allocationId string, newPower uin
     }
 
     return true
+}
+
+// allocationSourceGuild identifies the guild whose resource is being allocated.
+// A guild source owns itself; a guild-owned substation names it as owner.
+func (cc *CurrentContext) allocationSourceGuild(source PermissionedObject) *GuildCache {
+    if source == nil { return nil }
+    if guild, ok := source.(*GuildCache); ok { return guild }
+    kind, _, err := types.ParseAssetOwnerID(source.GetOwnerId())
+    if err != nil || kind != types.ObjectType_guild { return nil }
+    guild := cc.GetGuild(source.GetOwnerId())
+    if guild.CheckGuild() != nil { return nil }
+    return guild
 }

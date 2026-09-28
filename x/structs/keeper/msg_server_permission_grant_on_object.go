@@ -33,6 +33,10 @@ func (k msgServer) PermissionGrantOnObject(goCtx context.Context, msg *types.Msg
         return emptyResponse, types.NewPermissionError("player", player.GetPlayerId(), "object", msg.ObjectId, uint64(msg.Permissions), "permission_grant")
     }
 
+    if err := cc.PermissionAdministrationCheck(permissionedObject, player); err != nil {
+        return emptyResponse, err
+    }
+
     permissionErr := cc.PermissionCheck(permissionedObject, player, types.Permission(msg.Permissions))
     if permissionErr != nil {
         return emptyResponse, permissionErr

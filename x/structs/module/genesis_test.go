@@ -39,6 +39,41 @@ func TestGenesis_RebuildsProviderPoolAddressIndex(t *testing.T) {
 	require.Equal(t, keeperlib.ProviderPoolKindCollateral, kind)
 }
 
+func TestGenesis_PreservesExportedCountersAfterObjectDeletion(t *testing.T) {
+	gs := types.DefaultGenesis()
+	gs.GuildCount, gs.ReactorCount, gs.SubstationCount, gs.PlayerCount = 100, 101, 102, 103
+	gs.PlanetCount, gs.StructCount, gs.ProviderCount, gs.AllocationCount = 104, 105, 106, 107
+	k, ctx := keepertest.StructsKeeper(t)
+	// A hook may have already allocated an ID before Structs InitGenesis.
+	k.SetReactorCount(ctx, 200)
+	structs.InitGenesis(ctx, k, *gs)
+	exported := structs.ExportGenesis(ctx, k)
+	require.Equal(t, []uint64{100, 200, 102, 103, 104, 105, 106, 107}, []uint64{
+		exported.GuildCount, exported.ReactorCount, exported.SubstationCount, exported.PlayerCount,
+		exported.PlanetCount, exported.StructCount, exported.ProviderCount, exported.AllocationCount,
+	})
+	k2, ctx2 := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx2, k2, *exported)
+	require.Equal(t, uint64(107), k2.GetAllocationCount(ctx2), "a deleted allocation ID must not become the next allocation ID")
+	require.Equal(t, uint64(106), k2.GetProviderCount(ctx2))
+	require.Equal(t, uint64(102), k2.GetSubstationCount(ctx2))
+}
+
+func TestGenesis_RebuildsPlanetOwnerIndex(t *testing.T) {
+	gs := types.DefaultGenesis()
+	gs.PlanetList = []types.Planet{{Id: "2-1", Owner: "1-1"}, {Id: "2-2", Owner: "1-10"}}
+	for pass := 0; pass < 2; pass++ {
+		k, ctx := keepertest.StructsKeeper(t)
+		structs.InitGenesis(ctx, k, *gs)
+		for _, planet := range gs.PlanetList {
+			page, err := k.PlanetAllByPlayer(ctx, &types.QueryAllPlanetByPlayerRequest{PlayerId: planet.Owner})
+			require.NoError(t, err)
+			require.Equal(t, []types.Planet{planet}, page.Planet)
+		}
+		gs = structs.ExportGenesis(ctx, k)
+	}
+}
+
 // A planet exported while a fleet was visiting carries a nonzero
 // LocationListCount. On import every fleet is sent home, so the count must
 // reset to 0 or the planet is permanently un-raidable (MsgFleetMove rejects

@@ -43,6 +43,10 @@ func (k msgServer) PermissionGuildRankSet(goCtx context.Context, msg *types.MsgP
 		return emptyResponse, types.NewObjectNotFoundError("guild", msg.GuildId)
 	}
 
+    if err := cc.PermissionAdministrationCheck(permissionedObject, player); err != nil {
+        return emptyResponse, err
+    }
+
 	permissionErr := cc.PermissionCheck(permissionedObject, player, types.Permission(msg.Permission))
 	if permissionErr != nil {
 		return emptyResponse, permissionErr

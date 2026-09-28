@@ -2,7 +2,7 @@ package keeper
 
 import (
 
-	//"math"
+	"math/bits"
 
 	"structs/x/structs/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -206,11 +206,36 @@ func (cache *PlayerCache) GetAllocatableCapacity() uint64 {
 }
 
 func (cache *PlayerCache) GetAvailableCapacity() uint64 {
-	if (cache.GetLoad() + cache.GetStructsLoad()) > (cache.GetCapacity() + cache.GetCapacitySecondary()) {
-		return 0
-	} else {
-		return (cache.GetCapacity() + cache.GetCapacitySecondary()) - (cache.GetLoad() + cache.GetStructsLoad())
+	available, _ := cache.getPowerHeadroom()
+	return available
+}
+
+// Both totals can require 65 bits even though each stored attribute is uint64.
+// Preserve their carries through comparison and subtraction; saturating the
+// totals independently would hide overload when both exceed MaxUint64.
+func (cache *PlayerCache) getPowerHeadroom() (uint64, bool) {
+	load, loadCarry := bits.Add64(cache.GetLoad(), cache.GetStructsLoad(), 0)
+	secondary := cache.GetCapacitySecondary()
+	if secondary != 0 {
+		station := cache.CC.GetSubstation(cache.GetSubstationId())
+		if station.CheckSubstation() != nil {
+			secondary = 0
+		}
 	}
+	// Connection shares follow stored grid accounting and bounded GridCascade.
+	// A large incoming graph must not make a connected player go offline.
+	capacity, capacityCarry := bits.Add64(cache.getUsablePrimaryCapacity(), secondary, 0)
+	if loadCarry > capacityCarry || (loadCarry == capacityCarry && load > capacity) {
+		return 0, false
+	}
+	available, borrow := bits.Sub64(capacity, load, 0)
+	high, _ := bits.Sub64(capacityCarry, loadCarry, borrow)
+	if high != 0 {
+		// The public amount and any requested addition are uint64. Clamp only
+		// the final nonnegative difference, after exact comparison.
+		return ^uint64(0), true
+	}
+	return available, true
 }
 
 func (cache *PlayerCache) GetBuiltQuantity(structTypeId uint64) uint64 {
@@ -282,23 +307,19 @@ func (cache *PlayerCache) SetPrimaryAddress(address string) {
 }
 
 func (cache *PlayerCache) DepositRefinedAlpha() error {
-	newAlpha, _ := sdk.ParseCoinsNormalized("1000000ualpha")
-	if err := cache.CC.k.bankKeeper.MintCoins(cache.CC.ctx, types.ModuleName, newAlpha); err != nil {
-		return err
-	}
-	playerAcc, err := sdk.AccAddressFromBech32(cache.GetPrimaryAddress())
+	addresses, err := cache.CC.EnsureVaults(cache.ID())
 	if err != nil {
 		return err
 	}
-	return cache.CC.k.bankKeeper.SendCoinsFromModuleToAccount(cache.CC.ctx, types.ModuleName, playerAcc, newAlpha)
+	newAlpha := sdk.NewCoins(sdk.NewInt64Coin("ualpha", 1000000))
+	if err := cache.CC.k.bankKeeper.MintCoins(cache.CC.ctx, types.ModuleName, newAlpha); err != nil {
+		return err
+	}
+	return cache.CC.k.bankKeeper.SendCoinsFromModuleToAccount(cache.CC.ctx, types.ModuleName, addresses[0], newAlpha)
 }
 
 func (cache *PlayerCache) IsOnline() (online bool) {
-	if (cache.GetLoad() + cache.GetStructsLoad()) <= (cache.GetCapacity() + cache.GetCapacitySecondary()) {
-		online = true
-	} else {
-		online = false
-	}
+	_, online = cache.getPowerHeadroom()
 	return
 }
 
@@ -411,15 +432,8 @@ func (cache *PlayerCache) AttemptPlanetExplore() (err error) {
 }
 
 func (cache *PlayerCache) CanSupportLoadAddition(additionalLoad uint64) bool {
-	// Check player Load for the passiveDraw capacity
-	totalLoad := cache.GetLoad() + cache.GetStructsLoad()
-	totalCapacity := cache.GetCapacity() + cache.GetCapacitySecondary()
-
-	if totalLoad > totalCapacity {
-		return false
-	}
-
-	return ((totalCapacity - totalLoad) >= additionalLoad)
+	available, online := cache.getPowerHeadroom()
+	return online && available >= additionalLoad
 }
 
 func (cache *PlayerCache) SetGuildRank(rank uint64) {
@@ -451,7 +465,7 @@ func (cache *PlayerCache) MigrateSubstation(substationId string) {
 
 	cache.DisconnectSubstation()
 
-	if substationId != "" {
+	if substationId != "" && cache.CC.GetSubstation(substationId).CheckAcceptingConnections() == nil {
 		cache.Player.SubstationId = substationId
 		cache.CC.k.SetSubstationPlayerIndex(cache.CC.ctx, cache.GetSubstationId(), cache.GetPlayerId())
 		cache.GetSubstation().ConnectionCountIncrement(1)

@@ -8,6 +8,7 @@ import (
 
 	"structs/x/structs/types"
 
+	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -101,15 +102,23 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 
 	// Defensive: a zero start block would make currentAge the full chain
 	// height, collapsing the puzzle difficulty to trivial
-	if fleet.GetPlanet().GetBlockStartRaid() == 0 {
+	blockStart := fleet.GetPlanet().GetBlockStartRaid()
+	if blockStart == 0 {
 		return emptyResponse, types.NewPlanetStateError(fleet.GetPlanet().GetPlanetId(), "raid_clock_unset", "raid_complete")
 	}
 
+	// A future anchor is not elapsed work. Unsigned subtraction would wrap
+	// to an enormous age and accept a one-zero proof before the raid starts.
+	blockHeight := uint64(ctx.BlockHeight())
+	if blockHeight < blockStart {
+		return emptyResponse, sdkerrors.Wrapf(types.ErrInvalidParameters, "block height %d precedes start block %d", blockHeight, blockStart)
+	}
+
 	raidedPlanet := fleet.GetPlanet().GetPlanetId()
-	blockStartRaidString := strconv.FormatUint(fleet.GetPlanet().GetBlockStartRaid(), 10)
+	blockStartRaidString := strconv.FormatUint(blockStart, 10)
 	hashInput := msg.FleetId + "@" + fleet.GetPlanet().GetPlanetId() + "RAID" + blockStartRaidString + "NONCE" + msg.Nonce
 
-	currentAge := uint64(ctx.BlockHeight()) - fleet.GetPlanet().GetBlockStartRaid()
+	currentAge := blockHeight - blockStart
 	valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, fleet.GetPlanet().GetPlanetaryShield());
 	if !valid {
 		//_ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleet.GetFleetId(), PlanetId: raidedPlanet, Status: types.RaidStatus_ongoing}})

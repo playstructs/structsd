@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"cosmossdk.io/log"
+ "cosmossdk.io/math"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -81,7 +82,9 @@ func setupEnergyGridForSim(t *testing.T, k structskeeper.Keeper, ctx sdk.Context
 	player := registerPlayerWithAllPermissions(t, k, ctx, reactorOwnerAddr)
 
 	reactor := types.CreateEmptyReactor()
-	reactor.Validator = reactorOwnerAddr
+	validator := sdk.ValAddress(reactorOwner.Address)
+	k.StakingKeeper().(*testkeeper.MockStakingKeeper).AddValidator(validator, math.NewInt(10000000))
+	reactor.Validator = validator.String()
 	reactor.RawAddress = reactorOwner.Address.Bytes()
 	reactor = k.AppendReactor(ctx, reactor)
 
@@ -105,7 +108,7 @@ func setupEnergyGridForSim(t *testing.T, k structskeeper.Keeper, ctx sdk.Context
 
 	substationMsg := &types.MsgSubstationCreate{
 		Creator:      reactorOwnerAddr,
-		Owner:        reactorOwnerAddr,
+		Owner:        player.Id,
 		AllocationId: allocationId,
 	}
 	substationResp, err := msgServer.SubstationCreate(sdk.WrapSDKContext(ctx), substationMsg)

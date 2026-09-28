@@ -96,9 +96,9 @@ func (k Keeper) GetAllPlayer(ctx context.Context) (list []types.Player) {
     }
 */
 
-func (k Keeper) GetPlayerInventory(ctx context.Context, primaryAddress string) (types.PlayerInventory){
+func (k Keeper) GetPlayerInventory(ctx context.Context, assetAddress string) (types.PlayerInventory){
 
-     playerAcc, _ := sdk.AccAddressFromBech32(primaryAddress)
+     playerAcc, _ := sdk.AccAddressFromBech32(assetAddress)
      storage := k.bankKeeper.SpendableCoin(ctx, playerAcc, "ualpha")
 
      return types.PlayerInventory{Rocks: storage}

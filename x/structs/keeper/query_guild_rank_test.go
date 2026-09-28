@@ -18,28 +18,49 @@ func TestGuildRankPermissionByObjectQuery(t *testing.T) {
 	wctx := sdk.WrapSDKContext(ctx)
 
 	objectId := "1-5"
-	guild1 := "2-1"
-	guild2 := "2-2"
+	guild1 := "0-1"
+	guild2 := "0-2"
 
 	keeper.SetGuildRankPermissionStoreOnly(ctx, objectId, guild1, types.PermPlay, 3)
 	keeper.SetGuildRankPermissionStoreOnly(ctx, objectId, guild2, types.PermAdmin, 1)
 
-	resp, err := keeper.GuildRankPermissionByObject(wctx, &types.QueryGuildRankPermissionByObjectRequest{
-		ObjectId: objectId,
-	})
-	require.NoError(t, err)
-	require.Len(t, resp.GuildRankPermissionRecords, 2)
-
-	// With pagination (limit=1 means 1 guild register, which has 1 non-zero slot each)
-	resp2, err := keeper.GuildRankPermissionByObject(wctx, &types.QueryGuildRankPermissionByObjectRequest{
-		ObjectId: objectId,
-		Pagination: &query.PageRequest{
-			Limit: 1,
+	keeper.SetGuildRankPermissionStoreOnly(ctx, objectId, guild1, types.PermDelete, 7)
+	keeper.SetGuildRankPermissionStoreOnly(ctx, objectId, guild2, types.PermUpdate, 2)
+	keeper.SetGuildRankPermissionStoreOnly(ctx, "1-50", guild1, types.PermAll, 9)
+	expected := [][]*types.GuildRankPermissionRecord{
+		{
+			{ObjectId: objectId, GuildId: guild1, Permissions: uint64(types.PermPlay), Rank: 3},
+			{ObjectId: objectId, GuildId: guild1, Permissions: uint64(types.PermDelete), Rank: 7},
 		},
-	})
+		{
+			{ObjectId: objectId, GuildId: guild2, Permissions: uint64(types.PermAdmin), Rank: 1},
+			{ObjectId: objectId, GuildId: guild2, Permissions: uint64(types.PermUpdate), Rank: 2},
+		},
+	}
+	for _, reverse := range []bool{false, true} {
+		var next []byte
+		for page := 0; page < 2; page++ {
+			index := page
+			if reverse {
+				index = 1 - page
+			}
+			req := &types.QueryGuildRankPermissionByObjectRequest{ObjectId: objectId,
+				Pagination: &query.PageRequest{Key: next, Limit: 1, Reverse: reverse, CountTotal: true}}
+			resp, err := keeper.GuildRankPermissionByObject(wctx, req)
+			require.NoError(t, err)
+			require.Equal(t, expected[index], resp.GuildRankPermissionRecords, "a page contains every nonzero bit in its selected guild register")
+			require.Zero(t, resp.Pagination.Total)
+			next = resp.Pagination.NextKey
+			offsetResp, err := keeper.GuildRankPermissionByObject(wctx, &types.QueryGuildRankPermissionByObjectRequest{
+				ObjectId: objectId, Pagination: &query.PageRequest{Offset: uint64(page), Limit: 1, Reverse: reverse}})
+			require.NoError(t, err)
+			require.Equal(t, expected[index], offsetResp.GuildRankPermissionRecords)
+		}
+		require.Empty(t, next)
+	}
+	resp, err := keeper.GuildRankPermissionByObject(wctx, &types.QueryGuildRankPermissionByObjectRequest{ObjectId: objectId})
 	require.NoError(t, err)
-	require.Len(t, resp2.GuildRankPermissionRecords, 1)
-	require.NotNil(t, resp2.Pagination.NextKey)
+	require.Equal(t, append(expected[0], expected[1]...), resp.GuildRankPermissionRecords)
 
 	// Invalid: nil request
 	_, err = keeper.GuildRankPermissionByObject(wctx, nil)
@@ -66,7 +87,7 @@ func TestGuildRankPermissionByObjectAndGuildQuery(t *testing.T) {
 	wctx := sdk.WrapSDKContext(ctx)
 
 	objectId := "1-6"
-	guildId := "2-3"
+	guildId := "0-3"
 
 	keeper.SetGuildRankPermissionStoreOnly(ctx, objectId, guildId, types.PermPlay, 2)
 	keeper.SetGuildRankPermissionStoreOnly(ctx, objectId, guildId, types.PermUpdate, 5)
@@ -76,7 +97,10 @@ func TestGuildRankPermissionByObjectAndGuildQuery(t *testing.T) {
 		GuildId:  guildId,
 	})
 	require.NoError(t, err)
-	require.Len(t, resp.GuildRankPermissionRecords, 2)
+	require.Equal(t, []*types.GuildRankPermissionRecord{
+		{ObjectId: objectId, GuildId: guildId, Permissions: uint64(types.PermPlay), Rank: 2},
+		{ObjectId: objectId, GuildId: guildId, Permissions: uint64(types.PermUpdate), Rank: 5},
+	}, resp.GuildRankPermissionRecords)
 
 	// Invalid: empty object_id
 	_, err = keeper.GuildRankPermissionByObjectAndGuild(wctx, &types.QueryGuildRankPermissionByObjectAndGuildRequest{

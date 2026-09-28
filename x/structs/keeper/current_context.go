@@ -57,6 +57,7 @@ type CurrentContext struct {
 
 
     addresses       map[string]*AddressCache
+	addressesByPlayer map[uint64]map[string]*AddressCache
   	gridAttributes   map[string]*GridAttributeCache
   	structAttributes map[string]*StructAttributeCache
   	planetAttributes map[string]*PlanetAttributeCache
@@ -65,12 +66,18 @@ type CurrentContext struct {
 	guildRankRegisters      map[string]*GuildRankRegisterCache
 
 	players             map[string]*PlayerCache
+	vaults              map[string]*VaultCache
 	fleets              map[uint64]*FleetCache
 
 	agreements          map[string]*AgreementCache
 	guilds              map[string]*GuildCache
 	guildMembershipApps map[string]*GuildMembershipApplicationCache
 	infusions           map[string]*InfusionCache
+	// Read-only secondary view of the same caches, maintained on load/re-home.
+	infusionsByOwner    map[string]map[string]*InfusionCache
+	ownerReactorDiversity map[string]*OwnerReactorDiversityCache
+	reactorDiversityPositions map[string]*ReactorDiversityPositionCache
+	reactorDiversityParams *types.Params
 	planets             map[string]*PlanetCache
 
 
@@ -115,6 +122,7 @@ func (k *Keeper) NewCurrentContext(ctx context.Context) *CurrentContext {
 
 
 		addresses:       make(map[string]*AddressCache),
+		addressesByPlayer: make(map[uint64]map[string]*AddressCache),
 
 		gridAttributes:   make(map[string]*GridAttributeCache),
 		structAttributes: make(map[string]*StructAttributeCache),
@@ -125,6 +133,7 @@ func (k *Keeper) NewCurrentContext(ctx context.Context) *CurrentContext {
 
 
 		players:             make(map[string]*PlayerCache),
+		vaults:              make(map[string]*VaultCache),
 		fleets:              make(map[uint64]*FleetCache),
 
 		agreements:          make(map[string]*AgreementCache),
@@ -132,6 +141,9 @@ func (k *Keeper) NewCurrentContext(ctx context.Context) *CurrentContext {
 		guilds:              make(map[string]*GuildCache),
 		guildMembershipApps: make(map[string]*GuildMembershipApplicationCache),
 		infusions:           make(map[string]*InfusionCache),
+		infusionsByOwner:    make(map[string]map[string]*InfusionCache),
+		ownerReactorDiversity: make(map[string]*OwnerReactorDiversityCache),
+		reactorDiversityPositions: make(map[string]*ReactorDiversityPositionCache),
 		planets:             make(map[string]*PlanetCache),
 
 
@@ -201,8 +213,12 @@ func (cc *CurrentContext) CommitAll() {
 		return
 	}
 
+	cc.refreshDirtyReactorDiversity()
+	commitCaches(cc.ownerReactorDiversity)
+	commitCaches(cc.reactorDiversityPositions)
 	commitCaches(cc.players)
 	commitCaches(cc.addresses)
+	commitCaches(cc.vaults)
 	commitCaches(cc.infusions)
 	commitCaches(cc.allocations)
 	commitCaches(cc.guilds)

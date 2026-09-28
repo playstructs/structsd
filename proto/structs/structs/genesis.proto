@@ -32,6 +32,9 @@ message GenesisState {
   Params params  = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
   string port_id = 2;
 
+  // Provisioned vault owners; bank balances and auth accounts export in their modules.
+  repeated string vaultOwnerList = 38;
+
   repeated  Allocation allocationList   = 3 [(gogoproto.nullable) = false];
             uint64     allocationCount  = 28;
 
@@ -79,6 +82,16 @@ message GenesisState {
 
   repeated  PermissionRecord           permissionList         = 20;
   repeated  GuildRankPermissionRecord  guildRankPermissionList = 34;
+  // Deleted objects whose permission rows still require bounded cleanup.
+  repeated string permissionCleanupQueue = 41;
+  // Pending generator power/teardown jobs. Numeric cursors are derived from
+  // the rebuilt insertion index; infusion flags preserve completed progress.
+  repeated string generatorPowerQueue = 42;
+  // SDK staking v0.53 omits this sequence from its genesis. Preserve it so
+  // imported pending operations and later operations cannot reuse an ID.
+  uint64 stakingUnbondingId = 45;
+  // Once enabled, falling validator counts never disable the inflow cap.
+  bool reactorStakeCapActive = 46;
   repeated  GridRecord                 gridList               = 21;
   repeated  string              gridCascadeQueue = 30;
 

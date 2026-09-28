@@ -15,9 +15,16 @@ func (k msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParam
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := k.SetParams(ctx, req.Params); err != nil {
+    next := req.Params.WithReactorDefaults()
+    if err := next.Validate(); err != nil { return nil, err }
+    current := k.GetParams(ctx).WithReactorDefaults()
+    if next.DiversityMaxBonusBps != current.DiversityMaxBonusBps || next.DiversityTargetExtraReactors != current.DiversityTargetExtraReactors {
+        return nil, errorsmod.Wrap(types.ErrInvalidParameters, "diversity pricing changes require an upgrade")
+    }
+	if err := k.SetParams(ctx, next); err != nil {
 		return nil, err
 	}
 
+	if err := k.EmitReactorStakeCap(ctx); err != nil { return nil, err }
 	return &types.MsgUpdateParamsResponse{}, nil
 }

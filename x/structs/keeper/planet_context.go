@@ -56,6 +56,7 @@ func (cc *CurrentContext) GenesisImportPlanet(planet types.Planet) {
 	planet.LocationListCount = 0
 
 	cache := cc.GetPlanet(planet.Id)
+	if !cache.PlanetLoaded { cache.LoadPlanet() }
 	cache.Planet = planet
 	cache.PlanetLoaded = true
 	cache.Changed = true

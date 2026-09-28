@@ -5,7 +5,7 @@ import (
     sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// GetAgreement returns an AgreementCache by ID, loading from store if not already cached.
+// GetAgreement allocates a cache by ID; its getters load the record on demand.
 func (cc *CurrentContext) GetAgreement(agreementId string) *AgreementCache {
 	if cache, exists := cc.agreements[agreementId]; exists {
 		return cache
@@ -27,6 +27,20 @@ func (cc *CurrentContext) GetAgreement(agreementId string) *AgreementCache {
         }
 
 	return cc.agreements[agreementId]
+}
+
+// GetExistingAgreement resolves a message-supplied ID before checking authority.
+// A real permission row on a player's own ID cannot make that ID an agreement.
+// A loaded cache can still contain its old record after teardown removes the row.
+func (cc *CurrentContext) GetExistingAgreement(agreementId string) (*AgreementCache, error) {
+	if !ObjectIdHasType(agreementId, types.ObjectType_agreement) {
+		return nil, types.NewObjectNotFoundError("agreement", agreementId)
+	}
+	agreement := cc.GetAgreement(agreementId)
+	if agreement.Deleted || agreement.IsTearingDown() || (!agreement.AgreementLoaded && !agreement.LoadAgreement()) {
+		return nil, types.NewObjectNotFoundError("agreement", agreementId)
+	}
+	return agreement, nil
 }
 
 
@@ -117,6 +131,10 @@ func (cc *CurrentContext) RebaseAgreementsForZeroHeightGenesis() error {
 
 		// SetEndBlock records PreviousEndBlock, so Commit clears the row at the
 		// old absolute height and writes the rebased one.
+		// The served span's held-back provider penalty becomes unreachable once
+		// StartBlock is reset. Release it using the old window first, as with a
+		// capacity rebase; the remaining consumer collateral stays protected.
+		cache.PayoutVoidedProviderCancellationPenalty()
 		cache.SetStartBlock(0)
 		cache.SetEndBlock(remaining)
 	}

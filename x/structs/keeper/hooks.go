@@ -22,18 +22,11 @@ func (k Keeper) Hooks() Hooks {
 	return Hooks{k}
 }
 
-// AfterValidatorBonded restores reactor energy once a validator is back in the
-// active set, which is the path a routine unjail takes: MsgUnjail clears the
-// flag and staking rebonds the validator at the end of that block.
-//
-// An operator who unjails but stays below the active-set cutoff never reaches
-// here, and recovers through the permissionless MsgReactorRestart instead.
-//
-// Restoring is a reconciliation against live staking state, so calling it for a
-// validator that was never gated is harmless.
+// AfterValidatorBonded queues power reconstruction after a validator enters the
+// bonded set. Positions already zeroed regain power through the bounded worker;
+// unvisited positions remain subject to live backing and eligibility checks.
 func (h Hooks) AfterValidatorBonded(ctx context.Context, _ sdk.ConsAddress, valAddr sdk.ValAddress) error {
-	h.k.ReactorRestoreEnergy(ctx, valAddr)
-
+	h.k.QueueReactorRestoreEnergy(ctx, valAddr)
 	return nil
 }
 
@@ -54,23 +47,11 @@ func (h Hooks) AfterValidatorCreated(ctx context.Context, valAddr sdk.ValAddress
 
 // AfterValidatorBeginUnbonding is the primary jail gate for reactor energy.
 //
-// A jail sets the Jailed flag and drops the validator from the power index, and
-// staking's EndBlock in that same block moves it out of the bonded set through
-// bondedToUnbonding, which is what calls us here. Because the structs module is
-// last in the EndBlocker order, the gate lands before our own GridCascade, so
-// the capacity drop and its fallout resolve in the block the jail happened.
-//
-// Gating is conditional on the jail flag: leaving the active set voluntarily is
-// not a reason to stop producing energy, so an unjailed validator that is merely
-// unbonding keeps its reactor running.
+// Leaving the bonded set immediately makes live admission checks disregard the
+// reactor. Stored power is cleaned in bounded batches that enqueue GridCascade; a
+// large validator cannot force an unbounded scan in its staking transition hook.
 func (h Hooks) AfterValidatorBeginUnbonding(ctx context.Context, _ sdk.ConsAddress, valAddr sdk.ValAddress) error {
-	validator, err := h.k.stakingKeeper.GetValidator(ctx, valAddr)
-	if err != nil || validator.IsJailed() {
-		// A validator that cannot be read is treated as unhealthy, matching the
-		// fail-closed behaviour of reactorEnergyRatio.
-		h.k.ReactorGateEnergy(ctx, valAddr)
-	}
-
+	h.k.queueReactorEnergyReconcile(ctx, valAddr)
 	return nil
 }
 
@@ -79,14 +60,12 @@ func (h Hooks) BeforeValidatorModified(ctx context.Context, valAddr sdk.ValAddre
 	return nil
 }
 
-func (h Hooks) BeforeDelegationCreated(_ context.Context, _ sdk.AccAddress, _ sdk.ValAddress) error {
-	//_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
-	return nil
+func (h Hooks) BeforeDelegationCreated(ctx context.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
+	return h.k.snapshotReactorStake(ctx, playerAddress, valAddr)
 }
 
-func (h Hooks) BeforeDelegationSharesModified(_ context.Context, _ sdk.AccAddress, _ sdk.ValAddress) error {
-	//_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
-	return nil
+func (h Hooks) BeforeDelegationSharesModified(ctx context.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
+	return h.k.snapshotReactorStake(ctx, playerAddress, valAddr)
 }
 
 // BeforeDelegationRemoved clears the infusion behind a delegation that is being
@@ -96,20 +75,32 @@ func (h Hooks) BeforeDelegationSharesModified(_ context.Context, _ sdk.AccAddres
 // this matter, since it removes the source delegation and immediately grants
 // the destination the same stake.
 func (h Hooks) BeforeDelegationRemoved(ctx context.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
+	if err := h.k.clearReactorStakeSnapshot(ctx, playerAddress, valAddr); err != nil { return err }
 	h.k.ReactorInfusionDelegationRemoved(ctx, playerAddress, valAddr)
 
 	return nil
 }
 
 func (h Hooks) AfterDelegationModified(ctx context.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
-	h.k.ReactorUpdatePlayerInfusion(ctx, playerAddress, valAddr)
+	if err := h.k.enforceReactorStakeCap(ctx, playerAddress, valAddr); err != nil { return err }
+	err := h.k.ReactorUpdatePlayerInfusion(ctx, playerAddress, valAddr)
 
+    if err != nil {
+        // The consensus hook cannot veto a slash. Persist the retry through the
+        // existing bounded reactor repair queue, including a position already
+        // passed by an in-flight repair snapshot.
+        if reactorBytes, found := h.k.GetReactorBytesFromValidator(ctx, valAddr.Bytes()); found {
+            if reactor, found := h.k.GetReactorByBytes(ctx, reactorBytes); found {
+                h.k.EnqueueReactorInfusionRetry(ctx, reactor.Id, playerAddress)
+            }
+        }
+        h.k.logger.Error("reactor infusion reconciliation deferred", "error", err)
+    }
 	return nil
 }
 
 func (h Hooks) BeforeValidatorSlashed(ctx context.Context, valAddr sdk.ValAddress, fraction math.LegacyDec) error {
-	h.k.ReactorUpdateInfusionsFromSlashing(ctx, valAddr, fraction)
-	return nil
+	return h.k.ReactorUpdateInfusionsFromSlashing(ctx, valAddr, fraction)
 }
 
 func (h Hooks) AfterUnbondingInitiated(ctx context.Context, unbondingId uint64) error {

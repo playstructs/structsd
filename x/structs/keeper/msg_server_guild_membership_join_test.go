@@ -132,6 +132,14 @@ func TestGuildMembershipJoinRejectsDuplicateInfusions(t *testing.T) {
 		Fuel:            infusionFuel,
 	})
 	infusionId := reactor.Id + "-" + joinerAcc.String()
+	// Infusion records alone are not backing. The duplicate/sufficient controls
+	// must retain a real validator/share pair when the minimum uses live stake.
+	validatorAddress, err := sdk.ValAddressFromBech32(reactor.Validator)
+	require.NoError(t, err)
+	testAddValidator(k, validatorAddress, math.NewInt(infusionFuel))
+	require.NoError(t, k.StakingKeeper().(*keepertest.MockStakingKeeper).SetDelegation(ctx, stakingtypes.Delegation{
+		DelegatorAddress: joinerAcc.String(), ValidatorAddress: validatorAddress.String(), Shares: math.LegacyNewDec(infusionFuel),
+	}))
 
 	t.Run("one infusion is genuinely short of the minimum", func(t *testing.T) {
 		_, err := ms.GuildMembershipJoin(wctx, &types.MsgGuildMembershipJoin{

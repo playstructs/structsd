@@ -33,8 +33,16 @@ func (k msgServer) AllocationDelete(goCtx context.Context, msg *types.MsgAllocat
         }
     }
 
-    if (allocation.GetAllocation().Type != types.AllocationType_dynamic) {
-        return emptyResponse, types.NewAllocationError(allocation.GetAllocation().SourceObjectId, "immutable_type").WithFieldChange("type", allocation.GetAllocation().Type.String(), "dynamic")
+    if allocation.GetAllocation().Type != types.AllocationType_dynamic {
+        source := allocation.GetSource()
+        // Guild administrators can revoke committed guild power. Provider
+        // agreements keep their explicit settlement/closure path.
+        if allocation.IsProviderAgreement() || cc.allocationSourceGuild(source) == nil {
+            return emptyResponse, types.NewAllocationError(allocation.GetSourceId(), "immutable_type").WithFieldChange("type", allocation.GetAllocation().Type.String(), "dynamic")
+        }
+        if err := cc.PermissionAdministrationCheck(source, activePlayer); err != nil {
+            return emptyResponse, err
+        }
     }
 
     // Destroy settles any agreement backed by this allocation, so a failed

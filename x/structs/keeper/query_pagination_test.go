@@ -127,3 +127,14 @@ func TestQueryPagination_SmallLimitUnchanged(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, resp.Player, 7)
 }
+
+func TestQueryPagination_ExcessiveOffsetRejected(t *testing.T) {
+ f, _ := seedPlayers(t, 10)
+ for _, offset := range []uint64{types.QueryPageLimitMaximum + 1, ^uint64(0)} {
+  _, err := f.k.PlayerAll(f.ctx, &types.QueryAllPlayerRequest{Pagination: &query.PageRequest{Offset: offset, Limit: 1}})
+  require.ErrorContains(t, err, "use pagination key")
+ }
+ response, err := f.k.PlayerAll(f.ctx, &types.QueryAllPlayerRequest{Pagination: &query.PageRequest{Offset: 3, Limit: 2}})
+ require.NoError(t, err)
+ require.Len(t, response.Player, 2)
+}

@@ -33,6 +33,7 @@ type StructCache struct {
 	structType *types.StructType
 
 	CounterSpent bool
+	GeneratorReconcilePending bool
 }
 
 
@@ -41,6 +42,12 @@ func (cache *StructCache) Commit() {
     	cache.CC.k.logger.Info("Updating Struct From Cache", "structId", cache.StructId)
 		cache.CC.k.SetStruct(cache.CC.ctx, cache.Structure)
 		cache.Changed = false
+	}
+	if cache.GeneratorReconcilePending {
+		// Infusions commit before structs, including any created in this
+		// operation. Capture the finite work set only after those writes.
+		cache.CC.k.EnqueueGeneratorPower(cache.CC.ctx, cache.ID())
+		cache.GeneratorReconcilePending = false
 	}
 }
 
@@ -343,6 +350,7 @@ func (cache *StructCache) GoOnline() {
 
 	if cache.GetStructType().HasPowerGenerationSystem() {
 		cache.GridStatusAddReady()
+		 cache.GeneratorReconcilePending = true
 	}
 
 	// Set the struct status flag to include built
@@ -388,15 +396,9 @@ func (cache *StructCache) GoOffline() {
     	if cache.GetStructType().HasPowerGenerationSystem() {
     		cache.GridStatusRemoveReady()
 
-    		// Remove all allocations
-    		// The struct is going offline regardless, so a failed agreement
-    		// settlement is logged rather than stopping the teardown.
-    		allocations := cache.CC.GetAllAllocationBySource(cache.StructId)
-    		for _, allocation := range allocations {
-    		    if err := allocation.Destroy(); err != nil {
-    		        cache.CC.k.logger.Error("Allocation could not be destroyed on struct offline", "structId", cache.StructId, "allocationId", allocation.GetAllocationId(), "error", err)
-    		    }
-    		}
+
+			    cache.GeneratorReconcilePending = true
+
     	}
 
     	// Set the struct status flag to include built
@@ -767,33 +769,8 @@ func (cache *StructCache) DestroyAndCommit() {
 	cache.CC.k.DestroyStructDefender(cache.CC.ctx, cache.GetStructId())
 
 	if cache.GetStructType().HasPowerGenerationSystem() {
-		// Clear out infusions
-		infusions := cache.CC.GetAllInfusionByDestination(cache.StructId)
-		for _, infusion := range infusions {
-		    infusion.Destroy()
-		}
 
-		// Clear out all remaining allocations
-		// clearing out all infusions should automatically clear allocations too,
-		// but some allocations, such as automated ones may still exist
-		allocations := cache.CC.GetAllAllocationBySource(cache.StructId)
-        for _, allocation := range allocations {
-            if err := allocation.Destroy(); err != nil {
-                cache.CC.k.logger.Error("Allocation could not be destroyed on struct destruction", "structId", cache.StructId, "allocationId", allocation.GetAllocationId(), "error", err)
-            }
-        }
-
-		// Clear Load
-		cache.CC.ClearGridAttribute(GetGridAttributeIDByObjectId(types.GridAttributeType_load, cache.StructId))
-
-		// Clear Capacity
-		cache.CC.ClearGridAttribute(GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, cache.StructId))
-
-		// Clear Fuel
-		cache.CC.ClearGridAttribute(GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, cache.StructId))
-
-		// Clear Power
-		cache.CC.ClearGridAttribute(GetGridAttributeIDByObjectId(types.GridAttributeType_power, cache.StructId))
+			cache.GeneratorReconcilePending = true
 
 	}
 
@@ -840,6 +817,12 @@ func (cache *StructCache) AttemptMove(destinationType types.ObjectType, ambit ty
 		return types.NewStructStateError(cache.StructId, "offline", "online", "move")
 	}
 
+	// Stored capacity can outlive reactor shutdown until deferred repair.
+	// Moving a live struct still requires the owner's currently backed power.
+	if cache.GetOwner().IsOffline() {
+		return types.NewPlayerPowerError(cache.GetOwnerId(), "offline")
+	}
+
 	if !cache.GetStructType().Movable {
 		return types.NewStructLocationError(cache.GetTypeId(), ambit.String(), "immovable")
 	}
@@ -874,6 +857,7 @@ func (cache *StructCache) AttemptMove(destinationType types.ObjectType, ambit ty
             cache.Structure.LocationId = cache.GetOwner().GetPlanetId()
             cache.Structure.LocationType = destinationType
             cache.Structure.OperatingAmbit = ambit
+            cache.Structure.Slot = slot
 
             // Update the cross reference on the planet
             err := cache.GetOwner().GetPlanet().SetSlot(cache.Structure)

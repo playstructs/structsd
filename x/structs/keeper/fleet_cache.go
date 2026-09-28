@@ -302,29 +302,29 @@ func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structT
     } else {
 
         var slots uint64
-        var slot string
+        var occupants []string
         // Check Ambit / Slot
         switch ambit {
             case types.Ambit_land:
                 slots = cache.GetFleet().LandSlots
-                slot  = cache.GetFleet().Land[ambitSlot]
+                occupants = cache.GetFleet().Land
             case types.Ambit_water:
                 slots = cache.GetFleet().WaterSlots
-                slot  = cache.GetFleet().Water[ambitSlot]
+                occupants = cache.GetFleet().Water
             case types.Ambit_air:
                 slots = cache.GetFleet().AirSlots
-                slot  = cache.GetFleet().Air[ambitSlot]
+                occupants = cache.GetFleet().Air
             case types.Ambit_space:
                 slots = cache.GetFleet().SpaceSlots
-                slot  = cache.GetFleet().Space[ambitSlot]
+                occupants = cache.GetFleet().Space
             default:
                 return types.NewStructBuildError(structType.ID(), "fleet", cache.GetFleetId(), "invalid_ambit").WithAmbit(ambit.String())
         }
 
-        if (ambitSlot >= slots) {
+        if ambitSlot >= slots || ambitSlot >= uint64(len(occupants)) {
             return types.NewStructBuildError(structType.ID(), "fleet", cache.GetFleetId(), "slot_unavailable").WithSlot(ambitSlot)
         }
-        if (slot != "") {
+        if slot := occupants[ambitSlot]; slot != "" {
             return types.NewStructBuildError(structType.ID(), "fleet", cache.GetFleetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
         }
     }
@@ -350,29 +350,29 @@ func (cache *FleetCache) MoveReadiness(structure *StructCache, ambit types.Ambit
     if structure.GetStructType().Type != types.CommandStruct {
 
         var slots uint64
-        var slot string
+        var occupants []string
         // Check Ambit / Slot
         switch ambit {
             case types.Ambit_land:
                 slots = cache.GetFleet().LandSlots
-                slot  = cache.GetFleet().Land[ambitSlot]
+                occupants = cache.GetFleet().Land
             case types.Ambit_water:
                 slots = cache.GetFleet().WaterSlots
-                slot  = cache.GetFleet().Water[ambitSlot]
+                occupants = cache.GetFleet().Water
             case types.Ambit_air:
                 slots = cache.GetFleet().AirSlots
-                slot  = cache.GetFleet().Air[ambitSlot]
+                occupants = cache.GetFleet().Air
             case types.Ambit_space:
                 slots = cache.GetFleet().SpaceSlots
-                slot  = cache.GetFleet().Space[ambitSlot]
+                occupants = cache.GetFleet().Space
             default:
                 return types.NewStructBuildError(structure.GetTypeId(), "fleet", cache.GetFleetId(), "invalid_ambit").WithAmbit(ambit.String())
         }
 
-        if (ambitSlot >= slots) {
+        if ambitSlot >= slots || ambitSlot >= uint64(len(occupants)) {
             return types.NewStructBuildError(structure.GetTypeId(), "fleet", cache.GetFleetId(), "slot_unavailable").WithSlot(ambitSlot)
         }
-        if (slot != "") {
+        if slot := occupants[ambitSlot]; slot != "" {
             return types.NewStructBuildError(structure.GetTypeId(), "fleet", cache.GetFleetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
         }
     }

@@ -23,22 +23,12 @@ func (k msgServer) ReactorDefuse(goCtx context.Context, msg *types.MsgReactorDef
        return emptyResponse, err
     }
 
-    // Load the player related to the specified address
-    // Normally the address specified should be the PrimaryAddress
-    player, err := cc.GetPlayerByAddress(msg.DelegatorAddress)
+    delegatorAddress, err := cc.resolveReactorDelegator(msg.DelegatorAddress, msg.OwnerId, callingPlayer, types.PermTokenDefuse)
     if err != nil {
-       return emptyResponse, err
+        return emptyResponse, err
     }
 
-    err = player.CanDefuseTokensBy(callingPlayer)
-    if err != nil {
-       return emptyResponse, err
-    }
 
-    delegatorAddress, delegatorAddressErr := sdk.AccAddressFromBech32(msg.DelegatorAddress)
- 	if delegatorAddressErr != nil {
- 		return emptyResponse, types.NewAddressValidationError(msg.DelegatorAddress, "invalid_delegator")
- 	}
 
     valAddr, valErr := sdk.ValAddressFromBech32(msg.ValidatorAddress)
 	if valErr != nil {
@@ -76,7 +66,7 @@ func (k msgServer) ReactorDefuse(goCtx context.Context, msg *types.MsgReactorDef
 		sdk.NewEvent(
 			staking.EventTypeUnbond,
 			sdk.NewAttribute(staking.AttributeKeyValidator, msg.ValidatorAddress),
-			sdk.NewAttribute(staking.AttributeKeyDelegator, msg.DelegatorAddress),
+			sdk.NewAttribute(staking.AttributeKeyDelegator, delegatorAddress.String()),
 			sdk.NewAttribute(sdk.AttributeKeyAmount, undelegatedCoin.String()),
 			sdk.NewAttribute(staking.AttributeKeyCompletionTime, completionTime.Format(time.RFC3339)),
 		),

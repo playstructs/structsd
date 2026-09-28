@@ -19,6 +19,7 @@ message MsgProviderWithdrawBalance {
 func (k msgServer) ProviderWithdrawBalance(goCtx context.Context, msg *types.MsgProviderWithdrawBalance) (*types.MsgProviderResponse, error) {
     emptyResponse := &types.MsgProviderResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx, write := ctx.CacheContext()
     cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
@@ -45,5 +46,6 @@ func (k msgServer) ProviderWithdrawBalance(goCtx context.Context, msg *types.Msg
     }
 
 	cc.CommitAll()
+	write()
 	return &types.MsgProviderResponse{}, nil
 }

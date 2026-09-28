@@ -118,7 +118,12 @@ func TestArch_HandlersResolveMessagePlayerIdsThroughGetExistingPlayer(t *testing
 					return true
 				}
 
-				if sel.Sel.Name == "GetExistingPlayer" {
+				// Allocation controllers may also be existing guilds. Keep this
+				// exception scoped to those handlers; player-only subjects still
+				// require the player resolver.
+				assetControllerLoader := sel.Sel.Name == "GetExistingAssetOwner" &&
+					(fn.Name.Name == "AllocationCreate" || fn.Name.Name == "AllocationTransfer")
+				if sel.Sel.Name == "GetExistingPlayer" || assetControllerLoader {
 					checkedLoaders++
 					if len(call.Args) == 1 {
 						arg := call.Args[0]

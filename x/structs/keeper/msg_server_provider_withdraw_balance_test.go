@@ -13,111 +13,79 @@ import (
 )
 
 func TestMsgProviderWithdrawBalance(t *testing.T) {
-	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
-
-	// Create a player first
-	playerAcc := sdk.AccAddress("creator123456789012345678901234567890")
-	player := types.Player{
-		Creator:        playerAcc.String(),
-		PrimaryAddress: playerAcc.String(),
-	}
-	player = testAppendPlayer(k, ctx, player)
-
-	// Create a substation
-	sourceObjectId := "source-object"
-	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceObjectId)
-	k.SetGridAttribute(ctx, capacityAttrId, uint64(1000))
-
-	allocation := types.Allocation{
-		SourceObjectId: sourceObjectId,
-		DestinationId:  "",
-		Type:           types.AllocationType_static,
-		Controller:     player.Id,
-	}
-	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
-	require.NoError(t, err)
-
-	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, player)
-	require.NoError(t, err)
-
-	// Create a provider
-	provider := types.Provider{
-		Owner:                       player.Id,
-		Creator:                     player.Creator,
-		SubstationId:                substation.Id,
-		Rate:                        sdk.NewCoin("token", math.NewInt(100)),
-		AccessPolicy:                types.ProviderAccessPolicy_openMarket,
-		CapacityMinimum:             100,
-		CapacityMaximum:             1000,
-		DurationMinimum:             1,
-		DurationMaximum:             10,
-		ProviderCancellationPenalty: math.LegacyNewDec(1),
-		ConsumerCancellationPenalty: math.LegacyNewDec(1),
-	}
-	provider = testAppendProvider(k, ctx, provider)
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgProviderWithdrawBalance
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid balance withdrawal",
-			input: &types.MsgProviderWithdrawBalance{
-				Creator:            player.Creator,
-				ProviderId:         provider.Id,
-				DestinationAddress: player.Creator,
-			},
-			expErr: false,
-		},
-		{
-			name: "provider not found",
-			input: &types.MsgProviderWithdrawBalance{
-				Creator:            player.Creator,
-				ProviderId:         "invalid-provider",
-				DestinationAddress: player.Creator,
-			},
-			expErr:    true,
-			expErrMsg: "not found",
-			skip:      true, // Skip - cache system validation order
-		},
-		{
-			name: "no withdraw permissions",
-			input: &types.MsgProviderWithdrawBalance{
-				Creator:            sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				ProviderId:         provider.Id,
-				DestinationAddress: player.Creator,
-			},
-			expErr:    true,
-			expErrMsg: "has no",
-			skip:      true, // Skip - GetPlayerCacheFromAddress might create player
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
-			}
-
-			// Recreate provider if needed
-			if tc.name == "valid balance withdrawal" {
-				provider = testAppendProvider(k, ctx, provider)
-				tc.input.ProviderId = provider.Id
-			}
-
-			resp, err := ms.ProviderWithdrawBalance(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, resp)
+	for _, guildOwned := range []bool{false, true} {
+		ownership := "player owned"
+		if guildOwned {
+			ownership = "guild owned"
+		}
+		t.Run(ownership, func(t *testing.T) {
+			for _, name := range []string{"owner with exact key bit", "explicit delegate", "missing provider", "unregistered signer", "unprivileged player", "owner key lacks withdraw", "delegate key lacks withdraw", "invalid recipient"} {
+				t.Run(name, func(t *testing.T) {
+					f := setupTeardownFixture(t, 10, "0", "0")
+					ctx := sdk.UnwrapSDKContext(f.ctx)
+					if guildOwned {
+						guild := types.CreateEmptyGuild()
+						guild.Id, guild.Index, guild.Owner = "0-900", 900, f.provider.Owner
+						f.k.SetGuild(ctx, guild)
+						f.provider.Owner = guild.Id
+						_, err := f.k.SetProvider(ctx, f.provider)
+						require.NoError(t, err)
+					}
+					address := sdk.AccAddress("withdraw_other_player")
+					other := testAppendPlayer(f.k, ctx, types.Player{Creator: address.String(), PrimaryAddress: address.String()})
+					recipient := sdk.AccAddress("withdraw_recipient__")
+					msg := &types.MsgProviderWithdrawBalance{Creator: f.provider.Creator, ProviderId: f.provider.Id, DestinationAddress: recipient.String()}
+					f.k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(msg.Creator), types.PermProviderWithdraw)
+					f.k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(other.Creator), types.PermProviderWithdraw)
+					wantError := ""
+					switch name {
+					case "explicit delegate", "delegate key lacks withdraw":
+						msg.Creator = other.Creator
+						f.k.SetPermissionsByBytes(ctx, keeperlib.GetObjectPermissionIDBytes(f.provider.Id, other.Id), types.PermProviderWithdraw)
+						if name == "delegate key lacks withdraw" {
+							f.k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(msg.Creator), types.PermAll &^ types.PermProviderWithdraw)
+							wantError = "permission"
+						}
+					case "missing provider":
+						msg.ProviderId, wantError = "10-999999", "not found"
+					case "unregistered signer":
+						msg.Creator, wantError = sdk.AccAddress("withdraw_unknown_key").String(), "player"
+					case "unprivileged player":
+						msg.Creator, wantError = other.Creator, "permission"
+					case "owner key lacks withdraw":
+						f.k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(msg.Creator), types.PermAll &^ types.PermProviderWithdraw)
+						wantError = "permission"
+					case "invalid recipient":
+						msg.DestinationAddress, wantError = "invalid-recipient", "address"
+					}
+					f.fund(t, f.earningsAcc, 7)
+					f.fund(t, f.collateralAcc, 11)
+					bank := f.k.BankKeeper().(*keepertest.MockBankKeeper)
+					bankBefore := bank.Snapshot()
+					gridBefore := f.k.GetAllGridExport(ctx)
+					permissionsBefore := f.k.GetAllPermissionExport(ctx)
+					ctx = ctx.WithEventManager(sdk.NewEventManager())
+					response, err := f.ms.ProviderWithdrawBalance(ctx, msg)
+					require.NotNil(t, response, "handlers return an empty response with an error")
+					if wantError != "" {
+						require.ErrorContains(t, err, wantError)
+						require.Equal(t, bankBefore, bank.Snapshot())
+						require.Equal(t, gridBefore, f.k.GetAllGridExport(ctx))
+						require.Empty(t, ctx.EventManager().ABCIEvents())
+					} else {
+						require.NoError(t, err)
+						require.Equal(t, math.NewInt(7), f.balance(recipient))
+						require.True(t, f.balance(f.earningsAcc).IsZero())
+						_, err = f.ms.ProviderWithdrawBalance(ctx, msg)
+						require.NoError(t, err)
+						require.Equal(t, math.NewInt(7), f.balance(recipient), "an empty repeat cannot pay twice")
+					}
+					require.Equal(t, math.NewInt(11), f.balance(f.collateralAcc), "unearned collateral is not withdrawable")
+					require.Equal(t, permissionsBefore, f.k.GetAllPermissionExport(ctx))
+					provider, found := f.k.GetProvider(ctx, f.provider.Id)
+					require.True(t, found)
+					require.Equal(t, f.provider, provider)
+				})
 			}
 		})
 	}

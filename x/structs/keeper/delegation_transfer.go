@@ -5,6 +5,7 @@ import (
 	stdmath "math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	vestingexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"structs/x/structs/types"
@@ -21,6 +22,11 @@ const (
 	// DelegationTransferDisown leaves blocked stake in place but removes the
 	// capacity credited to an address the player no longer owns.
 	DelegationTransferDisown
+
+	// Rotation or registration keeps the source registered and accessible. Preserve its
+	// native operator stake and vesting-account stake without moving their
+	// obligations; remain strict for other delegation blockers.
+	DelegationTransferStrictRetainSelf
 )
 
 /* MoveDelegationsToAddress assembles the delegation transfer Cosmos does not
@@ -48,7 +54,8 @@ func (k Keeper) MoveDelegationsToAddress(ctx context.Context, cc *CurrentContext
 		return types.NewDelegationTransferError(from.String(), to, "too_many_delegations").WithCount(len(delegations))
 	}
 
-	movable, blocked, err := k.partitionTransferableDelegations(ctx, from, to, delegations, policy)
+	_, vestingSource := k.accountKeeper.GetAccount(ctx, from).(vestingexported.VestingAccount)
+	movable, blocked, err := k.partitionTransferableDelegations(ctx, from, to, delegations, policy, vestingSource)
 	if err != nil {
 		return err
 	}
@@ -62,8 +69,29 @@ func (k Keeper) MoveDelegationsToAddress(ctx context.Context, cc *CurrentContext
 	}
 
 	for _, validatorAddress := range touched {
-		k.reconcileExistingInfusionForDelegation(ctx, cc, from, validatorAddress)
-		k.reconcileInfusionForDelegation(ctx, cc, toAcc, validatorAddress)
+		// A reconcile that fails here has already lost the source credit, so
+		// it must fail the transaction rather than leave the destination
+		// uncredited.
+		if err := k.reconcileExistingInfusionForDelegation(ctx, cc, from, validatorAddress); err != nil {
+			return err
+		}
+		if _, _, err := k.reconcileInfusionForDelegation(ctx, cc, toAcc, validatorAddress); err != nil {
+			return err
+		}
+	}
+
+	if policy == DelegationTransferStrictRetainSelf {
+		// Registration staged the new address owner in this same context.
+		// Reconcile only after all transfers/hook commits, so retained stake
+		// credits that owner without a stale outer grid cache overwriting hooks.
+		for _, delegation := range delegations {
+			validatorAddress, _ := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
+			if vestingSource || from.Equals(sdk.AccAddress(validatorAddress)) {
+				if _, _, err := k.reconcileInfusionForDelegation(ctx, cc, from, validatorAddress); err != nil {
+					return err
+				}
+			}
+		}
 	}
 
 	for _, validatorAddress := range blocked {
@@ -78,9 +106,11 @@ type delegationMovement struct {
 	validator  sdk.ValAddress
 }
 
-/* partitionTransferableDelegations preflights every source delegation. SDK
- * queue rows and indices cannot be rekeyed, so in-flight unbonding delegations
- * and redelegations cannot follow the delegation safely.
+/* partitionTransferableDelegations preflights every source delegation. This
+ * transaction helper does not migrate queue slices or operation-ID indices,
+ * so it refuses in-flight unbondings and redelegations. A coordinated upgrade
+ * can use the SDK's queue/index setters, but must move all related records and
+ * preserve slashing and maturity semantics; those are outside this helper.
  */
 func (k Keeper) partitionTransferableDelegations(
 	ctx context.Context,
@@ -88,11 +118,30 @@ func (k Keeper) partitionTransferableDelegations(
 	to string,
 	delegations []stakingtypes.Delegation,
 	policy DelegationTransferPolicy,
+	vestingSource bool,
 ) (movable []delegationMovement, blocked []sdk.ValAddress, err error) {
 	for _, delegation := range delegations {
 		validatorAddress, validatorAddressErr := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
 		if validatorAddressErr != nil {
 			return nil, nil, types.NewAddressValidationError(delegation.ValidatorAddress, "invalid_format")
+		}
+
+		// SetDelegation moves no vesting counters. Keep the native account and
+		// all its stake together, regardless of which validator holds it. A
+		// revoke must still clear its capacity without being held up by locks.
+		if vestingSource {
+			if policy == DelegationTransferStrictRetainSelf {
+				continue
+			}
+			if policy != DelegationTransferDisown {
+				return nil, nil, types.NewDelegationTransferError(from.String(), to, "vesting_account").WithValidator(validatorAddress.String())
+			}
+			blocked = append(blocked, validatorAddress)
+			continue
+		}
+
+		if policy == DelegationTransferStrictRetainSelf && from.Equals(sdk.AccAddress(validatorAddress)) {
+			continue
 		}
 
 		reason, checkErr := k.delegationTransferBlocker(ctx, from, validatorAddress)
@@ -105,7 +154,7 @@ func (k Keeper) partitionTransferableDelegations(
 			continue
 		}
 
-		if policy == DelegationTransferStrict {
+		if policy != DelegationTransferDisown {
 			return nil, nil, types.NewDelegationTransferError(from.String(), to, reason).WithValidator(validatorAddress.String())
 		}
 
@@ -119,6 +168,13 @@ func (k Keeper) partitionTransferableDelegations(
 
 // delegationTransferBlocker returns why a delegation cannot be transferred.
 func (k Keeper) delegationTransferBlocker(ctx context.Context, from sdk.AccAddress, validatorAddress sdk.ValAddress) (string, error) {
+	// Rekeying self-stake would bypass native minimum-self-delegation and
+	// make native unjailing unable to find it. Revocation may disown it, but
+	// never relocate it through the assembled transfer.
+	if from.Equals(sdk.AccAddress(validatorAddress)) {
+		return "validator_self_delegation", nil
+	}
+
 	receiving, receivingErr := k.stakingKeeper.HasReceivingRedelegation(ctx, from, validatorAddress)
 	if receivingErr != nil {
 		return "", receivingErr

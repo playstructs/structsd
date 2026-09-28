@@ -32,6 +32,9 @@ func (k Keeper) GuildBankDenomSendRestriction(
 	if k.GetPlayerIndexFromAddress(ctx, toAddr.String()) > 0 {
 		return toAddr, nil
 	}
+	if _, found := k.GetVaultOwner(ctx, toAddr); found {
+		return toAddr, nil
+	}
 
 	moduleAddress := k.accountKeeper.GetModuleAddress(types.ModuleName)
 	if moduleAddress != nil && moduleAddress.Equals(toAddr) {

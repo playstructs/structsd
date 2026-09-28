@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"testing"
+ "cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -22,6 +23,7 @@ func TestMsgAllocationCreate(t *testing.T) {
 	player = testAppendPlayer(k, ctx, player)
 
 	validatorAddress := sdk.ValAddress(playerAcc.Bytes())
+	testAddValidator(k, validatorAddress, math.NewInt(1000))
 	reactor := types.Reactor{
 		Validator:  validatorAddress.String(),
 		RawAddress: validatorAddress.Bytes(),

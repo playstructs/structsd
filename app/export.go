@@ -11,6 +11,7 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	structstypes "structs/x/structs/types"
 )
 
 // ExportAppStateAndValidators exports the state of the application for a genesis
@@ -18,6 +19,8 @@ import (
 func (app *App) ExportAppStateAndValidators(forZeroHeight bool, jailAllowedAddrs, modulesToExport []string) (servertypes.ExportedApp, error) {
 	// as if they could withdraw from the start of the next block
 	ctx := app.NewContextLegacy(true, cmtproto.Header{Height: app.LastBlockHeight()})
+	// Export preparation must not mutate the source application's check state.
+	ctx, _ = ctx.CacheContext()
 
 	// We export at last height + 1, because that's the height at which
 	// CometBFT will start InitChain.
@@ -32,6 +35,20 @@ func (app *App) ExportAppStateAndValidators(forZeroHeight bool, jailAllowedAddrs
 	genState, err := app.ModuleManager.ExportGenesisForModules(ctx, app.appCodec, modulesToExport)
 	if err != nil {
 		return servertypes.ExportedApp{}, err
+	}
+	if raw, included := genState[structstypes.ModuleName]; included {
+		var genesis structstypes.GenesisState
+		if err := app.appCodec.UnmarshalJSON(raw, &genesis); err != nil {
+			return servertypes.ExportedApp{}, err
+		}
+		genesis.StakingUnbondingId, err = app.stakingUnbondingID(ctx)
+		if err != nil {
+			return servertypes.ExportedApp{}, err
+		}
+		genState[structstypes.ModuleName], err = app.appCodec.MarshalJSON(&genesis)
+		if err != nil {
+			return servertypes.ExportedApp{}, err
+		}
 	}
 
 	appState, err := json.MarshalIndent(genState, "", "  ")
@@ -88,10 +105,8 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 	 *
 	 * Runs before the staking work below because it settles providers against
 	 * the old clock, and that has to happen while the old clock still means
-	 * something. Structs holds no other absolute height that survives an import:
-	 * planet and struct block clocks are exported but never read back, grid
-	 * lastAction is filtered out, the reactor charter stamp is recomputed from
-	 * params, and CharterAge clamps an anchor ahead of the height to zero.
+	 * something. Planet/struct clocks are rebuilt on import, grid lastAction is
+	 * filtered, and reactor charter stamps are recomputed on import.
 	 */
 	structsCC := app.StructsKeeper.NewCurrentContext(ctx)
 	if err := structsCC.RebaseAgreementsForZeroHeightGenesis(); err != nil {

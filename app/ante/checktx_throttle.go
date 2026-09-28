@@ -100,8 +100,16 @@ func (d CheckTxThrottleDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 			return ctx, observeReject(ctx, "CheckTxThrottleDecorator",
 				errorsmod.Wrapf(ErrCheckTxAddrCapExceeded, "address %s: %d/%d at block %d", addr, newCount, d.addrCap, height))
 		}
-		d.counter.counts[addr] = newCount
 	}
 
-	return next(ctx, tx, simulate)
+	// Authenticate and preflight every signer before changing any count. Failed
+	// downstream ante checks do not consume node-local admission slots.
+	newCtx, err := next(ctx, tx, simulate)
+	if err != nil {
+		return newCtx, err
+	}
+	for addr := range addresses {
+		d.counter.counts[addr]++
+	}
+	return newCtx, nil
 }

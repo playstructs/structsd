@@ -77,8 +77,14 @@ func (cc *CurrentContext) ClearPermissions(permissionId []byte) {
 	}
 }
 
+// Block hooks share the existing cleanup worker's budget instead of multiplying
+// a per-object first pass by every expiry/cascade deletion in the block. Carry
+// this through the SDK context so nested CurrentContexts inherit the policy.
+type deferPermissionCleanupKey struct{}
+
 /* ClearPermissionsForObject removes what a destroyed object had granted, up to
- * one pass' worth, and queues the object if anything is left.
+ * one pass' worth, and queues the object if anything is left. In block hooks all
+ * rows go through the shared cleanup worker, with no per-object first pass.
  *
  * The row count is chosen by whoever owned the object, and agreement expiry
  * reaches this from the EndBlocker where nothing bounds it. What the pass does
@@ -96,8 +102,6 @@ func (cc *CurrentContext) ClearPermissionsForObject(objectId string) {
 		return
 	}
 
-	_, morePermissions := cc.k.ClearPermissionByObject(cc.ctx, objectId, types.PermissionCleanupBudget)
-
 	permissionPrefix := objectId + "@"
 	for id := range cc.permissions {
 		if strings.HasPrefix(id, permissionPrefix) {
@@ -105,14 +109,20 @@ func (cc *CurrentContext) ClearPermissionsForObject(objectId string) {
 		}
 	}
 
-	moreGuildRanks := cc.k.ClearPermissionGuildRankByObject(cc.ctx, objectId, types.PermissionCleanupBudget)
-
 	pfx := objectId + "/"
 	for id := range cc.guildRankRegisters {
 		if strings.HasPrefix(id, pfx) {
 			delete(cc.guildRankRegisters, id)
 		}
 	}
+
+	if deferred, _ := cc.ctx.Value(deferPermissionCleanupKey{}).(bool); deferred {
+		cc.k.EnqueuePermissionCleanup(cc.ctx, objectId)
+		return
+	}
+
+	_, morePermissions := cc.k.ClearPermissionByObject(cc.ctx, objectId, types.PermissionCleanupBudget)
+	moreGuildRanks := cc.k.ClearPermissionGuildRankByObject(cc.ctx, objectId, types.PermissionCleanupBudget)
 
 	if morePermissions || moreGuildRanks {
 		cc.k.EnqueuePermissionCleanup(cc.ctx, objectId)
@@ -327,6 +337,16 @@ func (cc *CurrentContext) SignerPermissionCheck(permission types.Permission) err
 }
 
 func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlayer *PlayerCache, permission types.Permission) error {
+	return cc.permissionCheck(object, activePlayer, permission, permission&types.PermAdmin == 0)
+}
+
+// PermissionAdministrationCheck deliberately excludes rank-derived standing.
+// Operational access cannot be converted into permanent grants or guild control.
+func (cc *CurrentContext) PermissionAdministrationCheck(object PermissionedObject, activePlayer *PlayerCache) error {
+	return cc.permissionCheck(object, activePlayer, types.PermAdmin, false)
+}
+
+func (cc *CurrentContext) permissionCheck(object PermissionedObject, activePlayer *PlayerCache, permission types.Permission, allowRank bool) error {
 
 	// The Action carries the bit that was actually wanted rather than a fixed
 	// "administrate". Every denial below used to name administrate whatever it was
@@ -366,12 +386,23 @@ func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlaye
 		return nil
 	}
 
+	// Guild assets follow the guild's current owner, including an owner who
+	// is not a member. Resolve through this context so an ownership change
+	// takes effect immediately; never copy the owner's grants onto each asset.
+	// This shortcut remains below the signing key's hard permission ceiling.
+	if kind, _, err := types.ParseAssetOwnerID(object.GetOwnerId()); err == nil && kind == types.ObjectType_guild {
+		guild := cc.GetGuild(object.GetOwnerId())
+		if err := guild.CheckGuild(); err == nil && guild.GetOwnerId() == activePlayer.ID() {
+			return nil
+		}
+	}
+
 	if cc.PermissionHasAll(GetObjectPermissionIDBytes(object.ID(), activePlayer.GetPlayerId()), permission) {
 		return nil
 	}
 
 	// rank(object / activePlayer.GetGuild() / permission) => activePlayer.GetGuildRank(); only grant if a record exists
-	if activePlayer.GetGuildId() != "" {
+	if allowRank && activePlayer.GetGuildId() != "" {
 		worstAllowedRank, exists := cc.GetPermissionsGuildRank(object, activePlayer.GetGuild(), permission)
 		if exists && worstAllowedRank > 0 && worstAllowedRank >= activePlayer.GetGuildRank() {
 			return nil
@@ -384,6 +415,18 @@ func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlaye
 func (cc *CurrentContext) UGCPermissionCheck(object PermissionedObject, activePlayer *PlayerCache) error {
 	if err := cc.PermissionCheck(object, activePlayer, types.PermUpdate); err == nil {
 		return nil
+	}
+
+	// Guild assets use their owning guild's cosmetic policy, independent of
+	// which guild the current human owner happens to belong to.
+	if object != nil {
+		if kind, _, err := types.ParseAssetOwnerID(object.GetOwnerId()); err == nil && kind == types.ObjectType_guild {
+			guild := cc.GetGuild(object.GetOwnerId())
+			if err := guild.CheckGuild(); err != nil {
+				return err
+			}
+			return cc.PermissionCheck(guild, activePlayer, types.PermGuildUGCUpdate)
+		}
 	}
 
 	owner := object.GetOwner()
