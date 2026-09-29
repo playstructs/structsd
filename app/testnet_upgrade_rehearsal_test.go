@@ -37,7 +37,10 @@ func TestTestnetStateUpgradeRehearsal(t *testing.T) {
 	output := os.Getenv("STRUCTS_TESTNET_REHEARSAL_OUTPUT")
 	require.NotEmpty(t, output)
 	require.NoError(t, os.MkdirAll(output, 0700))
-	home := t.TempDir()
+	// Keep the migrated database for independent binary export and inspection.
+	// Refuse to reuse a prior run's home.
+	home := filepath.Join(output, "chain")
+	require.NoError(t, os.Mkdir(home, 0700))
 	sourceDB := filepath.Join(source, "data", "application.db")
 	targetDB := filepath.Join(home, "data", "application.db")
 	require.NoError(t, filepath.WalkDir(sourceDB, func(path string, entry fs.DirEntry, err error) error {
@@ -76,7 +79,10 @@ func TestTestnetStateUpgradeRehearsal(t *testing.T) {
 	require.NoError(t, err)
 	height := bApp.LastBlockHeight()
 	require.Greater(t, height, int64(2700000), "requires the current testnet, not an old genesis fixture")
-	now := time.Date(2026, 9, 22, 21, 0, 0, 0, time.UTC)
+	// Pin the source block time so current snapshots never run backwards in
+	// time and repeated rehearsals exercise exactly the same maturity windows.
+	now, err := time.Parse(time.RFC3339Nano, os.Getenv("STRUCTS_TESTNET_REHEARSAL_TIME"))
+	require.NoError(t, err, "set STRUCTS_TESTNET_REHEARSAL_TIME to the source block time")
 	ctx := bApp.NewUncachedContext(false, cmtproto.Header{ChainID: "structstestnet-111", Height: height, Time: now})
 	beforeSupply := bApp.BankKeeper.GetSupply(ctx, "ualpha")
 	beforePlayers := len(bApp.StructsKeeper.GetAllPlayer(ctx))
@@ -94,7 +100,7 @@ func TestTestnetStateUpgradeRehearsal(t *testing.T) {
 		}
 		result, err := bApp.FinalizeBlock(&abci.RequestFinalizeBlock{Height: height + i, Time: now.Add(time.Duration(i) * time.Second)})
 		require.NoError(t, err)
-		blocks = append(blocks, map[string]interface{}{"height": height + i, "finalize_block_events": result.Events, "txs_results": result.TxResults})
+		blocks = append(blocks, map[string]interface{}{"height": height + i, "app_hash": result.AppHash, "finalize_block_events": result.Events, "txs_results": result.TxResults})
 		data, err := json.Marshal(result)
 		require.NoError(t, err)
 		if i == 1 {
@@ -122,9 +128,9 @@ func TestTestnetStateUpgradeRehearsal(t *testing.T) {
 	requireStakingAndDistributionHealthy(t, bApp, ctx)
 	require.NoError(t, bApp.StructsKeeper.CheckReactorDiversityAccounting(ctx))
 	require.True(t, bApp.StructsKeeper.ReactorDiversityReady(ctx))
-	state, err := bApp.ModuleManager.ExportGenesisForModules(ctx, bApp.AppCodec(), nil)
+	state, err := bApp.ExportAppStateAndValidators(false, nil, nil)
 	require.NoError(t, err)
-	data, err := json.Marshal(map[string]interface{}{"chain_id": "structstestnet-111", "initial_height": height + 5, "app_state": state})
+	data, err := json.Marshal(map[string]interface{}{"chain_id": "structstestnet-111", "initial_height": state.Height, "app_state": json.RawMessage(state.AppState)})
 	require.NoError(t, err)
 	require.NoError(t, os.WriteFile(filepath.Join(output, "after-export.json"), data, 0600))
 	events, err := json.Marshal(blocks)
@@ -141,5 +147,6 @@ func TestTestnetStateUpgradeRehearsal(t *testing.T) {
 	encodedVaults, err := json.Marshal(vaults)
 	require.NoError(t, err)
 	require.NoError(t, os.WriteFile(filepath.Join(output, "vault-map.json"), encodedVaults, 0600))
+	require.NoError(t, bApp.Close())
 	t.Logf("testnet state %d upgraded at %d; continued through %d; players=%d elapsed=%s", height, height+1, height+4, beforePlayers, time.Since(start))
 }
