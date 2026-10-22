@@ -1141,6 +1141,13 @@ package v0_22_0
 //   cosmos-sdk v0.53.8, cometbft v0.38.25) so a later bump that resolves any of
 //   them lower fails the suite rather than reintroducing the incident.
 //
+//   - Every struct type's buildCharge drops from 8 to 1, in genesis and, via
+//     MigrateStructBuildCharge, in stored state. Only that field is rewritten.
+//     StructTrash gates on the same buildCharge, so trashing costs 1 too.
+//   - Ore Extractor build difficulty range drops from 700 to 10 blocks in
+//     genesis and stored state, reaching minimum proof difficulty after about
+//     one minute at six-second blocks. In-progress builds retain their age.
+//
 // This upgrade includes the repair phases below and the full vault/economy
 // migration. CreateUpgradeHandler in upgrades.go defines their required order.
 //

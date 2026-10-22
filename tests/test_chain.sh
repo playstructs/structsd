@@ -986,7 +986,7 @@ create_paid_guild() {
 # ─── Charge-Aware Wait Helpers ────────────────────────────────────────────────
 # Charge = CurrentBlockHeight - Player.lastAction
 # Each block is ~1 second. Struct operations require a minimum charge level
-# before they can proceed (e.g. BuildCharge=8 means 8 blocks since last action).
+# before they can proceed (e.g. BuildCharge=1 means 1 block since last action).
 
 # get_block_height: query the current block height
 get_block_height() {
@@ -1087,7 +1087,7 @@ wait_for_charge() {
 }
 
 # Charge constants (from genesis_struct_type.go)
-CHARGE_BUILD=8
+CHARGE_BUILD=1
 CHARGE_ATTACK_DEFAULT=3              # primary charge 3 (Tank/Starfighter/Pursuit/CmdShip)
 CHARGE_ATTACK_BATTLESHIP=5           # guided secondary (v0.18.0 charge rebalance)
 CHARGE_ATTACK_BATTLESHIP_PRIMARY=5   # armour-piercing unguided primary

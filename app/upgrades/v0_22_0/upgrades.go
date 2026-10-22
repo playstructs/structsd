@@ -43,6 +43,8 @@ func CreateUpgradeHandler(
 			MigrateInfusionOwnerIndex,
 			MigrateReactorInfusionOrder,
 			MigrateSubstationConnectionCapacity,
+			MigrateStructBuildCharge,
+			MigrateExtractorBuildDifficulty,
 		} {
 			if err := phase(cache, keepers); err != nil {
 				return nil, err
