@@ -21,7 +21,7 @@ ignite chain serve
 
 A `Makefile` is provided to wrap the most common build, test, lint, proto, dev, and release tasks. Run `make` (or `make help`) at the repo root to see every target with a short description.
 
-Requires Go `1.23+`. Targets that touch protobuf, linting, or releases will pull their tools (`buf`, `golangci-lint`, `gofumpt`, `goreleaser`) on demand.
+Requires Go `1.27.3+`. Install `buf`, `goreleaser`, and `ignite` separately for the targets that use them. Lint and format targets install `golangci-lint` and `gofumpt` on demand; their binaries must be on your `PATH`.
 
 ### Build
 
@@ -46,7 +46,9 @@ Pass `LEDGER_ENABLED=false` to skip the Ledger build tag if you don't have `gcc`
 
 #### Unicode and consensus
 
-Any Go `1.23+` toolchain produces a consensus-compatible binary. The character set the chain accepts for player, guild and planet names comes from Unicode 15.0.0 tables checked into `x/structs/types/unicode_tables.go`, not from the Unicode tables of the toolchain that compiled the binary, so two validators on different Go versions agree.
+v0.22.0 requires Go `1.27.3` or newer for security fixes; release CI builds with Go `1.27.3`. Rebuild existing binaries to pick up the standard-library fixes. Operators using prebuilt binaries through Cosmovisor do not need Go installed on the node; the compiler requirement applies only to source builds. The character set the chain accepts for player, guild and planet names comes from Unicode 15.0.0 tables checked into `x/structs/types/unicode_tables.go`, not from the Unicode tables of the toolchain that compiled the binary, so changing the build toolchain does not change these name rules.
+
+`golang.org/x/text` remains pinned to `v0.28.0` through a module replacement, even when networking dependencies request a newer version. Changing that replacement requires a separate consensus review and upgrade handler.
 
 This matters because Go resolves `\p{L}` in a regexp, and `unicode.Is` against `unicode.L`, from the compiling toolchain's standard library, and those tables grow with Go releases. `U+088F` is unassigned in Unicode 15.0.0 and a letter in later versions, so before v0.21.0 a name built from it was accepted by validators on a newer Go and rejected by the rest — with only the accepting side writing the name, which is an application state split. The tables are now state.
 
@@ -70,17 +72,28 @@ make serve-reset-verbose    # ignite chain serve --reset-once --verbose
 
 ```
 make test                # go test ./...
-make test-unit           # unit tests, 5m timeout, norace tag
+make test-unit           # same Go packages, 5m timeout, norace tag
 make test-race           # tests with the race detector
 make test-cover          # writes coverage.txt
 make test-integration    # runs tests/test_chain.sh against a live chain
 ```
 
-The integration script supports flags such as `--skip-mining` and `--extended-battle`; invoke it directly when you need them:
+Go package tests include the in-process app and security regression tests. Live-chain tests are separate and require a disposable development chain. To limit hashing and run extended battles against an already running development chain:
 
 ```
-bash tests/test_chain.sh --skip-mining --extended-battle
+make test-integration TEST_CHAIN_FLAGS="--skip-mining --extended-battle"
 ```
+
+For an isolated lifecycle run with frozen source/binary evidence, export, and restart checks, use the Python 3 runner:
+
+```
+make build
+python3 -B tests/run_full_lifecycle.py --binary build/structsd --output-root build --skip-mining
+```
+
+The runner always enables extended battles and battle logging. `--skip-mining` skips mining/refining but still computes build proofs. Stop other local Structs nodes and any containers occupying the chain's ports before starting; the runner does not stop unrelated processes. Evidence is retained under `build/full-lifecycle-*`.
+
+See the [v0.22.0 vulnerability review](docs/upgrades/v0.22.0-vulnerability-review.md) for dependency fixes, the retained `x/text` pin, and final lifecycle/Cosmovisor validation results. Tests must be run locally; the release workflow does not run them.
 
 ### Linting & formatting
 
@@ -89,6 +102,8 @@ make lint        # golangci-lint
 make lint-fix    # golangci-lint with --fix
 make format      # gofumpt over the tree (skips generated .pb.go files)
 ```
+
+The repository has an existing lint backlog. For focused changes, scope linting to the affected packages and avoid tree-wide formatting, which rewrites unrelated files.
 
 ### Protobuf
 
