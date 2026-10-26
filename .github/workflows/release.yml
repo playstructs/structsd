@@ -4,6 +4,13 @@ on:
   push:
     tags:
       - "v*"
+  # Re-runs a release for an existing tag using this workflow file rather than
+  # the copy at the tag, so a CI fix does not require moving a published tag.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to build, e.g. v0.22.0"
+        required: true
 
 permissions:
   contents: write
@@ -12,10 +19,20 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      # Five cross-compiled targets of this module exceed the hosted runner's
+      # free disk; drop preinstalled SDKs this job never uses.
+      - name: Free disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force > /dev/null
+          df -h /
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ inputs.tag || github.ref }}
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -30,7 +47,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           version: latest
-          args: release --clean
+          args: release --clean --parallelism 2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TM_VERSION: ${{ steps.tm.outputs.version }}
