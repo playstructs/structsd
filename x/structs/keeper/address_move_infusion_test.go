@@ -152,7 +152,9 @@ func TestAddressRevokePreservesInfusionCapacity(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	assertDelegationMoved(t, f, secondaryAcc, primaryAcc)
+	vault, err := types.VaultAddress(f.player.Id)
+	require.NoError(t, err)
+	assertDelegationMoved(t, f, secondaryAcc, vault)
 	require.Equal(t, uint64(0), f.k.GetPlayerIndexFromAddress(f.sdkCtx, secondaryAcc.String()),
 		"the address is still revoked")
 }
@@ -178,7 +180,9 @@ func TestPlayerUpdatePrimaryAddressPreservesInfusionCapacity(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	assertDelegationMoved(t, f, oldPrimaryAcc, newPrimaryAcc)
+	vault, err := types.VaultAddress(f.player.Id)
+	require.NoError(t, err)
+	assertDelegationMoved(t, f, oldPrimaryAcc, vault)
 }
 
 // TestAddressRegisterSweepPreservesInfusionCapacity covers the third mover,
@@ -315,6 +319,14 @@ func TestGuildMembershipJoinRefusesReassignedInfusionAddress(t *testing.T) {
 // names it, still works. Without this the test above would pass just as well
 // against a check that refuses everybody.
 func TestGuildMembershipJoinAcceptsOwnedInfusionAddress(t *testing.T) {
+	t.Run("registered-key", func(t *testing.T) { testJoinInfusionOwner(t, "key") })
+	t.Run("player-vault", func(t *testing.T) { testJoinInfusionOwner(t, "vault") })
+	t.Run("another-player-vault", func(t *testing.T) { testJoinInfusionOwner(t, "other") })
+	t.Run("guild-vault", func(t *testing.T) { testJoinInfusionOwner(t, "guild") })
+}
+
+func testJoinInfusionOwner(t *testing.T, source string) {
+	t.Helper()
 	k, ms, ctx := setupMsgServer(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
@@ -331,6 +343,20 @@ func TestGuildMembershipJoinAcceptsOwnedInfusionAddress(t *testing.T) {
 		PrimaryAddress: joinerAcc.String(),
 	})
 
+	infusionAddress := joinerAcc
+	if source != "key" {
+		ownerID := joiner.Id
+		if source == "other" {
+			other := testAppendPlayer(k, ctx, types.Player{Creator: sdk.AccAddress("other_vault_owner1234").String(), PrimaryAddress: sdk.AccAddress("other_vault_owner1234").String()})
+			ownerID = other.Id
+		} else if source == "guild" {
+			ownerID = gs.Guild.Id
+		}
+		addresses, err := k.NewCurrentContext(sdkCtx).EnsureVaults(ownerID)
+		require.NoError(t, err)
+		infusionAddress = addresses[0]
+	}
+
 	sourceValAddr := sdk.ValAddress(fmt.Sprintf("%-36s", "joinownedsourceval")[:36])
 	testAddValidator(k, sourceValAddr, math.NewInt(1000))
 	sourceReactor := testAppendReactor(k, ctx, types.Reactor{
@@ -341,7 +367,7 @@ func TestGuildMembershipJoinAcceptsOwnedInfusionAddress(t *testing.T) {
 
 	mock := k.StakingKeeper().(*keepertest.MockStakingKeeper)
 	require.NoError(t, mock.SetDelegation(ctx, stakingtypes.Delegation{
-		DelegatorAddress: joinerAcc.String(),
+		DelegatorAddress: infusionAddress.String(),
 		ValidatorAddress: sourceValAddr.String(),
 		Shares:           math.LegacyNewDecFromInt(math.NewInt(1000)),
 	}))
@@ -349,7 +375,7 @@ func TestGuildMembershipJoinAcceptsOwnedInfusionAddress(t *testing.T) {
 	testAppendInfusion(k, ctx, types.Infusion{
 		DestinationId:   sourceReactor.Id,
 		DestinationType: types.ObjectType_reactor,
-		Address:         joinerAcc.String(),
+		Address:         infusionAddress.String(),
 		PlayerId:        joiner.Id,
 		Fuel:            1000,
 		Commission:      math.LegacyZeroDec(),
@@ -359,11 +385,74 @@ func TestGuildMembershipJoinAcceptsOwnedInfusionAddress(t *testing.T) {
 		Creator:    joiner.Creator,
 		GuildId:    gs.Guild.Id,
 		PlayerId:   joiner.Id,
-		InfusionId: []string{sourceReactor.Id + "-" + joinerAcc.String()},
+		InfusionId: []string{sourceReactor.Id + "-" + infusionAddress.String()},
 	})
+	if source == "other" || source == "guild" {
+		require.Error(t, err, "a forged infusion PlayerId cannot authorize another owner's stake")
+		require.ErrorContains(t, err, "infusion_address_ownership")
+		unchanged, found := k.GetPlayer(sdkCtx, joiner.Id)
+		require.True(t, found)
+		require.Equal(t, joiner.GuildId, unchanged.GuildId)
+		return
+	}
 	require.NoError(t, err)
 
 	joined, found := k.GetPlayer(sdkCtx, joiner.Id)
 	require.True(t, found)
 	require.Equal(t, gs.Guild.Id, joined.GuildId)
+}
+
+/* TestPlayerUpdatePrimaryAddressRefusesRedelegatingStake pins which transfer
+ * policy this handler passes, which is a security property rather than a
+ * preference.
+ *
+ * A delegation that is the destination of an in-flight redelegation cannot move
+ * address: the redelegation record keeps its own delegator address, and
+ * SlashRedelegation resolves the delegation it slashes through that address and
+ * continues on a miss. Moving out from under one leaves the stake represented at
+ * the new address and unreachable by a later slash of the source validator - the
+ * SDK's redelegation-slashing protection defeated, and supply under-burned.
+ *
+ * DelegationTransferStrict is what refuses it, and the refusal costs the player
+ * nothing but a wait: the old primary stays a registered address of theirs.
+ * AddressRevoke deliberately takes the opposite policy, because a revoke answers
+ * a compromised key and must not be blockable by that key.
+ *
+ * MoveDelegationsToAddress is already tested against all three blocked states
+ * directly. What only a handler test catches is this handler quietly switching
+ * policy: swapping Strict for Disown here would leave that suite green while
+ * putting the escape route back.
+ */
+func TestPlayerUpdatePrimaryAddressRefusesRedelegatingStake(t *testing.T) {
+	oldPrimaryAcc := sdk.AccAddress(fmt.Sprintf("%-36s", "redelrefuseold")[:36])
+	newPrimaryAcc := sdk.AccAddress(fmt.Sprintf("%-36s", "redelrefusenew")[:36])
+
+	f := setupAddressMove(t, "redelrefuse", oldPrimaryAcc, oldPrimaryAcc, 1000)
+
+	require.NoError(t, f.k.SetPlayerIndexForAddress(f.ctx, newPrimaryAcc.String(), f.player.Index))
+	testPermissionAdd(f.k, f.ctx, keeperlib.GetAddressPermissionIDBytes(newPrimaryAcc.String()), types.PermAll)
+
+	f.k.ReactorUpdatePlayerInfusion(f.ctx, oldPrimaryAcc, f.valAddr)
+	require.Equal(t, uint64(960), f.playerCapacity())
+
+	// The old primary is the destination of a redelegation still in its
+	// completion window.
+	f.mock.AddReceivingRedelegation(oldPrimaryAcc, f.valAddr)
+
+	_, err := f.ms.PlayerUpdatePrimaryAddress(f.ctx, &types.MsgPlayerUpdatePrimaryAddress{
+		Creator:        oldPrimaryAcc.String(),
+		PrimaryAddress: newPrimaryAcc.String(),
+	})
+	require.Error(t, err, "stake that a slash still has to be able to find must not change address")
+	require.Contains(t, err.Error(), "has a redelegation in flight")
+
+	// Nothing moved: a partial move here would be worse than the refusal.
+	reloaded, found := f.k.GetPlayer(f.sdkCtx, f.player.Id)
+	require.True(t, found)
+	require.Equal(t, oldPrimaryAcc.String(), reloaded.PrimaryAddress,
+		"the primary address must not have changed either")
+
+	delegation, delegationErr := f.k.StakingKeeper().GetDelegation(f.ctx, oldPrimaryAcc, f.valAddr)
+	require.NoError(t, delegationErr, "the delegation stays where the redelegation record expects it")
+	require.Equal(t, oldPrimaryAcc.String(), delegation.DelegatorAddress)
 }

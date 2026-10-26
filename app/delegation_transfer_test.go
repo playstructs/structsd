@@ -52,9 +52,12 @@ func TestDelegationTransferMergesAndKeepsDistributionUsable(t *testing.T) {
 
 	// Both addresses delegate to the same validator. Before the merge the
 	// second write simply replaced the first.
+	vaults, err := bApp.StructsKeeper.NewCurrentContext(ctx).EnsureVaults(playerId)
+	require.NoError(t, err)
+	vault := vaults[0]
 	primaryStake := math.NewInt(3_000_000)
 	secondaryStake := math.NewInt(4_000_000)
-	delegate(t, bApp, ctx, stakingMsgServer, bondDenom, primaryAcc, valAddr, primaryStake)
+	delegate(t, bApp, ctx, stakingMsgServer, bondDenom, vault, valAddr, primaryStake)
 	delegate(t, bApp, ctx, stakingMsgServer, bondDenom, secondaryAcc, valAddr, secondaryStake)
 
 	validatorBefore, err := bApp.StakingKeeper.GetValidator(ctx, valAddr)
@@ -69,10 +72,10 @@ func TestDelegationTransferMergesAndKeepsDistributionUsable(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	merged, err := bApp.StakingKeeper.GetDelegation(ctx, primaryAcc, valAddr)
+	merged, err := bApp.StakingKeeper.GetDelegation(ctx, vault, valAddr)
 	require.NoError(t, err)
 	require.Equal(t, math.LegacyNewDecFromInt(primaryStake.Add(secondaryStake)), merged.Shares,
-		"the primary's own stake must survive the arrival of the secondary's")
+		"the vault's existing stake must survive the arrival of the secondary's")
 
 	_, err = bApp.StakingKeeper.GetDelegation(ctx, secondaryAcc, valAddr)
 	require.Error(t, err, "and the revoked address must hold nothing")
@@ -89,19 +92,19 @@ func TestDelegationTransferMergesAndKeepsDistributionUsable(t *testing.T) {
 	// The half of the bug with no symptom at the time. A delegation written by
 	// bare SetDelegation has no starting info, and both of these fail on
 	// ErrEmptyDelegationDistInfo forever after.
-	hasStartingInfo, err := bApp.DistrKeeper.HasDelegatorStartingInfo(ctx, valAddr, primaryAcc)
+	hasStartingInfo, err := bApp.DistrKeeper.HasDelegatorStartingInfo(ctx, valAddr, vault)
 	require.NoError(t, err)
 	require.True(t, hasStartingInfo, "the destination must be able to price its rewards")
 
 	distrMsgServer := distrkeeper.NewMsgServerImpl(bApp.DistrKeeper)
 	_, err = distrMsgServer.WithdrawDelegatorReward(ctx, &distrtypes.MsgWithdrawDelegatorReward{
-		DelegatorAddress: primaryAcc.String(),
+		DelegatorAddress: vault.String(),
 		ValidatorAddress: valAddr.String(),
 	})
 	require.NoError(t, err, "the merged delegation must still be able to withdraw rewards")
 
 	_, err = stakingMsgServer.Undelegate(ctx, stakingtypes.NewMsgUndelegate(
-		primaryAcc.String(), valAddr.String(), sdk.NewCoin(bondDenom, primaryStake)))
+		vault.String(), valAddr.String(), sdk.NewCoin(bondDenom, primaryStake)))
 	require.NoError(t, err, "and must still be able to undelegate")
 
 	requireStakingAndDistributionHealthy(t, bApp, ctx)

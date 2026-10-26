@@ -12,104 +12,23 @@ import (
 )
 
 func TestMsgAgreementOpen(t *testing.T) {
-	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
-
-	playerAcc := sdk.AccAddress("creator123456789012345678901234567890")
-	player := types.Player{
-		Creator:        playerAcc.String(),
-		PrimaryAddress: playerAcc.String(),
-	}
-	player = testAppendPlayer(k, ctx, player)
-
-	validatorAddress := sdk.ValAddress(playerAcc.Bytes())
-	reactor := types.Reactor{
-		Validator:  validatorAddress.String(),
-		RawAddress: validatorAddress.Bytes(),
-	}
-	reactor = k.AppendReactor(ctx, reactor)
-
-	reactorCapacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, reactor.Id)
-	k.SetGridAttribute(ctx, reactorCapacityAttrId, uint64(10000))
-
-	reactorPermissionId := keeperlib.GetObjectPermissionIDBytes(reactor.Id, player.Id)
-	testPermissionAdd(k, ctx, reactorPermissionId, types.PermAll)
-
-	allocation := types.Allocation{
-		SourceObjectId: reactor.Id,
-		DestinationId:  "",
-		Type:           types.AllocationType_static,
-		Controller:     player.Id,
-	}
-	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 5000)
-	require.NoError(t, err)
-
-	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, player)
-	require.NoError(t, err)
-
-	createdAllocation.DestinationId = substation.Id
-	k.ImportAllocation(ctx, createdAllocation)
-
-	substationCapacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, substation.Id)
-	k.SetGridAttribute(ctx, substationCapacityAttrId, uint64(5000))
-
-	provider := types.Provider{
-		Owner:                       player.Id,
-		Creator:                     player.Creator,
-		SubstationId:                substation.Id,
-		Rate:                        sdk.NewCoin("token", math.NewInt(100)),
-		AccessPolicy:                types.ProviderAccessPolicy_openMarket,
-		CapacityMinimum:             100,
-		CapacityMaximum:             1000,
-		DurationMinimum:             1,
-		DurationMaximum:             10,
-		ProviderCancellationPenalty: math.LegacyNewDec(1),
-		ConsumerCancellationPenalty: math.LegacyNewDec(1),
-	}
-	provider = testAppendProvider(k, ctx, provider)
-
-	providerPermissionId := keeperlib.GetObjectPermissionIDBytes(provider.Id, player.Id)
-	testPermissionAdd(k, ctx, providerPermissionId, types.PermAll)
-
-	collateralAmount := math.NewInt(100).Mul(math.NewInt(5)).Mul(math.NewInt(100))
-	collateralCoin := sdk.NewCoin("token", collateralAmount)
-	k.BankKeeper().MintCoins(ctx, types.ModuleName, sdk.NewCoins(collateralCoin))
-	k.BankKeeper().SendCoinsFromModuleToAccount(ctx, types.ModuleName, playerAcc, sdk.NewCoins(collateralCoin))
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgAgreementOpen
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid agreement open",
-			input: &types.MsgAgreementOpen{
-				Creator:    player.Creator,
-				ProviderId: provider.Id,
-				Duration:   5,
-				Capacity:   100,
-			},
-			expErr: false,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test")
-			}
-
-			resp, err := ms.AgreementOpen(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, resp)
-			}
-		})
-	}
+	f := setupTeardownFixture(t, 10, "0", "0")
+	agreement, collateral := f.openAgreement(t, 100, 50)
+	require.Equal(t, math.NewInt(50000), collateral)
+	require.Equal(t, collateral, f.balance(f.collateralAcc))
+	require.True(t, f.balance(f.consumerAcc).IsZero())
+	require.True(t, f.balance(f.earningsAcc).IsZero())
+	require.Equal(t, f.consumer.Id, agreement.Owner, "omitting OwnerId selects the signer's player vault")
+	require.Equal(t, f.consumer.Creator, agreement.Creator)
+	require.Equal(t, uint64(sdk.UnwrapSDKContext(f.ctx).BlockHeight()), agreement.StartBlock)
+	require.Equal(t, agreement.StartBlock+50, agreement.EndBlock)
+	require.Contains(t, f.k.GetAllAgreementIdByExpirationIndex(f.ctx, agreement.EndBlock), agreement.Id)
+	cc := f.k.NewCurrentContext(f.ctx)
+	allocation, found := cc.GetAllocation(agreement.AllocationId)
+	require.True(t, found)
+	require.Equal(t, f.consumer.Id, allocation.GetOwnerId())
+	require.Equal(t, uint64(100), allocation.GetPower())
+	require.Equal(t, uint64(100), f.agreementLoad())
+	require.Equal(t, types.PermAgreementAll, cc.GetPermissions(keeperlib.GetObjectPermissionIDBytes(agreement.Id, f.consumer.Id)))
+	require.Equal(t, types.PermAllocationConnection, cc.GetPermissions(keeperlib.GetObjectPermissionIDBytes(allocation.ID(), f.consumer.Id)))
 }

@@ -560,6 +560,8 @@ func (e *StructLocationError) Error() string {
 		return "struct type cannot exist outside a planet"
 	case "immovable":
 		return fmt.Sprintf("struct type (%d) is not movable and cannot change ambit", e.StructType)
+	case "self_defense":
+		return fmt.Sprintf("struct (%s) cannot be assigned as its own defender", e.StructId)
 	default:
 		return fmt.Sprintf("struct type (%d) cannot exist in this location: %s", e.StructType, e.Reason)
 	}
@@ -799,7 +801,7 @@ type AddressValidationError struct {
 	Address          string
 	ExpectedPlayerId string
 	ActualPlayerId   string
-	Reason           string // "invalid_format", "not_registered", "wrong_player", "proof_mismatch", "signature_invalid", "already_registered"
+	Reason           string // "invalid_format", "not_registered", "wrong_player", "proof_mismatch", "signature_invalid", "already_registered", "primary_full_access_required"
 }
 
 func NewAddressValidationError(address, reason string) *AddressValidationError {
@@ -826,6 +828,8 @@ func (e *AddressValidationError) Error() string {
 			e.Address, e.ActualPlayerId, e.ExpectedPlayerId)
 	case "proof_mismatch":
 		return fmt.Sprintf("proof mismatch for address %s", e.Address)
+	case "primary_full_access_required":
+		return fmt.Sprintf("primary address (%s) must keep full access; rotate the primary address before narrowing this one", e.Address)
 	case "signature_invalid":
 		return "proof signature verification failure"
 	case "already_registered":
@@ -929,7 +933,7 @@ type GuildMembershipError struct {
 	GuildId         string
 	PlayerId        string
 	JoinType        string // "invite", "request", "proxy", "direct"
-	Reason          string // "wrong_type", "already_member", "not_allowed", "minimum_not_met", "not_member", "is_owner"
+	Reason          string // "wrong_type", "already_member", "not_allowed", "minimum_not_met", "not_member", "is_owner", "duplicate_infusion", "fuel_overflow"
 	InfusionId      string // For infusion-related errors (optional)
 	ReactorId       string // For reactor-related errors (optional)
 	MinimumRequired uint64 // For minimum not met (optional)
@@ -977,6 +981,10 @@ func (e *GuildMembershipError) Error() string {
 		return fmt.Sprintf("membership application is incorrect type for %s approval", e.JoinType)
 	case "minimum_not_met":
 		return "join infusion minimum not met"
+	case "duplicate_infusion":
+		return fmt.Sprintf("infusion (%s) listed more than once", e.InfusionId)
+	case "fuel_overflow":
+		return fmt.Sprintf("infusion fuel total overflows at infusion (%s)", e.InfusionId)
 	case "not_allowed":
 		return fmt.Sprintf("guild (%s) is not currently allowing %s", e.GuildId, e.JoinType)
 	default:
@@ -1209,6 +1217,8 @@ func (e *AllocationError) Error() string {
 		return "trying to set an allocation that doesn't exist yet"
 	case "not_connected":
 		return fmt.Sprintf("allocation (%s) must not be connected to a substation during transfer", e.AllocationId)
+	case "already_connected":
+		return fmt.Sprintf("allocation (%s) already feeds substation (%s) and cannot create another", e.AllocationId, e.DestinationId)
 	default:
 		return fmt.Sprintf("allocation error on source (%s): %s", e.SourceId, e.Reason)
 	}
@@ -1491,6 +1501,8 @@ func (e *ParameterValidationError) Error() string {
 		return fmt.Sprintf("%s change of %d would do nothing", e.Parameter, e.Value)
 	case "duration_overflow":
 		return fmt.Sprintf("%s (%d) would rescale the remaining duration past the representable range", e.Parameter, e.Value)
+	case "expiration_height_full":
+		return fmt.Sprintf("too many agreements already expire at block %d (limit %d); choose a different %s", e.Value, e.Maximum, e.Parameter)
 	default:
 		return fmt.Sprintf("parameter %s validation failed: %s", e.Parameter, e.Reason)
 	}
@@ -1638,7 +1650,7 @@ type FuelInfuseError struct {
 	StructId string
 	Amount   string
 	Denom    string
-	Reason   string // "invalid_amount", "invalid_denom", "transfer_failed"
+	Reason   string // "invalid_amount", "invalid_denom", "transfer_failed", "burn_failed"
 	Details  string // Additional error details (optional)
 }
 
@@ -1671,6 +1683,11 @@ func (e *FuelInfuseError) Error() string {
 			return fmt.Sprintf("infuse failed: %s", e.Details)
 		}
 		return "infuse failed"
+	case "burn_failed":
+		if e.Details != "" {
+			return fmt.Sprintf("infuse fuel could not be burned: %s", e.Details)
+		}
+		return "infuse fuel could not be burned"
 	default:
 		return fmt.Sprintf("fuel infuse error on struct (%s): %s", e.StructId, e.Reason)
 	}

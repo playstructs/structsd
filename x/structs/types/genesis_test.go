@@ -5,6 +5,7 @@ import (
 
 	"structs/x/structs/types"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -24,6 +25,98 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				PortId: types.PortID,
 				// this line is used by starport scaffolding # types/genesis/validField
+			},
+			valid: true,
+		},
+		{
+			/* An infusion key is destinationId + "-" + address, and the keeper
+			 * resolves one by splitting that into three parts. A key that does
+			 * not split yields a cache with no CurrentContext, and the
+			 * destruction queue that reads these keys runs in the EndBlocker.
+			 */
+			desc: "infusion whose key cannot be parsed is invalid",
+			genState: &types.GenesisState{
+				PortId:       types.PortID,
+				InfusionList: []types.Infusion{{DestinationId: "", Address: ""}},
+			},
+			valid: false,
+		},
+		{
+			desc: "infusion with a hyphen in the address is invalid",
+			genState: &types.GenesisState{
+				PortId:       types.PortID,
+				InfusionList: []types.Infusion{{DestinationId: "3-1", Address: "has-hyphen"}},
+			},
+			valid: false,
+		},
+		{
+			desc: "infusion with a well-formed key is valid",
+			genState: &types.GenesisState{
+				PortId:       types.PortID,
+				InfusionList: []types.Infusion{{DestinationId: "3-1", Address: "structs1abc"}},
+			},
+			valid: true,
+		},
+		{
+			// A provider's duration minimum is what stops a capacity resize from
+			// rescaling an agreement down to no duration at all, and
+			// GenesisImportProvider assigns the whole record, skipping the
+			// setter that floors it at 1.
+			desc: "provider with a zero duration minimum is invalid",
+			genState: &types.GenesisState{
+				PortId: types.PortID,
+				ProviderList: []types.Provider{{
+					Id:              "7-0",
+					DurationMinimum: 0,
+					DurationMaximum: 1000,
+					Rate:            sdk.NewInt64Coin("ualpha", 1),
+				}},
+			},
+			valid: false,
+		},
+		{
+			desc: "provider with an inverted duration range is invalid",
+			genState: &types.GenesisState{
+				PortId: types.PortID,
+				ProviderList: []types.Provider{{
+					Id:              "7-0",
+					DurationMinimum: 500,
+					DurationMaximum: 100,
+					Rate:            sdk.NewInt64Coin("ualpha", 1),
+				}},
+			},
+			valid: false,
+		},
+		{
+			desc: "provider with a sane duration range is valid",
+			genState: &types.GenesisState{
+				PortId: types.PortID,
+				ProviderList: []types.Provider{{
+					Id:              "7-0",
+					DurationMinimum: 1,
+					DurationMaximum: 1000,
+					Rate:            sdk.NewInt64Coin("ualpha", 1),
+				}},
+			},
+			valid: true,
+		},
+		{
+			/* A fleet whose id does not parse cannot be cached, so CommitAll
+			 * never writes it - the fleet vanished while the players and
+			 * structs pointing at it imported normally.
+			 */
+			desc: "fleet with an unparseable id is invalid",
+			genState: &types.GenesisState{
+				PortId:    types.PortID,
+				FleetList: []types.Fleet{{Id: "not-a-fleet"}},
+			},
+			valid: false,
+		},
+		{
+			desc: "fleet with a well-formed id is valid",
+			genState: &types.GenesisState{
+				PortId:    types.PortID,
+				FleetList: []types.Fleet{{Id: "9-7"}},
 			},
 			valid: true,
 		},

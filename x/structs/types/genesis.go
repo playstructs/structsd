@@ -14,6 +14,8 @@ const DefaultIndex uint64 = 1
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		PortId: PortID,
+		// Fresh v0.22 chains start with the new economy. Historical exports
+		// decode an absent field as false and activate through the upgrade.
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -22,8 +24,19 @@ func DefaultGenesis() *GenesisState {
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
+	if err := gs.ValidateGeneratorPowerQueue(); err != nil { return err }
+	if err := gs.ValidatePermissionCleanupQueue(); err != nil { return err }
+	if err := gs.ValidateVaultOwners(); err != nil { return err }
 	if err := host.PortIdentifierValidator(gs.PortId); err != nil {
 		return err
+	}
+
+	// Constructors reject undeclared proto3 enum values. Imports must do the
+	// same; legacy live state is normalized by the v0.22 upgrade before capture.
+	for _, allocation := range gs.AllocationList {
+		if _, valid := AllocationType_name[int32(allocation.Type)]; !valid {
+			return NewAllocationError(allocation.Id, "invalid_type")
+		}
 	}
 
 	// A genesis AddressList is the only way an unparseable address can reach
@@ -40,6 +53,23 @@ func (gs GenesisState) Validate() error {
 		}
 	}
 
+	// The nonce list is validated the same way and for a stronger reason: these
+	// rows are what make a registration proof single-use, so a malformed or
+	// duplicated entry is a replay window rather than a cosmetic problem.
+	seenAddressNonce := make(map[string]struct{}, len(gs.AddressNonceList))
+	for _, nonce := range gs.AddressNonceList {
+		if nonce == nil {
+			continue
+		}
+		if _, err := sdk.AccAddressFromBech32(nonce.Address); err != nil {
+			return NewAddressValidationError(nonce.Address, "invalid_format")
+		}
+		if _, duplicate := seenAddressNonce[nonce.Address]; duplicate {
+			return NewAddressValidationError(nonce.Address, "duplicate_nonce")
+		}
+		seenAddressNonce[nonce.Address] = struct{}{}
+	}
+
 	// GenesisImportGuild assigns the whole record onto the cache, so a genesis
 	// file is the one way a guild join bypass level reaches state without
 	// passing GuildCache.SetJoinInfusionMinimumBypassBy*. The readers deny an
@@ -48,6 +78,9 @@ func (gs GenesisState) Validate() error {
 	// but failing `structsd genesis validate` on the file beats discovering it
 	// as a permanently closed guild.
 	for _, guild := range gs.GuildList {
+		if err := ValidateRankPurchaseSettings(guild.EntryRank, guild.RankPurchaseMinimumRank, guild.JoinByRankPurchaseEnabled); err != nil {
+			return err
+		}
 		if guild.EntryRank == 0 {
 			return NewParameterValidationError("guild.entryRank", guild.EntryRank, "must_be_positive")
 		}
@@ -64,6 +97,71 @@ func (gs GenesisState) Validate() error {
 		}
 		if !guild.JoinInfusionMinimumBypassByInvite.IsValid() {
 			return errorsmod.Wrapf(ErrInvalidGuildJoinBypassLevel, "byInvite level (%d) on guild (%s)", int32(guild.JoinInfusionMinimumBypassByInvite), guild.Id)
+		}
+	}
+
+	/* An infusion whose key cannot be parsed can never be resolved again.
+	 *
+	 * The store key is destinationId + "-" + address, and the keeper resolves an
+	 * infusion by splitting that back into three parts. Every runtime path
+	 * satisfies this without trying - a destination id carries exactly one
+	 * hyphen and a bech32 address carries none - so a genesis file is the only
+	 * way a key that does not round-trip reaches state.
+	 *
+	 * The consequence is not a lookup miss. A split that fails yields a cache
+	 * with no CurrentContext behind it, and the destruction queue that reads
+	 * these keys runs in the EndBlocker: the first method call panics the block,
+	 * the panic discards the delete that would have cleared the row, and the
+	 * next block does the same. The keeper now drops such a row instead, but the
+	 * file should not carry one.
+	 */
+	for _, infusion := range gs.InfusionList {
+		if infusion.GeneratorDisabled { if err := infusion.ValidateGeneratorPower(); err != nil { return err } }
+		if err := infusion.ValidateAssetOwner(); err != nil {
+			return err
+		}
+		if !ValidInfusionParts(infusion.DestinationId, infusion.Address) {
+			return NewObjectNotFoundError("infusion", BuildInfusionKey(infusion.DestinationId, infusion.Address))
+		}
+	}
+
+	/* A fleet id that does not parse cannot be imported at all.
+	 *
+	 * The keeper resolves a fleet by parsing its id into an index, and a
+	 * malformed one yields a cache that is not tracked and so is never
+	 * committed. The fleet vanished silently while the players and structs
+	 * referencing it imported normally - referentially inconsistent state with
+	 * no error anywhere. InitGenesis refuses it too; failing `structsd genesis
+	 * validate` on the file is the cheaper place to find out.
+	 */
+	for _, fleet := range gs.FleetList {
+		if _, err := ParseFleetId(fleet.Id); err != nil {
+			return err
+		}
+	}
+
+	/* A provider's published duration range is a safety property, not only a
+	 * policy one, and a genesis file is the only way it reaches state unchecked:
+	 * GenesisImportProvider assigns the whole record onto the cache and so skips
+	 * SetDurationRange, which floors the minimum at 1.
+	 *
+	 * Zero matters because AgreementDurationVerify is what stops a capacity
+	 * resize from rescaling an agreement down to no duration at all. An agreement
+	 * whose EndBlock lands on the current block is live for the rest of that
+	 * block - AgreementExpirations runs in the EndBlocker, after every message -
+	 * so its raised capacity is usable while the collateral still covers the old
+	 * one. rescaledDuration refuses zero on its own account now, which is what
+	 * covers records already on disk; this is what stops new ones.
+	 */
+	for _, provider := range gs.ProviderList {
+		if err := ValidateProviderRate(provider.Rate); err != nil {
+			return err
+		}
+		if provider.DurationMinimum == 0 {
+			return NewParameterValidationError("provider.durationMinimum", provider.DurationMinimum, "must_be_positive").WithProvider(provider.Id)
+		}
+		if provider.DurationMinimum > provider.DurationMaximum {
+			return NewParameterValidationError("provider.durationMinimum", provider.DurationMinimum, "exceeds_maximum").WithProvider(provider.Id).WithRange(0, provider.DurationMaximum)
 		}
 	}
 

@@ -11,7 +11,8 @@
 #   6. Fleet movement & Combat (attacks, defense, raids)
 #
 # Prerequisites:
-#   - structsd chain running locally (fresh chain recommended)
+#   python3 (exact SDK delegation-share arithmetic)
+#   - structsd chain running locally (fresh chain required unless resuming)
 #   - 'alice' key in keyring (genesis validator)
 #   - 'bob' key in keyring (faucet / bank sender)
 #
@@ -26,7 +27,9 @@
 #                      transaction and write them to a JSONL file under
 #                      tests/battle_logs/. Each line is a JSON object with
 #                      timestamp, description, txhash, height, and the raw
-#                      event attributes emitted by the chain.
+#                      event attributes emitted by the chain. Rejected and
+#                      unverified attempts have separate record types; only
+#                      confirmed attack events contribute to the event count.
 #   --resume-from N    Skip phases before N and resume execution from phase N.
 #                      Recovers all IDs by querying the running chain.
 #                      Phase names: 0 1 2 3 3b 4 4b 4c 4d 4e 4f 4g 5 5b 6
@@ -55,8 +58,24 @@ done
 
 # ─── Configuration ────────────────────────────────────────────────────────────
 
-SLEEP=2
-BIGGER_SLEEP=15
+# Faster local blocks need shorter delivery sleeps and enough blocks for live
+# agreement edits. These affect test timing/quotes, never chain PoW parameters.
+configure_fixture_timing() {
+    SLEEP="${STRUCTS_TEST_SETTLE_SECONDS:-2}"
+    BIGGER_SLEEP="${STRUCTS_TEST_LONG_SETTLE_SECONDS:-15}"
+    FIXTURE_DURATION_MULTIPLIER="${STRUCTS_TEST_DURATION_MULTIPLIER:-1}"
+    python3 - "${SLEEP}" "${BIGGER_SLEEP}" "${FIXTURE_DURATION_MULTIPLIER}" <<'PY'
+from decimal import Decimal
+import re
+import sys
+for value in sys.argv[1:3]:
+    if not re.fullmatch(r"(?:0|[1-9][0-9]?)(?:[.][0-9]{1,3})?", value) or not Decimal("0.01") <= Decimal(value) <= Decimal("60"):
+        sys.exit("Fixture settle seconds must be a decimal between 0.01 and 60")
+if not re.fullmatch(r"[1-9][0-9]{0,2}", sys.argv[3]) or int(sys.argv[3]) > 100:
+    sys.exit("Fixture duration multiplier must be an integer between 1 and 100")
+PY
+}
+configure_fixture_timing
 
 # How long to follow a txhash into a block before giving up. Blocks are ~1s on a
 # dev chain, so this is generous.
@@ -162,7 +181,7 @@ _tx_json() {
 # follow — which is the honest answer for a simulation or cobra failure that never
 # reached a block.
 _tx_delivered() {
-    local txhash result found elapsed=0
+    local txhash result found height code elapsed=0
     txhash=$(echo "$1" | jq -r '.txhash // empty' 2>/dev/null || echo "")
     if [ -z "${txhash}" ]; then
         return 0
@@ -171,11 +190,14 @@ _tx_delivered() {
     while [ "${elapsed}" -lt "${TX_CONFIRM_TIMEOUT}" ]; do
         result=$(query query tx "${txhash}" 2>/dev/null || echo "")
         found=$(echo "${result}" | jq -r '.txhash // empty' 2>/dev/null || echo "")
-        if [ -n "${found}" ]; then
+        height=$(echo "${result}" | jq -r '.height // "0"' 2>/dev/null || echo "0")
+        code=$(echo "${result}" | jq -r '.code // 0' 2>/dev/null || echo "")
+        if [ "${found}" = "${txhash}" ] && [[ "${height}" =~ ^[0-9]+$ ]] && \
+           [ "${height}" -gt 0 ] && [[ "${code}" =~ ^[0-9]+$ ]]; then
             # Presence is decided by txhash and the code by `.code // 0`, because a
             # zero-valued proto field may be omitted from the JSON entirely. A
             # missing code has to read as success, not as "not in a block yet".
-            echo "$(echo "${result}" | jq -r '.code // 0' 2>/dev/null)|$(echo "${result}" | jq -r '.raw_log // ""' 2>/dev/null | head -1)"
+            echo "${code}|$(echo "${result}" | jq -r '.raw_log // ""' 2>/dev/null | head -1)"
             return 0
         fi
         sleep 1
@@ -199,7 +221,8 @@ _tx_error_line() {
 
 # _tx_outcome: classify a transaction that was expected to fail.
 #
-# Echoes "ok|" when it genuinely succeeded and "rejected|<reason>" otherwise. A
+# Echoes "ok|" on confirmed success, "rejected|<reason>" on a rejection, or
+# "unknown|<reason>" when delivery cannot be established. A
 # rejection can arrive from any of three places and all three count: the CLI before
 # broadcast (a failed --gas auto simulation, or cobra refusing the invocation), the
 # ante at CheckTx, or the handler in the block. Only the first two were ever looked
@@ -210,24 +233,55 @@ _tx_outcome() {
     output=$(_tx_json "$1")
     tx_code=$(echo "${output}" | jq -r '.code // empty' 2>/dev/null || echo "")
 
+    if [ -n "${tx_code}" ] && ! [[ "${tx_code}" =~ ^[0-9]+$ ]]; then
+        echo "unknown|response has an invalid transaction code"
+        return 0
+    fi
+
     if [ -n "${tx_code}" ] && [ "${tx_code}" != "0" ]; then
         echo "rejected|$(echo "${output}" | jq -r '.raw_log // empty' 2>/dev/null | head -1)"
         return 0
     fi
 
-    # A tx broadcast response always carries a code, so its absence means nothing
-    # was broadcast and the command's own text is the only reason there is.
+    # A JSON response without a code is not itself a rejection. Some encoders
+    # omit zero; follow its hash when present. Empty/malformed responses and
+    # transport failures cannot prove a handler refused the message.
     if [ -z "${tx_code}" ]; then
-        echo "rejected|$(_tx_error_line "$1")"
-        return 0
+        if [ -z "${output}" ] || echo "${output}" | jq -e 'type == "object"' >/dev/null 2>&1; then
+            if [ -z "$(echo "${output}" | jq -r '.txhash // empty' 2>/dev/null || echo "")" ]; then
+                echo "unknown|response has neither a rejection code nor a transaction hash"
+                return 0
+            fi
+        elif echo "$1" | grep -qiE 'connection refused|dial tcp|context deadline exceeded|TLS handshake timeout|unexpected EOF'; then
+            echo "unknown|$(_tx_error_line "$1")"
+            return 0
+        else
+            echo "rejected|$(_tx_error_line "$1")"
+            return 0
+        fi
     fi
 
     delivered=$(_tx_delivered "${output}")
-    if [ -z "${delivered}" ] || [ "${delivered%%|*}" = "0" ]; then
+    if [ -z "${delivered}" ]; then
+        echo "unknown|broadcast response has no transaction hash"
+    elif [ "${delivered%%|*}" = "timeout" ]; then
+        echo "unknown|${delivered#*|}"
+    elif [ "${delivered%%|*}" = "0" ]; then
         echo "ok|"
     else
         echo "rejected|${delivered#*|}"
     fi
+}
+
+# Unknown delivery is never evidence of success or an intentional refusal.
+# Call outside command substitution so the failed-check count survives.
+_tx_outcome_known() {
+    if [ "${1%%|*}" = "unknown" ]; then
+        echo -e "  ${RED}FAIL${NC}: transaction outcome unverified: ${1#*|}"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+        return 1
+    fi
+    return 0
 }
 
 # _check_tx_output: shared logic for checking TX command output.
@@ -276,7 +330,8 @@ _check_tx_output() {
     LAST_TX_DELIVERED="${delivered}"
 
     if [ -z "${delivered}" ]; then
-        echo -e "  ${GREEN}TX submitted${NC}"
+        echo -e "  ${RED}FAIL${NC}: no confirmed transaction delivery or transaction hash"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
         return 0
     fi
 
@@ -362,6 +417,7 @@ run_tx_tolerate_reject() {
     LAST_TX_OUTPUT="${OUTPUT}"
     sleep "${SLEEP}"
     OUTCOME=$(_tx_outcome "${OUTPUT}")
+    _tx_outcome_known "${OUTCOME}" || return 0
     if [ "${OUTCOME%%|*}" = "ok" ]; then
         echo -e "  ${GREEN}TX delivered${NC}"
     else
@@ -374,8 +430,7 @@ run_tx_tolerate_reject() {
 #
 # Used to print "Compute completed" in green unconditionally, having looked at
 # nothing at all, so a compute that mined a valid proof and then lost the
-# transaction reported success — and guild-create-compute can also fail before it
-# broadcasts anything, on a consent whose anchor has moved.
+# transaction reported success. Proof computation can also fail before broadcast.
 run_compute() {
     local description="$1"
     shift
@@ -403,6 +458,7 @@ run_tx_expect_fail_noauto() {
     LAST_TX_OUTPUT="${OUTPUT}"
     sleep "${SLEEP}"
     OUTCOME=$(_tx_outcome "${OUTPUT}")
+    _tx_outcome_known "${OUTCOME}" || return 0
     if [ "${OUTCOME%%|*}" = "ok" ]; then
         echo -e "  ${RED}FAIL${NC}: TX succeeded but was expected to fail"
         FAIL_COUNT=$((FAIL_COUNT + 1))
@@ -432,44 +488,36 @@ jqr() {
     fi
 }
 
-# _log_battle_event: capture EventAttack details from a struct-attack tx
+# _log_battle_event: only a confirmed typed event increments the capture count.
+# Failed or unreadable attempts stay in the JSONL as distinct record types.
 _log_battle_event() {
-    local tx_output="$1"
-    local description="$2"
-
-    local json_line txhash
-    json_line=$(echo "${tx_output}" | grep '^{' | tail -1) || true
-    txhash=$(echo "${json_line}" | jq -r '.txhash // empty' 2>/dev/null || echo "")
-    if [ -z "${txhash}" ]; then return; fi
-
-    local tx_result
-    tx_result=$(structsd query tx "${txhash}" --home ~/.structs --output json 2>/dev/null) || return
-
-    local height
-    height=$(echo "${tx_result}" | jq -r '.height // "?"' 2>/dev/null || echo "?")
-
-    local attack_events
-    attack_events=$(echo "${tx_result}" | jq -c '
-        [(.events // [])[] | select(.type | test("EventAttack"))]
-    ' 2>/dev/null || echo "[]")
-
-    if [ "${attack_events}" = "[]" ] || [ -z "${attack_events}" ]; then
-        attack_events=$(echo "${tx_result}" | jq -c '
-            [(.events // [])[] | select(.type | test("[Aa]ttack"))]
-        ' 2>/dev/null || echo "[]")
+    local tx_output="$1" description="$2"
+    local txhash='' tx_result='' record='' reason='' timestamp helper_dir
+    timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+    helper_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) || return 1
+    if ! txhash=$(_tx_json "${tx_output}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))'); then
+        reason='Attack output has no valid transaction hash'
+    elif ! tx_result=$(query query tx "${txhash}"); then
+        reason='Delivered attack query failed'
+    elif ! record=$(printf '%s' "${tx_result}" | python3 "${helper_dir}/battle_log.py" "${txhash}" "${description}" "${timestamp}"); then
+        reason='Delivered attack receipt or typed event is invalid'
     fi
-
-    jq -nc \
-        --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-        --arg desc "${description}" \
-        --arg tx "${txhash}" \
-        --arg ht "${height}" \
-        --argjson events "${attack_events}" \
-        '{type:"attack", timestamp:$ts, description:$desc, txhash:$tx, height:$ht, events:$events}' \
-        >> "${BATTLE_LOG_FILE}"
-
-    BATTLE_LOG_COUNT=$((BATTLE_LOG_COUNT + 1))
-    echo -e "  ${CYAN}(battle event #${BATTLE_LOG_COUNT} logged)${NC}"
+    if [ -n "${reason}" ]; then
+        jq -nc --arg ts "${timestamp}" --arg desc "${description}" --arg tx "${txhash}" \
+            --arg reason "${reason}" --arg output "${tx_output}" --arg receipt "${tx_result}" \
+            '{type:"attack_unverified", timestamp:$ts, description:$desc, txhash:$tx, reason:$reason, tx_output:$output, query_output:$receipt}' \
+            >> "${BATTLE_LOG_FILE}" || return 1
+        echo -e "  ${RED}FAIL${NC}: ${reason}; unverified attempt preserved in battle log"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+        return 0
+    fi
+    printf '%s\n' "${record}" >> "${BATTLE_LOG_FILE}" || return 1
+    if [ "$(printf '%s' "${record}" | jq -r '.type')" = attack ]; then
+        BATTLE_LOG_COUNT=$((BATTLE_LOG_COUNT + 1))
+        echo -e "  ${CYAN}(battle event #${BATTLE_LOG_COUNT} logged)${NC}"
+    else
+        echo -e "  ${CYAN}(rejected attack preserved; no attack event counted)${NC}"
+    fi
 }
 
 # assert_eq: check that two values are equal
@@ -484,6 +532,45 @@ assert_eq() {
         echo -e "  ${RED}FAIL${NC}: ${label}  (expected='${expected}', got='${actual}')"
         FAIL_COUNT=$((FAIL_COUNT + 1))
     fi
+}
+
+# A transport failure or empty successful response does not prove deletion.
+# Read stderr directly because query() deliberately suppresses it.
+assert_object_missing() {
+    local label="$1" kind="$2" id="$3" output missing=false
+    if output=$(structsd ${PARAMS_QUERY} query structs "${kind}" "${id}" 2>&1); then
+        missing=false
+    elif [[ "${output}" == *"object not found"* ]]; then
+        missing=true
+    fi
+    assert_eq "${label}" "true" "${missing}"
+    if [ "${missing}" != true ]; then
+        printf '  Unexpected query response: %s\n' "${output}"
+    fi
+}
+
+# Parse addressproof output as data. Clear prior values before parsing so an
+# incomplete proof cannot borrow signing material from another phase.
+parse_address_proof() {
+    ADDRESS='' PROOF_PUBKEY='' PROOF_SIGNATURE='' PRIVKEY=''
+    local line value key seen='|'
+    while IFS= read -r line; do
+        value="${line#*=}"
+        key="${line%%=*}"
+        case "${key}" in ADDRESS|PROOF_PUBKEY|PROOF_SIGNATURE|PRIVKEY) ;; *) continue ;; esac
+        case "${seen}" in *"|${key}|"*) return 1 ;; esac
+        seen="${seen}${key}|"
+        case "${line}" in
+            ADDRESS=*) [ -z "${ADDRESS}" ] || return 1; ADDRESS="${value}" ;;
+            PROOF_PUBKEY=*) [ -z "${PROOF_PUBKEY}" ] || return 1; PROOF_PUBKEY="${value}" ;;
+            PROOF_SIGNATURE=*) [ -z "${PROOF_SIGNATURE}" ] || return 1; PROOF_SIGNATURE="${value}" ;;
+            PRIVKEY=*) [ -z "${PRIVKEY}" ] || return 1; PRIVKEY="${value}" ;;
+        esac
+    done <<< "$1"
+    [[ "${ADDRESS}" =~ ^structs1[0-9a-z]+$ ]] &&
+    [[ "${PROOF_PUBKEY}" =~ ^[0-9a-f]{66}$ ]] &&
+    [[ "${PROOF_SIGNATURE}" =~ ^[0-9a-f]{128}$ ]] &&
+    [[ "${PRIVKEY}" =~ ^[0-9a-f]{64}$ ]]
 }
 
 # assert_not_empty: check that a value is not empty/null
@@ -520,7 +607,15 @@ assert_ge() {
     local label="$1"
     local threshold="$2"
     local actual="$3"
-    if [ -n "${actual}" ] && [ "${actual}" != "null" ] && [ "${actual}" -ge "${threshold}" ] 2>/dev/null; then
+    if python3 - "${threshold}" "${actual}" <<'PY_COMPARE'
+import re
+import sys
+threshold, actual = sys.argv[1:]
+if not all(re.fullmatch(r"-?(0|[1-9][0-9]*)", value) for value in (threshold, actual)):
+    raise SystemExit(1)
+raise SystemExit(0 if int(actual) >= int(threshold) else 1)
+PY_COMPARE
+    then
         echo -e "  ${GREEN}PASS${NC}: ${label} = ${actual} >= ${threshold}"
         PASS_COUNT=$((PASS_COUNT + 1))
     else
@@ -543,36 +638,56 @@ assert_lt() {
     fi
 }
 
-# get_newest_struct_id: find the struct with the highest numeric index
-# NOTE: struct-all returns structs in string-sorted order (5-10 < 5-2),
-# so .Struct[-1] breaks once indices exceed single digits. This sorts numerically.
-get_newest_struct_id() {
-    local json="${1:-}"
-    if [ -z "${json}" ]; then
-        json=$(query query structs struct-all)
-    fi
-    echo "${json}" | jq -r '[.Struct[].id] | map(split("-") | {p: .[0], n: (.[1] | tonumber)}) | sort_by(.n) | last | "\(.p)-\(.n)"' 2>/dev/null || echo ""
+# A successful build identifies its struct in its own confirmed event. A list
+# page cannot establish which object this transaction created, regardless of size.
+get_created_struct_id() {
+    local owner="$1" type_id="$2" txhash delivered struct_id
+    txhash=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash
+        | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))') || return 1
+    delivered=$(query query tx "${txhash}") || return 1
+    struct_id=$(echo "${delivered}" | jq -er --arg hash "${txhash}" \
+        --arg owner "${owner}" --arg kind "${type_id}" '
+        def positive_uint64:
+            type == "string" and test("^[1-9][0-9]*$") and
+            (length < 20 or (length == 20 and . <= "18446744073709551615"));
+        select((if has("code") then (.code == 0 or .code == "0") else true end)
+            and (.txhash | ascii_upcase) == ($hash | ascii_upcase))
+        | select(.height | positive_uint64 and
+            (length < 19 or (length == 19 and . <= "9223372036854775807")))
+        | [.events[] | select(.type == "structs.structs.EventStruct")
+            | [.attributes[] | select(.key == "structure")]
+            | if length == 1 then .[0].value | fromjson else error("ambiguous struct event") end
+            | select(.owner == $owner and .type == $kind)]
+        | select(length == 1) | .[0]
+        | select(.index | positive_uint64)
+        | select(.id == ("5-" + .index)) | .id') || return 1
+    printf '%s\n' "${struct_id}"
 }
 
-# assert_new_struct: fail loudly if a struct-build-initiate did not produce a
-# NEW struct of the expected type (guards against get_newest_struct_id silently
-# returning a stale id when an initiate is rejected).
+# Automatic command ships are named by the player's fleet, not by creation order.
+get_command_ship_id() {
+    local owner="$1" fleet="$2" fleet_json struct_id struct_json
+    fleet_json=$(query query structs fleet "${fleet}") || return 1
+    struct_id=$(echo "${fleet_json}" | jq -er --arg owner "${owner}" --arg fleet "${fleet}" '
+        .Fleet | select(.id == $fleet and .owner == $owner) | .commandStruct
+        | select(type == "string" and test("^5-[1-9][0-9]*$"))') || return 1
+    struct_json=$(query query structs struct "${struct_id}") || return 1
+    echo "${struct_json}" | jq -er --arg id "${struct_id}" --arg owner "${owner}" --arg fleet "${fleet}" '
+        .Struct | select(.id == $id and .owner == $owner and .type == "1" and .locationId == $fleet) | .id'
+}
+
+# Verify the event-resolved object before computing against it.
 # Returns non-zero, which under `set -e` aborts the run: every later assertion in
 # the phase would be measuring the wrong struct, and the stale id may even belong
 # to a struct that a subsequent sweep deletes, so stopping here is far cheaper
 # than letting hours of proof-of-work run against corrupt bookkeeping.
-# Usage: assert_new_struct <label> <new_id> <prev_newest_id> <expected_type>
+# Usage: assert_new_struct <label> <new_id> <expected_owner> <expected_type>
 assert_new_struct() {
-    local label="$1" new_id="$2" prev_id="$3" exp_type="$4"
-    if [ -z "${new_id}" ] || [ "${new_id}" = "${prev_id}" ]; then
-        echo -e "  ${RED}FAIL${NC}: ${label} - initiate produced no new struct (id='${new_id}', prev='${prev_id}')"
-        echo -e "  ${RED}Aborting: the phase would continue against a stale struct id.${NC}"
-        FAIL_COUNT=$((FAIL_COUNT + 1)); return 1
-    fi
-    local t; t=$(query query structs struct "${new_id}" 2>/dev/null | jq -r '.Struct.type // empty' 2>/dev/null || echo "")
-    if [ "${t}" != "${exp_type}" ]; then
-        echo -e "  ${RED}FAIL${NC}: ${label} - new struct ${new_id} type='${t}', expected '${exp_type}'"
-        echo -e "  ${RED}Aborting: the phase would continue against the wrong struct.${NC}"
+    local label="$1" new_id="$2" owner="$3" exp_type="$4" record
+    if ! record=$(query query structs struct "${new_id}" | jq -ce \
+        --arg id "${new_id}" --arg owner "${owner}" --arg kind "${exp_type}" '
+        .Struct | select(.id == $id and .owner == $owner and .type == $kind)'); then
+        echo -e "  ${RED}FAIL${NC}: ${label} - created struct '${new_id}' does not match owner '${owner}' and type '${exp_type}'"
         FAIL_COUNT=$((FAIL_COUNT + 1)); return 1
     fi
     echo -e "  ${GREEN}PASS${NC}: ${label} = ${new_id} (type ${exp_type})"
@@ -586,19 +701,30 @@ assert_new_struct() {
 # Usage: first_free_slot <planet|fleet> <location id> <space|air|land|water>
 first_free_slot() {
     local kind="$1" id="$2" ambit="$3"
-    local root
+    local root payload
     case "${kind}" in
         planet) root="Planet" ;;
         fleet)  root="Fleet" ;;
-        *)      echo ""; return 0 ;;
+        *)      echo "Invalid slot location kind: ${kind}" >&2; return 1 ;;
     esac
-    query query structs "${kind}" "${id}" 2>/dev/null | jq -r --arg root "${root}" --arg ambit "${ambit}" '
-        (.[$root] // {}) as $loc
-        | ((($loc[$ambit + "Slots"]) // "0") | tonumber) as $n
-        | (($loc[$ambit]) // []) as $used
-        | [range(0; $n) | select(((($used[.]) // "") | length) == 0)]
-        | if length == 0 then "" else (.[0] | tostring) end
-    ' 2>/dev/null || echo ""
+    case "${ambit}" in
+        space|air|land|water) ;;
+        *) echo "Invalid slot ambit: ${ambit}" >&2; return 1 ;;
+    esac
+    # A failed RPC may still print JSON. Capture its status before parsing, and
+    # distinguish a full location from missing or inconsistent occupancy data.
+    payload=$(query query structs "${kind}" "${id}") || return 1
+    printf '%s' "${payload}" | jq -r --arg root "${root}" --arg id "${id}" --arg ambit "${ambit}" '
+        .[$root] as $loc
+        | if ($loc | type) != "object" or $loc.id != $id then error("slot location identity differs") else . end
+        | (if $loc | has($ambit + "Slots") then $loc[$ambit + "Slots"] else "0" end) as $count
+        | (if $loc | has($ambit) then $loc[$ambit] else [] end) as $used
+        | if ($used | type) != "array" then error("missing slot occupancy") else . end
+        | if ($used | length | tostring) != $count then error("slot count and occupancy differ") else . end
+        | if all($used[]; type == "string" and (. == "" or test("^5-[1-9][0-9]*$")))
+          then ($used | index("") | if . == null then "" else tostring end)
+          else error("invalid slot occupant") end
+    '
 }
 
 # wait_for_free_slot: like first_free_slot, but tolerates the rubble window.
@@ -613,7 +739,7 @@ wait_for_free_slot() {
     local kind="$1" id="$2" ambit="$3" timeout="${4:-30}"
     local slot elapsed=0
     while [ "${elapsed}" -lt "${timeout}" ]; do
-        slot=$(first_free_slot "${kind}" "${id}" "${ambit}")
+        slot=$(first_free_slot "${kind}" "${id}" "${ambit}") || return 1
         if [ -n "${slot}" ]; then
             # Progress goes to stderr so only the slot index lands on stdout.
             [ "${elapsed}" -gt 0 ] && echo -e "  ${GREEN}Slot free${NC}: ${kind} ${id} ${ambit} slot=${slot} (after ${elapsed}s)" >&2
@@ -627,37 +753,101 @@ wait_for_free_slot() {
     echo ""
 }
 
-# get_newest_provider_id / get_newest_agreement_id: like get_newest_struct_id,
-# these sort on the numeric index rather than trusting the store's string order,
-# where 10-10 sorts before 10-9.
-# get_newest_agreement_id optionally scopes to a single provider.
-get_newest_provider_id() {
-    query query structs provider-all 2>/dev/null \
-        | jq -r '[.Provider[]?] | sort_by(.id | split("-") | .[1] | tonumber) | .[-1].id // empty' 2>/dev/null || echo ""
+# Resolve a newly created provider from its own confirmed transaction event.
+get_created_provider_id() {
+    local owner="$1" substation="$2" txhash delivered provider_id
+    txhash=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))') || return 1
+    delivered=$(query query tx "${txhash}") || return 1
+    provider_id=$(echo "${delivered}" | jq -er \
+        --arg hash "${txhash}" --arg owner "${owner}" --arg substation "${substation}" '
+        select((.code == 0 or .code == "0") and (.txhash | ascii_upcase) == ($hash | ascii_upcase))
+        | [.events[] | select(.type == "structs.structs.EventProvider")] | select(length == 1)
+        | [.[0].attributes[] | select(.key == "provider")] | select(length == 1)
+        | .[0].value | fromjson
+        | select(.owner == $owner and .substationId == $substation)
+        | .id | select(type == "string" and test("^10-[0-9]+$"))') || return 1
+    printf '%s\n' "${provider_id}"
 }
 
-get_newest_substation_id() {
-    query query structs substation-all 2>/dev/null \
-        | jq -r '[.Substation[]?] | sort_by(.id | split("-") | .[1] | tonumber) | .[-1].id // empty' 2>/dev/null || echo ""
+# Bind grid creation to its delivered transaction, including the feeder association.
+# Usage: get_created_grid_id allocation <source> <controller>
+#        get_created_grid_id substation <owner> <allocation>
+get_created_grid_id() {
+    local kind="$1" first="$2" second="$3" txhash delivered object_id
+    case "${kind}" in allocation|substation) ;; *) return 1 ;; esac
+    txhash=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))') || return 1
+    delivered=$(query query tx "${txhash}") || return 1
+    object_id=$(printf '%s' "${delivered}" | jq -er \
+        --arg hash "${txhash}" --arg kind "${kind}" --arg first "${first}" --arg second "${second}" '
+        def positive_uint64:
+            type == "string" and test("^[1-9][0-9]*$") and
+            (length < 20 or (length == 20 and . <= "18446744073709551615"));
+        def records($name; $key):
+            [.events[] | select(.type == ("structs.structs.Event" + $name))
+                | [.attributes[] | select(.key == $key)]
+                | if length == 1 then .[0].value | fromjson else error("ambiguous grid event") end];
+        select((if has("code") then (.code == 0 or .code == "0") else true end)
+            and (.txhash | ascii_upcase) == ($hash | ascii_upcase))
+        | select(.height | positive_uint64 and
+            (length < 19 or (length == 19 and . <= "9223372036854775807")))
+        | if $kind == "allocation" then
+            records("Allocation"; "allocation") | select(length == 1) | .[0]
+            | select(.sourceObjectId == $first and .controller == $second and .type == "dynamic")
+            | select((if has("destinationId") then .destinationId == "" else true end))
+            | select(.index | positive_uint64)
+            | select(.id == ("6-" + .index)) | .id
+          else
+            . as $tx | records("Substation"; "substation") | select(length == 1) | .[0]
+            | select(.owner == $first)
+            | select(.id | type == "string" and startswith("4-") and (.[2:] | positive_uint64))
+            | .id as $id
+            | $tx | records("Allocation"; "allocation")
+            | map(select(.id == $second)) | select(length == 1) | .[0]
+            | select(.index | positive_uint64)
+            | select(.id == ("6-" + .index) and .destinationId == $id)
+            | $id
+          end') || return 1
+    printf '%s\n' "${object_id}"
 }
 
-get_newest_agreement_id() {
-    local provider_id="${1:-}"
-    query query structs agreement-all 2>/dev/null \
-        | jq -r --arg p "${provider_id}" \
-            '[.Agreement[]? | select($p == "" or .providerId == $p)]
-             | sort_by(.id | split("-") | .[1] | tonumber) | .[-1].id // empty' 2>/dev/null || echo ""
+# Resolve the agreement from this transaction's typed event, never a list page.
+get_opened_agreement_record() {
+    local provider="$1" owner="$2" capacity="$3"
+    local txhash delivered agreement_record
+    txhash=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))') || return 1
+    delivered=$(query query tx "${txhash}") || return 1
+    agreement_record=$(echo "${delivered}" | jq -cer \
+        --arg hash "${txhash}" --arg provider "${provider}" --arg owner "${owner}" --arg capacity "${capacity}" '
+        select((.code == 0 or .code == "0") and (.txhash | ascii_upcase) == ($hash | ascii_upcase))
+        | [.events[] | select(.type == "structs.structs.EventAgreement")] | select(length == 1)
+        | [.[0].attributes[] | select(.key == "agreement")] | select(length == 1)
+        | .[0].value | fromjson
+        | select(.providerId == $provider and .owner == $owner and .capacity == $capacity)
+        | select(.id | type == "string" and test("^11-[0-9]+$"))') || return 1
+    printf '%s\n' "${agreement_record}"
 }
 
-# get_latest_allocation_for_source: find the most recent allocation for a given source
-get_latest_allocation_for_source() {
-    local source_id="$1"
-    query query structs allocation-all-by-source "${source_id}" | jq -r '.Allocation[-1].id // empty'
+get_opened_agreement_id() {
+    local record
+    record=$(get_opened_agreement_record "$1" "$2" "$3") || return 1
+    echo "${record}" | jq -er '.id'
 }
 
-# get_allocation_count: get current number of allocations
-get_allocation_count() {
-    query query structs allocation-all | jq -r '.pagination.total // "0"'
+# Recover the fixture's own associations at one committed height.
+get_fixture_grid() {
+    local helper_dir
+    helper_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+    python3 "${helper_dir}/fixture_grid_recovery.py" grid --player "$1" -- structsd ${PARAMS_QUERY}
+}
+
+# Match the source, destination and controller across the complete scoped index.
+# Empty is allowed only when that complete inventory has no matching allocation.
+get_fixture_feeder() {
+    local helper_dir
+    helper_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+    local arguments=(feeder --source "$1" --destination "$2" --controller "$3")
+    if [ -n "${4:-}" ]; then arguments+=(--height "$4"); fi
+    python3 "${helper_dir}/fixture_grid_recovery.py" "${arguments[@]}" -- structsd ${PARAMS_QUERY}
 }
 
 # get_balance: get the balance of a specific denom for an address
@@ -666,22 +856,158 @@ get_balance() {
     local addr="$1"
     local denom="$2"
     local result
-    result=$(query query bank balances "${addr}" | jq -r --arg d "${denom}" '.balances[] | select(.denom == $d) | .amount // "0"' 2>/dev/null || echo "0")
-    if [ -z "${result}" ]; then
-        echo "0"
-    else
-        echo "${result}"
+    result=$(query query bank balance "${addr}" "${denom}" | jq -er --arg d "${denom}" \
+        '.balance | select(.denom == $d) | .amount | select(type == "string" and test("^[0-9]+$"))') || return 1
+    printf '%s\n' "${result}"
+}
+
+# Read every leg of a changing balance comparison at one committed height.
+# Pruned/unavailable historical state is a failure, never a retry at latest.
+get_balance_at_height() {
+    local address="$1" denom="$2" height="$3" response result
+    python3 -c 'import re, sys
+h = sys.argv[1]
+assert re.fullmatch(r"[1-9][0-9]{0,18}", h) and int(h) <= 2**63-1, "invalid committed query height"' "${height}" || return 1
+    response=$(query query bank balance "${address}" "${denom}" --height "${height}") || return 1
+    result=$(printf '%s' "${response}" | jq -er --arg d "${denom}" \
+        '.balance | select(.denom == $d) | .amount | select(type == "string" and test("^(0|[1-9][0-9]*)$"))') || return 1
+    printf '%s\n' "${result}"
+}
+
+# Fresh single-validator fixtures must prove the entire delegation set, not
+# select one matching row while ignoring duplicates, wrong owners or later pages.
+get_fixture_delegation_shares() {
+    local address="$1" validator="$2" presence="${3:-present}" output
+    output=$(query query staking delegations "${address}" --page-limit 2) || return 1
+    printf '%s\n' "${output}" | jq -er --arg address "${address}" --arg validator "${validator}" --arg presence "${presence}" '
+        select(type == "object" and (keys - ["pagination", "delegation_responses"] | length == 0)) |
+        select(.pagination | type == "object") |
+        select(.pagination | (has("next_key") and has("nextKey")) | not) |
+        select((.pagination.next_key == null or .pagination.next_key == "") and
+               (.pagination.nextKey == null or .pagination.nextKey == "")) |
+        .delegation_responses | if . == null then [] else . end | select(type == "array") |
+        if $presence == "empty" then
+            select(length == 0) | "0.000000000000000000"
+        elif $presence == "present" then
+            select(length == 1) | .[0].delegation |
+            select(.delegator_address == $address and .validator_address == $validator) |
+            .shares | select(type == "string" and test("^(0|[1-9][0-9]*)[.][0-9]{18}$") and test("[1-9]"))
+        else empty end'
+}
+
+# Denomination-specific queries avoid pagination hiding a real asset or supply.
+# Query errors are failures, not evidence that the amount is zero.
+guild_supply() {
+    local result
+    result=$(query query bank total-supply-of "$1" | jq -er --arg d "$1" \
+        '.amount | select(.denom == $d) | .amount | select(type == "string" and test("^[0-9]+$"))') || return 1
+    printf '%s\n' "${result}"
+}
+
+# Resolve the protocol address from chain state; never infer a vault from a key.
+# A missing owner/address must stop the phase rather than read as a zero balance.
+get_vault_address() {
+    local owner_id="$1"
+    query query structs vault "${owner_id}" | jq -er --arg owner "${owner_id}" \
+        'select(.ownerId == $owner) | .address | select(type == "string" and length > 0)'
+}
+
+# Fund only a shortfall from the faucet. Transaction fees stay on the signing key;
+# economic collateral belongs in the vault. ualpha can fund an unprovisioned vault;
+# the owning handler provisions its association before spending it.
+fund_vault_alpha() {
+    local owner_id="$1" minimum="$2" vault balance shortfall faucet
+    vault=$(get_vault_address "${owner_id}") || return 1
+    balance=$(get_balance "${vault}" ualpha) || return 1
+    shortfall=$(python3 -c 'import re, sys
+assert all(re.fullmatch(r"0|[1-9][0-9]*", value) for value in sys.argv[1:]), "invalid vault funding amount"
+balance, minimum = map(int, sys.argv[1:])
+print(max(minimum-balance, 0))' "${balance}" "${minimum}") || return 1
+    if [ "${shortfall}" != "0" ]; then
+        # Phase 1 funds guild creation before Phase 2 initializes BOB_ADDRESS.
+        # Resolve the key here so early calls and resumed phases are independent.
+        faucet=$(structsd ${PARAMS_KEYS} keys show bob | jq -er '.address | select(type == "string" and length > 0)') || return 1
+        run_tx "Funding ${owner_id} vault with ${shortfall}ualpha" \
+            tx bank send "${faucet}" "${vault}" "${shortfall}ualpha" --from bob
     fi
+}
+
+# The bank-address event is emitted once by AppendGuild. Guild snapshots may
+# repeat as membership is committed, so validate every snapshot of that new ID.
+get_created_guild_id() {
+    local owner="$1" reactor="$2" endpoint="$3" station="$4" txhash delivered guild_id
+    txhash=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))') || return 1
+    delivered=$(query query tx "${txhash}") || return 1
+    guild_id=$(echo "${delivered}" | jq -er --arg hash "${txhash}" --arg owner "${owner}" --arg reactor "${reactor}" --arg endpoint "${endpoint}" --arg station "${station}" '
+        select((.code == 0 or .code == "0") and (.txhash | ascii_upcase) == ($hash | ascii_upcase))
+        | .events as $events
+        | [$events[] | select(.type == "structs.structs.EventGuildBankAddress")] | select(length == 1)
+        | [.[0].attributes[] | select(.key == "eventGuildBankAddressDetail")] | select(length == 1)
+        | .[0].value | fromjson | .guildId | select(type == "string" and test("^0-[0-9]+$")) as $id
+        | [$events[] | select(.type == "structs.structs.EventGuild")
+            | [.attributes[] | select(.key == "guild")]
+            | if length == 1 then .[0].value | fromjson else error("invalid guild event attributes") end
+            | select(.id == $id)]
+        | select(length > 0 and all(.[]; .owner == $owner and .primaryReactorId == $reactor and .endpoint == $endpoint and (if has("entrySubstationId") then .entrySubstationId else "" end) == $station))
+        | [$events[] | select(.type == "burn")] | select(length == 1)
+        | [.[0].attributes[] | select(.key == "amount")] | select(length == 1 and .[0].value == "1000000ualpha")
+        | [$events[] | select(.type == "coinbase")] | select(length == 1)
+        | [.[0].attributes[] | select(.key == "amount")] | select(length == 1 and .[0].value == ("1000000uguild." + $id))
+        | $id') || return 1
+    printf '%s\n' "${guild_id}"
+}
+
+# The one founding path: pay from the founder vault and verify the new treasury.
+create_paid_guild() {
+    local key="$1" owner_id="$2" reactor_id="$3" endpoint="$4" station_id="$5"
+    local founder_vault before expected_after guild_id guild_vault collateral vault_state guild_state founder_guild
+    fund_vault_alpha "${owner_id}" 2000000 || return 1
+    founder_vault=$(get_vault_address "${owner_id}") || return 1
+    before=$(get_balance "${founder_vault}" ualpha) || return 1
+    expected_after=$(python3 -c 'import re, sys; value = sys.argv[1]; assert re.fullmatch(r"0|[1-9][0-9]*", value); balance = int(value); assert balance >= 2000000; print(balance-2000000)' "${before}") || return 1
+    run_tx "${key} creates a paid guild" \
+        tx structs guild-create "${reactor_id}" "${endpoint}" "${station_id}" --from "${key}" || return 1
+    guild_id=$(get_created_guild_id "${owner_id}" "${reactor_id}" "${endpoint}" "${station_id}") || return 1
+    founder_guild=$(query query structs player "${owner_id}" | jq -er --arg owner "${owner_id}" '.Player | select(.id == $owner) | .guildId | select(type == "string" and test("^0-[0-9]+$"))') || return 1
+    assert_eq "Founder joined the guild created by this transaction" "${guild_id}" "${founder_guild}"
+    guild_vault=$(get_vault_address "${guild_id}") || return 1
+    collateral=$(query query structs guild-bank-collateral-address "${guild_id}" | jq -er --arg guild "${guild_id}" '.internalAddressAssociation | select(type == "array" and length == 1) | .[0] | select(.objectId == $guild) | .address | select(type == "string" and length > 0)') || return 1
+    vault_state=$(query query structs vault "${guild_id}") || return 1
+    vault_state=$(echo "${vault_state}" | jq -ce --arg owner "${guild_id}" --arg address "${guild_vault}" 'select(.ownerId == $owner and .address == $address and (.provisioned | type == "boolean"))') || return 1
+    guild_state=$(query query structs guild "${guild_id}" | jq -ce --arg id "${guild_id}" '.Guild | select(type == "object" and .id == $id)') || return 1
+    assert_eq "Guild creation spends exactly two Alpha from founder vault" "${expected_after}" "$(get_balance "${founder_vault}" ualpha)"
+    assert_eq "Initial guild token is in guild vault" "1000000" "$(get_balance "${guild_vault}" "uguild.${guild_id}")"
+    assert_eq "Initial token has one Alpha collateral" "1000000" "$(get_balance "${collateral}" ualpha)"
+    assert_eq "New guild treasury has no collateral Alpha" "0" "$(get_balance "${guild_vault}" ualpha)"
+    assert_eq "Vault association was provisioned" "true" "$(echo "${vault_state}" | jq -r '.provisioned')"
+    assert_eq "New guild belongs to the signing founder" "${owner_id}" "$(echo "${guild_state}" | jq -r '.owner')"
 }
 
 # ─── Charge-Aware Wait Helpers ────────────────────────────────────────────────
 # Charge = CurrentBlockHeight - Player.lastAction
 # Each block is ~1 second. Struct operations require a minimum charge level
-# before they can proceed (e.g. BuildCharge=8 means 8 blocks since last action).
+# before they can proceed (e.g. BuildCharge=1 means 1 block since last action).
 
 # get_block_height: query the current block height
 get_block_height() {
     query query structs block-height | jq -r '.blockHeight // "0"' 2>/dev/null || echo "0"
+}
+
+# Capture every raid assertion at one committed height, including on resume.
+raid_state_at_height() {
+    local height="$1" victim raider planet fleet require_ore=true
+    [[ "${height}" =~ ^[1-9][0-9]*$ ]] || return 1
+    [ "${SKIP_MINING}" != true ] || require_ore=false
+    victim=$(query query structs player "${PLAYER_2_ID}" --height "${height}") || return 1
+    raider=$(query query structs player "${PLAYER_3_ID}" --height "${height}") || return 1
+    planet=$(query query structs planet "${PLAYER_2_PLANET_ID}" --height "${height}") || return 1
+    fleet=$(query query structs fleet "${PLAYER_3_FLEET_ID}" --height "${height}") || return 1
+    jq -nc --arg height "${height}" --arg victim_id "${PLAYER_2_ID}" --arg raider_id "${PLAYER_3_ID}" \
+        --arg planet_id "${PLAYER_2_PLANET_ID}" --arg home_id "${PLAYER_3_PLANET_ID}" --arg fleet_id "${PLAYER_3_FLEET_ID}" \
+        --argjson require_ore "${require_ore}" --argjson victim "${victim}" --argjson raider "${raider}" \
+        --argjson planet "${planet}" --argjson fleet "${fleet}" \
+        '{height:$height,victim_id:$victim_id,raider_id:$raider_id,planet_id:$planet_id,home_id:$home_id,
+          fleet_id:$fleet_id,require_ore:$require_ore,victim:$victim,raider:$raider,planet:$planet,fleet:$fleet}'
 }
 
 # wait_for_block: wait until the chain reaches a given height
@@ -706,6 +1032,25 @@ wait_for_block() {
     done
     echo -e "  ${RED}Timed out${NC} waiting for block ${target} (still at ${height})"
     return 1
+}
+
+# Record only the confirmed transaction's terms and transfers. The model prices
+# each served window independently of the chain's settlement/checkpoint counters.
+record_agreement_terms() {
+    local operation="$1" amount="$2" state="$3" test_dir txhash delivered
+    test_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) || return 1
+    txhash=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))') || return 1
+    delivered=$(query query tx "${txhash}") || return 1
+    printf '%s' "${delivered}" | python3 "${test_dir}/agreement_terms.py" step "${operation}" "${amount}" "${state}" "${txhash}" || return 1
+}
+
+# Preserve transaction-local evidence for the live-contract withdrawal/delete fixture.
+record_provider_lifecycle_step() {
+    local operation="$1" argument="$2" state="$3" test_dir txhash delivered
+    test_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) || return 1
+    txhash=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))') || return 1
+    delivered=$(query query tx "${txhash}") || return 1
+    printf '%s' "${delivered}" | python3 "${test_dir}/provider_lifecycle_accounting.py" "${operation}" "${state}" "${argument}" "${txhash}" || return 1
 }
 
 # get_player_charge: compute a player's current charge
@@ -742,7 +1087,7 @@ wait_for_charge() {
 }
 
 # Charge constants (from genesis_struct_type.go)
-CHARGE_BUILD=8
+CHARGE_BUILD=1
 CHARGE_ATTACK_DEFAULT=3              # primary charge 3 (Tank/Starfighter/Pursuit/CmdShip)
 CHARGE_ATTACK_BATTLESHIP=5           # guided secondary (v0.18.0 charge rebalance)
 CHARGE_ATTACK_BATTLESHIP_PRIMARY=5   # armour-piercing unguided primary
@@ -808,6 +1153,7 @@ run_tx_expect_fail() {
     OUTPUT=$(structsd ${PARAMS_TX} "$@" 2>&1) || true
     LAST_TX_OUTPUT="${OUTPUT}"
     OUTCOME=$(_tx_outcome "${OUTPUT}")
+    _tx_outcome_known "${OUTCOME}" || return 0
     if [ "${OUTCOME%%|*}" = "ok" ]; then
         echo -e "  ${RED}FAIL${NC}: TX succeeded but was expected to fail"
         FAIL_COUNT=$((FAIL_COUNT + 1))
@@ -823,27 +1169,8 @@ run_tx_expect_fail() {
 run_tx_expect_permission_denied() {
     local description="$1"
     shift
-    info "${description}"
-    echo -e "  ${BOLD}structsd ${PARAMS_TX} $*${NC}"
-    local OUTPUT OUTCOME REASON
-    OUTPUT=$(structsd ${PARAMS_TX} "$@" 2>&1) || true
-    LAST_TX_OUTPUT="${OUTPUT}"
-    OUTCOME=$(_tx_outcome "${OUTPUT}")
-    if [ "${OUTCOME%%|*}" = "ok" ]; then
-        echo -e "  ${RED}Expected permission denial but TX succeeded${NC}"
-        FAIL_COUNT=$((FAIL_COUNT + 1))
-        return 0
-    fi
-    REASON="${OUTCOME#*|}"
-    if echo "${REASON}" | grep -qiE "permission|authority|does not have|not have the authority|unauthorized"; then
-        echo -e "  ${GREEN}Correctly rejected (permission/authority)${NC}"
-        PASS_COUNT=$((PASS_COUNT + 1))
-        return 0
-    fi
-    echo -e "  ${GREEN}Correctly rejected${NC} (no permission phrase in output)"
-    echo "  ${REASON}"
-    PASS_COUNT=$((PASS_COUNT + 1))
-    return 0
+    run_tx_expect_reject_matching "${description}" \
+        'has no .*permission|permission denied|does not have .*permission|does not have .*authority|not have the authority|unauthorized|not authorized' "$@"
 }
 
 # run_tx_expect_reject_matching: expect failure AND pin the reason.
@@ -864,6 +1191,7 @@ run_tx_expect_reject_matching() {
     OUTPUT=$(structsd ${PARAMS_TX} "$@" 2>&1) || true
     LAST_TX_OUTPUT="${OUTPUT}"
     OUTCOME=$(_tx_outcome "${OUTPUT}")
+    _tx_outcome_known "${OUTCOME}" || return 0
     if [ "${OUTCOME%%|*}" = "ok" ]; then
         echo -e "  ${RED}FAIL${NC}: TX succeeded but was expected to fail"
         FAIL_COUNT=$((FAIL_COUNT + 1))
@@ -890,29 +1218,94 @@ run_tx_expect_reject_matching() {
 # ─── Permission Query Helpers ────────────────────────────────────────────────
 
 get_permission_by_object() {
-    query query structs permission-by-object "$1" 2>/dev/null || echo '{}'
+    local object_id="$1" page next='' seen='|' records='[]' page_records
+    local pages=0
+    while true; do
+        pages=$((pages + 1))
+        if [ "$pages" -gt 10000 ]; then
+            echo "Permission pagination exceeded 10000 pages" >&2
+            return 1
+        fi
+        if [ -z "$next" ]; then
+            page=$(query query structs permission-by-object "$object_id" --page-limit 100) || return 1
+        else
+            page=$(query query structs permission-by-object "$object_id" --page-limit 100 --page-key "$next") || return 1
+        fi
+        page_records=$(echo "$page" | jq -ce --arg prefix "${object_id}@" '
+            if type != "object" or (.pagination | type) != "object" then error("invalid permission page") else . end |
+            (if has("permissionRecords") then .permissionRecords else [] end) |
+            if type != "array" then error("invalid permission records") else . end |
+            if all(.[]; type == "object" and (.permissionId | type == "string" and startswith($prefix)))
+            then . else error("permission page contains another object") end') || return 1
+        records=$(jq -cen --argjson old "$records" --argjson page "$page_records" '
+            $old + $page | if (map(.permissionId) | unique | length) == length
+            then . else error("duplicate permission row across pages") end') || return 1
+        next=$(echo "$page" | jq -er '
+            .pagination | (if has("next_key") and has("nextKey") then error("ambiguous permission cursor")
+            elif has("next_key") then .next_key elif has("nextKey") then .nextKey else "" end) |
+            (if . == null then "" else . end) |
+            if type == "string" and test("^[A-Za-z0-9+/]*={0,2}$") then . else error("invalid permission cursor") end') || return 1
+        if [ -z "$next" ]; then break; fi
+        case "$seen" in
+            *"|${next}|"*) echo "Permission pagination repeated a cursor" >&2; return 1 ;;
+        esac
+        seen="${seen}${next}|"
+    done
+    jq -cn --argjson rows "$records" '{permissionRecords: $rows}'
 }
 
 get_permission_value_for_player() {
-    local obj_id="$1"
-    local player_id="$2"
+    local perm_id="$1@$2"
     local json
-    json=$(get_permission_by_object "${obj_id}")
-    local perm_id="${obj_id}@${player_id}"
-    local val
-    val=$(echo "${json}" | jq -r --arg id "${perm_id}" '[.permissionRecords[]? | select(.permissionId == $id) | .value] | first // empty' 2>/dev/null)
-    if [[ -z "${val}" || "${val}" == "null" ]]; then
-        val=$(echo "${json}" | jq -r --arg id "${perm_id}" '[.permissionRecord[]? | select(.permissionId == $id) | .value] | first // empty' 2>/dev/null)
-    fi
-    if [[ -z "${val}" || "${val}" == "null" ]]; then
-        echo "0"
-    else
-        echo "${val}"
-    fi
+    # Resolve the exact row. A filtered first page of permission-by-object can
+    # omit this player, and a failed query is not evidence of zero permissions.
+    json=$(query query structs permission "${perm_id}") || return 1
+    echo "${json}" | jq -er --arg id "${perm_id}" '
+        .permissionRecord |
+        if type != "object" or .permissionId != $id then error("missing or mismatched permission record")
+        else (if has("value") then .value else "0" end) end |
+        if type != "string" then error("permission value must be a uint64 string")
+        elif test("^(0|[1-9][0-9]*)$") | not then error("invalid permission value")
+        elif length > 20 or (length == 20 and . > "18446744073709551615") then error("permission value exceeds uint64")
+        else . end'
 }
 
 get_guild_rank_permission_by_object() {
-    query query structs guild-rank-permission-by-object "$1" 2>/dev/null || echo '{}'
+    local object_id="$1" page next='' seen='|' records='[]' page_records
+    local pages=0
+    while true; do
+        pages=$((pages + 1))
+        if [ "$pages" -gt 10000 ]; then
+            echo "Guild-rank permission pagination exceeded 10000 pages" >&2
+            return 1
+        fi
+        if [ -z "$next" ]; then
+            page=$(query query structs guild-rank-permission-by-object "$object_id" --page-limit 100) || return 1
+        else
+            page=$(query query structs guild-rank-permission-by-object "$object_id" --page-limit 100 --page-key "$next") || return 1
+        fi
+        page_records=$(echo "$page" | jq -ce --arg object "$object_id" '
+            if type != "object" or (.pagination | type) != "object" then error("invalid permission page") else . end |
+            (if has("guildRankPermissionRecords") then .guildRankPermissionRecords
+             elif has("guild_rank_permission_records") then .guild_rank_permission_records else [] end) |
+            if type != "array" then error("invalid permission records") else . end |
+            if all(.[]; type == "object" and .objectId == $object and (.guildId | type == "string") and (.permissions | type == "string") and (.rank | type == "string"))
+            then . else error("permission page contains another object") end') || return 1
+        records=$(jq -cen --argjson old "$records" --argjson page "$page_records" '
+            $old + $page | if (map([.guildId, .permissions]) | unique | length) == length
+            then . else error("duplicate permission row across pages") end') || return 1
+        next=$(echo "$page" | jq -er '
+            .pagination | (if has("next_key") and has("nextKey") then error("ambiguous permission cursor")
+            elif has("next_key") then .next_key elif has("nextKey") then .nextKey else "" end) |
+            (if . == null then "" else . end) |
+            if type == "string" and test("^[A-Za-z0-9+/]*={0,2}$") then . else error("invalid permission cursor") end') || return 1
+        if [ -z "$next" ]; then break; fi
+        case "$seen" in
+            *"|${next}|"*) echo "Guild-rank permission pagination repeated a cursor" >&2; return 1 ;;
+        esac
+        seen="${seen}${next}|"
+    done
+    jq -cn --argjson rows "$records" '{guildRankPermissionRecords: $rows}'
 }
 
 get_guild_rank_permission_by_object_and_guild() {
@@ -924,6 +1317,122 @@ get_player_guild_rank() {
     local json
     json=$(query query structs player "${player_id}" 2>/dev/null || echo '{}')
     jqr "${json}" '.Player.guildRank // .guildRank' '0'
+}
+
+# Decode the typed event from the last delivered rank transaction. Attribute
+# values are JSON-encoded, including quoted uint64 values; compare as strings.
+assert_rank_purchase_event() {
+    local guild="$1" player="$2" previous="$3" rank="$4" price="$5" joined="$6"
+    local txhash matched=false
+    txhash=$(_tx_json "${LAST_TX_OUTPUT}" | jq -r '.txhash // empty')
+    if [ -n "${txhash}" ]; then
+        matched=$(query query tx "${txhash}" | jq -r \
+            --arg guild "${guild}" --arg player "${player}" --arg previous "${previous}" \
+            --arg rank "${rank}" --arg price "${price}" --argjson joined "${joined}" '
+            [(.events // [])[] | select(.type == "structs.structs.EventGuildRankPurchase")
+             | [.attributes[] | {key: .key, value: (.value | fromjson)}] | from_entries] as $events
+            | ($events | length) == 1 and
+              ($events[0] | .guildId == $guild and .playerId == $player and
+               (.previousRank | tostring) == $previous and (.rank | tostring) == $rank and
+               (.price | tostring) == $price and .denom == ("uguild." + $guild) and
+               (.joined // false) == $joined)')
+    fi
+    assert_eq "Rank event identifies player, ranks, price, currency and admission" "true" "${matched}"
+}
+
+# Zero load is valid only inside a successful query for the requested provider.
+get_provider_load() {
+    local provider="$1" payload load
+    payload=$(query query structs provider "${provider}") || return 1
+    load=$(echo "${payload}" | jq -er --arg id "${provider}" '
+        select(.Provider.id == $id) | .gridAttributes | select(type == "object")
+        | if has("load") then .load else "0" end
+        | select(type == "string" and test("^(0|[1-9][0-9]*)$")
+          and (length < 20 or (length == 20 and . <= "18446744073709551615")))') || return 1
+    printf '%s\n' "${load}"
+}
+
+# Phase 16b uses rate 1 ualpha and consumer penalty 0.25 (verified on creation).
+# SDK settlement truncates the penalty, not the final refund.
+expected_settlement_consumer_vault() {
+    local before="$1" end="$2" capacity="$3" txhash delivered height
+    txhash=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))') || return 1
+    delivered=$(query query tx "${txhash}") || return 1
+    height=$(echo "${delivered}" | jq -er --arg hash "${txhash}" 'select((.code == 0 or .code == "0") and (.txhash | ascii_upcase) == ($hash | ascii_upcase)) | .height | select(type == "string" and test("^[0-9]+$"))') || return 1
+    python3 -c 'import sys
+before, end, capacity, height = map(int, sys.argv[1:])
+assert before >= 0 and 0 <= height <= end < 2**64 and 0 < capacity < 2**64
+remaining = (end-height)*capacity
+print(before+remaining-remaining//4)' "${before}" "${end}" "${capacity}" "${height}"
+}
+
+# Cancellation/trash can be swept before a latest-state query returns. Pin the
+# assertion to the successful receipt, and fail if that historical state is missing.
+struct_state_after_last_tx() {
+    local id="$1" txhash receipt height
+    txhash=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))') || return 1
+    receipt=$(query query tx "${txhash}") || return 1
+    height=$(printf '%s' "${receipt}" | jq -er --arg hash "${txhash}" '
+        select((.code == 0 or .code == "0") and (.txhash | ascii_upcase) == ($hash | ascii_upcase))
+        | .height | select(type == "string" and test("^[1-9][0-9]*$"))') || return 1
+    combat_state_at_height "${id}" "${height}"
+}
+
+# A destroyed combatant remains queryable at its transaction height even after
+# the live sweep. Accept omitted protobuf zeros, but never malformed values.
+combat_state_at_height() {
+    query query structs struct "$1" --height "$2" | jq -ce --arg id "$1" '
+        select(.Struct.id == $id and (.structAttributes | type) == "object")
+        | .structAttributes as $a
+        | (if $a | has("health") then $a.health else "0" end) as $hp
+        | select(($hp | type) == "string" and ($hp | test("^(0|[1-9][0-9]*)$")))
+        | select(($hp | length) < 20 or (($hp | length) == 20 and $hp <= "18446744073709551615"))
+        | select(if $a | has("isDestroyed") then ($a.isDestroyed | type) == "boolean" else true end)'
+}
+
+# Pin all generator baseline inputs to one committed height. Two rows suffice
+# to reject a fixture with unexpected extra positions; pagination must be empty.
+generator_fixture_snapshot() {
+    local height="${1:-}" generator player positions catalog
+    if [ -z "${height}" ]; then
+        height=$(query query structs block-height | jq -er '.blockHeight | select(type == "string" and test("^[1-9][0-9]*$"))') || return 1
+    fi
+    python3 -c 'import re,sys; h=sys.argv[1]; assert re.fullmatch(r"[1-9][0-9]*", h) and int(h) <= 2**63-1' "${height}" || return 1
+    generator=$(query query structs struct "${GENERATOR_STRUCT_ID}" --height "${height}") || return 1
+    player=$(query query structs player "${PLAYER_4_ID}" --height "${height}") || return 1
+    positions=$(query query structs infusion-all-by-destination "${GENERATOR_STRUCT_ID}" --page-limit 2 --height "${height}") || return 1
+    catalog=$(query query structs struct-type 20 --height "${height}") || return 1
+    jq -n --arg height "${height}" --argjson generator "${generator}" --argjson player "${player}" \
+        --argjson positions "${positions}" --argjson catalog "${catalog}" \
+        '{height:$height,generator:$generator,player:$player,positions:$positions,catalog:$catalog}'
+}
+
+# Read the generator at the confirmed attack height: a latest query can race
+# its delayed sweep. Missing receipts/state must fail, never become zero health.
+generator_state_after_attack() {
+    local before="$1" txhash receipt outcome height state
+    txhash=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))') || return 1
+    receipt=$(query query tx "${txhash}") || return 1
+    outcome=$(printf '%s' "${receipt}" | python3 "${GENERATOR_TEST_DIR}/generator_attack.py" "${txhash}" "${DESTROYER_STRUCT_ID}" "${GENERATOR_STRUCT_ID}" "${before}") || return 1
+    height=$(printf '%s' "${outcome}" | jq -er '.height') || return 1
+    state=$(query query structs struct "${GENERATOR_STRUCT_ID}" --height "${height}") || return 1
+    printf '%s' "${state}" | jq -ce --arg id "${GENERATOR_STRUCT_ID}" --argjson expected "${outcome}" '
+        select(.Struct.id == $id and (.structAttributes | type) == "object" and (.gridAttributes | type) == "object")
+        | select((if .structAttributes | has("health") then .structAttributes.health else "0" end) == $expected.health)
+        | select((if .structAttributes | has("isDestroyed") then .structAttributes.isDestroyed else false end) == $expected.destroyed)'
+}
+
+# Destruction retires the infusion in EndBlock. A transaction receipt alone
+# cannot prove the deletion and capacity updates delivered to indexers.
+generator_destruction_height() {
+    local txhash receipt height block
+    txhash=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))') || return 1
+    receipt=$(query query tx "${txhash}") || return 1
+    height=$(printf '%s' "${receipt}" | jq -er '.height | select(type == "string" and test("^[1-9][0-9]*$"))') || return 1
+    block=$(query query block-results "${height}") || return 1
+    jq -n --argjson receipt "${receipt}" --argjson block "${block}" '{receipt:$receipt,block:$block}' | \
+        python3 "${GENERATOR_TEST_DIR}/generator_destruction.py" "${txhash}" "${DESTROYER_STRUCT_ID}" \
+            "${GENERATOR_STRUCT_ID}" "${PLAYER_4_ID}" "${PLAYER_4_VAULT}" "${P4_CAP_EXPECTED_DESTROYED}"
 }
 
 # print_summary: final report
@@ -983,15 +1492,22 @@ run_phase() {
     [ "$1" -ge "${RESUME_PHASE_NUM}" ]
 }
 
-# find_struct_by_owner_type: locate a struct on-chain by owner player ID and type number
+# A recovery/combat inventory genuinely needs every row. Pin all pages to one
+# committed height so deferred sweeps cannot change the inventory between pages.
+get_all_structs() {
+    local helper_dir
+    helper_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) || return 1
+    python3 "${helper_dir}/struct_inventory.py" collect -- structsd ${PARAMS_QUERY}
+}
+
+# find_struct_by_owner_type: select from a complete inventory, ordered by exact index.
 # Usage: find_struct_by_owner_type <owner_player_id> <type_num> [nth] [struct_all_json]
 find_struct_by_owner_type() {
     local owner="$1" type_num="$2" nth="${3:-1}" json="${4:-}"
-    if [ -z "${json}" ]; then json=$(query query structs struct-all); fi
-    echo "${json}" | jq -r --arg o "${owner}" --argjson t "${type_num}" --argjson n "${nth}" \
-        '[.Struct[] | select(.owner == $o and (.type | tonumber) == $t)]
-         | sort_by(.id | split("-") | .[1] | tonumber)
-         | .[($n - 1)].id // empty' 2>/dev/null || echo ""
+    local helper_dir
+    helper_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) || return 1
+    if [ -z "${json}" ]; then json=$(get_all_structs) || return 1; fi
+    printf '%s\n' "${json}" | python3 "${helper_dir}/struct_inventory.py" select "${owner}" "${type_num}" "${nth}"
 }
 
 # find_last_struct_by_owner_type: the same lookup counted from the newest end, so
@@ -1000,12 +1516,10 @@ find_struct_by_owner_type() {
 # rebuilds types the EB phases already used, and the EB one is usually the rubble.
 find_last_struct_by_owner_type() {
     local owner="$1" type_num="$2" nth="${3:-1}" json="${4:-}"
-    if [ -z "${json}" ]; then json=$(query query structs struct-all); fi
-    echo "${json}" | jq -r --arg o "${owner}" --argjson t "${type_num}" --argjson n "${nth}" \
-        '[.Struct[] | select(.owner == $o and (.type | tonumber) == $t)]
-         | sort_by(.id | split("-") | .[1] | tonumber)
-         | reverse
-         | .[($n - 1)].id // empty' 2>/dev/null || echo ""
+    local helper_dir
+    helper_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) || return 1
+    if [ -z "${json}" ]; then json=$(get_all_structs) || return 1; fi
+    printf '%s\n' "${json}" | python3 "${helper_dir}/struct_inventory.py" select "${owner}" "${type_num}" "${nth}" --newest
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1118,37 +1632,314 @@ eb_attack() {
     fi
 }
 
-# Helper: attempt an attack that should fail (wrong ambit targeting)
+# Required combat roles are recovered by identity or rebuilt after combat attrition.
+# Snapshot candidate queries at the inventory height so rubble sweeps cannot
+# turn a known destroyed candidate into a misleading RPC failure mid-selection.
+combat_fixture_state() {
+    local id="$1" owner="$2" kind="$3" location="$4" ambit="$5" height="${6:-}" payload
+    if [ -n "${height}" ]; then
+        payload=$(query query structs struct "${id}" --height "${height}") || return 1
+    else
+        payload=$(query query structs struct "${id}") || return 1
+    fi
+    printf '%s' "${payload}" | python3 "${GENERATOR_TEST_DIR}/combat_fixture.py" fixture "${id}" "${owner}" "${kind}" "${location}" "${ambit}"
+}
+
+# Optional mode: ready completes/activates; prepare preserves the current build
+# stage for parallel aging; pending requires an unbuilt role for refusal tests.
+combat_require_struct() {
+    local output="$1" player="$2" kind="$3" placement="$4" location="$5" ambit="$6" label="$7"
+    local excluded="${8:-}" key="${9:-player_${2}}" preferred completion_mode="${10:-ready}"
+    case "${completion_mode}" in ready|prepare|pending) ;; *) return 1 ;; esac
+    local owner inventory height candidates candidate stage id="" slot home return_planet=""
+    [[ "${output}" =~ ^[A-Z][A-Z0-9_]*$ && "${player}" =~ ^[1-9][0-9]*$ ]] || return 1
+    eval "owner=\${PLAYER_${player}_ID}"
+    eval "preferred=\${${output}:-}"
+    inventory=$(get_all_structs) || return 1
+    height=$(printf '%s' "${inventory}" | jq -er '.queryHeight | select(type == "string" and test("^[1-9][0-9]*$"))') || return 1
+    candidates=$(printf '%s' "${inventory}" | jq -r --arg owner "${owner}" --arg kind "${kind}" --arg location "${location}" --arg ambit "${ambit}" \
+        --arg preferred "${preferred}" --arg excluded "${excluded}" '
+        ($excluded | split(" ") | map(select(. != ""))) as $excluded
+        | .Struct | sort_by(.id != $preferred) | .[]
+        | select(.owner == $owner and .type == $kind and .locationId == $location and .operatingAmbit == $ambit)
+        | .id | select(. as $id | $excluded | index($id) | . == null)') || return 1
+    for candidate in ${candidates}; do
+        stage=$(combat_fixture_state "${candidate}" "${owner}" "${kind}" "${location}" "${ambit}" "${height}") || return 1
+        if [ "${stage}" = destroyed ]; then continue; fi
+        if [ "${completion_mode}" = pending ] && [ "${stage}" != build ]; then continue; fi
+        id="${candidate}"; break
+    done
+    if [ -z "${id}" ]; then
+        if [ "${placement}" = fleet ]; then
+            eval "home=\${PLAYER_${player}_PLANET_ID}"
+            return_planet=$(combat_fleet_location "${player}") || return 1
+            combat_move_fleet "${player}" "${home}" "${key}" || return 1
+        fi
+        if [ "${kind}" = 1 ] && [ "${placement}" = fleet ]; then
+            # Command ships use commandStruct, not an ordinary ambit slot.
+            combat_wait_command_slot "${location}" || return 1
+            slot=0
+        else
+            slot=$(wait_for_free_slot "${placement}" "${location}" "${ambit}") || return 1
+        fi
+        if ! [[ "${slot}" =~ ^(0|[1-9][0-9]*)$ ]]; then
+            echo "FAIL: Combat fixture requires a free ${ambit} slot for ${label}" >&2
+            FAIL_COUNT=$((FAIL_COUNT + 1)); return 1
+        fi
+        wait_for_charge "${owner}" "${CHARGE_BUILD}" || return 1
+        run_tx "Combat fixture: Initiating ${label}" tx structs struct-build-initiate "${owner}" "${kind}" "${ambit}" "${slot}" --from "${key}" || return 1
+        id=$(get_created_struct_id "${owner}" "${kind}") || return 1
+        assert_new_struct "Combat fixture ${label}" "${id}" "${owner}" "${kind}" || return 1
+    fi
+    stage=$(combat_fixture_state "${id}" "${owner}" "${kind}" "${location}" "${ambit}") || return 1
+    if [ "${completion_mode}" = ready ] && [ "${stage}" = "build" ]; then
+        run_compute "Combat fixture: Building ${label} ${id}" tx structs struct-build-compute "${id}" --from "${key}" || return 1
+        stage=$(combat_fixture_state "${id}" "${owner}" "${kind}" "${location}" "${ambit}") || return 1
+    fi
+    if [ "${completion_mode}" = ready ] && [ "${stage}" = "activate" ]; then
+        wait_for_charge "${owner}" "${CHARGE_ACTIVATE}" || return 1
+        run_tx "Combat fixture: Activating ${label} ${id}" tx structs struct-activate "${id}" --from "${key}" || return 1
+        stage=$(combat_fixture_state "${id}" "${owner}" "${kind}" "${location}" "${ambit}") || return 1
+    fi
+    if { [ "${completion_mode}" = ready ] && [ "${stage}" != ready ]; } ||
+       { [ "${completion_mode}" = pending ] && [ "${stage}" != build ]; } ||
+       { [ "${stage}" != build ] && [ "${stage}" != activate ] && [ "${stage}" != ready ]; }; then
+        echo "FAIL: Combat fixture ${label} ${id} does not satisfy ${completion_mode} (${stage})" >&2
+        FAIL_COUNT=$((FAIL_COUNT + 1)); return 1
+    fi
+    if [ -n "${return_planet}" ]; then
+        combat_move_fleet "${player}" "${return_planet}" "${key}" || return 1
+    fi
+    printf -v "${output}" '%s' "${id}"
+}
+
+# A Command Ship's ambit is movable; preserve it instead of treating a live
+# command in another ambit as missing and attempting to build a duplicate.
+combat_require_command() {
+    local output="$1" player="$2" label="$3" owner fleet height payload command ambit=land resolved
+    [[ "${output}" =~ ^[A-Z][A-Z0-9_]*$ && "${player}" =~ ^[1-9][0-9]*$ ]] || return 1
+    eval "owner=\${PLAYER_${player}_ID}"
+    eval "fleet=\${PLAYER_${player}_FLEET_ID}"
+    # A destruction sweep between the fleet and struct reads would read as an error.
+    height=$(query query structs block-height | jq -er '.blockHeight | select(type == "string" and test("^[1-9][0-9]*$"))') || return 1
+    payload=$(query query structs fleet "${fleet}" --height "${height}") || return 1
+    command=$(printf '%s' "${payload}" | jq -er --arg fleet "${fleet}" --arg owner "${owner}" '
+        .Fleet | select(.id == $fleet and .owner == $owner)
+        | (if has("commandStruct") then .commandStruct else "" end)
+        | select(type == "string" and (. == "" or test("^5-[1-9][0-9]*$")))') || return 1
+    if [ -n "${command}" ]; then
+        payload=$(query query structs struct "${command}" --height "${height}") || return 1
+        ambit=$(printf '%s' "${payload}" | jq -er --arg id "${command}" --arg owner "${owner}" --arg fleet "${fleet}" '
+            .Struct | select(.id == $id and .owner == $owner and .type == "1" and .locationId == $fleet and .locationType == "fleet")
+            | .operatingAmbit | select(. == "land" or . == "water" or . == "air" or . == "space")') || return 1
+    fi
+    combat_require_struct "${output}" "${player}" 1 fleet "${fleet}" "${ambit}" "${label}" || return 1
+    resolved=$(get_command_ship_id "${owner}" "${fleet}") || return 1
+    eval "command=\${${output}}"
+    [ "${resolved}" = "${command}" ]
+}
+
+combat_wait_command_slot() {
+    local fleet="$1" command elapsed=0
+    while [ "${elapsed}" -lt 30 ]; do
+        command=$(query query structs fleet "${fleet}" | jq -er --arg id "${fleet}" '.Fleet | select(.id == $id) | .commandStruct // ""') || return 1
+        [ -n "${command}" ] || return 0
+        sleep 3
+        elapsed=$((elapsed + 3))
+    done
+    echo "FAIL: command ship slot did not clear for ${fleet}" >&2
+    return 1
+}
+
+combat_fleet_location() {
+    local player="$1" height="${2:-}" owner fleet payload
+    eval "owner=\${PLAYER_${player}_ID}"
+    eval "fleet=\${PLAYER_${player}_FLEET_ID}"
+    if [ -n "${height}" ]; then
+        payload=$(query query structs fleet "${fleet}" --height "${height}") || return 1
+    else
+        payload=$(query query structs fleet "${fleet}") || return 1
+    fi
+    printf '%s' "${payload}" | jq -er --arg id "${fleet}" --arg owner "${owner}" \
+        '.Fleet | select(.id == $id and .owner == $owner) | .locationId | select(type == "string" and test("^2-[1-9][0-9]*$"))'
+}
+
+combat_move_fleet() {
+    local player="$1" destination="$2" key="${3:-player_${1}}" owner fleet actual
+    eval "owner=\${PLAYER_${player}_ID}"
+    eval "fleet=\${PLAYER_${player}_FLEET_ID}"
+    actual=$(combat_fleet_location "${player}") || return 1
+    if [ "${actual}" != "${destination}" ]; then
+        wait_for_charge "${owner}" "${CHARGE_MOVE}" || return 1
+        run_tx "Combat fixture: Move ${fleet} to ${destination}" tx structs fleet-move "${fleet}" "${destination}" --from "${key}" || return 1
+    fi
+    actual=$(combat_fleet_location "${player}") || return 1
+    assert_eq "Combat fixture fleet ${fleet} reached required planet" "${destination}" "${actual}"
+    [ "${actual}" = "${destination}" ]
+}
+
+# Evasion isolates the unit defense from registered blockers and counters.
+combat_clear_target_defenders() {
+    local player="$1" target="$2" owner payload ids id kind location ambit stage
+    eval "owner=\${PLAYER_${player}_ID}"
+    payload=$(query query structs struct "${target}") || return 1
+    ids=$(printf '%s' "${payload}" | jq -er --arg id "${target}" --arg owner "${owner}" '
+        select(.Struct.id == $id and .Struct.owner == $owner) | (if has("structDefenders") then .structDefenders else [] end)
+        | select(type == "array" and length == (unique | length))
+        | if all(.[]; type == "string" and test("^5-[1-9][0-9]*$")) then join(" ") else error("invalid defender id") end') || return 1
+    for id in ${ids}; do
+        payload=$(query query structs struct "${id}") || return 1
+        printf '%s' "${payload}" | jq -e --arg id "${id}" --arg owner "${owner}" --arg target "${target#5-}" \
+            '.Struct.id == $id and .Struct.owner == $owner and .structAttributes.protectedStructIndex == $target' >/dev/null || return 1
+        kind=$(printf '%s' "${payload}" | jq -er '.Struct.type') || return 1
+        location=$(printf '%s' "${payload}" | jq -er '.Struct.locationId') || return 1
+        ambit=$(printf '%s' "${payload}" | jq -er '.Struct.operatingAmbit') || return 1
+        stage=$(printf '%s' "${payload}" | python3 "${GENERATOR_TEST_DIR}/combat_fixture.py" fixture "${id}" "${owner}" "${kind}" "${location}" "${ambit}") || return 1
+        if [ "${stage}" = activate ]; then
+            wait_for_charge "${owner}" "${CHARGE_ACTIVATE}" || return 1
+            run_tx "Evasion: activate ${id} before clearing defense" tx structs struct-activate "${id}" --from "player_${player}" || return 1
+        elif [ "${stage}" != ready ]; then
+            echo "FAIL: evasion defender ${id} cannot be cleared (${stage})" >&2
+            return 1
+        fi
+        wait_for_charge "${owner}" "${CHARGE_DEFEND}" || return 1
+        run_tx "Evasion: clear ${id} from ${target}" tx structs struct-defense-clear "${id}" --from "player_${player}" || return 1
+    done
+    query query structs struct "${target}" | jq -e --arg id "${target}" --arg owner "${owner}" \
+        '.Struct.id == $id and .Struct.owner == $owner and (if has("structDefenders") then .structDefenders == [] else true end)' >/dev/null
+}
+
+# ev_attack <case> <attacker-var/player/type/ambit> <target-var/player/type/ambit> <weapon> [planet] [offline-command]
+# Every scheduled attempt restores its roles, verifies the catalog, then binds
+# the receipt and canonical state to exact identities and committed heights.
+ev_attack() {
+    local case_id="$1" attacker_var="$2" attacker_player="$3" attacker_type="$4" attacker_ambit="$5"
+    local target_var="$6" target_player="$7" target_type="$8" target_ambit="$9" weapon="${10}"
+    local battlefield="${11:-${PLAYER_6_PLANET_ID:-}}" command="${12:-}" command_state
+    local attacker_owner target_owner attacker_fleet target_fleet attacker target before_height before after catalog receipt txhash outcome height
+    local attacker_state target_state attacker_catalog target_catalog attacker_location target_location charge
+    [[ "${attacker_player}" =~ ^[1-9][0-9]*$ && "${target_player}" =~ ^[1-9][0-9]*$ && "${attacker_var}" =~ ^[A-Z][A-Z0-9_]*$ && "${target_var}" =~ ^[A-Z][A-Z0-9_]*$ ]] || return 1
+    eval "attacker_owner=\${PLAYER_${attacker_player}_ID}; attacker_fleet=\${PLAYER_${attacker_player}_FLEET_ID}"
+    eval "target_owner=\${PLAYER_${target_player}_ID}; target_fleet=\${PLAYER_${target_player}_FLEET_ID}"
+    combat_require_struct "${attacker_var}" "${attacker_player}" "${attacker_type}" fleet "${attacker_fleet}" "${attacker_ambit}" "${case_id} attacker" || return 1
+    combat_require_struct "${target_var}" "${target_player}" "${target_type}" fleet "${target_fleet}" "${target_ambit}" "${case_id} target" || return 1
+    eval "attacker=\${${attacker_var}}; target=\${${target_var}}"
+    combat_clear_target_defenders "${target_player}" "${target}" || return 1
+    if [ "${weapon}" = primaryWeapon ]; then charge=$(_primary_charge "${attacker_type}"); else charge=$(_secondary_charge "${attacker_type}"); fi
+    wait_for_charge "${attacker_owner}" "${charge}" || return 1
+    before_height=$(query query structs block-height | jq -er '.blockHeight | select(type == "string" and test("^[1-9][0-9]*$"))') || return 1
+    attacker_state=$(combat_state_at_height "${attacker}" "${before_height}") || return 1
+    target_state=$(combat_state_at_height "${target}" "${before_height}") || return 1
+    before=$(jq -n --argjson attacker "${attacker_state}" --argjson target "${target_state}" '{attacker:$attacker,target:$target}') || return 1
+    if [ "${case_id}" = P14_OFFLINE ]; then
+        command_state=$(combat_state_at_height "${command}" "${before_height}") || return 1
+        before=$(jq -n --argjson before "${before}" --argjson command "${command_state}" '$before + {command:$command}') || return 1
+    fi
+    printf '%s' "${before}" | python3 "${GENERATOR_TEST_DIR}/evasion_attack.py" before "${case_id}" "${attacker}" "${target}" \
+        "${attacker_owner}" "${target_owner}" "${attacker_fleet}" "${target_fleet}" "${command}" >/dev/null || return 1
+    attacker_location=$(combat_fleet_location "${attacker_player}" "${before_height}") || return 1
+    target_location=$(combat_fleet_location "${target_player}" "${before_height}") || return 1
+    [ "${attacker_location}" = "${battlefield}" ] && [ "${target_location}" = "${battlefield}" ] || return 1
+    attacker_catalog=$(query query structs struct-type "${attacker_type}" --height "${before_height}") || return 1
+    target_catalog=$(query query structs struct-type "${target_type}" --height "${before_height}") || return 1
+    catalog=$(jq -n --argjson attacker "${attacker_catalog}" --argjson target "${target_catalog}" '{attacker:$attacker,target:$target}') || return 1
+    printf '%s' "${catalog}" | python3 "${GENERATOR_TEST_DIR}/evasion_attack.py" catalog "${case_id}" >/dev/null || return 1
+    run_tx "${case_id}: Required evasion attempt ${attacker} -> ${target}" \
+        tx structs struct-attack "${attacker}" "${target}" "${weapon}" --from "player_${attacker_player}" || return 1
+    txhash=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))') || return 1
+    receipt=$(query query tx "${txhash}") || return 1
+    outcome=$(jq -n --argjson before "${before}" --argjson tx "${receipt}" '{before:$before,tx:$tx}' \
+        | python3 "${GENERATOR_TEST_DIR}/evasion_attack.py" attack "${case_id}" "${txhash}") || return 1
+    height=$(printf '%s' "${outcome}" | jq -er '.height') || return 1
+    [ "${height}" -gt "${before_height}" ] || return 1
+    attacker_state=$(combat_state_at_height "${attacker}" "${height}") || return 1
+    target_state=$(combat_state_at_height "${target}" "${height}") || return 1
+    after=$(jq -n --argjson attacker "${attacker_state}" --argjson target "${target_state}" '{attacker:$attacker,target:$target}') || return 1
+    if [ "${case_id}" = P14_OFFLINE ]; then
+        command_state=$(combat_state_at_height "${command}" "${height}") || return 1
+        after=$(jq -n --argjson after "${after}" --argjson command "${command_state}" '$after + {command:$command}') || return 1
+    fi
+    jq -n --argjson before "${before}" --argjson after "${after}" --argjson outcome "${outcome}" '{before:$before,after:$after,outcome:$outcome}' \
+        | python3 "${GENERATOR_TEST_DIR}/evasion_attack.py" after "${case_id}" >/dev/null || return 1
+    attacker_location=$(combat_fleet_location "${attacker_player}" "${height}") || return 1
+    target_location=$(combat_fleet_location "${target_player}" "${height}") || return 1
+    [ "${attacker_location}" = "${battlefield}" ] && [ "${target_location}" = "${battlefield}" ] || return 1
+    if [[ "${case_id}" = EV* ]]; then
+        EV_CONFIRMED=$((EV_CONFIRMED + 1))
+        EV_EVADED=$((EV_EVADED + $(printf '%s' "${outcome}" | jq 'if .evaded then 1 else 0 end')))
+    fi
+    EB_ATTACKS=$((${EB_ATTACKS:-0} + 1))
+    EB_DESTROYED=$((${EB_DESTROYED:-0} + $(printf '%s' "${outcome}" | jq '[.attackerDestroyed,.targetDestroyed] | map(select(. == true)) | length')))
+    assert_eq "${case_id}: receipt and canonical evasion outcome verified" true "$(printf '%s' "${outcome}" | jq -r '.verified')"
+    if [ "${case_id}" = EB_B6 ]; then
+        printf 'EB outcome: %s\n' "$(printf '%s' "${outcome}" | jq -c --arg beforeHeight "${before_height}" '. + {beforeHeight:$beforeHeight}')"
+    elif [[ "${case_id}" = P14* || "${case_id}" = P11 ]]; then
+        printf '%s outcome: %s\n' "${case_id%%_*}" "$(printf '%s' "${outcome}" | jq -c --arg beforeHeight "${before_height}" '. + {beforeHeight:$beforeHeight}')"
+    else
+        printf 'EV outcome: %s\n' "$(printf '%s' "${outcome}" | jq -c --arg beforeHeight "${before_height}" '. + {beforeHeight:$beforeHeight}')"
+    fi
+}
+
+# Each batch transition reads both ships at a shared height and verifies the
+# delivered receipt plus state at that receipt's height. Failed queries refuse.
+p12_batch_step() {
+    local mode="$1" before_height first second before txhash receipt height after outcome
+    case "${mode}" in reject|offline|first|second) ;; *) return 1 ;; esac
+    if [ "${mode}" = first ] || [ "${mode}" = second ]; then
+        wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}" || return 1
+    fi
+    before_height=$(query query structs block-height | jq -er '.blockHeight | select(type == "string" and test("^[1-9][0-9]*$"))') || return 1
+    first=$(combat_state_at_height "${BATTLESHIP_1_ID}" "${before_height}") || return 1
+    second=$(combat_state_at_height "${BATTLESHIP_2_ID}" "${before_height}") || return 1
+    before=$(jq -n --argjson first "${first}" --argjson second "${second}" '{first:$first,second:$second}') || return 1
+    printf '%s' "${before}" | python3 "${GENERATOR_TEST_DIR}/batch_deactivation.py" before "${mode}" \
+        "${BATTLESHIP_1_ID}" "${BATTLESHIP_2_ID}" "${PLAYER_3_ID}" "${PLAYER_3_FLEET_ID}" >/dev/null || return 1
+    case "${mode}" in
+        reject) run_tx_expect_fail_noauto "P12: Batch rejects missing ship atomically" \
+            tx structs struct-deactivate-batch "${BATTLESHIP_1_ID},5-18446744073709551615" --from player_3 || return 1 ;;
+        offline) run_tx "P12: Deactivate both Battleships" \
+            tx structs struct-deactivate-batch "${BATTLESHIP_1_ID},${BATTLESHIP_2_ID}" --from player_3 || return 1 ;;
+        first) run_tx "P12: Reactivate first Battleship" tx structs struct-activate "${BATTLESHIP_1_ID}" --from player_3 || return 1 ;;
+        second) run_tx "P12: Reactivate second Battleship" tx structs struct-activate "${BATTLESHIP_2_ID}" --from player_3 || return 1 ;;
+    esac
+    txhash=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))') || return 1
+    receipt=$(query query tx "${txhash}") || return 1
+    height=$(printf '%s' "${receipt}" | jq -er '.height | select(type == "string" and test("^[1-9][0-9]*$"))') || return 1
+    [ "${height}" -gt "${before_height}" ] || return 1
+    first=$(combat_state_at_height "${BATTLESHIP_1_ID}" "${height}") || return 1
+    second=$(combat_state_at_height "${BATTLESHIP_2_ID}" "${height}") || return 1
+    after=$(jq -n --argjson first "${first}" --argjson second "${second}" '{first:$first,second:$second}') || return 1
+    outcome=$(jq -n --argjson before "${before}" --argjson tx "${receipt}" --argjson after "${after}" '{before:$before,tx:$tx,after:$after}' \
+        | python3 "${GENERATOR_TEST_DIR}/batch_deactivation.py" verify "${mode}" "${txhash}") || return 1
+    assert_eq "P12 ${mode}: receipt and both ships verified" true "$(printf '%s' "${outcome}" | jq -r '.verified')"
+    printf 'P12 outcome: %s\n' "$(printf '%s' "${outcome}" | jq -c --arg beforeHeight "${before_height}" '. + {beforeHeight:$beforeHeight}')"
+}
+
+# Helper: pin the intended targeting refusal; incidental errors are failures.
 eb_attack_should_fail() {
-    local desc="$1"
-    local attacker="$2"
-    local target="$3"
-    local from_player="$4"
-
-    local tgt_hp_before
+    local desc="$1" attacker="$2" target="$3" from_player="$4" reason="${5:-out_of_range}"
+    local atk_hp_before tgt_hp_before charge
+    case "${reason}" in hidden|out_of_range) ;; *) echo "Invalid negative attack reason" >&2; return 1 ;; esac
+    atk_hp_before=$(eb_health "${attacker}")
     tgt_hp_before=$(eb_health "${target}")
-
+    if ! [[ "${atk_hp_before}" =~ ^[1-9][0-9]*$ && "${tgt_hp_before}" =~ ^[1-9][0-9]*$ ]]; then
+        echo "FAIL: Required negative attack fixture is missing or destroyed: ${desc}" >&2
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+        return 1
+    fi
     info "[Negative] ${desc}"
-    echo "  Attacker: ${attacker}  Target: ${target} (HP=${tgt_hp_before})"
-
-    local charge
     charge=$(eb_get_charge "${attacker}" "primaryWeapon")
     wait_for_charge "$(eval echo "\${PLAYER_${from_player}_ID}")" "${charge}"
-    run_tx_expect_fail "${desc}" \
+    run_tx_expect_reject_matching "${desc}" \
+        "target struct [(]${target}[)] is ${reason} from attacker struct [(]${attacker}[)]" \
         tx structs struct-attack "${attacker}" "${target}" primaryWeapon --from "player_${from_player}"
-
-    local tgt_hp_after
-    tgt_hp_after=$(eb_health "${target}")
-
-    assert_eq "${desc} — target HP unchanged" "${tgt_hp_before}" "${tgt_hp_after}"
+    assert_eq "${desc} — target HP unchanged" "${tgt_hp_before}" "$(eb_health "${target}")"
+    assert_eq "${desc} — attacker HP unchanged" "${atk_hp_before}" "$(eb_health "${attacker}")"
 }
 
 # recover_state: rebuild all script variables by querying the running chain
 recover_state() {
     info "Recovering state from chain for resume..."
-
-    VALIDATOR_ADDRESS=$(query query staking validators | jq -r '.validators[0].operator_address')
-    assert_not_empty "Recovered validator" "${VALIDATOR_ADDRESS}"
 
     PLAYER_1_ADDRESS=$(structsd ${PARAMS_KEYS} keys show alice 2>/dev/null | jq -r .address || echo "")
     # Phase 0 / GP1 still reference ALICE_ADDRESS; keep both names in sync on resume.
@@ -1172,10 +1963,15 @@ recover_state() {
         fi
     done
 
-    GUILD_ID=$(query query structs player "${PLAYER_1_ID}" 2>/dev/null | jq -r '.Player.guildId // empty' 2>/dev/null || echo "")
-    REACTOR_ID=$(query query structs reactor-all 2>/dev/null | jq -r '.Reactor[0].id // empty' 2>/dev/null || echo "")
-    SUBSTATION_ID=$(query query structs substation-all 2>/dev/null | jq -r '.Substation[0].id // empty' 2>/dev/null || echo "")
-    P1_ALLOC_ID=$(get_latest_allocation_for_source "${PLAYER_1_ID}")
+    local FIXTURE_GRID FIXTURE_GRID_HEIGHT
+    FIXTURE_GRID=$(get_fixture_grid "${PLAYER_1_ID}") || return 1
+    FIXTURE_GRID_HEIGHT=$(jqr "${FIXTURE_GRID}" '.queryHeight')
+    GUILD_ID=$(jqr "${FIXTURE_GRID}" '.guildId')
+    REACTOR_ID=$(jqr "${FIXTURE_GRID}" '.reactorId')
+    SUBSTATION_ID=$(jqr "${FIXTURE_GRID}" '.substationId')
+    P1_ALLOC_ID=$(jqr "${FIXTURE_GRID}" '.allocationId')
+    VALIDATOR_ADDRESS=$(jqr "${FIXTURE_GRID}" '.validatorAddress')
+    assert_not_empty "Recovered validator" "${VALIDATOR_ADDRESS}"
     GUILD_TOKEN_DENOM="uguild.${GUILD_ID}"
     echo "  Guild A: ${GUILD_ID}  Reactor: ${REACTOR_ID}  Substation: ${SUBSTATION_ID}  P1 alloc: ${P1_ALLOC_ID:-none}"
 
@@ -1207,7 +2003,7 @@ recover_state() {
         eval "PLAYER_${PLAYER_NUM}_PLANET_ID=$(jqr "${PJSON}" '.Player.planetId')"
         eval "PLAYER_${PLAYER_NUM}_FLEET_ID=$(jqr "${PJSON}" '.Player.fleetId')"
         local ALLOC
-        ALLOC=$(query query structs allocation-all-by-source "${PID}" 2>/dev/null | jq -r '.Allocation[-1].id // empty' 2>/dev/null || echo "")
+        ALLOC=$(get_fixture_feeder "${PID}" "${SUBSTATION_ID}" "${PLAYER_1_ID}" "${FIXTURE_GRID_HEIGHT}") || return 1
         eval "P${PLAYER_NUM}_ALLOC_ID=${ALLOC}"
     done
     echo "  P2 planet=${PLAYER_2_PLANET_ID:-?} fleet=${PLAYER_2_FLEET_ID:-?}"
@@ -1215,7 +2011,7 @@ recover_state() {
     echo "  P4 planet=${PLAYER_4_PLANET_ID:-?} fleet=${PLAYER_4_FLEET_ID:-?}"
 
     local SA
-    SA=$(query query structs struct-all)
+    SA=$(get_all_structs)
 
     COMMAND_SHIP_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 1 1 "${SA}")
     PLAYER_2_CMD_SHIP_ID=$(find_struct_by_owner_type "${PLAYER_2_ID}" 1 1 "${SA}")
@@ -1247,7 +2043,7 @@ recover_state() {
         P6JSON=$(query query structs player "${PLAYER_6_ID}" 2>/dev/null || echo '{}')
         PLAYER_6_PLANET_ID=$(jqr "${P6JSON}" '.Player.planetId')
         PLAYER_6_FLEET_ID=$(jqr "${P6JSON}" '.Player.fleetId')
-        P6_ALLOC_ID=$(query query structs allocation-all-by-source "${PLAYER_6_ID}" 2>/dev/null | jq -r '.Allocation[-1].id // empty' 2>/dev/null || echo "")
+        P6_ALLOC_ID=$(get_fixture_feeder "${PLAYER_6_ID}" "${SUBSTATION_ID}" "${PLAYER_1_ID}" "${FIXTURE_GRID_HEIGHT}") || return 1
         P6_COMMAND_SHIP_ID=$(find_struct_by_owner_type "${PLAYER_6_ID}" 1 1 "${SA}")
         EB_PURSUIT_FIGHTER_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 5 1 "${SA}")
         EB_STARFIGHTER_ID=$(find_struct_by_owner_type "${PLAYER_6_ID}" 3 1 "${SA}")
@@ -1320,6 +2116,15 @@ recover_state() {
     info "State recovery complete"
 }
 
+GENERATOR_TEST_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+source "${GENERATOR_TEST_DIR}/attack_run.sh"
+source "${GENERATOR_TEST_DIR}/defender_counter_fixture.sh"
+source "${GENERATOR_TEST_DIR}/dead_bomber.sh"
+source "${GENERATOR_TEST_DIR}/phase13_combat.sh"
+source "${GENERATOR_TEST_DIR}/blocking_attack.sh"
+source "${GENERATOR_TEST_DIR}/pdc_attack.sh"
+source "${GENERATOR_TEST_DIR}/jamming_attack.sh"
+
 # Arrays for rank-test players (populated by Phase 4e2, recovered by recover_state)
 declare -a RP_IDS
 declare -a RP_KEYS
@@ -1335,30 +2140,12 @@ fi
 # (and hours of proof-of-work later), so refuse up front instead. --resume-from
 # deliberately targets an in-progress chain and is exempt.
 assert_fresh_chain() {
-    # Phase 1 is also a writer, so an aborted earlier run leaves guilds,
-    # substations and allocations behind even when no planet or struct exists.
-    # Count those too, otherwise a half-finished run looks fresh.
-    local structs planets players guilds substations allocations
-    structs=$(query query structs struct-all 2>/dev/null | jq '.Struct | length' 2>/dev/null || echo "0")
-    planets=$(query query structs planet-all 2>/dev/null | jq '.Planet | length' 2>/dev/null || echo "0")
-    players=$(query query structs player-all 2>/dev/null | jq '.Player | length' 2>/dev/null || echo "0")
-    guilds=$(query query structs guild-all 2>/dev/null | jq '.Guild | length' 2>/dev/null || echo "0")
-    substations=$(query query structs substation-all 2>/dev/null | jq '.Substation | length' 2>/dev/null || echo "0")
-    allocations=$(query query structs allocation-all 2>/dev/null | jq '.Allocation | length' 2>/dev/null || echo "0")
-
-    if [ "${structs}" = "0" ] && [ "${planets}" = "0" ] && [ "${guilds}" = "0" ] \
-        && [ "${substations}" = "0" ] && [ "${allocations}" = "0" ] && [ "${players}" -le 1 ] 2>/dev/null; then
-        info "Fresh chain confirmed (players=${players}, planets=${planets}, structs=${structs}, guilds=${guilds}, substations=${substations}, allocations=${allocations})"
-        return 0
-    fi
-
-    echo ""
-    echo -e "${RED}${BOLD}  ABORT: chain is not freshly reset${NC}"
-    echo -e "${RED}  players=${players} (expected <=1), planets=${planets}, structs=${structs}, guilds=${guilds}, substations=${substations}, allocations=${allocations} (all expected 0)${NC}"
-    echo -e "${RED}  Leftover state makes the hardcoded slots and ids in later phases collide.${NC}"
-    echo -e "${RED}  Reset the chain and restart it, then re-run. Use --resume-from to skip this check.${NC}"
-    echo ""
-    exit 1
+    local helper_dir snapshot
+    helper_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) || return 1
+    # Presence queries share one committed height and stop at the first excess
+    # row. Transport errors or incomplete inventories must never authorize writes.
+    snapshot=$(python3 "${helper_dir}/fresh_chain_inventory.py" -- structsd ${PARAMS_QUERY}) || return 1
+    info "Fresh chain confirmed: ${snapshot}"
 }
 
 if [ -z "${RESUME_FROM}" ]; then
@@ -1436,15 +2223,12 @@ PLAYER_1_CAPACITY=$(jqr "${PLAYER_ME_JSON}" '.gridAttributes.capacity')
 assert_gt "Player 1 capacity" 0 "${PLAYER_1_CAPACITY}"
 echo "  Player 1 Capacity: ${PLAYER_1_CAPACITY}"
 
-# Track allocation count before creation so we can find the new one
-ALLOC_COUNT_BEFORE=$(get_allocation_count)
-
 run_tx "Creating allocation from Player 1" \
     tx structs allocation-create "${PLAYER_1_ID}" "${PLAYER_1_CAPACITY}" \
     --allocation-type dynamic --from alice
 
-# Discover the allocation ID dynamically
-P1_ALLOC_ID=$(get_latest_allocation_for_source "${PLAYER_1_ID}")
+# Resolve the allocation from the confirmed creation transaction.
+P1_ALLOC_ID=$(get_created_grid_id allocation "${PLAYER_1_ID}" "${PLAYER_1_ID}")
 assert_not_empty "Player 1 allocation ID" "${P1_ALLOC_ID}"
 echo "  Player 1 Allocation ID: ${P1_ALLOC_ID}"
 
@@ -1457,9 +2241,8 @@ assert_eq "Allocation source is Player 1" "${PLAYER_1_ID}" "${P1_ALLOC_SRC}"
 run_tx "Creating Substation 1" \
     tx structs substation-create "${PLAYER_1_ID}" "${P1_ALLOC_ID}" --from alice
 
-# Discover the substation ID from the allocation's destination
-P1_ALLOC_JSON=$(query query structs allocation "${P1_ALLOC_ID}")
-SUBSTATION_ID=$(jqr "${P1_ALLOC_JSON}" '.Allocation.destinationId')
+# Verify the substation event and its feeder update belong to this transaction.
+SUBSTATION_ID=$(get_created_grid_id substation "${PLAYER_1_ID}" "${P1_ALLOC_ID}")
 assert_not_empty "Substation ID" "${SUBSTATION_ID}"
 echo "  Substation ID: ${SUBSTATION_ID}"
 
@@ -1471,80 +2254,121 @@ assert_eq "Substation exists" "${SUBSTATION_ID}" "${SUB_CHECK}"
 # ─────────────────────────────────────────────────────────────────────────────
 # Throwaway substations
 #
-# Three later phases need a second substation to test against. They each used to
-# run substation-create with the P1_ALLOC_ID captured just above, which was wrong
-# in a way nothing reported until the fourth attempt.
+# Three later phases need a second substation to test against. v0.22.0 refuses
+# MsgSubstationCreate when the named allocation already feeds a substation
+# ("already feeds substation … and cannot create another"), so these helpers
+# mint a fresh unused allocation carved out of Alice's main feeder rather than
+# reusing P1_ALLOC_ID.
 #
-# substation-create does not copy an allocation, it MOVES it: NewSubstation calls
-# allocation.SetDestination, so every one of those calls quietly pulled Alice's
-# entire capacity off SUBSTATION_ID and parked it on a throwaway. And
-# SubstationCache.Delete destroys the allocations pointing *into* the substation
-# being removed, so the first test that tidied up took Alice's only allocation
-# with it. From then on the allocation did not exist, the create failed, and the
-# block carried on against whatever `.Substation[-1]` happened to return — in the
-# last run an orphan left behind by an earlier test, which it then deleted.
-#
-# So: re-resolve the allocation at use time, prove the substation is genuinely
-# new rather than adopted, and hand the allocation back before anything deletes
-# the throwaway.
+# P1_ALLOC_ID stays pointed at the allocation that powers SUBSTATION_ID for the
+# whole run. TEMP_ALLOC_ID is the throwaway; SubstationCache.Delete destroys
+# allocations still pointing into the deleted substation, so the destroy path
+# deliberately does not move TEMP_ALLOC_ID home first.
 # ─────────────────────────────────────────────────────────────────────────────
 
+TEMP_ALLOC_ID=""
+TEMP_ALLOC_POWER=100000
+
 # temp_substation_create <out_var> <label>
-# Writes the new substation id to out_var and returns non-zero when there is
-# nothing to test with, which every caller treats as a skip.
+# Writes the new substation id to out_var. A setup failure is recorded before
+# returning non-zero, so callers can omit dependent steps without passing them.
 temp_substation_create() {
     local out_var="$1" label="$2"
-    local alloc before after
+    local main_power new_main after temp_dst main_after
     eval "${out_var}=''"
+    TEMP_ALLOC_ID=""
 
-    alloc=$(get_latest_allocation_for_source "${PLAYER_1_ID}")
-    if [ -z "${alloc}" ]; then
-        info "SKIP ${label}: Player 1 has no allocation to power a temporary substation"
+    if [ -z "${P1_ALLOC_ID}" ]; then
+        if ! P1_ALLOC_ID=$(get_fixture_feeder "${PLAYER_1_ID}" "${SUBSTATION_ID}" "${PLAYER_1_ID}"); then
+            assert_eq "${label}: main feeder recovery succeeded" "true" "false"
+            return 1
+        fi
+    fi
+    if [ -z "${P1_ALLOC_ID}" ]; then
+        assert_not_empty "${label}: required Player 1 allocation exists" "${P1_ALLOC_ID}"
         return 1
     fi
-    P1_ALLOC_ID="${alloc}"
 
-    before=$(get_newest_substation_id)
+    main_power=$(jqr "$(query query structs allocation "${P1_ALLOC_ID}")" '.gridAttributes.power' '0')
+    if [ -z "${main_power}" ] || [ "${main_power}" -le "${TEMP_ALLOC_POWER}" ] 2>/dev/null; then
+        assert_gt "${label}: main allocation has fixture headroom" "${TEMP_ALLOC_POWER}" "${main_power}"
+        return 1
+    fi
+
+    new_main=$((main_power - TEMP_ALLOC_POWER))
+    run_tx "Freeing ${TEMP_ALLOC_POWER} from ${P1_ALLOC_ID} for ${label}" \
+        tx structs allocation-update "${P1_ALLOC_ID}" "${new_main}" --from alice
+
+    main_after=$(jqr "$(query query structs allocation "${P1_ALLOC_ID}")" '.gridAttributes.power' 'invalid')
+    if [ "${main_after}" != "${new_main}" ]; then
+        assert_eq "${label}: source power was reduced before fixture creation" "${new_main}" "${main_after}"
+        return 1
+    fi
+
+    run_tx "Creating unused throwaway allocation for ${label}" \
+        tx structs allocation-create "${PLAYER_1_ID}" "${TEMP_ALLOC_POWER}" \
+        --controller "${PLAYER_1_ID}" --allocation-type dynamic --from alice
+
+    TEMP_ALLOC_ID=$(get_created_grid_id allocation "${PLAYER_1_ID}" "${PLAYER_1_ID}") || TEMP_ALLOC_ID=""
+    if [ -z "${TEMP_ALLOC_ID}" ] || [ "${TEMP_ALLOC_ID}" = "${P1_ALLOC_ID}" ]; then
+        assert_eq "${label}: a new throwaway allocation appeared" "true" "false"
+        TEMP_ALLOC_ID=""
+        run_tx "Restoring ${P1_ALLOC_ID} power after failed throwaway mint (${label})" \
+            tx structs allocation-update "${P1_ALLOC_ID}" "${main_power}" --from alice
+        return 1
+    fi
+
+    temp_dst=$(jqr "$(query query structs allocation "${TEMP_ALLOC_ID}")" '.Allocation.destinationId' '')
+    if [ -n "${temp_dst}" ]; then
+        assert_eq "${label}: throwaway allocation is initially disconnected" "" "${temp_dst}"
+        TEMP_ALLOC_ID=""
+        return 1
+    fi
+
     run_tx "Creating temporary substation for ${label}" \
-        tx structs substation-create "${PLAYER_1_ID}" "${alloc}" --from alice
+        tx structs substation-create "${PLAYER_1_ID}" "${TEMP_ALLOC_ID}" --from alice
 
-    after=$(get_newest_substation_id)
-    if [ -z "${after}" ] || [ "${after}" = "${before}" ] || [ "${after}" = "${SUBSTATION_ID}" ]; then
-        info "SKIP ${label}: no new substation appeared (create was rejected)"
+    after=$(get_created_grid_id substation "${PLAYER_1_ID}" "${TEMP_ALLOC_ID}") || after=""
+    if [ -z "${after}" ] || [ "${after}" = "${SUBSTATION_ID}" ]; then
+        assert_eq "${label}: a new temporary substation appeared" "true" "false"
+        TEMP_ALLOC_ID=""
         return 1
     fi
 
     eval "${out_var}='${after}'"
-    info "Temporary substation for ${label}: ${after}"
+    info "Temporary substation for ${label}: ${after} (alloc ${TEMP_ALLOC_ID})"
 }
 
 # temp_substation_return_allocation <label>
-# Puts Alice's allocation back on the main substation. Call this before deleting
-# a throwaway, or the delete destroys the allocation and every later test that
-# needs one fails with "allocation not found".
+# Moves the throwaway allocation onto the main substation when a caller needs
+# the allocation to survive a subsequent delete. Prefer temp_substation_destroy,
+# which lets Delete consume the throwaway instead.
 temp_substation_return_allocation() {
     local label="$1" dst
-    [ -z "${P1_ALLOC_ID}" ] && return 0
+    [ -z "${TEMP_ALLOC_ID}" ] && return 0
 
-    # connect refuses same_destination, so check before asking. Nothing should
-    # have moved the allocation home already, but a caller that skipped the
-    # create would otherwise turn a no-op into a counted failure.
-    dst=$(query query structs allocation "${P1_ALLOC_ID}" 2>/dev/null | jq -r '.Allocation.destinationId // empty' 2>/dev/null || echo "")
+    dst=$(query query structs allocation "${TEMP_ALLOC_ID}" 2>/dev/null | jq -r '.Allocation.destinationId // empty' 2>/dev/null || echo "")
     if [ "${dst}" = "${SUBSTATION_ID}" ]; then
         return 0
     fi
+    if [ -z "${dst}" ] && [ -z "$(query query structs allocation "${TEMP_ALLOC_ID}" 2>/dev/null | jq -r '.Allocation.id // empty' 2>/dev/null || echo "")" ]; then
+        TEMP_ALLOC_ID=""
+        return 0
+    fi
 
-    run_tx "Returning Player 1 allocation to ${SUBSTATION_ID} after ${label}" \
-        tx structs substation-allocation-connect "${P1_ALLOC_ID}" "${SUBSTATION_ID}" --from alice
+    run_tx "Returning throwaway allocation ${TEMP_ALLOC_ID} to ${SUBSTATION_ID} after ${label}" \
+        tx structs substation-allocation-connect "${TEMP_ALLOC_ID}" "${SUBSTATION_ID}" --from alice
 }
 
 # temp_substation_destroy <sub_id> <label>
+# Deletes the throwaway substation. The throwaway allocation still feeds it, so
+# Delete destroys that allocation; P1_ALLOC_ID is untouched.
 temp_substation_destroy() {
     local sub_id="$1" label="$2"
     [ -z "${sub_id}" ] && return 0
-    temp_substation_return_allocation "${label}"
     run_tx "Deleting temporary substation ${sub_id} (${label})" \
         tx structs substation-delete "${sub_id}" "${SUBSTATION_ID}" --from alice
+    TEMP_ALLOC_ID=""
 }
 
 # ─── Discover Reactor (created during validator setup) ───
@@ -1558,28 +2382,8 @@ REACTOR_VAL=$(jqr "${REACTOR_ALL_JSON}" '.Reactor[0].validator')
 assert_eq "Reactor validator matches" "${VALIDATOR_ADDRESS}" "${REACTOR_VAL}"
 
 # ─── Create Guild ───
-# Guild A takes the proof-free route, which a reactor only earns once it is
-# guildCharterReactorAge blocks old. AppendReactor stamps that deadline as an
-# absolute height, so wait for it rather than assuming the blocks spent getting
-# here were enough — config.yml keeps the age tiny, but a fast preflight on a slow
-# block time can still arrive early, and the refusal looks like a permission bug.
-REACTOR_ELIGIBLE_HEIGHT=$(jqr "${REACTOR_ALL_JSON}" '.Reactor[0].guildCharterEligibleHeight' '0')
-if [ "${REACTOR_ELIGIBLE_HEIGHT}" != "0" ]; then
-    info "Reactor charter eligibility at height ${REACTOR_ELIGIBLE_HEIGHT} (now $(get_block_height))"
-    wait_for_block "${REACTOR_ELIGIBLE_HEIGHT}" 120 || true
-fi
-
-# The reactor entitlement path deliberately leaves the global charter anchor where
-# it is. That is not an oversight: moving it kills every nonce anyone is grinding,
-# so a validator collecting a perk must not be able to wipe the mining pools'
-# work. Nothing checked it until now.
-CHARTER_ANCHOR_BEFORE_A=$(jqr "$(query query structs guild-charter)" '.anchor' '0')
-
-run_tx "Creating Guild" \
-    tx structs guild-create "${REACTOR_ID}" "oh.energy" "${SUBSTATION_ID}" --from alice
-
-assert_eq "Entitlement founding left the charter anchor alone" \
-    "${CHARTER_ANCHOR_BEFORE_A}" "$(jqr "$(query query structs guild-charter)" '.anchor' '0')"
+# Reactor choice is a preference, not a consumed founding entitlement.
+create_paid_guild alice "${PLAYER_1_ID}" "${REACTOR_ID}" "oh.energy" "${SUBSTATION_ID}"
 
 # Discover guild ID from Alice's player record (reliable regardless of genesis guilds)
 P1_JSON=$(query query structs player "${PLAYER_1_ID}")
@@ -1627,19 +2431,22 @@ assert_not_empty "Player 4 address" "${PLAYER_4_ADDRESS}"
 assert_not_empty "Player 5 address" "${PLAYER_5_ADDRESS}"
 
 # ─── Fund players from bob (separate faucet account) ───
+# Bootstrap stakes use twice the old fuel budget so a 50% entry rate supplies
+# the prior pre-commission energy. Increase funding by the added stake only,
+# preserving the 5M signing-key balance used by later address/asset fixtures.
 BOB_ADDRESS=$(structsd ${PARAMS_KEYS} keys show bob | jq -r .address)
 info "Bob (faucet) address: ${BOB_ADDRESS}"
 
 for PLAYER_NUM in 2 3 4 5; do
     eval "PADDR=\${PLAYER_${PLAYER_NUM}_ADDRESS}"
-    run_tx "Sending 10000000ualpha from bob to player_${PLAYER_NUM}" \
-        tx bank send "${BOB_ADDRESS}" "${PADDR}" 10000000ualpha --from bob
+    run_tx "Sending 15000000ualpha from bob to player_${PLAYER_NUM}" \
+        tx bank send "${BOB_ADDRESS}" "${PADDR}" 15000000ualpha --from bob
 done
 
 # ─── Delegate to validator (creates player accounts on the structs module) ───
 for PLAYER_NUM in 2 3 4 5; do
-    run_tx "Delegating 5000000ualpha from player_${PLAYER_NUM} to validator" \
-        tx staking delegate "${VALIDATOR_ADDRESS}" 5000000ualpha --from "player_${PLAYER_NUM}"
+    run_tx "Delegating 10000000ualpha from player_${PLAYER_NUM} to validator" \
+        tx staking delegate "${VALIDATOR_ADDRESS}" 10000000ualpha --from "player_${PLAYER_NUM}"
 
     eval "PADDR=\${PLAYER_${PLAYER_NUM}_ADDRESS}"
     ADDR_JSON=$(query query structs address "${PADDR}")
@@ -1676,18 +2483,11 @@ assert_eq "Reactor validator intact after new players" "${VALIDATOR_ADDRESS}" "$
 # found a second one, so alice — who owns Guild A — cannot create any more.
 # Dedicated leader accounts instead.
 #
-# PermReactorGuildCreate is granted below, but note what it does and does not buy:
-# since the charter rewrite it gates only writing the reactor's own GuildId, which
-# is the entitlement marker, and Guild A already claimed it. B and C found on a
-# proof and would succeed without the grant. It stays because the grant itself is
-# worth exercising, not because the founding needs it.
+# Reactor ownership grants are unnecessary for founding; B, C and D exercise
+# creation without any such grant.
 
-section "Create Guild Leaders (B, C)"
+section "Create Guild Leaders (B, C, D)"
 
-# Leader D is the odd one out: he never solves anything, he only signs a consent
-# and has Guild D founded for him by leader B. Set up identically all the same,
-# because a consent founding needs a real registered player with PermPlay on the
-# signing address.
 for LEADER_SUFFIX in b c d; do
     LEADER_KEY="guild_leader_${LEADER_SUFFIX}"
     info "Setting up ${LEADER_KEY}"
@@ -1711,15 +2511,15 @@ assert_not_empty "Guild Leader D address" "${GUILD_LEADER_D_ADDRESS}"
 for LEADER_SUFFIX in B C D; do
     LEADER_LOWER=$(echo "${LEADER_SUFFIX}" | tr '[:upper:]' '[:lower:]')
     eval "LADDR=\${GUILD_LEADER_${LEADER_SUFFIX}_ADDRESS}"
-    run_tx "Sending 10000000ualpha from alice to guild_leader_${LEADER_LOWER}" \
-        tx bank send "${PLAYER_1_ADDRESS}" "${LADDR}" 10000000ualpha --from alice
+    run_tx "Sending 15000000ualpha from alice to guild_leader_${LEADER_LOWER}" \
+        tx bank send "${PLAYER_1_ADDRESS}" "${LADDR}" 15000000ualpha --from alice
 done
 
 # Delegate guild leaders (creates player accounts)
 for LEADER_SUFFIX in B C D; do
     LEADER_LOWER=$(echo "${LEADER_SUFFIX}" | tr '[:upper:]' '[:lower:]')
-    run_tx "Delegating 5000000ualpha from guild_leader_${LEADER_LOWER} to validator" \
-        tx staking delegate "${VALIDATOR_ADDRESS}" 5000000ualpha --from "guild_leader_${LEADER_LOWER}"
+    run_tx "Delegating 10000000ualpha from guild_leader_${LEADER_LOWER} to validator" \
+        tx staking delegate "${VALIDATOR_ADDRESS}" 10000000ualpha --from "guild_leader_${LEADER_LOWER}"
 
     eval "LADDR=\${GUILD_LEADER_${LEADER_SUFFIX}_ADDRESS}"
     ADDR_JSON=$(query query structs address "${LADDR}")
@@ -1729,13 +2529,6 @@ for LEADER_SUFFIX in B C D; do
     echo "  Guild Leader ${LEADER_SUFFIX} ID: ${LID}"
 done
 
-# Grant PermReactorGuildCreate (524288) on reactor to each leader
-run_tx "Granting PermReactorGuildCreate on reactor to Guild Leader B" \
-    tx structs permission-grant-on-object "${REACTOR_ID}" "${GUILD_LEADER_B_ID}" 524288 --from alice
-
-run_tx "Granting PermReactorGuildCreate on reactor to Guild Leader C" \
-    tx structs permission-grant-on-object "${REACTOR_ID}" "${GUILD_LEADER_C_ID}" 524288 --from alice
-
 # Grant PermSubstationConnection (1024) on substation to each leader
 run_tx "Granting PermSubstationConnection on substation to Guild Leader B" \
     tx structs permission-grant-on-object "${SUBSTATION_ID}" "${GUILD_LEADER_B_ID}" 1024 --from alice
@@ -1743,188 +2536,40 @@ run_tx "Granting PermSubstationConnection on substation to Guild Leader B" \
 run_tx "Granting PermSubstationConnection on substation to Guild Leader C" \
     tx structs permission-grant-on-object "${SUBSTATION_ID}" "${GUILD_LEADER_C_ID}" 1024 --from alice
 
-# Guilds B and C go through the charter puzzle. Guild A spent the only reactor
-# entitlement on this chain, so guild-create with no proof would be refused with
-# entitlement_spent from here on. guild-create-compute mines the global puzzle,
-# which the dev genesis keeps at difficulty 1.
-#
-# The anchor is read around each founding, because which paths move it is the rule
-# the whole design rests on. Phase 1 pinned the entitlement path leaving it alone;
-# these two pin the proof path moving it, which is what makes a charter a race
-# rather than a queue.
-CHARTER_ANCHOR_AFTER_A=$(jqr "$(query query structs guild-charter)" '.anchor' '0')
+# Each founder pays from their own vault. All guilds may choose the same reactor
+# without owning it, waiting for an age threshold, or consuming an entitlement.
+create_paid_guild guild_leader_b "${GUILD_LEADER_B_ID}" "${REACTOR_ID}" "guild-b.energy" "${SUBSTATION_ID}"
+GUILD_B_ID=$(query query structs player "${GUILD_LEADER_B_ID}" | jq -er '.Player.guildId | select(length > 0)')
 
-run_compute "Guild Leader B creates Guild B" \
-    tx structs guild-create-compute "${REACTOR_ID}" --endpoint "guild-b.energy" --entry-substation-id "${SUBSTATION_ID}" --from guild_leader_b
+create_paid_guild guild_leader_c "${GUILD_LEADER_C_ID}" "${REACTOR_ID}" "guild-c.energy" "${SUBSTATION_ID}"
+GUILD_C_ID=$(query query structs player "${GUILD_LEADER_C_ID}" | jq -er '.Player.guildId | select(length > 0)')
 
-GUILD_B_ID=$(query query structs player "${GUILD_LEADER_B_ID}" | jq -r '.Player.guildId // empty' 2>/dev/null || echo "")
-assert_not_empty "Guild B ID" "${GUILD_B_ID}"
-echo "  Guild B ID: ${GUILD_B_ID}"
-
-CHARTER_ANCHOR_AFTER_B=$(jqr "$(query query structs guild-charter)" '.anchor' '0')
-assert_gt "Guild B's proof founding moved the charter anchor" \
-    "${CHARTER_ANCHOR_AFTER_A}" "${CHARTER_ANCHOR_AFTER_B}"
-
-# Founding moved the anchor, so this is a fresh puzzle rather than a second win
-# off the same one.
-run_compute "Guild Leader C creates Guild C" \
-    tx structs guild-create-compute "${REACTOR_ID}" --endpoint "guild-c.energy" --entry-substation-id "${SUBSTATION_ID}" --from guild_leader_c
-
-GUILD_C_ID=$(query query structs player "${GUILD_LEADER_C_ID}" | jq -r '.Player.guildId // empty' 2>/dev/null || echo "")
-assert_not_empty "Guild C ID" "${GUILD_C_ID}"
-echo "  Guild C ID: ${GUILD_C_ID}"
-
-CHARTER_ANCHOR_AFTER_C=$(jqr "$(query query structs guild-charter)" '.anchor' '0')
-assert_gt "Guild C's proof founding moved the charter anchor again" \
-    "${CHARTER_ANCHOR_AFTER_B}" "${CHARTER_ANCHOR_AFTER_C}"
-
-# The solver is recorded on the guild forever, and is the same player here
-# because each leader founded their own.
-GUILD_B_SOLVER=$(query query structs guild "${GUILD_B_ID}" | jq -r '.Guild.charterSolverId // empty' 2>/dev/null || echo "")
-assert_eq "Guild B charter solver" "${GUILD_LEADER_B_ID}" "${GUILD_B_SOLVER}"
-
-GUILD_C_SOLVER=$(query query structs guild "${GUILD_C_ID}" | jq -r '.Guild.charterSolverId // empty' 2>/dev/null || echo "")
-assert_eq "Guild C charter solver" "${GUILD_LEADER_C_ID}" "${GUILD_C_SOLVER}"
-
-# Guild A took the reactor route, so it records no solver.
-GUILD_A_SOLVER=$(query query structs guild "${GUILD_ID}" | jq -r '.Guild.charterSolverId // empty' 2>/dev/null || echo "")
-assert_eq "Guild A has no charter solver" "" "${GUILD_A_SOLVER}"
-
-# A guild owner may not found a second guild. This is the state corruption the
-# old handler allowed: an owner whose Player record pointed at the newest guild
-# while they kept full permissions on every earlier one.
-#
-# Matched on the reason, not merely on failure: this message mines a real proof
-# first, so any number of unrelated problems would also make it fail. The pattern
-# is the prose GuildMembershipError renders, not the "is_owner" reason code, which
-# never appears in the output.
+# Existing guild owners still cannot abandon their guild by founding another.
 run_tx_expect_reject_matching "Guild owner founding a second guild rejected" \
     "is the owner of guild" \
-    tx structs guild-create-compute "${REACTOR_ID}" --endpoint "guild-c2.energy" --entry-substation-id "${SUBSTATION_ID}" --from guild_leader_c
+    tx structs guild-create "${REACTOR_ID}" "guild-c2.energy" "${SUBSTATION_ID}" --from guild_leader_c
+assert_eq "Rejected founding preserves Guild C membership" "${GUILD_C_ID}" \
+    "$(query query structs player "${GUILD_LEADER_C_ID}" | jq -r '.Player.guildId')"
 
-# And the proof-free route is gone once the reactor's one entitlement is spent.
-# player_2 is guildless here and names no entry substation, so the entitlement is
-# the only thing left to refuse it. ReactorError renders an unrecognised reason
-# verbatim, so the reason code is what to match on here.
-run_tx_expect_reject_matching "Proof-free guild refused after the reactor entitlement is spent" \
-    "entitlement_spent" \
-    tx structs guild-create "${REACTOR_ID}" "no-entitlement.energy" "" --from player_2
+# Retained wire fields must not revive proof or third-party founding authority.
+run_tx_expect_reject_matching "Legacy charter proof cannot authorize founding" \
+    "legacy_charter_fields_not_supported" \
+    tx structs guild-create "${REACTOR_ID}" "retired-proof.energy" "" --proof retired --from player_2
+run_tx_expect_reject_matching "Third-party founding cannot name a different owner" \
+    "legacy_charter_fields_not_supported" \
+    tx structs guild-create "${REACTOR_ID}" "retired-consent.energy" "" \
+    --founder-player-id "${GUILD_LEADER_D_ID}" --from guild_leader_b
+assert_eq "Refused legacy founding leaves player_2 guildless" "" \
+    "$(query query structs player "${PLAYER_2_ID}" | jq -r '.Player.guildId // ""')"
 
-CHARTER_ANCHOR_AFTER_REFUSALS=$(jqr "$(query query structs guild-charter)" '.anchor' '0')
-assert_eq "A refused founding leaves the charter anchor alone" \
-    "${CHARTER_ANCHOR_AFTER_C}" "${CHARTER_ANCHOR_AFTER_REFUSALS}"
-
-# ─── Founder consent, and the one path that may not spend it ─────────────────
-# guild-charter-consent broadcasts nothing: it is the founder's offline half of a
-# charter, collected before the grind because a winning nonce cannot wait for a
-# round trip. This also smoke-tests the GuildCharter query the command reads the
-# anchor from.
-info "Signing founder consent for player_2 (nothing is broadcast)"
-CONSENT_JSON=$(structsd ${PARAMS_TX} tx structs guild-charter-consent "${REACTOR_ID}" \
-    --endpoint "guild-consent.energy" --from player_2 2>&1 || true)
-CONSENT_FOUNDER=$(jqr "${CONSENT_JSON}" '.founder_player_id')
-CONSENT_ADDRESS=$(jqr "${CONSENT_JSON}" '.address')
-CONSENT_PUBKEY=$(jqr "${CONSENT_JSON}" '.proof_pub_key')
-CONSENT_SIGNATURE=$(jqr "${CONSENT_JSON}" '.proof_signature')
-assert_eq "Consent names player_2 as founder" "${PLAYER_2_ID}" "${CONSENT_FOUNDER}"
-assert_not_empty "Consent signature" "${CONSENT_SIGNATURE}"
-
-# A consent is retired by the anchor moving, and only the proof path moves it, so
-# only the proof path may spend one. Offered without a proof this is refused
-# outright — otherwise the signature would stay live until an unrelated player
-# proof-founded, long enough to mine a fresh proof and replay it. Asserted on the
-# reason rather than merely on failure, since the entitlement is already spent on
-# this chain and would refuse the same message one check later.
-info "Third-party founding without a proof (expect consent_needs_proof)"
-OUTPUT=$(structsd ${PARAMS_TX} tx structs guild-create "${REACTOR_ID}" "guild-consent.energy" "" \
-    --founder-player-id "${CONSENT_FOUNDER}" \
-    --address "${CONSENT_ADDRESS}" \
-    --proof-pub-key "${CONSENT_PUBKEY}" \
-    --proof-signature "${CONSENT_SIGNATURE}" \
-    --from guild_leader_b 2>&1) || true
-sleep "${SLEEP}"
-
-if echo "${OUTPUT}" | grep -q "consent_needs_proof"; then
-    echo -e "  ${GREEN}PASS${NC}: consent refused on the path that does not move the anchor"
-    PASS_COUNT=$((PASS_COUNT + 1))
-else
-    echo -e "  ${RED}FAIL${NC}: expected consent_needs_proof, got:"
-    echo "${OUTPUT}" | head -5
-    FAIL_COUNT=$((FAIL_COUNT + 1))
-fi
-
-P2_JSON=$(query query structs player "${PLAYER_2_ID}")
-assert_eq "Refused consent founding left player_2 guildless" "" "$(jqr "${P2_JSON}" '.Player.guildId')"
-
-# ─── Guild D: a consent founding that actually goes through ──────────────────
-# The headline of the charter rewrite, and until now only its refusal was covered:
-# leader D signs a consent, leader B mines the proof, and Guild D belongs to D
-# while the work is credited to B.
-#
-# Leader B as the solver is the whole point. He owns Guild B, and the guild-owner
-# guard applies to the *founder*, so if the handler ever confused the two
-# identities this would be refused with `is the owner of guild` — which is what
-# makes it a test of the split rather than just of a signature.
-#
-# No entry substation on either side: the founder's rights are what a named
-# substation is checked against, and leader D holds none. The two commands must
-# agree on reactor, substation, endpoint and anchor or guild-create-compute
-# refuses before it spends a cycle.
-CONSENT_FILE="$(cd "$(dirname "$0")" && pwd)/.guild_d_consent.json"
+# Guild D needs no entry substation and no permission on the preferred reactor.
 GUILD_D_ENDPOINT="guild-d.energy"
-
-info "Signing founder consent for guild_leader_d"
-# stdout is only the consent JSON, so it can go straight to the file; stderr stays
-# on the terminal, because a failure here otherwise reads as an empty signature.
-structsd ${PARAMS_TX} tx structs guild-charter-consent "${REACTOR_ID}" \
-    --endpoint "${GUILD_D_ENDPOINT}" --from guild_leader_d > "${CONSENT_FILE}" || true
-
-CONSENT_D_JSON=$(cat "${CONSENT_FILE}" 2>/dev/null || echo '{}')
-assert_eq "Consent names guild_leader_d as founder" \
-    "${GUILD_LEADER_D_ID}" "$(jqr "${CONSENT_D_JSON}" '.founder_player_id')"
-assert_not_empty "Consent D signature" "$(jqr "${CONSENT_D_JSON}" '.proof_signature')"
-assert_eq "Consent D is bound to the live anchor" \
-    "${CHARTER_ANCHOR_AFTER_C}" "$(jqr "${CONSENT_D_JSON}" '.anchor' '0')"
-
-run_compute "Guild Leader B founds Guild D on leader D's consent" \
-    tx structs guild-create-compute "${REACTOR_ID}" --endpoint "${GUILD_D_ENDPOINT}" --consent-file "${CONSENT_FILE}" --from guild_leader_b
-
-GUILD_D_ID=$(query query structs player "${GUILD_LEADER_D_ID}" | jq -r '.Player.guildId // empty' 2>/dev/null || echo "")
-assert_not_empty "Guild D ID" "${GUILD_D_ID}"
-
-GUILD_D_JSON=$(query query structs guild "${GUILD_D_ID}" 2>/dev/null || echo '{}')
-assert_eq "Guild D endpoint" "${GUILD_D_ENDPOINT}" "$(jqr "${GUILD_D_JSON}" '.Guild.endpoint')"
-assert_eq "Guild D is owned by the founder, not the solver" \
-    "${GUILD_LEADER_D_ID}" "$(jqr "${GUILD_D_JSON}" '.Guild.owner')"
-assert_eq "Guild D credits the solver who did the work" \
-    "${GUILD_LEADER_B_ID}" "$(jqr "${GUILD_D_JSON}" '.Guild.charterSolverId')"
-
-# The solver founded a guild without joining it, and without losing the one he
-# owns. Nothing about the founder's guild is the solver's business.
-assert_eq "Solving for somebody else left leader B in Guild B" \
-    "${GUILD_B_ID}" "$(jqr "$(query query structs player "${GUILD_LEADER_B_ID}")" '.Player.guildId')"
-assert_eq "Guild B still belongs to leader B" \
-    "${GUILD_LEADER_B_ID}" "$(jqr "$(query query structs guild "${GUILD_B_ID}")" '.Guild.owner')"
-
-CHARTER_ANCHOR_AFTER_D=$(jqr "$(query query structs guild-charter)" '.anchor' '0')
-assert_gt "The consent founding moved the charter anchor" \
-    "${CHARTER_ANCHOR_AFTER_C}" "${CHARTER_ANCHOR_AFTER_D}"
-
-# Moving the anchor is the whole of what retires a consent, so replaying the same
-# file is now refused by the client before it broadcasts anything.
-info "Replaying the spent consent (expect a stale-anchor refusal)"
-REPLAY_OUTPUT=$(structsd ${PARAMS_TX} tx structs guild-create-compute "${REACTOR_ID}" \
-    --endpoint "${GUILD_D_ENDPOINT}" --consent-file "${CONSENT_FILE}" --from guild_leader_c 2>&1) || true
-if echo "${REPLAY_OUTPUT}" | grep -q "anchor"; then
-    echo -e "  ${GREEN}PASS${NC}: spent consent refused against the moved anchor"
-    PASS_COUNT=$((PASS_COUNT + 1))
-else
-    echo -e "  ${RED}FAIL${NC}: expected an anchor mismatch, got:"
-    echo "${REPLAY_OUTPUT}" | tail -5
-    FAIL_COUNT=$((FAIL_COUNT + 1))
-fi
-
-rm -f "${CONSENT_FILE}"
+create_paid_guild guild_leader_d "${GUILD_LEADER_D_ID}" "${REACTOR_ID}" "${GUILD_D_ENDPOINT}" ""
+GUILD_D_ID=$(query query structs player "${GUILD_LEADER_D_ID}" | jq -er '.Player.guildId | select(length > 0)')
+assert_eq "Guild D endpoint" "${GUILD_D_ENDPOINT}" \
+    "$(query query structs guild "${GUILD_D_ID}" | jq -r '.Guild.endpoint')"
+assert_eq "Guild D founding leaves Guild B unchanged" "${GUILD_B_ID}" \
+    "$(query query structs player "${GUILD_LEADER_B_ID}" | jq -r '.Player.guildId')"
 
 info "Guilds: A=${GUILD_ID}  B=${GUILD_B_ID}  C=${GUILD_C_ID}  D=${GUILD_D_ID}"
 
@@ -1956,8 +2601,8 @@ for PLAYER_NUM in 2 3 4; do
         tx structs allocation-create "${PID}" "${PCAP}" \
         --controller "${PLAYER_1_ID}" --allocation-type dynamic --from "player_${PLAYER_NUM}"
 
-    # Discover the allocation ID dynamically
-    ALLOC_ID=$(get_latest_allocation_for_source "${PID}")
+    # Resolve this transaction's allocation, including its intended controller.
+    ALLOC_ID=$(get_created_grid_id allocation "${PID}" "${PLAYER_1_ID}")
     eval "P${PLAYER_NUM}_ALLOC_ID=${ALLOC_ID}"
     assert_not_empty "Player ${PLAYER_NUM} allocation ID" "${ALLOC_ID}"
     echo "  Player ${PLAYER_NUM} Allocation ID: ${ALLOC_ID}"
@@ -1989,17 +2634,20 @@ section "PHASE 3b: Allocation Lifecycle"
 
 # Create an allocation for Player 5 to use in lifecycle tests
 P5_JSON=$(query query structs player "${PLAYER_5_ID}")
-P5_CAP=$(jqr "${P5_JSON}" '.gridAttributes.capacity' '0')
-HALF_CAP=$(( P5_CAP / 2 ))
-QUARTER_CAP=$(( P5_CAP / 4 ))
-info "Player 5 (${PLAYER_5_ID}) capacity: ${P5_CAP}"
+ALLOCATION_TEST_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+P5_LIFECYCLE_CAPACITY=$(echo "${P5_JSON}" | python3 "${ALLOCATION_TEST_DIR}/player_allocatable_capacity.py" --lifecycle)
+P5_CAP=$(echo "${P5_LIFECYCLE_CAPACITY}" | jq -er '.allocatableCapacity')
+HALF_CAP=$(echo "${P5_LIFECYCLE_CAPACITY}" | jq -er '.half')
+QUARTER_CAP=$(echo "${P5_LIFECYCLE_CAPACITY}" | jq -er '.quarter')
+THREE_QUARTER_CAP=$(echo "${P5_LIFECYCLE_CAPACITY}" | jq -er '.threeQuarter')
+info "Player 5 (${PLAYER_5_ID}) available primary capacity: ${P5_CAP}"
 
 # Create with half capacity so we have room to test updates
 run_tx "Creating allocation from Player 5 (${HALF_CAP} of ${P5_CAP})" \
     tx structs allocation-create "${PLAYER_5_ID}" "${HALF_CAP}" \
     --controller "${PLAYER_5_ID}" --allocation-type dynamic --from player_5
 
-P5_ALLOC_ID=$(get_latest_allocation_for_source "${PLAYER_5_ID}")
+P5_ALLOC_ID=$(get_created_grid_id allocation "${PLAYER_5_ID}" "${PLAYER_5_ID}")
 assert_not_empty "Player 5 allocation ID" "${P5_ALLOC_ID}"
 echo "  Player 5 Allocation ID: ${P5_ALLOC_ID}"
 
@@ -2017,7 +2665,6 @@ assert_eq "Allocation power updated" "${QUARTER_CAP}" "${ALLOC_POWER}"
 run_tx "Updating allocation ${P5_ALLOC_ID} power back to ${HALF_CAP}" \
     tx structs allocation-update "${P5_ALLOC_ID}" "${HALF_CAP}" --from player_5
 
-THREE_QUARTER_CAP=$(( (P5_CAP * 3) / 4 ))
 run_tx "Updating allocation ${P5_ALLOC_ID} power up to ${THREE_QUARTER_CAP} (own power released)" \
     tx structs allocation-update "${P5_ALLOC_ID}" "${THREE_QUARTER_CAP}" --from player_5
 
@@ -2026,6 +2673,10 @@ ALLOC_POWER=$(jqr "${ALLOC_JSON}" '.gridAttributes.power' '0')
 assert_eq "Allocation grew past prior free capacity" "${THREE_QUARTER_CAP}" "${ALLOC_POWER}"
 
 # ─── allocation-transfer: transfer controller to alice ───
+P5_TRANSFER_PERMS=$(get_permission_value_for_player "${P5_ALLOC_ID}" "${PLAYER_5_ID}")
+ALICE_TRANSFER_PERMS=$(get_permission_value_for_player "${P5_ALLOC_ID}" "${PLAYER_1_ID}")
+TRANSFER_STATE_BEFORE=$(query query structs allocation "${P5_ALLOC_ID}" | jq -cS '{allocation: (.Allocation | del(.controller)), power: .gridAttributes.power}')
+assert_eq "Creator retains Update/Delete before transfer" "$(( PERM_UPDATE | PERM_DELETE ))" "$(( P5_TRANSFER_PERMS & (PERM_UPDATE | PERM_DELETE) ))"
 info "Transferring allocation controller from player_5 to alice"
 run_tx "Transferring allocation ${P5_ALLOC_ID} controller to alice" \
     tx structs allocation-transfer "${P5_ALLOC_ID}" "${PLAYER_1_ID}" --from player_5
@@ -2033,10 +2684,19 @@ run_tx "Transferring allocation ${P5_ALLOC_ID} controller to alice" \
 ALLOC_JSON=$(query query structs allocation "${P5_ALLOC_ID}")
 ALLOC_CTRL=$(jqr "${ALLOC_JSON}" '.Allocation.controller')
 assert_eq "Allocation controller transferred" "${PLAYER_1_ID}" "${ALLOC_CTRL}"
+assert_eq "Outgoing controller retains unrelated permissions" "$(( P5_TRANSFER_PERMS & ~PERM_ALLOCATION_CONNECTION ))" "$(get_permission_value_for_player "${P5_ALLOC_ID}" "${PLAYER_5_ID}")"
+assert_eq "Incoming controller retains existing permissions" "$(( ALICE_TRANSFER_PERMS | PERM_ALLOCATION_CONNECTION ))" "$(get_permission_value_for_player "${P5_ALLOC_ID}" "${PLAYER_1_ID}")"
+assert_eq "Transfer preserves allocation connection and power" "${TRANSFER_STATE_BEFORE}" "$(echo "${ALLOC_JSON}" | jq -cS '{allocation: (.Allocation | del(.controller)), power: .gridAttributes.power}')"
 
 # Transfer back to player_5 so they can delete it
 run_tx "Transferring allocation back to player_5" \
     tx structs allocation-transfer "${P5_ALLOC_ID}" "${PLAYER_5_ID}" --from alice
+
+ALLOC_JSON=$(query query structs allocation "${P5_ALLOC_ID}")
+assert_eq "Allocation controller returned" "${PLAYER_5_ID}" "$(jqr "${ALLOC_JSON}" '.Allocation.controller')"
+assert_eq "Returning controller keeps original rights" "$(( P5_TRANSFER_PERMS | PERM_ALLOCATION_CONNECTION ))" "$(get_permission_value_for_player "${P5_ALLOC_ID}" "${PLAYER_5_ID}")"
+assert_eq "Alice retains only her independent rights" "$(( ALICE_TRANSFER_PERMS & ~PERM_ALLOCATION_CONNECTION ))" "$(get_permission_value_for_player "${P5_ALLOC_ID}" "${PLAYER_1_ID}")"
+assert_eq "Return transfer preserves allocation connection and power" "${TRANSFER_STATE_BEFORE}" "$(echo "${ALLOC_JSON}" | jq -cS '{allocation: (.Allocation | del(.controller)), power: .gridAttributes.power}')"
 
 # ─── allocation-transfer to a player that does not exist ───
 #
@@ -2053,6 +2713,10 @@ ALLOC_CTRL=$(jqr "${ALLOC_JSON}" '.Allocation.controller')
 assert_eq "Allocation controller survives a refused transfer" "${PLAYER_5_ID}" "${ALLOC_CTRL}"
 
 # ─── allocation-delete ───
+DELETE_ALLOC_JSON=$(query query structs allocation "${P5_ALLOC_ID}")
+DELETE_ALLOC_POWER=$(echo "${DELETE_ALLOC_JSON}" | jq -er '.gridAttributes.power')
+DELETE_SOURCE_LOAD=$(query query structs player "${PLAYER_5_ID}" | jq -er '.gridAttributes.load')
+DELETE_EXPECTED_LOAD=$(python3 -c 'import sys; load, power = map(int, sys.argv[1:]); assert 0 < power <= load < 2**64; print(load - power)' "${DELETE_SOURCE_LOAD}" "${DELETE_ALLOC_POWER}")
 run_tx "Deleting allocation ${P5_ALLOC_ID}" \
     tx structs allocation-delete "${P5_ALLOC_ID}" --from player_5
 
@@ -2060,6 +2724,10 @@ run_tx "Deleting allocation ${P5_ALLOC_ID}" \
 ALLOC_GONE_JSON=$(query query structs allocation "${P5_ALLOC_ID}" 2>/dev/null || echo '{}')
 ALLOC_GONE_ID=$(jqr "${ALLOC_GONE_JSON}" '.Allocation.id' '')
 assert_eq "Allocation deleted" "" "${ALLOC_GONE_ID}"
+DELETE_SOURCE_AFTER=$(query query structs player "${PLAYER_5_ID}" | jq -er '.gridAttributes | if type == "object" then (.load // "0") else error("missing player grid") end')
+assert_eq "Allocation deletion releases exactly its source load" "${DELETE_EXPECTED_LOAD}" "${DELETE_SOURCE_AFTER}"
+assert_eq "Deleted allocation clears creator permissions" "0" "$(get_permission_value_for_player "${P5_ALLOC_ID}" "${PLAYER_5_ID}")"
+assert_eq "Deleted allocation clears recipient permissions" "0" "$(get_permission_value_for_player "${P5_ALLOC_ID}" "${PLAYER_1_ID}")"
 
 # ─── Query: allocation-all-by-destination ───
 info "Querying allocations by destination (substation ${SUBSTATION_ID})"
@@ -2067,11 +2735,16 @@ ALLOC_BY_DEST=$(query query structs allocation-all-by-destination "${SUBSTATION_
 echo "  Allocations connected to substation: $(echo "${ALLOC_BY_DEST}" | jq '.Allocation | length' 2>/dev/null || echo '0')"
 
 # ─── Re-create allocation for Player 5 for later phases ───
+# Earlier transactions may have changed power; use current unallocated capacity.
+P5_JSON=$(query query structs player "${PLAYER_5_ID}")
+P5_AVAILABLE=$(echo "${P5_JSON}" | python3 "${ALLOCATION_TEST_DIR}/player_allocatable_capacity.py")
+assert_eq "Player 5 has power for replacement allocation" "true" "$(echo "${P5_AVAILABLE}" | jq -r '.hasCapacity')"
+P5_CAP=$(echo "${P5_AVAILABLE}" | jq -er '.allocatableCapacity')
 run_tx "Re-creating allocation for Player 5" \
     tx structs allocation-create "${PLAYER_5_ID}" "${P5_CAP}" \
     --controller "${PLAYER_5_ID}" --allocation-type dynamic --from player_5
 
-P5_ALLOC_ID=$(get_latest_allocation_for_source "${PLAYER_5_ID}")
+P5_ALLOC_ID=$(get_created_grid_id allocation "${PLAYER_5_ID}" "${PLAYER_5_ID}")
 assert_not_empty "Player 5 re-created allocation ID" "${P5_ALLOC_ID}"
 echo "  Player 5 new Allocation ID: ${P5_ALLOC_ID}"
 
@@ -2133,13 +2806,15 @@ P4_ALLOC_JSON=$(query query structs allocation "${P4_ALLOC_ID}")
 ALLOC_4_DST=$(jqr "${P4_ALLOC_JSON}" '.Allocation.destinationId')
 assert_eq "Player 4 allocation connected to substation" "${SUBSTATION_ID}" "${ALLOC_4_DST}"
 
-# Verify substation exists (load will be 0 until structs are built and drawing power)
+# Verify substation input, outgoing load and shares after the fixed 10% operating loss.
 info "Checking substation power"
 SUB_JSON=$(query query structs substation "${SUBSTATION_ID}")
 SUB_LOAD=$(jqr "${SUB_JSON}" '.gridAttributes.load' '0')
 SUB_CAP=$(jqr "${SUB_JSON}" '.gridAttributes.capacity' '0')
 assert_gt "Substation capacity" 0 "${SUB_CAP}"
-echo "  Substation capacity: ${SUB_CAP}, load: ${SUB_LOAD} (load=0 expected before builds)"
+echo "  Substation incoming capacity: ${SUB_CAP}, outgoing allocation load: ${SUB_LOAD}"
+SUB_EXPECTED_SHARE=$(echo "${SUB_JSON}" | python3 -c 'import json,sys; g=json.load(sys.stdin)["gridAttributes"]; print(max(int(g.get("capacity","0"))*9//10-int(g.get("load","0")),0)//max(1,int(g.get("connectionCount","0"))))')
+assert_eq "Substation player share includes 10% operating loss" "${SUB_EXPECTED_SHARE}" "$(jqr "${SUB_JSON}" '.gridAttributes.connectionCapacity // "0"')"
 
 # ─── Dump all players ───
 info "All players state"
@@ -2155,6 +2830,12 @@ if run_phase 450; then
 
 section "PHASE 4b: Guild Bank & Token Operations"
 
+GUILD_VAULT=$(get_vault_address "${GUILD_ID}")
+PLAYER_2_VAULT=$(get_vault_address "${PLAYER_2_ID}")
+PLAYER_3_VAULT=$(get_vault_address "${PLAYER_3_ID}")
+fund_vault_alpha "${GUILD_ID}" 1000000
+fund_vault_alpha "${PLAYER_2_ID}" 200000
+
 # Guild token denomination is uguild.{guildId}  (e.g. uguild.0-1)
 GUILD_TOKEN_DENOM="uguild.${GUILD_ID}"
 info "Guild token denomination: ${GUILD_TOKEN_DENOM}"
@@ -2167,113 +2848,142 @@ assert_not_empty "Collateral address" "${COLLATERAL_ADDR}"
 echo "  Collateral address: ${COLLATERAL_ADDR}"
 
 # ─── Check initial balances ───
-info "Alice's ualpha balance before mint"
-ALICE_ALPHA_BEFORE=$(get_balance "${PLAYER_1_ADDRESS}" ualpha)
-echo "  Alice ualpha: ${ALICE_ALPHA_BEFORE}"
+info "Guild treasury ualpha balance before mint"
+TREASURY_ALPHA_BEFORE=$(get_balance "${GUILD_VAULT}" ualpha)
+echo "  Treasury ualpha: ${TREASURY_ALPHA_BEFORE}"
 
-ALICE_TOKEN_BEFORE=$(get_balance "${PLAYER_1_ADDRESS}" "${GUILD_TOKEN_DENOM}")
-echo "  Alice ${GUILD_TOKEN_DENOM}: ${ALICE_TOKEN_BEFORE}"
+TREASURY_TOKEN_BEFORE=$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")
+echo "  Treasury ${GUILD_TOKEN_DENOM}: ${TREASURY_TOKEN_BEFORE}"
 
 COLLATERAL_ALPHA_BEFORE=$(get_balance "${COLLATERAL_ADDR}" ualpha)
 echo "  Collateral ualpha: ${COLLATERAL_ALPHA_BEFORE}"
 
 # ─── Mint guild tokens ───
-# Alice (guild owner) deposits 1000000 ualpha as collateral and mints 500000 guild tokens
+# Alice authorizes the guild vault to deposit 1000000 ualpha as collateral and mints 500000 guild tokens
 MINT_ALPHA=1000000
 MINT_TOKENS=500000
+SUPPLY_BEFORE_MINT=$(guild_supply "${GUILD_TOKEN_DENOM}")
 run_tx "Minting ${MINT_TOKENS} guild tokens with ${MINT_ALPHA} ualpha collateral" \
     tx structs guild-bank-mint "${MINT_ALPHA}" "${MINT_TOKENS}" --from alice
 
-# Verify: alice should have guild tokens now
-ALICE_TOKEN_AFTER_MINT=$(get_balance "${PLAYER_1_ADDRESS}" "${GUILD_TOKEN_DENOM}")
-info "Alice guild tokens after mint: ${ALICE_TOKEN_AFTER_MINT}"
-assert_gt "Alice guild token balance after mint" 0 "${ALICE_TOKEN_AFTER_MINT}"
+# Verify: newly minted tokens belong to the guild treasury
+TREASURY_TOKEN_AFTER_MINT=$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")
+info "Guild treasury tokens after mint: ${TREASURY_TOKEN_AFTER_MINT}"
+assert_eq "Guild treasury receives exactly the minted tokens" "$((TREASURY_TOKEN_BEFORE + MINT_TOKENS))" "${TREASURY_TOKEN_AFTER_MINT}"
+assert_eq "Guild vault funds the mint collateral" "$((TREASURY_ALPHA_BEFORE - MINT_ALPHA))" "$(get_balance "${GUILD_VAULT}" ualpha)"
 
 # Verify: collateral address should hold the Alpha
 COLLATERAL_ALPHA_AFTER_MINT=$(get_balance "${COLLATERAL_ADDR}" ualpha)
 info "Collateral ualpha after mint: ${COLLATERAL_ALPHA_AFTER_MINT}"
-assert_gt "Collateral Alpha increased after mint" "${COLLATERAL_ALPHA_BEFORE}" "${COLLATERAL_ALPHA_AFTER_MINT}"
+assert_eq "Collateral Alpha increased by the mint deposit" "$((COLLATERAL_ALPHA_BEFORE + MINT_ALPHA))" "${COLLATERAL_ALPHA_AFTER_MINT}"
 
-# ─── Transfer guild tokens to Player 2 via bank send ───
+# ─── Transfer guild tokens to Player 2 via vault-send ───
 TRANSFER_TO_P2=200000
-run_tx "Transferring ${TRANSFER_TO_P2}${GUILD_TOKEN_DENOM} to Player 2 via bank send" \
-    tx bank send "${PLAYER_1_ADDRESS}" "${PLAYER_2_ADDRESS}" "${TRANSFER_TO_P2}${GUILD_TOKEN_DENOM}" --from alice
+P2_TOKEN_BEFORE_TRANSFER=$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")
+run_tx "Transferring ${TRANSFER_TO_P2}${GUILD_TOKEN_DENOM} to Player 2 via vault-send" \
+    tx structs vault-send "${GUILD_ID}" "${PLAYER_2_ID}" "${TRANSFER_TO_P2}${GUILD_TOKEN_DENOM}" --from alice
 
-P2_TOKEN_AFTER_TRANSFER=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+P2_TOKEN_AFTER_TRANSFER=$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")
 info "Player 2 guild tokens after transfer: ${P2_TOKEN_AFTER_TRANSFER}"
-assert_eq "Player 2 received guild tokens" "${TRANSFER_TO_P2}" "${P2_TOKEN_AFTER_TRANSFER}"
+assert_eq "Player 2 received guild tokens" "$((P2_TOKEN_BEFORE_TRANSFER + TRANSFER_TO_P2))" "${P2_TOKEN_AFTER_TRANSFER}"
 
 # ─── Transfer guild tokens to Player 3 (for confiscation test later) ───
 TRANSFER_TO_P3=100000
-run_tx "Transferring ${TRANSFER_TO_P3}${GUILD_TOKEN_DENOM} to Player 3 via bank send" \
-    tx bank send "${PLAYER_1_ADDRESS}" "${PLAYER_3_ADDRESS}" "${TRANSFER_TO_P3}${GUILD_TOKEN_DENOM}" --from alice
+P3_TOKEN_BEFORE_TRANSFER=$(get_balance "${PLAYER_3_VAULT}" "${GUILD_TOKEN_DENOM}")
+run_tx "Transferring ${TRANSFER_TO_P3}${GUILD_TOKEN_DENOM} to Player 3 via vault-send" \
+    tx structs vault-send "${GUILD_ID}" "${PLAYER_3_ID}" "${TRANSFER_TO_P3}${GUILD_TOKEN_DENOM}" --from alice
 
-P3_TOKEN_AFTER_TRANSFER=$(get_balance "${PLAYER_3_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+P3_TOKEN_AFTER_TRANSFER=$(get_balance "${PLAYER_3_VAULT}" "${GUILD_TOKEN_DENOM}")
 info "Player 3 guild tokens after transfer: ${P3_TOKEN_AFTER_TRANSFER}"
-assert_eq "Player 3 received guild tokens" "${TRANSFER_TO_P3}" "${P3_TOKEN_AFTER_TRANSFER}"
+assert_eq "Player 3 received guild tokens" "$((P3_TOKEN_BEFORE_TRANSFER + TRANSFER_TO_P3))" "${P3_TOKEN_AFTER_TRANSFER}"
 
-# Verify Alice's remaining tokens = minted - transferred
-ALICE_TOKEN_AFTER_TRANSFERS=$(get_balance "${PLAYER_1_ADDRESS}" "${GUILD_TOKEN_DENOM}")
-EXPECTED_ALICE_REMAINING=$((ALICE_TOKEN_AFTER_MINT - TRANSFER_TO_P2 - TRANSFER_TO_P3))
-info "Alice guild tokens after transfers: ${ALICE_TOKEN_AFTER_TRANSFERS} (expected ${EXPECTED_ALICE_REMAINING})"
-assert_eq "Alice token balance after transfers" "${EXPECTED_ALICE_REMAINING}" "${ALICE_TOKEN_AFTER_TRANSFERS}"
+# Verify treasury tokens, including the founding token, less distributions
+TREASURY_TOKEN_AFTER_TRANSFERS=$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")
+EXPECTED_TREASURY_REMAINING=$((TREASURY_TOKEN_AFTER_MINT - TRANSFER_TO_P2 - TRANSFER_TO_P3))
+info "Guild treasury tokens after transfers: ${TREASURY_TOKEN_AFTER_TRANSFERS} (expected ${EXPECTED_TREASURY_REMAINING})"
+assert_eq "Guild treasury token balance after transfers" "${EXPECTED_TREASURY_REMAINING}" "${TREASURY_TOKEN_AFTER_TRANSFERS}"
 
 # ─── Redeem guild tokens (Player 2 redeems some for Alpha) ───
 REDEEM_AMOUNT=50000
-P2_ALPHA_BEFORE_REDEEM=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
+P2_ALPHA_BEFORE_REDEEM=$(get_balance "${PLAYER_2_VAULT}" ualpha)
+SUPPLY_BEFORE_REDEEM=$(guild_supply "${GUILD_TOKEN_DENOM}")
+EXPECTED_REDEEM_ALPHA=$((REDEEM_AMOUNT * COLLATERAL_ALPHA_AFTER_MINT / SUPPLY_BEFORE_REDEEM))
 info "Player 2 ualpha before redeem: ${P2_ALPHA_BEFORE_REDEEM}"
 
 run_tx "Player 2 redeeming ${REDEEM_AMOUNT}${GUILD_TOKEN_DENOM} for Alpha" \
     tx structs guild-bank-redeem "${REDEEM_AMOUNT}${GUILD_TOKEN_DENOM}" 1 --from player_2
 
 # Verify: Player 2 token balance decreased
-P2_TOKEN_AFTER_REDEEM=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
-EXPECTED_P2_TOKENS=$((TRANSFER_TO_P2 - REDEEM_AMOUNT))
+P2_TOKEN_AFTER_REDEEM=$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")
+EXPECTED_P2_TOKENS=$((P2_TOKEN_AFTER_TRANSFER - REDEEM_AMOUNT))
 info "Player 2 guild tokens after redeem: ${P2_TOKEN_AFTER_REDEEM} (expected ${EXPECTED_P2_TOKENS})"
 assert_eq "Player 2 tokens decreased after redeem" "${EXPECTED_P2_TOKENS}" "${P2_TOKEN_AFTER_REDEEM}"
 
-# Verify: Player 2 received some Alpha back
-P2_ALPHA_AFTER_REDEEM=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
+# No convert-out fee has been configured yet. The founding token and collateral
+# are included in the queried supply and pool; a positive credit alone is not proof.
+P2_ALPHA_AFTER_REDEEM=$(get_balance "${PLAYER_2_VAULT}" ualpha)
 info "Player 2 ualpha after redeem: ${P2_ALPHA_AFTER_REDEEM}"
-assert_gt "Player 2 Alpha increased after redeem" "${P2_ALPHA_BEFORE_REDEEM}" "${P2_ALPHA_AFTER_REDEEM}"
+assert_eq "Player 2 vault receives exact initial redemption" "$((P2_ALPHA_BEFORE_REDEEM + EXPECTED_REDEEM_ALPHA))" "${P2_ALPHA_AFTER_REDEEM}"
 
 # Verify: Collateral pool decreased
 COLLATERAL_ALPHA_AFTER_REDEEM=$(get_balance "${COLLATERAL_ADDR}" ualpha)
 info "Collateral ualpha after redeem: ${COLLATERAL_ALPHA_AFTER_REDEEM}"
-assert_lt "Collateral decreased after redeem" "${COLLATERAL_ALPHA_AFTER_MINT}" "${COLLATERAL_ALPHA_AFTER_REDEEM}"
+assert_eq "Collateral funds exact initial redemption" "$((COLLATERAL_ALPHA_AFTER_MINT - EXPECTED_REDEEM_ALPHA))" "${COLLATERAL_ALPHA_AFTER_REDEEM}"
+assert_eq "Initial redemption burns exact token supply" "$((SUPPLY_BEFORE_REDEEM - REDEEM_AMOUNT))" "$(guild_supply "${GUILD_TOKEN_DENOM}")"
 
 # ─── Confiscate and burn (Alice confiscates tokens from Player 3) ───
 CONFISCATE_AMOUNT=50000
-P3_TOKEN_BEFORE_CONFISCATE=$(get_balance "${PLAYER_3_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+P3_TOKEN_BEFORE_CONFISCATE=$(get_balance "${PLAYER_3_VAULT}" "${GUILD_TOKEN_DENOM}")
+P3_ALPHA_BEFORE_CONFISCATE=$(get_balance "${PLAYER_3_VAULT}" ualpha)
+P3_KEY_TOKEN_BEFORE_CONFISCATE=$(get_balance "${PLAYER_3_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+P3_KEY_ALPHA_BEFORE_CONFISCATE=$(get_balance "${PLAYER_3_ADDRESS}" ualpha)
+GUILD_TOKEN_BEFORE_CONFISCATE=$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")
+COLLATERAL_BEFORE_CONFISCATE=$(get_balance "${COLLATERAL_ADDR}" ualpha)
+SUPPLY_BEFORE_CONFISCATE=$(guild_supply "${GUILD_TOKEN_DENOM}")
 info "Player 3 guild tokens before confiscate: ${P3_TOKEN_BEFORE_CONFISCATE}"
 
 run_tx "Alice confiscating ${CONFISCATE_AMOUNT} guild tokens from Player 3" \
-    tx structs guild-bank-confiscate-and-burn "${CONFISCATE_AMOUNT}" "${PLAYER_3_ADDRESS}" --from alice
+    tx structs guild-bank-confiscate-and-burn "${CONFISCATE_AMOUNT}" "${PLAYER_3_VAULT}" --from alice
 
 # Verify: Player 3 token balance decreased
-P3_TOKEN_AFTER_CONFISCATE=$(get_balance "${PLAYER_3_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+P3_TOKEN_AFTER_CONFISCATE=$(get_balance "${PLAYER_3_VAULT}" "${GUILD_TOKEN_DENOM}")
 EXPECTED_P3_TOKENS=$((P3_TOKEN_BEFORE_CONFISCATE - CONFISCATE_AMOUNT))
 info "Player 3 guild tokens after confiscate: ${P3_TOKEN_AFTER_CONFISCATE} (expected ${EXPECTED_P3_TOKENS})"
 assert_eq "Player 3 tokens decreased after confiscate" "${EXPECTED_P3_TOKENS}" "${P3_TOKEN_AFTER_CONFISCATE}"
+assert_eq "Confiscation burns exact supply" "$((SUPPLY_BEFORE_CONFISCATE - CONFISCATE_AMOUNT))" "$(guild_supply "${GUILD_TOKEN_DENOM}")"
+assert_eq "Confiscation does not redeem collateral" "${COLLATERAL_BEFORE_CONFISCATE}" "$(get_balance "${COLLATERAL_ADDR}" ualpha)"
+assert_eq "Confiscation leaves holder vault Alpha unchanged" "${P3_ALPHA_BEFORE_CONFISCATE}" "$(get_balance "${PLAYER_3_VAULT}" ualpha)"
+assert_eq "Confiscation leaves holder key tokens unchanged" "${P3_KEY_TOKEN_BEFORE_CONFISCATE}" "$(get_balance "${PLAYER_3_ADDRESS}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Confiscation leaves holder key Alpha unchanged" "${P3_KEY_ALPHA_BEFORE_CONFISCATE}" "$(get_balance "${PLAYER_3_ADDRESS}" ualpha)"
+assert_eq "Confiscation does not credit treasury tokens" "${GUILD_TOKEN_BEFORE_CONFISCATE}" "$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")"
 
 # ─── Verify total supply decreased (tokens were burned, not moved) ───
-TOTAL_SUPPLY=$(query query bank total | jq -r --arg d "${GUILD_TOKEN_DENOM}" '.supply[] | select(.denom == $d) | .amount // "0"' 2>/dev/null || echo "0")
+TOTAL_SUPPLY=$(guild_supply "${GUILD_TOKEN_DENOM}")
 info "Total guild token supply: ${TOTAL_SUPPLY}"
-EXPECTED_SUPPLY=$((MINT_TOKENS - REDEEM_AMOUNT - CONFISCATE_AMOUNT))
-info "Expected supply (minted ${MINT_TOKENS} - redeemed ${REDEEM_AMOUNT} - burned ${CONFISCATE_AMOUNT} = ${EXPECTED_SUPPLY})"
+EXPECTED_SUPPLY=$((SUPPLY_BEFORE_MINT + MINT_TOKENS - REDEEM_AMOUNT - CONFISCATE_AMOUNT))
+info "Expected supply (prior ${SUPPLY_BEFORE_MINT} + minted ${MINT_TOKENS} - redeemed ${REDEEM_AMOUNT} - burned ${CONFISCATE_AMOUNT} = ${EXPECTED_SUPPLY})"
 assert_eq "Total guild token supply after redeem+burn" "${EXPECTED_SUPPLY}" "${TOTAL_SUPPLY}"
 
 # ─── Attempt unauthorized mint (Player 2 should fail) ───
 info "Testing unauthorized mint (Player 2, non-admin)"
-P2_TOKEN_BEFORE_BAD_MINT=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+P2_TOKEN_BEFORE_BAD_MINT=$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")
+P2_ALPHA_BEFORE_BAD_MINT=$(get_balance "${PLAYER_2_VAULT}" ualpha)
+GUILD_TOKEN_BEFORE_BAD_MINT=$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")
+GUILD_ALPHA_BEFORE_BAD_MINT=$(get_balance "${GUILD_VAULT}" ualpha)
+COLLATERAL_BEFORE_BAD_MINT=$(get_balance "${COLLATERAL_ADDR}" ualpha)
+SUPPLY_BEFORE_BAD_MINT=$(guild_supply "${GUILD_TOKEN_DENOM}")
 
-OUTPUT=$(structsd ${PARAMS_TX} tx structs guild-bank-mint 100 100 --from player_2 2>&1) || true
-BAD_MINT_CODE=$(echo "${OUTPUT}" | jq -r '.code // empty' 2>/dev/null || echo "")
-sleep "${SLEEP}"
+run_tx_expect_permission_denied "Non-owner Player 2 cannot mint treasury tokens" \
+    tx structs guild-bank-mint 100 100 --from player_2
 
-P2_TOKEN_AFTER_BAD_MINT=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+P2_TOKEN_AFTER_BAD_MINT=$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")
 assert_eq "Unauthorized mint did not change Player 2 balance" "${P2_TOKEN_BEFORE_BAD_MINT}" "${P2_TOKEN_AFTER_BAD_MINT}"
-info "Unauthorized mint result code: ${BAD_MINT_CODE} (non-zero expected)"
+assert_eq "Unauthorized mint preserves player vault Alpha" "${P2_ALPHA_BEFORE_BAD_MINT}" "$(get_balance "${PLAYER_2_VAULT}" ualpha)"
+assert_eq "Unauthorized mint preserves treasury tokens" "${GUILD_TOKEN_BEFORE_BAD_MINT}" "$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Unauthorized mint preserves treasury Alpha" "${GUILD_ALPHA_BEFORE_BAD_MINT}" "$(get_balance "${GUILD_VAULT}" ualpha)"
+assert_eq "Unauthorized mint preserves collateral" "${COLLATERAL_BEFORE_BAD_MINT}" "$(get_balance "${COLLATERAL_ADDR}" ualpha)"
+assert_eq "Unauthorized mint preserves supply" "${SUPPLY_BEFORE_BAD_MINT}" "$(guild_supply "${GUILD_TOKEN_DENOM}")"
+
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  Convert-in, convert fees, and cross-guild convert (v0.21.0)
@@ -2281,9 +2991,6 @@ info "Unauthorized mint result code: ${BAD_MINT_CODE} (non-zero expected)"
 info "--- Guild Bank Convert & Fees (v0.21.0) ---"
 
 # guild_supply <denom>: total supply of a guild token denom
-guild_supply() {
-    query query bank total | jq -r --arg d "$1" '.supply[] | select(.denom == $d) | .amount // "0"' 2>/dev/null || echo "0"
-}
 
 # ─── Set a 10% convert-in fee and verify it is stored ───
 run_tx "Setting guild convert-in fee to 0.1" \
@@ -2301,26 +3008,35 @@ CONVERT_NET=$((CONVERT_ALPHA - CONVERT_FEE))
 
 SUPPLY_BEFORE_CONVERT=$(guild_supply "${GUILD_TOKEN_DENOM}")
 COLLATERAL_BEFORE_CONVERT=$(get_balance "${COLLATERAL_ADDR}" ualpha)
-P2_TOKEN_BEFORE_CONVERT=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+P2_TOKEN_BEFORE_CONVERT=$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")
+P2_ALPHA_BEFORE_CONVERT=$(get_balance "${PLAYER_2_VAULT}" ualpha)
 EXPECTED_CONVERT_TOKENS=$((CONVERT_NET * SUPPLY_BEFORE_CONVERT / COLLATERAL_BEFORE_CONVERT))
 info "Convert quote: ${CONVERT_ALPHA} ualpha (fee ${CONVERT_FEE}) -> ${EXPECTED_CONVERT_TOKENS} tokens (supply=${SUPPLY_BEFORE_CONVERT}, collateral=${COLLATERAL_BEFORE_CONVERT})"
 
 run_tx "Player 2 converts ${CONVERT_ALPHA} ualpha into guild tokens" \
     tx structs guild-bank-convert "${GUILD_ID}" "${CONVERT_ALPHA}" 1 --from player_2
 
-P2_TOKEN_AFTER_CONVERT=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+P2_TOKEN_AFTER_CONVERT=$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")
 assert_eq "Player 2 received converted tokens" "$((P2_TOKEN_BEFORE_CONVERT + EXPECTED_CONVERT_TOKENS))" "${P2_TOKEN_AFTER_CONVERT}"
 
 COLLATERAL_AFTER_CONVERT=$(get_balance "${COLLATERAL_ADDR}" ualpha)
 assert_eq "Full convert alpha (incl fee) entered collateral" "$((COLLATERAL_BEFORE_CONVERT + CONVERT_ALPHA))" "${COLLATERAL_AFTER_CONVERT}"
+assert_eq "Conversion debits exact player vault Alpha" "$((P2_ALPHA_BEFORE_CONVERT - CONVERT_ALPHA))" "$(get_balance "${PLAYER_2_VAULT}" ualpha)"
+assert_eq "Conversion mints exact guild token supply" "$((SUPPLY_BEFORE_CONVERT + EXPECTED_CONVERT_TOKENS))" "$(guild_supply "${GUILD_TOKEN_DENOM}")"
 
 # ─── Convert-in slippage guard: demand an impossibly high min output ───
 info "Testing convert-in slippage guard (min-amount-token too high)"
-P2_TOKEN_BEFORE_GUARD=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+P2_TOKEN_BEFORE_GUARD=$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")
+P2_ALPHA_BEFORE_GUARD=$(get_balance "${PLAYER_2_VAULT}" ualpha)
+COLLATERAL_BEFORE_GUARD=$(get_balance "${COLLATERAL_ADDR}" ualpha)
+SUPPLY_BEFORE_GUARD=$(guild_supply "${GUILD_TOKEN_DENOM}")
 run_tx_expect_reject_matching "Player 2 convert with min-amount-token 999999999 (should fail)" \
     "slippage" \
     tx structs guild-bank-convert "${GUILD_ID}" "${CONVERT_ALPHA}" 999999999 --from player_2
-assert_eq "Slippage-guarded convert left Player 2 tokens unchanged" "${P2_TOKEN_BEFORE_GUARD}" "$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Slippage-guarded convert left Player 2 tokens unchanged" "${P2_TOKEN_BEFORE_GUARD}" "$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Slippage-guarded convert preserves player vault Alpha" "${P2_ALPHA_BEFORE_GUARD}" "$(get_balance "${PLAYER_2_VAULT}" ualpha)"
+assert_eq "Slippage-guarded convert preserves collateral" "${COLLATERAL_BEFORE_GUARD}" "$(get_balance "${COLLATERAL_ADDR}" ualpha)"
+assert_eq "Slippage-guarded convert preserves supply" "${SUPPLY_BEFORE_GUARD}" "$(guild_supply "${GUILD_TOKEN_DENOM}")"
 
 # ─── Set a 10% convert-out fee and redeem: fee stays in collateral ───
 run_tx "Setting guild convert-out fee to 0.1" \
@@ -2332,7 +3048,8 @@ assert_eq "Guild convert-out fee stored" "0.100000000000000000" "$(jqr "${GUILD_
 FEE_REDEEM_AMOUNT=40000
 SUPPLY_BEFORE_FEE_REDEEM=$(guild_supply "${GUILD_TOKEN_DENOM}")
 COLLATERAL_BEFORE_FEE_REDEEM=$(get_balance "${COLLATERAL_ADDR}" ualpha)
-P2_ALPHA_BEFORE_FEE_REDEEM=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
+P2_ALPHA_BEFORE_FEE_REDEEM=$(get_balance "${PLAYER_2_VAULT}" ualpha)
+P2_TOKEN_BEFORE_FEE_REDEEM=$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")
 # grossAlpha = floor(amount * collateral / supply); feeAlpha = ceil(0.1 * gross); net = gross - fee.
 GROSS_ALPHA=$((FEE_REDEEM_AMOUNT * COLLATERAL_BEFORE_FEE_REDEEM / SUPPLY_BEFORE_FEE_REDEEM))
 OUT_FEE=$(( (GROSS_ALPHA + 9) / 10 ))   # ceil(gross/10)
@@ -2342,19 +3059,22 @@ info "Redeem-with-fee quote: ${FEE_REDEEM_AMOUNT} tokens -> gross ${GROSS_ALPHA}
 run_tx "Player 2 redeems ${FEE_REDEEM_AMOUNT}${GUILD_TOKEN_DENOM} with 10% out-fee" \
     tx structs guild-bank-redeem "${FEE_REDEEM_AMOUNT}${GUILD_TOKEN_DENOM}" 1 --from player_2
 
-P2_ALPHA_AFTER_FEE_REDEEM=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
-# Player 2 pays a tx fee in ualpha too, so assert the net credit is at least gross-minus-fee-minus-slack.
+P2_ALPHA_AFTER_FEE_REDEEM=$(get_balance "${PLAYER_2_VAULT}" ualpha)
+# Fees are paid by the signing key, so the vault credit must equal the quote.
 P2_ALPHA_DELTA=$((P2_ALPHA_AFTER_FEE_REDEEM - P2_ALPHA_BEFORE_FEE_REDEEM))
-info "Player 2 ualpha delta after fee redeem: ${P2_ALPHA_DELTA} (net payout ${NET_ALPHA} minus tx fee)"
+assert_eq "Player 2 vault receives exact net redemption" "${NET_ALPHA}" "${P2_ALPHA_DELTA}"
 COLLATERAL_AFTER_FEE_REDEEM=$(get_balance "${COLLATERAL_ADDR}" ualpha)
 assert_eq "Collateral retained out-fee (dropped only net payout)" "$((COLLATERAL_BEFORE_FEE_REDEEM - NET_ALPHA))" "${COLLATERAL_AFTER_FEE_REDEEM}"
+assert_eq "Fee redemption debits exact player tokens" "$((P2_TOKEN_BEFORE_FEE_REDEEM - FEE_REDEEM_AMOUNT))" "$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Fee redemption burns exact token supply" "$((SUPPLY_BEFORE_FEE_REDEEM - FEE_REDEEM_AMOUNT))" "$(guild_supply "${GUILD_TOKEN_DENOM}")"
 
 # ─── Cross-guild convert: Guild A token -> Guild B token in one tx ───
 if [ -n "${GUILD_B_ID:-}" ]; then
     info "--- Cross-guild convert (A -> B) ---"
     GUILD_B_TOKEN_DENOM="uguild.${GUILD_B_ID}"
 
-    # Bootstrap Guild B's bank so it has a defined ratio (supply>0, collateral>0).
+    # Add collateral and tokens to the bank already initialized by founding.
+    fund_vault_alpha "${GUILD_B_ID}" 500000
     run_tx "Guild Leader B bootstraps Guild B bank (500000 ualpha -> 500000 token)" \
         tx structs guild-bank-mint 500000 500000 --from guild_leader_b
 
@@ -2382,12 +3102,18 @@ if [ -n "${GUILD_B_ID:-}" ]; then
     X_OUT=$((X_B_NET * B_SUPPLY_X / B_COLL_X))
     info "Cross quote: ${XCONVERT_TOKENS} A-tok -> gross ${X_GROSS} (A fee ${X_A_FEE}) -> bridge ${X_BRIDGE} -> (B fee ${X_B_FEE}) -> ${X_OUT} B-tok"
 
-    P2_B_TOKEN_BEFORE_X=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_B_TOKEN_DENOM}")
+    P2_B_TOKEN_BEFORE_X=$(get_balance "${PLAYER_2_VAULT}" "${GUILD_B_TOKEN_DENOM}")
+    P2_A_TOKEN_BEFORE_X=$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")
+    P2_ALPHA_BEFORE_X=$(get_balance "${PLAYER_2_VAULT}" ualpha)
     run_tx "Player 2 converts ${XCONVERT_TOKENS}${GUILD_TOKEN_DENOM} into Guild B tokens" \
         tx structs guild-bank-convert-token "${XCONVERT_TOKENS}${GUILD_TOKEN_DENOM}" "${GUILD_B_ID}" 1 --from player_2
 
-    P2_B_TOKEN_AFTER_X=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_B_TOKEN_DENOM}")
+    P2_B_TOKEN_AFTER_X=$(get_balance "${PLAYER_2_VAULT}" "${GUILD_B_TOKEN_DENOM}")
     assert_eq "Player 2 received cross-converted Guild B tokens" "$((P2_B_TOKEN_BEFORE_X + X_OUT))" "${P2_B_TOKEN_AFTER_X}"
+    assert_eq "Cross-conversion debits exact Guild A tokens" "$((P2_A_TOKEN_BEFORE_X - XCONVERT_TOKENS))" "$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")"
+    assert_eq "Cross-conversion keeps bridge Alpha out of player vault" "${P2_ALPHA_BEFORE_X}" "$(get_balance "${PLAYER_2_VAULT}" ualpha)"
+    assert_eq "Cross-conversion burns exact Guild A supply" "$((A_SUPPLY_X - XCONVERT_TOKENS))" "$(guild_supply "${GUILD_TOKEN_DENOM}")"
+    assert_eq "Cross-conversion mints exact Guild B supply" "$((B_SUPPLY_X + X_OUT))" "$(guild_supply "${GUILD_B_TOKEN_DENOM}")"
 
     # Guild A collateral drops by the net bridge alpha (gross out, fee retained).
     assert_eq "Guild A collateral dropped by bridge alpha (fee retained)" "$((A_COLL_X - X_BRIDGE))" "$(get_balance "${COLLATERAL_ADDR}" ualpha)"
@@ -2396,13 +3122,13 @@ if [ -n "${GUILD_B_ID:-}" ]; then
 
     # Same-guild convert-token is rejected.
     info "Testing same-guild convert-token rejection"
-    P2_A_TOKEN_BEFORE_SAME=$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")
+    P2_A_TOKEN_BEFORE_SAME=$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")
     run_tx_expect_reject_matching "Player 2 same-guild convert-token A->A (should fail)" \
         "same_guild" \
         tx structs guild-bank-convert-token "1000${GUILD_TOKEN_DENOM}" "${GUILD_ID}" 1 --from player_2
-    assert_eq "Same-guild convert left Player 2 A-token balance unchanged" "${P2_A_TOKEN_BEFORE_SAME}" "$(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")"
+    assert_eq "Same-guild convert left Player 2 A-token balance unchanged" "${P2_A_TOKEN_BEFORE_SAME}" "$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")"
 else
-    info "SKIP: Guild B not available, skipping cross-guild convert test"
+    assert_not_empty "Guild B is required for cross-guild conversion coverage" "${GUILD_B_ID:-}"
 fi
 
 # ─── Reset Guild A convert fees to 0 so later phases are unaffected ───
@@ -2411,13 +3137,95 @@ run_tx "Resetting Guild A convert-in fee to 0" \
 run_tx "Resetting Guild A convert-out fee to 0" \
     tx structs guild-update-bank-convert-out-fee "${GUILD_ID}" "0" --from alice
 
+# ─── Rank purchases: cumulative curve, quote guards and separate admission ───
+# Entry 101 -> 100 costs 10; 100 -> 99 costs 15. Buying both at once costs 25.
+run_tx "Configuring guild rank purchases with admission disabled" \
+    tx structs guild-update-rank-purchase "${GUILD_ID}" 10 5 99 false --from alice
+run_tx "Setting the member rank-purchase starting rank" \
+    tx structs player-update-guild-rank "${PLAYER_2_ID}" 101 --from alice
+run_tx "Funding member rank purchase in the guild's own token" \
+    tx structs vault-send "${GUILD_ID}" "${PLAYER_2_ID}" "25${GUILD_TOKEN_DENOM}" --from alice
+RANK_P2_BEFORE=$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")
+RANK_GUILD_BEFORE=$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")
+RANK_SUPPLY_BEFORE=$(guild_supply "${GUILD_TOKEN_DENOM}")
+run_tx_expect_reject_matching "Rank purchase rejects an insufficient quote ceiling" \
+    "quoted_price_exceeded" \
+    tx structs guild-rank-purchase "${GUILD_ID}" 100 9 101 --from player_2
+assert_eq "Rejected quote moves no guild tokens" "${RANK_P2_BEFORE}" "$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Rejected quote leaves treasury unchanged" "${RANK_GUILD_BEFORE}" "$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Rejected quote leaves supply unchanged" "${RANK_SUPPLY_BEFORE}" "$(guild_supply "${GUILD_TOKEN_DENOM}")"
+assert_eq "Rejected quote preserves member rank" "101" "$(get_player_guild_rank "${PLAYER_2_ID}")"
+run_tx "Purchasing first rank step" \
+    tx structs guild-rank-purchase "${GUILD_ID}" 100 10 101 --from player_2
+assert_rank_purchase_event "${GUILD_ID}" "${PLAYER_2_ID}" 101 100 10 false
+assert_eq "First purchase rank" "100" "$(get_player_guild_rank "${PLAYER_2_ID}")"
+assert_eq "First purchase debits 10 base tokens" "$((RANK_P2_BEFORE - 10))" "$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")"
+run_tx_expect_reject_matching "Stale expected rank cannot buy again" \
+    "rank_changed" \
+    tx structs guild-rank-purchase "${GUILD_ID}" 99 25 101 --from player_2
+assert_eq "Stale rank quote leaves player tokens unchanged" "$((RANK_P2_BEFORE - 10))" "$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Stale rank quote leaves treasury unchanged" "$((RANK_GUILD_BEFORE + 10))" "$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Stale rank quote leaves supply unchanged" "${RANK_SUPPLY_BEFORE}" "$(guild_supply "${GUILD_TOKEN_DENOM}")"
+assert_eq "Stale rank quote preserves purchased rank" "100" "$(get_player_guild_rank "${PLAYER_2_ID}")"
+run_tx "Purchasing second rank step for the incremental price" \
+    tx structs guild-rank-purchase "${GUILD_ID}" 99 15 100 --from player_2
+assert_rank_purchase_event "${GUILD_ID}" "${PLAYER_2_ID}" 100 99 15 false
+assert_eq "Second purchase rank" "99" "$(get_player_guild_rank "${PLAYER_2_ID}")"
+assert_eq "Two upgrades charge only 25 base tokens in total" "$((RANK_P2_BEFORE - 25))" "$(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Rank payments reach the guild vault" "$((RANK_GUILD_BEFORE + 25))" "$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Rank purchases conserve guild token supply" "${RANK_SUPPLY_BEFORE}" "$(guild_supply "${GUILD_TOKEN_DENOM}")"
+
+PLAYER_5_VAULT=$(get_vault_address "${PLAYER_5_ID}")
+run_tx "Funding non-member purchase admission" \
+    tx structs vault-send "${GUILD_ID}" "${PLAYER_5_ID}" "25${GUILD_TOKEN_DENOM}" --from alice
+RANK_P5_BEFORE=$(get_balance "${PLAYER_5_VAULT}" "${GUILD_TOKEN_DENOM}")
+RANK_GUILD_BEFORE_REJECT=$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")
+RANK_P5_BEFORE_REJECT=$(get_player_guild_rank "${PLAYER_5_ID}")
+run_tx_expect_reject_matching "Normal rank purchase cannot admit a non-member" \
+    "not a member of guild" \
+    tx structs guild-rank-purchase "${GUILD_ID}" 99 25 101 --from player_5
+assert_eq "Non-member purchase leaves player tokens unchanged" "${RANK_P5_BEFORE}" "$(get_balance "${PLAYER_5_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Non-member purchase leaves treasury unchanged" "${RANK_GUILD_BEFORE_REJECT}" "$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Non-member purchase leaves supply unchanged" "${RANK_SUPPLY_BEFORE}" "$(guild_supply "${GUILD_TOKEN_DENOM}")"
+assert_eq "Non-member purchase preserves rank" "${RANK_P5_BEFORE_REJECT}" "$(get_player_guild_rank "${PLAYER_5_ID}")"
+assert_eq "Non-member purchase leaves player outside guild" "" "$(query query structs player "${PLAYER_5_ID}" | jq -r '.Player.guildId // ""')"
+run_tx_expect_reject_matching "Purchase admission requires its explicit guild setting" \
+    "rank_purchase_admission_disabled" \
+    tx structs guild-membership-join-by-rank-purchase "${GUILD_ID}" 99 25 --from player_5
+assert_eq "Rejected admission moves no tokens" "${RANK_P5_BEFORE}" "$(get_balance "${PLAYER_5_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Rejected admission leaves treasury unchanged" "${RANK_GUILD_BEFORE_REJECT}" "$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Rejected admission leaves supply unchanged" "${RANK_SUPPLY_BEFORE}" "$(guild_supply "${GUILD_TOKEN_DENOM}")"
+assert_eq "Rejected admission preserves rank" "${RANK_P5_BEFORE_REJECT}" "$(get_player_guild_rank "${PLAYER_5_ID}")"
+assert_eq "Rejected admission leaves player outside guild" "" "$(query query structs player "${PLAYER_5_ID}" | jq -r '.Player.guildId // ""')"
+run_tx "Enabling the separate purchase admission path" \
+    tx structs guild-update-rank-purchase "${GUILD_ID}" 10 5 99 true --from alice
+RANK_GUILD_BEFORE_JOIN=$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")
+RANK_P5_BEFORE_JOIN=$(get_player_guild_rank "${PLAYER_5_ID}")
+run_tx "Player 5 joins by purchasing two rank steps" \
+    tx structs guild-membership-join-by-rank-purchase "${GUILD_ID}" 99 25 --from player_5
+assert_rank_purchase_event "${GUILD_ID}" "${PLAYER_5_ID}" "${RANK_P5_BEFORE_JOIN}" 99 25 true
+assert_eq "Purchase admission joins guild" "${GUILD_ID}" "$(query query structs player "${PLAYER_5_ID}" | jq -r '.Player.guildId')"
+assert_eq "Purchase admission sets bought rank" "99" "$(get_player_guild_rank "${PLAYER_5_ID}")"
+assert_eq "Admission uses the same cumulative price" "$((RANK_P5_BEFORE - 25))" "$(get_balance "${PLAYER_5_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Admission payment reaches treasury" "$((RANK_GUILD_BEFORE_JOIN + 25))" "$(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")"
+assert_eq "Admission conserves guild token supply" "${RANK_SUPPLY_BEFORE}" "$(guild_supply "${GUILD_TOKEN_DENOM}")"
+run_tx "Disabling sales after purchase" \
+    tx structs guild-update-rank-purchase "${GUILD_ID}" 0 0 0 false --from alice
+assert_eq "Disabling sales preserves purchased member rank" "99" "$(get_player_guild_rank "${PLAYER_2_ID}")"
+assert_eq "Disabling sales preserves purchased admission rank" "99" "$(get_player_guild_rank "${PLAYER_5_ID}")"
+# Restore the membership fixtures for the later invite/request and rank suites.
+run_tx "Returning Player 5 to the non-member fixture" \
+    tx structs guild-membership-kick "${PLAYER_5_ID}" --from alice
+run_tx "Restoring Player 2 entry rank for later tests" \
+    tx structs player-update-guild-rank "${PLAYER_2_ID}" 101 --from alice
+
 # ─── Summary of token state ───
 info "Guild token summary:"
 echo "  Denom: ${GUILD_TOKEN_DENOM}"
 echo "  Total supply: $(guild_supply "${GUILD_TOKEN_DENOM}")"
-echo "  Alice: $(get_balance "${PLAYER_1_ADDRESS}" "${GUILD_TOKEN_DENOM}")"
-echo "  Player 2: $(get_balance "${PLAYER_2_ADDRESS}" "${GUILD_TOKEN_DENOM}")"
-echo "  Player 3: $(get_balance "${PLAYER_3_ADDRESS}" "${GUILD_TOKEN_DENOM}")"
+echo "  Alice: $(get_balance "${GUILD_VAULT}" "${GUILD_TOKEN_DENOM}")"
+echo "  Player 2: $(get_balance "${PLAYER_2_VAULT}" "${GUILD_TOKEN_DENOM}")"
+echo "  Player 3: $(get_balance "${PLAYER_3_VAULT}" "${GUILD_TOKEN_DENOM}")"
 echo "  Collateral: $(get_balance "${COLLATERAL_ADDR}" ualpha) ualpha"
 
 fi # phase 4b
@@ -2993,12 +3801,10 @@ run_tx "Resetting convert-out fee to 0" \
     tx structs guild-update-bank-convert-out-fee "${GUILD_ID}" "0" --from alice
 
 # ─── guild-update-owner-id: transfer ownership ───
-# Grant Player 2 PermAdmin (2) on guild so they can transfer ownership back.
-# (CanTransferOwnershipBy requires PermAdmin.) The grant is intentionally NOT
-# revoked here — later phases (notably GP1) re-clear player_2's grants on the
-# guild when they need a clean "non-admin" caller.
-run_tx "Granting Player 2 PermAdmin on guild (for ownership transfer test)" \
-    tx structs permission-grant-on-object "${GUILD_ID}" "${PLAYER_2_ID}" 2 --from alice
+# Seed an explicit treasury grant on the seller; the sale must clear it along
+# with every other direct guild permission. The new owner can transfer by ownership.
+run_tx "Grant seller explicit guild treasury permission before ownership transfer" \
+    tx structs permission-grant-on-object "${GUILD_ID}" "${PLAYER_1_ID}" "${PERM_TOKEN_TRANSFER}" --from alice
 
 info "Transferring guild ownership to Player 2"
 run_tx "Transferring guild ownership to Player 2" \
@@ -3007,6 +3813,7 @@ run_tx "Transferring guild ownership to Player 2" \
 GUILD_JSON=$(query query structs guild "${GUILD_ID}")
 GUILD_OWNER=$(jqr "${GUILD_JSON}" '.Guild.owner')
 assert_eq "Guild owner transferred to Player 2" "${PLAYER_2_ID}" "${GUILD_OWNER}"
+assert_eq "Seller has no residual guild permissions" "0" "$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_1_ID}")"
 
 # Player 2 transfers back to Player 1
 run_tx "Player 2 transfers guild ownership back to Player 1" \
@@ -3015,6 +3822,7 @@ run_tx "Player 2 transfers guild ownership back to Player 1" \
 GUILD_JSON=$(query query structs guild "${GUILD_ID}")
 GUILD_OWNER=$(jqr "${GUILD_JSON}" '.Guild.owner')
 assert_eq "Guild owner transferred back to Player 1" "${PLAYER_1_ID}" "${GUILD_OWNER}"
+assert_eq "Returning seller has no residual guild permissions" "0" "$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_2_ID}")"
 
 # ─── Negative: non-owner tries to update endpoint ───
 info "Testing unauthorized guild update (Player 3 tries to update endpoint)"
@@ -3089,7 +3897,7 @@ P2_JSON=$(query query structs player "${PLAYER_2_ID}")
 P2_RANK_AFTER_ZERO=$(jqr "${P2_JSON}" '.Player.guildRank' '0')
 assert_eq "Player 2 rank unchanged after rank=0 attempt" "5" "${P2_RANK_AFTER_ZERO}"
 
-# Negative: Player 3 (rank 10) tries to update Player 2 (rank 5) — must have strictly better rank
+# Negative: rank standing does not supply administrative authority.
 run_tx_expect_permission_denied "Player 3 (rank 10) tries to update Player 2 rank (should fail)" \
     tx structs player-update-guild-rank "${PLAYER_2_ID}" 3 --from player_3
 
@@ -3097,14 +3905,13 @@ P2_JSON=$(query query structs player "${PLAYER_2_ID}")
 P2_RANK_UNCHANGED=$(jqr "${P2_JSON}" '.Player.guildRank' '0')
 assert_eq "Player 2 rank unchanged after unauthorized change" "5" "${P2_RANK_UNCHANGED}"
 
-# Positive: Player 2 (rank 5) sets Player 3 (rank 10) to rank 8
-# Actor rank 5 < target rank 10, and new rank 8 >= actor rank 5
-run_tx "Player 2 (rank 5) sets Player 3 (rank 10) to rank 8" \
+# A better rank still cannot promote another member without explicit Admin.
+run_tx_expect_permission_denied "Player 2 rank alone cannot promote Player 3" \
     tx structs player-update-guild-rank "${PLAYER_3_ID}" 8 --from player_2
 
 P3_JSON=$(query query structs player "${PLAYER_3_ID}")
 P3_RANK_AFTER=$(jqr "${P3_JSON}" '.Player.guildRank' '0')
-assert_eq "Player 3 rank updated to 8 by Player 2" "8" "${P3_RANK_AFTER}"
+assert_eq "Player 3 rank unchanged after rank-only promotion attempt" "10" "${P3_RANK_AFTER}"
 
 # Reset ranks for later phases
 run_tx "Resetting Player 2 guild rank to 101" \
@@ -3177,17 +3984,39 @@ assert_eq "Player 3 rank untouched by an out-of-guild rerank" "101" \
 
 # ─── guild-bank-mint / guild-bank-confiscate-and-burn --guild-id ───
 GUILD_C_DENOM="uguild.${GUILD_C_ID}"
+GUILD_C_VAULT=$(get_vault_address "${GUILD_C_ID}")
+fund_vault_alpha "${GUILD_C_ID}" 100
+GUILD_C_TOKENS_BEFORE=$(get_balance "${GUILD_C_VAULT}" "${GUILD_C_DENOM}")
+GUILD_C_COLLATERAL_ADDR=$(jqr "$(query query structs guild-bank-collateral-address "${GUILD_C_ID}")" '.internalAddressAssociation[0].address')
+assert_not_empty "Guild C collateral address" "${GUILD_C_COLLATERAL_ADDR}"
+LEADER_B_VAULT=$(get_vault_address "${GUILD_LEADER_B_ID}")
+GUILD_B_VAULT=$(get_vault_address "${GUILD_B_ID}")
+GUILD_C_ALPHA_BEFORE=$(get_balance "${GUILD_C_VAULT}" ualpha)
+GUILD_C_COLLATERAL_BEFORE=$(get_balance "${GUILD_C_COLLATERAL_ADDR}" ualpha)
+GUILD_C_SUPPLY_BEFORE=$(guild_supply "${GUILD_C_DENOM}")
+LEADER_B_ALPHA_BEFORE_C_MINT=$(get_balance "${LEADER_B_VAULT}" ualpha)
+GUILD_B_ALPHA_BEFORE_C_MINT=$(get_balance "${GUILD_B_VAULT}" ualpha)
 run_tx "Non-member owner mints Guild C token" \
     tx structs guild-bank-mint 100 100 --guild-id "${GUILD_C_ID}" --from guild_leader_b
 
-assert_eq "Guild C token minted to its non-member owner" "100" \
-    "$(get_balance "${GUILD_LEADER_B_ADDRESS}" "${GUILD_C_DENOM}")"
+assert_eq "Non-member owner mints to Guild C vault" "$((GUILD_C_TOKENS_BEFORE + 100))" \
+    "$(get_balance "${GUILD_C_VAULT}" "${GUILD_C_DENOM}")"
+assert_eq "Named guild mint spends its own treasury Alpha" "$((GUILD_C_ALPHA_BEFORE - 100))" "$(get_balance "${GUILD_C_VAULT}" ualpha)"
+assert_eq "Named guild mint funds its own collateral" "$((GUILD_C_COLLATERAL_BEFORE + 100))" "$(get_balance "${GUILD_C_COLLATERAL_ADDR}" ualpha)"
+assert_eq "Named guild mint increases its own supply" "$((GUILD_C_SUPPLY_BEFORE + 100))" "$(guild_supply "${GUILD_C_DENOM}")"
+assert_eq "Named guild mint preserves owner personal Alpha" "${LEADER_B_ALPHA_BEFORE_C_MINT}" "$(get_balance "${LEADER_B_VAULT}" ualpha)"
+assert_eq "Named guild mint preserves membership guild Alpha" "${GUILD_B_ALPHA_BEFORE_C_MINT}" "$(get_balance "${GUILD_B_VAULT}" ualpha)"
 
 run_tx "Non-member owner confiscates and burns Guild C token" \
-    tx structs guild-bank-confiscate-and-burn 40 "${GUILD_LEADER_B_ADDRESS}" --guild-id "${GUILD_C_ID}" --from guild_leader_b
+    tx structs guild-bank-confiscate-and-burn 40 "${GUILD_C_VAULT}" --guild-id "${GUILD_C_ID}" --from guild_leader_b
 
-assert_eq "Guild C token confiscated by its non-member owner" "60" \
-    "$(get_balance "${GUILD_LEADER_B_ADDRESS}" "${GUILD_C_DENOM}")"
+assert_eq "Guild C token confiscated by its non-member owner" "$((GUILD_C_TOKENS_BEFORE + 60))" \
+    "$(get_balance "${GUILD_C_VAULT}" "${GUILD_C_DENOM}")"
+assert_eq "Named guild burn preserves treasury Alpha" "$((GUILD_C_ALPHA_BEFORE - 100))" "$(get_balance "${GUILD_C_VAULT}" ualpha)"
+assert_eq "Named guild burn preserves collateral" "$((GUILD_C_COLLATERAL_BEFORE + 100))" "$(get_balance "${GUILD_C_COLLATERAL_ADDR}" ualpha)"
+assert_eq "Named guild burn removes exact supply" "$((GUILD_C_SUPPLY_BEFORE + 60))" "$(guild_supply "${GUILD_C_DENOM}")"
+assert_eq "Named guild burn preserves owner personal Alpha" "${LEADER_B_ALPHA_BEFORE_C_MINT}" "$(get_balance "${LEADER_B_VAULT}" ualpha)"
+assert_eq "Named guild burn preserves membership guild Alpha" "${GUILD_B_ALPHA_BEFORE_C_MINT}" "$(get_balance "${GUILD_B_VAULT}" ualpha)"
 
 # Naming a guild is not the same as holding rights on it.
 run_tx_expect_fail "Stranger naming Guild C rejected" \
@@ -3261,7 +4090,8 @@ run_tx "Clearing Player 5 permissions on substation" \
 
 # ─── permission-grant-on-address / permission-revoke-on-address ───
 # Address permissions can only be managed on your OWN player's addresses.
-# Player 5 grants PermDelete (8) on their own address (already has it, but tests the grant path).
+# Player 5 grants PermDelete (8) on their own primary (already has it, but tests
+# the grant path).
 run_tx "Player 5 granting own address PermDelete (8)" \
     tx structs permission-grant-on-address "${PLAYER_5_ADDRESS}" 8 --from player_5
 
@@ -3270,46 +4100,87 @@ PERM_BY_PLAYER=$(query query structs permission-by-player "${PLAYER_5_ID}" 2>/de
 info "Permissions for Player 5 after address grant:"
 echo "${PERM_BY_PLAYER}" | jq -r '.permissionRecord[]? | "  obj=\(.objectId) val=\(.value)"' 2>/dev/null | head -5 || echo "  (no records)"
 
-# Dropping PermDelete below is a one-way door unless somebody else can put it
-# back: permission-grant-on-address runs PermissionCheck(target player, caller,
-# PermDelete), and Alice holds nothing on object 1-5 — being the guild owner is
-# not standing on another player. Player 5 delegates the bit on their own player
-# object while they still hold it, which is what makes the restore below possible.
-run_tx "Player 5 delegates PermDelete on self to Alice (so the restore below is possible)" \
-    tx structs permission-grant-on-object "${PLAYER_5_ID}" "${PLAYER_1_ID}" "${PERM_DELETE}" --from player_5
-
-# Revoke PermDelete (8) from Player 5's address
-run_tx "Player 5 revoking own address PermDelete (8)" \
+# v0.22.0: a primary address must keep PermAll. Narrowing it in place is refused
+# so a player cannot lock themselves out of every recovery route. Assert both
+# revoke and set hit that gate; the supported way to hold a narrow key is to
+# rotate the primary first, then narrow the old address.
+run_tx_expect_fail "Player 5 cannot revoke PermDelete from primary address" \
     tx structs permission-revoke-on-address "${PLAYER_5_ADDRESS}" 8 --from player_5
 
-# ─── permission-set-on-address ───
-# NOTE: permission-set-on-address prevents privilege escalation — the caller
-# needs ALL bits of the target value. After revoking PermDelete (8),
-# the address has PermAll minus PermDelete = 33554423. We demonstrate set
-# by setting to that value (proving the command works).
-# (33554423 = (2^25 - 1) ^ 8; the older 16777207 constant predates the UGC bit.)
-run_tx "Player 5 setting own address permissions to 33554423 (PermAll minus PermDelete)" \
+# 33554423 = PermAll minus PermDelete = (2^25 - 1) ^ 8
+run_tx_expect_fail "Player 5 cannot set primary address below PermAll" \
     tx structs permission-set-on-address "${PLAYER_5_ADDRESS}" 33554423 --from player_5
 
-# While below PermAll, player-update-primary-address must fail. Passing the
-# player's own already-registered address clears both lookups and hits the
-# new PermAll gate without needing a crypto proof for a second address.
-run_tx_expect_fail "Player 5 cannot update primary address without PermAll" \
-    tx structs player-update-primary-address "${PLAYER_5_ADDRESS}" --from player_5
-
-# Restore Player 5 address to full permissions for later phases. Player 5 can't
-# re-grant it themselves (escalation prevention), so Alice does it on the strength
-# of the object-level delegation taken out above.
-run_tx "Alice restoring Player 5 address PermDelete" \
-    tx structs permission-grant-on-address "${PLAYER_5_ADDRESS}" 8 --from alice
-
-# With PermAll restored, the same self-update clears the gate (noop swap).
+# With PermAll intact, a no-op primary self-update clears the gate.
 run_tx "Player 5 can update primary address with PermAll" \
     tx structs player-update-primary-address "${PLAYER_5_ADDRESS}" --from player_5
 
-# Hand the delegation back now that the restore is done.
-run_tx "Player 5 revokes Alice's PermDelete delegation on self" \
-    tx structs permission-revoke-on-object "${PLAYER_5_ID}" "${PLAYER_1_ID}" "${PERM_DELETE}" --from player_5
+# ─── PermAll gate on a secondary address ───
+# Register a second key for Player 5, narrow it, and show that key cannot call
+# player-update-primary-address. The primary stays whole throughout.
+P5_SEC_KEY="player_5_sec"
+P5_SEC_ADDR=""
+ADDRESS_PROOF_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CHAIN_ID_FOR_P5=$(query status | jq -er '.node_info.network | select(type == "string" and length > 0)' 2>/dev/null) || CHAIN_ID_FOR_P5=""
+P5_SEC_PROOF=""
+if [ -n "${CHAIN_ID_FOR_P5}" ] && [ "${CHAIN_ID_FOR_P5}" != "null" ]; then
+    P5_SEC_PROOF=$(cd "${ADDRESS_PROOF_REPO}" && go run ./tests/tools/addressproof \
+        -chain-id "${CHAIN_ID_FOR_P5}" -player "${PLAYER_5_ID}" -nonce 0 2>&1) || P5_SEC_PROOF=""
+fi
+
+if parse_address_proof "${P5_SEC_PROOF}"; then
+    P5_SEC_ADDR="${ADDRESS}"
+    assert_not_empty "Player 5 secondary address" "${P5_SEC_ADDR}"
+    assert_eq "Player 5 secondary signing material generated" "true" "$([ -n "${PRIVKEY}" ] && echo true || echo false)"
+
+    # Drop any leftover key from a prior run, then import the freshly minted one.
+    structsd ${PARAMS_KEYS} keys delete "${P5_SEC_KEY}" --yes >/dev/null 2>&1 || true
+    info "Importing Player 5 secondary key into keyring"
+    IMPORT_OUT=$(structsd ${PARAMS_KEYS} keys import-hex "${P5_SEC_KEY}" "${PRIVKEY}" 2>&1) || true
+    unset PRIVKEY P5_SEC_PROOF
+    IMPORTED_ADDR=$(structsd ${PARAMS_KEYS} keys show "${P5_SEC_KEY}" 2>/dev/null | jq -er '.address | select(type == "string" and length > 0)' 2>/dev/null || true)
+    if [ -z "${IMPORTED_ADDR}" ] || [ "${IMPORTED_ADDR}" = "null" ]; then
+        IMPORTED_ADDR=$(structsd --home ~/.structs --keyring-dir ~/.structs --keyring-backend test keys show "${P5_SEC_KEY}" -a 2>/dev/null || true)
+    fi
+    if [ "${IMPORTED_ADDR}" != "${P5_SEC_ADDR}" ]; then
+        echo -e "  ${RED}FAIL${NC}: imported key address '${IMPORTED_ADDR}' != proof address '${P5_SEC_ADDR}'"
+        echo "  ${IMPORT_OUT}"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+        P5_SEC_ADDR=""
+    else
+        echo -e "  ${GREEN}Imported${NC}: ${P5_SEC_KEY} = ${IMPORTED_ADDR}"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    fi
+
+    if [ -n "${P5_SEC_ADDR}" ]; then
+        # Register with PermAll so the subsequent narrow is the only thing stripping it.
+        run_tx "Registering secondary address for Player 5 with PermAll" \
+            tx structs address-register \
+            "${PLAYER_5_ID}" \
+            "${P5_SEC_ADDR}" \
+            "${PROOF_PUBKEY}" \
+            "${PROOF_SIGNATURE}" \
+            33554431 --from player_5
+
+        ADDR_CHECK_JSON=$(query query structs address "${P5_SEC_ADDR}")
+        assert_eq "Player 5 secondary belongs to Player 5" "${PLAYER_5_ID}" "$(jqr "${ADDR_CHECK_JSON}" '.playerId')"
+
+        run_tx "Narrowing Player 5 secondary to PermAll minus PermDelete" \
+            tx structs permission-set-on-address "${P5_SEC_ADDR}" 33554423 --from player_5
+
+        run_tx_expect_fail "Narrowed secondary cannot update primary address" \
+            tx structs player-update-primary-address "${PLAYER_5_ADDRESS}" --from "${P5_SEC_KEY}"
+
+        # Leave the secondary registered but restore PermAll so later phases that
+        # touch Player 5's address set are not fighting a deliberately broken key.
+        run_tx "Restoring Player 5 secondary to PermAll" \
+            tx structs permission-set-on-address "${P5_SEC_ADDR}" 33554431 --from player_5
+    fi
+else
+    echo -e "  ${RED}FAIL${NC}: could not generate Player 5 secondary address proof for the PermAll gate"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+    unset PRIVKEY P5_SEC_PROOF
+fi
 
 # ─── General permission query ───
 info "All permissions sample:"
@@ -3528,6 +4399,13 @@ assert_eq "After partial revoke, 1 record remains" "1" "${GRANK_PARTIAL_COUNT}"
 GRANK_PARTIAL_PERM=$(echo "${GRANK_PARTIAL_JSON}" | jq -r '.guild_rank_permission_records[0].permissions // empty' 2>/dev/null || echo "")
 assert_eq "Remaining record is PermUpdate (4)" "4" "${GRANK_PARTIAL_PERM}"
 
+# Operational Update must not let a rank holder make free entry match a paid rank.
+ENTRY_RANK_BEFORE_RANK_ATTEMPT=$(jqr "$(query query structs guild "${GUILD_ID}")" '.Guild.entryRank' '0')
+run_tx_expect_permission_denied "Rank-derived Update cannot change free entry rank" \
+    tx structs guild-update-entry-rank 2 --from player_4
+assert_eq "Entry rank unchanged after rank-derived Update attempt" "${ENTRY_RANK_BEFORE_RANK_ATTEMPT}" \
+    "$(jqr "$(query query structs guild "${GUILD_ID}")" '.Guild.entryRank' '0')"
+
 # Revoke remaining PermUpdate (4)
 run_tx "Revoking remaining PermUpdate (4) from guild rank" \
     tx structs permission-guild-rank-revoke "${GUILD_ID}" "${GUILD_ID}" 4 --from alice
@@ -3600,35 +4478,118 @@ run_tx "Clean up P5 PermDelete" \
 # ─── Object deletion and permission cleanup ──────────────────────────────────
 info "--- Object Deletion Permission Cleanup ---"
 
-if structsd tx structs provider-create --help 2>&1 | grep -q "Create a new Energy Provider"; then
-    # The access policy is an enum, and autocli takes the kebab-case rendering of
-    # the proto name -- openMarket is "open-market", not "open". A wrong value is
-    # refused by the client before it reaches the chain, which used to leave this
-    # block skipping its two cleanup assertions on the strength of an empty
-    # PROVIDER_ID rather than reporting anything.
-    run_tx "Create provider for cleanup test" \
-        tx structs provider-create "${SUBSTATION_ID}" \
-        "1ualpha" "open-market" 0 0 100 1000 10 1000 --from alice
-    PROVIDER_ID=$(get_newest_provider_id)
-    if [ -n "${PROVIDER_ID}" ]; then
-        run_tx "Grant P4 permission on provider" \
-            tx structs permission-grant-on-object "${PROVIDER_ID}" "${PLAYER_4_ID}" "${PERM_UPDATE}" --from alice
-        run_tx "Set guild-rank on provider" \
-            tx structs permission-guild-rank-set "${PROVIDER_ID}" "${GUILD_ID}" "${PERM_UPDATE}" 1 --from alice
-        run_tx "Delete provider" \
-            tx structs provider-delete "${PROVIDER_ID}" --from alice
-        sleep "${SLEEP}"
-        PERM_AFTER=$(get_permission_by_object "${PROVIDER_ID}")
-        PERM_COUNT=$(echo "${PERM_AFTER}" | jq -r '.permissionRecords | length' 2>/dev/null || echo "${PERM_AFTER}" | jq -r '.permissionRecord | length' 2>/dev/null || echo "0")
-        GRANK_AFTER=$(get_guild_rank_permission_by_object "${PROVIDER_ID}")
-        GRANK_COUNT=$(echo "${GRANK_AFTER}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "${GRANK_AFTER}" | jq -r '.guildRankPermissionRecords | length' 2>/dev/null || echo "0")
-        assert_eq "Permission records cleared after provider delete" "0" "${PERM_COUNT}"
-        assert_eq "Guild rank records cleared after provider delete" "0" "${GRANK_COUNT}"
+# The access policy is an enum, and autocli takes the kebab-case rendering of
+# the proto name -- openMarket is "open-market", not "open". A wrong value is
+# refused by the client before it reaches the chain, which used to leave this
+# block skipping its two cleanup assertions on the strength of an empty
+# PROVIDER_ID rather than reporting anything.
+run_tx "Create guild-owned provider for cleanup test" \
+    tx structs provider-create "${SUBSTATION_ID}" \
+    "1ualpha" "open-market" 0 0 100 1000 10 1000 --owner-id "${GUILD_ID}" --from alice
+PROVIDER_ID=$(get_created_provider_id "${GUILD_ID}" "${SUBSTATION_ID}")
+assert_not_empty "Guild-owned cleanup provider created" "${PROVIDER_ID}"
+if [ -n "${PROVIDER_ID}" ]; then
+    CLEANUP_PROVIDER_JSON=$(query query structs provider "${PROVIDER_ID}")
+    assert_eq "Cleanup provider is owned by the guild" "${GUILD_ID}" "$(jqr "${CLEANUP_PROVIDER_JSON}" '.Provider.owner' '')"
+    CLEANUP_PERMISSIONS=$(get_permission_by_object "${PROVIDER_ID}")
+    CLEANUP_CREATOR_PERMISSION=$(echo "${CLEANUP_PERMISSIONS}" | jq -r --arg id "${PROVIDER_ID}@${PLAYER_1_ID}" '
+        (.permissionRecords // .permissionRecord) | if type == "array" then
+        ([.[] | select(.permissionId == $id) | .value] | first // 0) else "invalid response" end')
+    assert_eq "Guild provider has no copied personal creator grant" "0" "${CLEANUP_CREATOR_PERMISSION}"
+    CLEANUP_MEMBER_JSON=$(query query structs player "${PLAYER_4_ID}")
+    assert_eq "Provider rank delegate belongs to the owning guild" "${GUILD_ID}" "$(jqr "${CLEANUP_MEMBER_JSON}" '.Player.guildId' '')"
+    CLEANUP_MEMBER_RANK=$(jqr "${CLEANUP_MEMBER_JSON}" '.Player.guildRank' '0')
+    assert_gt "Provider rank delegate has a valid rank" 0 "${CLEANUP_MEMBER_RANK}"
+    run_tx_expect_permission_denied "Guild membership alone cannot manage a guild provider" \
+        tx structs provider-update-access-policy "${PROVIDER_ID}" "guild-market" --from player_4
+    run_tx "Grant current guild rank access to manage provider" \
+        tx structs permission-guild-rank-set "${PROVIDER_ID}" "${GUILD_ID}" "${PERM_UPDATE}" "${CLEANUP_MEMBER_RANK}" --from alice
+    run_tx "Rank delegate updates guild provider policy" \
+        tx structs provider-update-access-policy "${PROVIDER_ID}" "guild-market" --from player_4
+    assert_eq "Rank grant enables provider policy update" "guildMarket" "$(jqr "$(query query structs provider "${PROVIDER_ID}")" '.Provider.accessPolicy' '')"
+    run_tx "Revoke rank access to manage provider" \
+        tx structs permission-guild-rank-revoke "${PROVIDER_ID}" "${GUILD_ID}" "${PERM_UPDATE}" --from alice
+    run_tx_expect_permission_denied "Revoked rank delegate cannot manage guild provider" \
+        tx structs provider-update-access-policy "${PROVIDER_ID}" "open-market" --from player_4
+    assert_eq "Rejected update preserves guild provider policy" "guildMarket" "$(jqr "$(query query structs provider "${PROVIDER_ID}")" '.Provider.accessPolicy' '')"
+    CLEANUP_P2_GUILD_PERMS=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_2_ID}")
+    run_tx "Transfer guild ownership while its provider remains in place" \
+        tx structs guild-update-owner-id "${GUILD_ID}" "${PLAYER_2_ID}" --from alice
+    assert_eq "Guild ownership transferred for provider authority check" "${PLAYER_2_ID}" "$(jqr "$(query query structs guild "${GUILD_ID}")" '.Guild.owner' '')"
+    run_tx "New guild owner manages existing provider" \
+        tx structs provider-update-access-policy "${PROVIDER_ID}" "closed-market" --from player_2
+    run_tx_expect_permission_denied "Former guild owner has no inherited provider authority" \
+        tx structs provider-update-access-policy "${PROVIDER_ID}" "open-market" --from alice
+    CLEANUP_PROVIDER_JSON=$(query query structs provider "${PROVIDER_ID}")
+    assert_eq "Provider remains guild-owned across the handoff" "${GUILD_ID}" "$(jqr "${CLEANUP_PROVIDER_JSON}" '.Provider.owner' '')"
+    assert_eq "Former owner's rejected update leaves policy unchanged" "closedMarket" "$(jqr "${CLEANUP_PROVIDER_JSON}" '.Provider.accessPolicy' '')"
+    run_tx "Restore original guild owner after provider authority check" \
+        tx structs guild-update-owner-id "${GUILD_ID}" "${PLAYER_1_ID}" --from player_2
+    assert_eq "Original guild owner restored" "${PLAYER_1_ID}" "$(jqr "$(query query structs guild "${GUILD_ID}")" '.Guild.owner' '')"
+    if [ "$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_2_ID}")" != "${CLEANUP_P2_GUILD_PERMS}" ]; then
+        run_tx "Restore Player 2's pre-handoff guild grants" \
+            tx structs permission-set-on-object "${GUILD_ID}" "${PLAYER_2_ID}" "${CLEANUP_P2_GUILD_PERMS}" --from alice
+    fi
+    run_tx "Restored guild owner manages provider" \
+        tx structs provider-update-access-policy "${PROVIDER_ID}" "open-market" --from alice
+    run_tx "Grant P4 permission on provider" \
+        tx structs permission-grant-on-object "${PROVIDER_ID}" "${PLAYER_4_ID}" "${PERM_UPDATE}" --from alice
+    run_tx "Set guild-rank on provider" \
+        tx structs permission-guild-rank-set "${PROVIDER_ID}" "${GUILD_ID}" "${PERM_UPDATE}" 1 --from alice
+    run_tx "Delete provider" \
+        tx structs provider-delete "${PROVIDER_ID}" --from alice
+    sleep "${SLEEP}"
+    PERM_AFTER=$(get_permission_by_object "${PROVIDER_ID}")
+    PERM_COUNT=$(echo "${PERM_AFTER}" | jq -r '(.permissionRecords // .permissionRecord) | if type == "array" then length else "invalid response" end')
+    GRANK_AFTER=$(get_guild_rank_permission_by_object "${PROVIDER_ID}")
+    GRANK_COUNT=$(echo "${GRANK_AFTER}" | jq -r '(.guild_rank_permission_records // .guildRankPermissionRecords) | if type == "array" then length else "invalid response" end')
+    assert_eq "Permission records cleared after provider delete" "0" "${PERM_COUNT}"
+    assert_eq "Guild rank records cleared after provider delete" "0" "${GRANK_COUNT}"
+fi
+
+# ─── Guild-controlled allocation and substation lifecycle ───
+GGRID_TEST_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+GGRID_SOURCE_BEFORE=$(query query structs substation "${SUBSTATION_ID}" | python3 "${GGRID_TEST_DIR}/player_allocatable_capacity.py" --substation-id "${SUBSTATION_ID}" --required-capacity 1000)
+GGRID_LOAD_BEFORE=$(echo "${GGRID_SOURCE_BEFORE}" | jq -er '.load')
+assert_eq "Guild grid fixture has source headroom" "true" "$(echo "${GGRID_SOURCE_BEFORE}" | jq -r '.hasCapacity')"
+run_tx "Create guild-controlled allocation from the main substation" \
+    tx structs allocation-create "${SUBSTATION_ID}" 1000 --controller "${GUILD_ID}" --allocation-type dynamic --from alice
+GGRID_ALLOC_ID=$(get_created_grid_id allocation "${SUBSTATION_ID}" "${GUILD_ID}") || GGRID_ALLOC_ID=""
+assert_not_empty "Guild-controlled allocation created" "${GGRID_ALLOC_ID}"
+if [ -n "${GGRID_ALLOC_ID}" ]; then
+    assert_eq "Allocation controller is the guild" "${GUILD_ID}" "$(jqr "$(query query structs allocation "${GGRID_ALLOC_ID}")" '.Allocation.controller' '')"
+    run_tx "Transfer allocation control from guild to player" \
+        tx structs allocation-transfer "${GGRID_ALLOC_ID}" "${PLAYER_1_ID}" --from alice
+    assert_eq "Allocation control transferred to player" "${PLAYER_1_ID}" "$(jqr "$(query query structs allocation "${GGRID_ALLOC_ID}")" '.Allocation.controller' '')"
+    run_tx "Return allocation control to the guild" \
+        tx structs allocation-transfer "${GGRID_ALLOC_ID}" "${GUILD_ID}" --from alice
+    run_tx "Create guild-owned substation from guild allocation" \
+        tx structs substation-create "${GUILD_ID}" "${GGRID_ALLOC_ID}" --from alice
+    GGRID_STATION_ID=$(get_created_grid_id substation "${GUILD_ID}" "${GGRID_ALLOC_ID}") || GGRID_STATION_ID=""
+    assert_not_empty "Guild substation created" "${GGRID_STATION_ID}"
+    if [ -n "${GGRID_STATION_ID}" ] && [ "${GGRID_STATION_ID}" != "${SUBSTATION_ID}" ]; then
+        assert_eq "Substation belongs to guild" "${GUILD_ID}" "$(jqr "$(query query structs substation "${GGRID_STATION_ID}")" '.Substation.owner' '')"
+        run_tx "Guild owner updates guild substation name" \
+            tx structs substation-update-name "${GGRID_STATION_ID}" "Guild Grid Test" --from alice
+        assert_eq "Guild substation name updated" "Guild Grid Test" "$(jqr "$(query query structs substation "${GGRID_STATION_ID}")" '.Substation.name' '')"
+        run_tx "Resize the guild-controlled allocation" \
+            tx structs allocation-update "${GGRID_ALLOC_ID}" 750 --from alice
+        assert_eq "Guild substation receives resized capacity" "750" "$(jqr "$(query query structs substation "${GGRID_STATION_ID}")" '.gridAttributes.capacity' 'invalid')"
+        run_tx_expect_permission_denied "Membership alone cannot delete a guild substation" \
+            tx structs substation-delete "${GGRID_STATION_ID}" "" --from player_4
+        run_tx "Delete the temporary guild substation and its allocation" \
+            tx structs substation-delete "${GGRID_STATION_ID}" "" --from alice
+        assert_eq "Guild substation removed" "" "$(jqr "$(query query structs substation "${GGRID_STATION_ID}" 2>/dev/null || echo '{}')" '.Substation.id' '')"
+        assert_eq "Incoming guild allocation removed with substation" "" "$(jqr "$(query query structs allocation "${GGRID_ALLOC_ID}" 2>/dev/null || echo '{}')" '.Allocation.id' '')"
+        GGRID_SOURCE_AFTER=$(query query structs substation "${SUBSTATION_ID}" | python3 "${GGRID_TEST_DIR}/player_allocatable_capacity.py" --substation-id "${SUBSTATION_ID}")
+        assert_eq "Main substation load restored after guild grid cleanup" "${GGRID_LOAD_BEFORE}" "$(echo "${GGRID_SOURCE_AFTER}" | jq -er '.load')"
     else
-        info "Could not get provider ID; skipping deletion cleanup test"
+        assert_eq "Guild substation creation produced a new object" "true" "false"
+        run_tx "Clean up guild allocation after failed substation creation" \
+            tx structs allocation-delete "${GGRID_ALLOC_ID}" --from alice
     fi
 else
-    info "provider-create not available; skipping deletion cleanup test"
+    assert_eq "Guild allocation creation produced a new object" "true" "false"
 fi
 
 fi # phase 4e
@@ -3643,6 +4604,10 @@ section "PHASE 4e2: Rank-Test Player Setup (20 players)"
 
 NUM_RP=20
 info "Creating ${NUM_RP} rank-test players (rp_1..rp_20)"
+# Resume may already have recovered these arrays. Rebuild them in key order,
+# reusing accounts below, rather than appending a duplicate fixture set.
+RP_IDS=()
+RP_KEYS=()
 
 for RP_NUM in $(seq 1 ${NUM_RP}); do
     RP_KEY="rp_${RP_NUM}"
@@ -3659,8 +4624,10 @@ for RP_NUM in $(seq 1 ${NUM_RP}); do
         exit 1
     fi
 
-    run_tx "Fund ${RP_KEY}" tx bank send "${PLAYER_1_ADDRESS}" "${ADDR}" 4000000ualpha --from alice
-    run_tx "Delegate ${RP_KEY}" tx staking delegate "${VALIDATOR_ADDRESS}" 2000000ualpha --from "${RP_KEY}"
+    # 4M fuel preserves the previous 2M pre-commission energy at the minimum
+    # entry rate; 6M funding leaves the same 2M signing-key balance.
+    run_tx "Fund ${RP_KEY}" tx bank send "${PLAYER_1_ADDRESS}" "${ADDR}" 6000000ualpha --from alice
+    run_tx "Delegate ${RP_KEY}" tx staking delegate "${VALIDATOR_ADDRESS}" 4000000ualpha --from "${RP_KEY}"
 
     PID=""
     for ATTEMPT in 1 2 3; do
@@ -3694,8 +4661,9 @@ if run_phase 484; then
 
 section "PHASE 4e3: Comprehensive Rank Tests"
 
-if [ "${#RP_IDS[@]}" -lt 10 ]; then
-    info "Fewer than 10 rank-test players; skipping rank tests (need Phase 4e2 first)"
+if [ "${#RP_IDS[@]}" -ne 20 ] || [ "${#RP_KEYS[@]}" -ne 20 ]; then
+    assert_eq "Rank tests require all 20 player IDs" "20" "${#RP_IDS[@]}"
+    assert_eq "Rank tests require all 20 signing keys" "20" "${#RP_KEYS[@]}"
 else
 
 # ── 4e3a: Admin rank assignment sweep ────────────────────────────────────────
@@ -3782,74 +4750,41 @@ done
 run_tx "Revoke guild-rank PermGuildEndpointUpdate on guild" \
     tx structs permission-guild-rank-revoke "${GUILD_ID}" "${GUILD_ID}" "${PERM_GUILD_ENDPOINT_UPDATE}" --from alice
 
-# ── 4e3c: Rank-based rank management ────────────────────────────────────────
-info "--- Rank-Based Rank Management ---"
+# ── 4e3c: Explicit rank administration ──────────────────────────────────────
+info "--- Explicit Rank Administration ---"
 
-# Player 4=rank 2, Player 5=rank 5, rp_1..rp_20=rank 1..20
-run_tx "Player 4 (rank 2) promotes rp_10 (rank 10) to rank 7" \
+run_tx_expect_permission_denied "Rank 2 alone cannot promote a lower-ranked member" \
     tx structs player-update-guild-rank "${RP_IDS[9]}" 7 --from player_4
-RANK=$(get_player_guild_rank "${RP_IDS[9]}")
-assert_eq "rp_10 rank after partial promote" "7" "${RANK}"
-
-run_tx "Player 4 (rank 2) demotes rp_15 (rank 15) to rank 18" \
+assert_eq "Rank-only promotion leaves rp_10 unchanged" "10" "$(get_player_guild_rank "${RP_IDS[9]}")"
+run_tx_expect_permission_denied "Rank 2 alone cannot demote a paying member" \
     tx structs player-update-guild-rank "${RP_IDS[14]}" 18 --from player_4
-RANK=$(get_player_guild_rank "${RP_IDS[14]}")
-assert_eq "rp_15 rank after demotion" "18" "${RANK}"
+assert_eq "Rank-only demotion leaves rp_15 unchanged" "15" "$(get_player_guild_rank "${RP_IDS[14]}")"
 
-run_tx "Player 4 (rank 2) promotes rp_20 (rank 20) to rank 2 (own level)" \
-    tx structs player-update-guild-rank "${RP_IDS[19]}" 2 --from player_4
-RANK=$(get_player_guild_rank "${RP_IDS[19]}")
-assert_eq "rp_20 rank after promote to own level" "2" "${RANK}"
-
-run_tx_expect_permission_denied "Player 4 (rank 2) cannot promote rp_10 to rank 1 (above self)" \
+run_tx "Grant Player 4 explicit guild administration" \
+    tx structs permission-grant-on-object "${GUILD_ID}" "${PLAYER_4_ID}" "${PERM_ADMIN}" --from alice
+run_tx "Explicit administrator promotes rp_10 to rank 1" \
     tx structs player-update-guild-rank "${RP_IDS[9]}" 1 --from player_4
+assert_eq "Administrator can assign rank 1" "1" "$(get_player_guild_rank "${RP_IDS[9]}")"
+run_tx "Explicit administrator demotes rp_15" \
+    tx structs player-update-guild-rank "${RP_IDS[14]}" 18 --from player_4
+assert_eq "Administrator demotion applied" "18" "$(get_player_guild_rank "${RP_IDS[14]}")"
+run_tx "Revoke Player 4 explicit guild administration" \
+    tx structs permission-revoke-on-object "${GUILD_ID}" "${PLAYER_4_ID}" "${PERM_ADMIN}" --from alice
+run_tx_expect_permission_denied "Revoked administrator cannot keep promoting via rank" \
+    tx structs player-update-guild-rank "${RP_IDS[9]}" 7 --from player_4
 
-run_tx_expect_permission_denied "Player 5 (rank 5) cannot modify Player 4 (rank 2)" \
-    tx structs player-update-guild-rank "${PLAYER_4_ID}" 10 --from player_5
-
-run_tx_expect_permission_denied "Player 5 (rank 5) cannot modify rp_1 (rank 1)" \
-    tx structs player-update-guild-rank "${RP_IDS[0]}" 10 --from player_5
-
-run_tx_expect_permission_denied "Player 5 (rank 5) cannot modify rp_5 (rank 5, equal)" \
-    tx structs player-update-guild-rank "${RP_IDS[4]}" 10 --from player_5
-
-run_tx_expect_permission_denied "rp_20 (rank 2) cannot modify Player 4 (rank 2, equal)" \
-    tx structs player-update-guild-rank "${PLAYER_4_ID}" 10 --from "${RP_KEYS[19]}"
-
-run_tx "Player 5 (rank 5) promotes rp_10 (rank 7) to rank 6" \
-    tx structs player-update-guild-rank "${RP_IDS[9]}" 6 --from player_5
-RANK=$(get_player_guild_rank "${RP_IDS[9]}")
-assert_eq "rp_10 rank after Player 5 promotes to 6" "6" "${RANK}"
-
-run_tx "Player 5 (rank 5) demotes rp_10 (rank 6) to rank 100" \
-    tx structs player-update-guild-rank "${RP_IDS[9]}" 100 --from player_5
-RANK=$(get_player_guild_rank "${RP_IDS[9]}")
-assert_eq "rp_10 rank after demotion to 100" "100" "${RANK}"
-
-# ── 4e3d: Chain of rank modification ────────────────────────────────────────
-info "--- Chain of Rank Modification ---"
-
-run_tx "Alice sets rp_6 to rank 2" tx structs player-update-guild-rank "${RP_IDS[5]}" 2 --from alice
-run_tx "Alice sets rp_7 to rank 10" tx structs player-update-guild-rank "${RP_IDS[6]}" 10 --from alice
-run_tx "Alice sets rp_8 to rank 15" tx structs player-update-guild-rank "${RP_IDS[7]}" 15 --from alice
-
-run_tx "Chain step 1: rp_6 (rank 2) sets rp_7 (rank 10) to rank 4" \
-    tx structs player-update-guild-rank "${RP_IDS[6]}" 4 --from "${RP_KEYS[5]}"
-RANK=$(get_player_guild_rank "${RP_IDS[6]}")
-assert_eq "Chain step 1: rp_7 is now rank 4" "4" "${RANK}"
-
-run_tx "Chain step 2: rp_7 (rank 4) sets rp_8 (rank 15) to rank 5" \
-    tx structs player-update-guild-rank "${RP_IDS[7]}" 5 --from "${RP_KEYS[6]}"
-RANK=$(get_player_guild_rank "${RP_IDS[7]}")
-assert_eq "Chain step 2: rp_8 is now rank 5" "5" "${RANK}"
-
-run_tx_expect_permission_denied "Chain: rp_8 (rank 5) cannot modify rp_7 (rank 4)" \
-    tx structs player-update-guild-rank "${RP_IDS[6]}" 10 --from "${RP_KEYS[7]}"
-
-run_tx "Chain step 3: rp_7 (rank 4) demotes rp_8 (rank 5) to rank 15" \
-    tx structs player-update-guild-rank "${RP_IDS[7]}" 15 --from "${RP_KEYS[6]}"
-RANK=$(get_player_guild_rank "${RP_IDS[7]}")
-assert_eq "Chain step 3: rp_8 back to rank 15" "15" "${RANK}"
+# ── 4e3d: Rank authority cannot manufacture administration ───────────────────
+info "--- Rank Authority Cannot Grant Permanent Permissions ---"
+run_tx "Configure rank-derived admin to test the explicit-authority boundary" \
+    tx structs permission-guild-rank-set "${GUILD_ID}" "${GUILD_ID}" "${PERM_ADMIN}" 5 --from alice
+run_tx_expect_permission_denied "Rank-derived admin cannot promote members for free" \
+    tx structs player-update-guild-rank "${RP_IDS[6]}" 4 --from player_4
+run_tx_expect_permission_denied "Rank-derived admin cannot grant permanent admin" \
+    tx structs permission-grant-on-object "${GUILD_ID}" "${PLAYER_4_ID}" "${PERM_ADMIN}" --from player_4
+run_tx_expect_permission_denied "Rank-derived admin cannot transfer ownership" \
+    tx structs guild-update-owner-id "${GUILD_ID}" "${PLAYER_4_ID}" --from player_4
+run_tx "Remove rank-derived admin fixture" \
+    tx structs permission-guild-rank-revoke "${GUILD_ID}" "${GUILD_ID}" "${PERM_ADMIN}" --from alice
 
 # ── 4e3e: Mass rank shuffle and verify ──────────────────────────────────────
 info "--- Mass Rank Shuffle ---"
@@ -3865,8 +4800,8 @@ for i in "${!RP_IDS[@]}"; do
         tx structs player-update-guild-rank "${RP_IDS[$i]}" "${NEW_RANK}" --from alice
 done
 
-# Report only. run_tx above already counts a transaction that failed to land, so
-# counting the resulting wrong rank as well would charge one drop twice.
+# Delivery and resulting state are separate requirements: a successful message
+# that writes the wrong rank must fail even when no transaction was rejected.
 SHUFFLE_PASS=0
 SHUFFLE_FAIL=0
 for i in "${!RP_IDS[@]}"; do
@@ -3875,29 +4810,30 @@ for i in "${!RP_IDS[@]}"; do
     if [ "${ACTUAL}" = "${EXPECTED}" ]; then
         SHUFFLE_PASS=$(( SHUFFLE_PASS + 1 ))
     else
-        echo -e "  ${YELLOW}MISMATCH${NC}: ${RP_KEYS[$i]} shuffle expected=${EXPECTED} got=${ACTUAL}"
+        echo -e "  ${RED}FAIL${NC}: ${RP_KEYS[$i]} shuffle expected=${EXPECTED} got=${ACTUAL}"
         SHUFFLE_FAIL=$(( SHUFFLE_FAIL + 1 ))
+        FAIL_COUNT=$(( FAIL_COUNT + 1 ))
     fi
 done
 echo -e "  ${GREEN}Mass shuffle: ${SHUFFLE_PASS}/${#RP_IDS[@]} verified${NC}"
 if [ "${SHUFFLE_FAIL}" -gt 0 ]; then
-    echo -e "  ${YELLOW}${SHUFFLE_FAIL} rank(s) did not match; the failing transaction above is the count${NC}"
+    echo -e "  ${RED}${SHUFFLE_FAIL} stored ranks did not match the requested shuffle${NC}"
 fi
 PASS_COUNT=$(( PASS_COUNT + SHUFFLE_PASS ))
 
 # After shuffle: rp_1=rank 20, rp_20=rank 1
-run_tx "rp_20 (rank 1) sets rp_1 (rank 20) to rank 10" \
+run_tx_expect_permission_denied "Rank 1 still cannot give another player a free promotion" \
     tx structs player-update-guild-rank "${RP_IDS[0]}" 10 --from "${RP_KEYS[19]}"
 RANK=$(get_player_guild_rank "${RP_IDS[0]}")
-assert_eq "rp_1 rank after shuffle-based modify" "10" "${RANK}"
+assert_eq "rp_1 unchanged after rank-only promotion" "20" "${RANK}"
 
-run_tx_expect_permission_denied "rp_1 (rank 10) cannot modify rp_20 (rank 1)" \
+run_tx_expect_permission_denied "rp_1 without admin cannot modify rp_20" \
     tx structs player-update-guild-rank "${RP_IDS[19]}" 15 --from "${RP_KEYS[0]}"
 
 # ── 4e3f: Edge cases ────────────────────────────────────────────────────────
 info "--- Edge Cases ---"
 
-run_tx_expect_permission_denied "Player 4 cannot self-modify rank (equal = denied)" \
+run_tx_expect_permission_denied "Player 4 cannot self-modify rank without admin" \
     tx structs player-update-guild-rank "${PLAYER_4_ID}" 50 --from player_4
 
 run_tx "alice (admin) can change own rank" \
@@ -3917,7 +4853,7 @@ run_tx "Alice sets rp_1 back to rank 1" \
 RANK=$(get_player_guild_rank "${RP_IDS[0]}")
 assert_eq "rp_1 rank after set back to 1" "1" "${RANK}"
 
-run_tx_expect_permission_denied "Setting rank to 0 is rejected" \
+run_tx_expect_reject_matching "Setting rank to 0 is rejected by parameter validation" 'parameter rank validation failed: zero' \
     tx structs player-update-guild-rank "${RP_IDS[0]}" 0 --from alice
 
 # ── Clean up all ranks ──────────────────────────────────────────────────────
@@ -3925,8 +4861,9 @@ info "Resetting all test player ranks"
 run_tx "Reset Player 4 rank to 101" tx structs player-update-guild-rank "${PLAYER_4_ID}" 101 --from alice
 run_tx "Reset Player 5 rank to 101" tx structs player-update-guild-rank "${PLAYER_5_ID}" 101 --from alice
 for i in "${!RP_IDS[@]}"; do
-    structsd ${PARAMS_TX} tx structs player-update-guild-rank "${RP_IDS[$i]}" 101 --from alice 2>&1 || true
-    sleep 1
+    run_tx "Reset ${RP_KEYS[$i]} rank to 101" \
+        tx structs player-update-guild-rank "${RP_IDS[$i]}" 101 --from alice
+    assert_eq "${RP_KEYS[$i]} rank restored for later tests" "101" "$(get_player_guild_rank "${RP_IDS[$i]}")"
 done
 
 fi # end rank-test player guard
@@ -4038,14 +4975,11 @@ if temp_substation_create SECOND_SUB_ID "migration test"; then
     run_tx "Setting guild rank perm on second substation (pre-delete)" \
         tx structs permission-guild-rank-set "${SECOND_SUB_ID}" "${GUILD_ID}" 4 2 --from alice
 
-    # The delete below destroys every allocation whose destination is this
-    # substation, and substation-create moved Alice's onto it. Take it back
-    # first, or the allocation is gone for the rest of the run.
-    temp_substation_return_allocation "migration test"
-
-    # ─── substation-delete: delete second substation ───
+    # The throwaway allocation still feeds SECOND_SUB_ID. Delete destroys it
+    # with the substation; P1_ALLOC_ID never left the main feeder.
     run_tx "Deleting second substation (migrate to original)" \
         tx structs substation-delete "${SECOND_SUB_ID}" "${SUBSTATION_ID}" --from alice
+    TEMP_ALLOC_ID=""
 
     # Verify second substation is gone
     DEL_SUB_JSON=$(query query structs substation "${SECOND_SUB_ID}" 2>/dev/null || echo '{}')
@@ -4053,28 +4987,29 @@ if temp_substation_create SECOND_SUB_ID "migration test"; then
     assert_eq "Second substation deleted" "" "${DEL_SUB_ID}"
 
     # Verify permissions were cleaned up with the substation
-    PERM_CLEANUP_JSON=$(query query structs permission-by-object "${SECOND_SUB_ID}" 2>/dev/null || echo '{}')
-    PERM_CLEANUP_COUNT=$(echo "${PERM_CLEANUP_JSON}" | jq -r '.permissionRecord | length' 2>/dev/null || echo "0")
+    PERM_CLEANUP_JSON=$(get_permission_by_object "${SECOND_SUB_ID}")
+    PERM_CLEANUP_COUNT=$(echo "${PERM_CLEANUP_JSON}" | jq -er '.permissionRecords | length')
     info "Object permissions on deleted substation: ${PERM_CLEANUP_COUNT} records"
     assert_eq "Object permissions cleaned up after substation delete" "0" "${PERM_CLEANUP_COUNT}"
 
-    GRANK_CLEANUP_JSON=$(query query structs guild-rank-permission-by-object "${SECOND_SUB_ID}" 2>/dev/null || echo '{}')
-    GRANK_CLEANUP_COUNT=$(echo "${GRANK_CLEANUP_JSON}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "0")
+    GRANK_CLEANUP_JSON=$(get_guild_rank_permission_by_object "${SECOND_SUB_ID}")
+    GRANK_CLEANUP_COUNT=$(echo "${GRANK_CLEANUP_JSON}" | jq -er '.guildRankPermissionRecords | length')
     info "Guild rank permissions on deleted substation: ${GRANK_CLEANUP_COUNT} records"
     assert_eq "Guild rank permissions cleaned up after substation delete" "0" "${GRANK_CLEANUP_COUNT}"
 
-    # The allocation was handed back before the delete, so it should still be
-    # powering the main substation. Pin it: this is the exact state whose loss
-    # broke the agreement phase, silently, several thousand lines later.
+    # Main feeder never moved onto the throwaway, so it must still be powering
+    # the main substation after the delete.
     P1_ALLOC_DST_AFTER=$(query query structs allocation "${P1_ALLOC_ID}" 2>/dev/null | jq -r '.Allocation.destinationId // empty' 2>/dev/null || echo "")
     assert_eq "Player 1 allocation survived the substation delete" "${SUBSTATION_ID}" "${P1_ALLOC_DST_AFTER}"
-else
-    info "SKIP: Could not create second substation for migration tests"
 fi
 
 # ─── Grid query coverage ───
 info "Grid attributes sample:"
-query query structs grid-all 2>/dev/null | jq -r '.gridAttribute[:3]? | .[]? | "  \(.objectId) cap=\(.capacity) load=\(.load)"' || echo "  (none)"
+GRID_SAMPLE=$(query query structs grid-all --page-limit 3 | jq -ce '
+    .gridRecords | select(type == "array" and length > 0)
+    | select(all(.[]; (.attributeId | type == "string" and length > 0)))')
+assert_gt "Grid query returns fixture attributes" 0 "$(echo "${GRID_SAMPLE}" | jq -r 'length')"
+echo "${GRID_SAMPLE}" | jq -r '.[] | "  \(.attributeId)=\(.value // "0")"'
 
 fi # phase 4f
 
@@ -4086,60 +5021,125 @@ if run_phase 495; then
 
 section "PHASE 4g: Reactor Operations"
 
+# Price the entire owner portfolio at one committed height. Deposits need not
+# increase power under the diversity curve; correctness is exact accounting.
+check_fixture_diversity() {
+    local owner="$1" label="$2" proof
+    if ! proof=$(python3 "${GENERATOR_TEST_DIR}/live_reactor_diversity.py" "${owner}" \
+        -- structsd ${PARAMS_QUERY} 2>&1); then
+        proof="verification failed: ${proof}"
+    fi
+    assert_eq "${label}: exact stored and usable diversity accounting" "verified" \
+        "$(printf '%s' "${proof}" | jq -r '.status' 2>/dev/null || printf '%s' "${proof}")"
+}
+check_fixture_diversity "${PLAYER_2_ID}" "Before reactor operations"
+
 # Query current reactor state
 info "Querying reactors"
 REACTOR_ALL=$(query query structs reactor-all 2>/dev/null || echo '{}')
 echo "  Reactor count: $(echo "${REACTOR_ALL}" | jq '.Reactor | length' 2>/dev/null || echo '0')"
 
-# Get Player 2's delegation info for reactor operations
-P2_DELEGATION=$(query query staking delegations "${PLAYER_2_ADDRESS}" 2>/dev/null || echo '{}')
-P2_VAL_ADDR=$(echo "${P2_DELEGATION}" | jq -r '.delegation_responses[0].delegation.validator_address // empty' 2>/dev/null || echo "")
-P2_SHARES_BEFORE=$(echo "${P2_DELEGATION}" | jq -r '.delegation_responses[0].delegation.shares // "0"' 2>/dev/null || echo "0")
-info "Player 2 delegated to: ${P2_VAL_ADDR}"
-info "Player 2 shares: ${P2_SHARES_BEFORE}"
+# Legacy stake remains at signing addresses after upgrade. Select the fixture
+# reactor directly so the default vault deposit runs independently of legacy stake.
+P2_REACTOR_JSON=$(query query structs reactor "${REACTOR_ID}" 2>/dev/null || echo '{}')
+P2_VAL_ADDR=$(jqr "${P2_REACTOR_JSON}" '.Reactor.validator' '')
+assert_not_empty "Reactor operation fixture has a validator" "${P2_VAL_ADDR}"
+info "Player 2 vault reactor validator: ${P2_VAL_ADDR}"
 
 if [ -n "${P2_VAL_ADDR}" ]; then
+    PLAYER_2_VAULT=$(get_vault_address "${PLAYER_2_ID}")
+    fund_vault_alpha "${PLAYER_2_ID}" 1000000
+    P2_VAULT_BEFORE_INFUSE=$(get_balance "${PLAYER_2_VAULT}" ualpha)
+    P2_SIGNING_BEFORE_INFUSE=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
+    P2_LEGACY_STAKE_BEFORE=$(query query staking delegations "${PLAYER_2_ADDRESS}" --page-limit 100 | jq -ce '
+        select((.pagination.next_key == null or .pagination.next_key == "") and
+               (.pagination.nextKey == null or .pagination.nextKey == "")) |
+        [.delegation_responses[]?.delegation] | sort_by(.validator_address)')
     # Snapshot Player 2 capacity before
     P2_CAP_BEFORE=$(query query structs player "${PLAYER_2_ID}" | jq -r '.gridAttributes.capacity // "0"' 2>/dev/null || echo "0")
     info "Player 2 capacity before infuse: ${P2_CAP_BEFORE}"
 
     # ─── reactor-infuse: Player 2 infuses additional Alpha ───
     run_tx "Player 2 infusing 1000000ualpha into reactor" \
-        tx structs reactor-infuse "${PLAYER_2_ADDRESS}" "${P2_VAL_ADDR}" 1000000ualpha --from player_2
+        tx structs reactor-infuse "${P2_VAL_ADDR}" 1000000ualpha --from player_2
+    assert_eq "Default reactor infusion debits player vault" \
+        "$((P2_VAULT_BEFORE_INFUSE - 1000000))" "$(get_balance "${PLAYER_2_VAULT}" ualpha)"
+    assert_eq "Default reactor infusion leaves signing-address funds unchanged" \
+        "${P2_SIGNING_BEFORE_INFUSE}" "$(get_balance "${PLAYER_2_ADDRESS}" ualpha)"
+    P2_VAULT_SHARES_INFUSED=$(query query staking delegations "${PLAYER_2_VAULT}" | jq -er \
+        --arg validator "${P2_VAL_ADDR}" '.delegation_responses[] | select(.delegation.validator_address == $validator) | .delegation.shares')
 
-    # Verify capacity increased
+    # This deposit can change diversity as well as base power.
     sleep "${SLEEP}"
     P2_CAP_AFTER=$(query query structs player "${PLAYER_2_ID}" | jq -r '.gridAttributes.capacity // "0"' 2>/dev/null || echo "0")
     info "Player 2 capacity after infuse: ${P2_CAP_AFTER}"
-    assert_gt "Player 2 capacity increased after infuse" "${P2_CAP_BEFORE}" "${P2_CAP_AFTER}"
+    check_fixture_diversity "${PLAYER_2_ID}" "After infusion"
+    P2_INFUSION_INFUSED=$(query query structs infusion "${REACTOR_ID}" "${PLAYER_2_VAULT}")
 
     # ─── reactor-defuse: Player 2 defuses a small amount ───
     run_tx "Player 2 defusing 500000ualpha from reactor" \
-        tx structs reactor-defuse "${PLAYER_2_ADDRESS}" "${P2_VAL_ADDR}" 500000ualpha --from player_2
+        tx structs reactor-defuse "${P2_VAL_ADDR}" 500000ualpha --from player_2
+    P2_INFUSION_DEFUSED=$(query query structs infusion "${REACTOR_ID}" "${PLAYER_2_VAULT}")
+    P2_CAP_DEFUSED=$(query query structs player "${PLAYER_2_ID}" | jq -er '.gridAttributes.capacity')
+    check_fixture_diversity "${PLAYER_2_ID}" "After defusion"
 
     # Get the creation height for cancel-defusion
-    UNBONDING_JSON=$(query query staking unbonding-delegations "${PLAYER_2_ADDRESS}" 2>/dev/null || echo '{}')
-    UNBOND_HEIGHT=$(echo "${UNBONDING_JSON}" | jq -r '.unbonding_responses[0].entries[0].creation_height // empty' 2>/dev/null || echo "")
+    REACTOR_TEST_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+    UNBONDING_JSON=$(query query staking unbonding-delegations "${PLAYER_2_VAULT}" --page-limit 100)
+    UNBOND_HEIGHT=$(echo "${UNBONDING_JSON}" | python3 "${REACTOR_TEST_DIR}/staking_unbonding_entries.py" "${PLAYER_2_VAULT}" "${P2_VAL_ADDR}")
     info "Unbonding entry creation height: ${UNBOND_HEIGHT}"
 
     if [ -n "${UNBOND_HEIGHT}" ]; then
         # ─── reactor-cancel-defusion ───
         run_tx "Cancelling defusion (re-delegate)" \
-            tx structs reactor-cancel-defusion "${PLAYER_2_ADDRESS}" "${P2_VAL_ADDR}" 500000ualpha "${UNBOND_HEIGHT}" --from player_2
+            tx structs reactor-cancel-defusion "${P2_VAL_ADDR}" 500000ualpha "${UNBOND_HEIGHT}" --from player_2
+        P2_VAULT_SHARES_RESTORED=$(query query staking delegations "${PLAYER_2_VAULT}" | jq -er \
+            --arg validator "${P2_VAL_ADDR}" '.delegation_responses[] | select(.delegation.validator_address == $validator) | .delegation.shares')
+        assert_eq "Cancelling defusion restores vault delegation shares" "${P2_VAULT_SHARES_INFUSED}" "${P2_VAULT_SHARES_RESTORED}"
 
         # Verify delegation restored
         P2_CAP_RESTORED=$(query query structs player "${PLAYER_2_ID}" | jq -r '.gridAttributes.capacity // "0"' 2>/dev/null || echo "0")
         info "Player 2 capacity after cancel-defusion: ${P2_CAP_RESTORED}"
+        assert_eq "Cancelling defusion restores the pre-defusion capacity" "${P2_CAP_AFTER}" "${P2_CAP_RESTORED}"
+        check_fixture_diversity "${PLAYER_2_ID}" "After cancellation"
+        # Cancellation restores flat backing; no historical pricing state is needed.
+        P2_INFUSION_CANCELLED=$(query query structs infusion "${REACTOR_ID}" "${PLAYER_2_VAULT}")
+        REACTOR_TEST_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+        if ! P2_CYCLE_PROOF=$(jq -n --argjson infused "${P2_INFUSION_INFUSED}" \
+            --argjson defused "${P2_INFUSION_DEFUSED}" --argjson cancelled "${P2_INFUSION_CANCELLED}" \
+            '{infused: $infused, defused: $defused, cancelled: $cancelled}' | \
+            python3 "${REACTOR_TEST_DIR}/verify_reactor_defusion_cycle.py" \
+                "${REACTOR_ID}" "${PLAYER_2_VAULT}" "${PLAYER_2_ID}" 500000 2>&1); then
+            P2_CYCLE_PROOF="verification failed: ${P2_CYCLE_PROOF}"
+        fi
+        assert_eq "Defuse/cancel preserves flat backing" "verified" "${P2_CYCLE_PROOF}"
+        P2_CANCELLED_ENTRIES=$(query query staking unbonding-delegations "${PLAYER_2_VAULT}" --page-limit 100 | python3 "${REACTOR_TEST_DIR}/staking_unbonding_entries.py" "${PLAYER_2_VAULT}" "${P2_VAL_ADDR}" --creation-height "${UNBOND_HEIGHT}")
+        assert_eq "Full cancellation removes its vault unbonding entry" "0" "${P2_CANCELLED_ENTRIES}"
     else
-        info "SKIP: No unbonding entry found for cancel-defusion test"
+        assert_eq "Vault defusion creates an unbonding entry" "present" "missing"
     fi
+
+    P2_LEGACY_STAKE_AFTER=$(query query staking delegations "${PLAYER_2_ADDRESS}" --page-limit 100 | jq -ce '
+        select((.pagination.next_key == null or .pagination.next_key == "") and
+               (.pagination.nextKey == null or .pagination.nextKey == "")) |
+        [.delegation_responses[]?.delegation] | sort_by(.validator_address)')
+    assert_eq "Vault infuse/defuse/cancel leaves legacy delegation shares unchanged" \
+        "${P2_LEGACY_STAKE_BEFORE}" "${P2_LEGACY_STAKE_AFTER}"
 
     # ─── Infusion/reactor query coverage ───
     info "Infusion query coverage:"
-    query query structs infusion-all 2>/dev/null | jq -r '.infusion[:3]? | .[]? | "  dst=\(.destinationId) addr=\(.address)"' || echo "  (none)"
-    query query structs reactor-all 2>/dev/null | jq -r '.Reactor[:3]? | .[]? | "  \(.id) validator=\(.validator)"' || echo "  (none)"
-else
-    info "SKIP: Player 2 has no delegation, skipping reactor tests"
+    INFUSION_SAMPLE=$(query query structs infusion-all --page-limit 3 | jq -ce '
+        .Infusion | select(type == "array" and length > 0)
+        | select(all(.[]; (.destinationId | type == "string" and length > 0)
+            and (.address | type == "string" and length > 0)))')
+    assert_gt "Infusion query returns fixture positions" 0 "$(echo "${INFUSION_SAMPLE}" | jq -r 'length')"
+    echo "${INFUSION_SAMPLE}" | jq -r '.[] | "  dst=\(.destinationId) addr=\(.address)"'
+    REACTOR_SAMPLE=$(query query structs reactor-all --page-limit 3 | jq -ce '
+        .Reactor | select(type == "array" and length > 0)
+        | select(all(.[]; (.id | type == "string" and length > 0)
+            and (.validator | type == "string" and length > 0)))')
+    assert_gt "Reactor query returns fixture reactors" 0 "$(echo "${REACTOR_SAMPLE}" | jq -r 'length')"
+    echo "${REACTOR_SAMPLE}" | jq -r '.[] | "  \(.id) validator=\(.validator)"'
 fi
 
 fi # phase 4g
@@ -4152,18 +5152,48 @@ if run_phase 500; then
 
 section "PHASE 5: Address Register & Proxy Join"
 
-run_tx "Registering external address for Player 1" \
-    tx structs address-register \
-    "${PLAYER_1_ID}" \
-    structs12eufgpe24hnqndwh7hccxw36nhs47wt85hunjw \
-    02faf4ada9b17d17441861baa580f95b4e5852cd56f6555c4c1f1ac6d27f6b97f8 \
-    cbf4e9276a7f54ecea553779c1a589431e29327d894eef12edadf1e314030e5b3259db9f8f3a2b963f94ed13b7c66b94fa15cb5bf7df4bddd78bb64480093a8b00 \
-    127 --from alice
+# The proof is generated here rather than hardcoded. It binds the chain id, the
+# player id and the address's current registration nonce, so a literal captured
+# from one run is worthless on the next chain - and a stale one does not fail
+# loudly, it leaves this phase quietly registering nothing. tests/tools/addressproof
+# signs with the same builder the chain verifies with, so the two cannot drift.
+ADDRESS_PROOF_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CHAIN_ID=$(query status | jq -er '.node_info.network | select(type == "string" and length > 0)' 2>/dev/null) || CHAIN_ID=""
+REGISTERED_EXT_ADDR=""
 
-# Verify address was registered
-ADDR_CHECK_JSON=$(query query structs address structs12eufgpe24hnqndwh7hccxw36nhs47wt85hunjw)
-REGISTERED_PLAYER=$(jqr "${ADDR_CHECK_JSON}" '.playerId')
-assert_not_empty "Registered address player ID" "${REGISTERED_PLAYER}"
+if [ -z "${CHAIN_ID}" ] || [ "${CHAIN_ID}" = "null" ]; then
+    ADDRESS_PROOF=""
+    info "Could not read chain_id from the connected node"
+else
+    ADDRESS_PROOF=$(cd "${ADDRESS_PROOF_REPO}" && go run ./tests/tools/addressproof \
+        -chain-id "${CHAIN_ID}" -player "${PLAYER_1_ID}" -nonce 0 2>&1) || ADDRESS_PROOF=""
+fi
+
+if parse_address_proof "${ADDRESS_PROOF}"; then
+    assert_eq "Address register proof generated" "true" "true"
+    unset PRIVKEY ADDRESS_PROOF
+    REGISTERED_EXT_ADDR="${ADDRESS}"
+    info "Generated address-register proof for ${REGISTERED_EXT_ADDR} on ${CHAIN_ID}"
+fi
+
+if [ -n "${REGISTERED_EXT_ADDR}" ]; then
+    run_tx "Registering external address for Player 1" \
+        tx structs address-register \
+        "${PLAYER_1_ID}" \
+        "${REGISTERED_EXT_ADDR}" \
+        "${PROOF_PUBKEY}" \
+        "${PROOF_SIGNATURE}" \
+        127 --from alice
+
+    # A hard assert: the proof was built for this chain and this player, so a
+    # mismatch here is a real regression rather than stale test data.
+    ADDR_CHECK_JSON=$(query query structs address "${REGISTERED_EXT_ADDR}")
+    REGISTERED_PLAYER=$(jqr "${ADDR_CHECK_JSON}" '.playerId')
+    assert_eq "Registered address belongs to Player 1" "${PLAYER_1_ID}" "${REGISTERED_PLAYER}"
+else
+    assert_eq "Address register proof generated" "true" "false"
+    unset PRIVKEY ADDRESS_PROOF
+fi
 
 run_tx "Proxy joining guild for external address" \
     tx structs guild-membership-join-proxy \
@@ -4187,8 +5217,13 @@ if run_phase 550; then
 
 section "PHASE 5b: Address Revoke"
 
-# The address registered in Phase 5 for Player 1
-REGISTERED_EXT_ADDR="structs12eufgpe24hnqndwh7hccxw36nhs47wt85hunjw"
+# The address registered in Phase 5 for Player 1. Resolved at use time rather
+# than hardcoded, so this phase either tests the real registration or says why it
+# cannot - it must not quietly pass against an address nobody registered.
+if [ -z "${REGISTERED_EXT_ADDR:-}" ]; then
+    info "SKIP: Phase 5 did not run, so there is no registered address to revoke"
+    REGISTERED_EXT_ADDR=""
+fi
 
 # Query address-all for coverage
 info "Address query coverage:"
@@ -4211,9 +5246,10 @@ if [ "${ADDR_PLAYER}" = "${PLAYER_1_ID}" ]; then
     ADDR_JSON=$(query query structs address "${REGISTERED_EXT_ADDR}" 2>/dev/null || echo '{}')
     ADDR_PLAYER_AFTER=$(jqr "${ADDR_JSON}" '.playerId' '')
     assert_eq "Address revoked (no player)" "" "${ADDR_PLAYER_AFTER}"
+elif [ -z "${REGISTERED_EXT_ADDR}" ]; then
+    info "SKIP: no address from Phase 5 to revoke"
 else
-    info "SKIP: Address registration used static crypto data; address not properly associated (got '${ADDR_PLAYER}', expected '${PLAYER_1_ID}')"
-    info "Address revoke test skipped — crypto signatures may be chain-specific"
+    fail "Registered address ${REGISTERED_EXT_ADDR} should belong to ${PLAYER_1_ID} but reports '${ADDR_PLAYER}'"
 fi
 
 fi # phase 5b
@@ -4295,11 +5331,9 @@ query query structs fleet-all  | jq -r '.Fleet[]  | "  Fleet  \(.id) loc=\(.loca
 
 # ─── Discover auto-created Command Ships (created during planet exploration) ───
 info "Discovering auto-created Command Ships (type=1)"
-STRUCT_ALL_JSON=$(query query structs struct-all)
-
-PLAYER_2_CMD_SHIP_ID=$(echo "${STRUCT_ALL_JSON}" | jq -r '[.Struct[] | select(.type == "1" and .owner == "'"${PLAYER_2_ID}"'")] | .[0].id // empty' 2>/dev/null || echo "")
-PLAYER_3_CMD_SHIP_ID=$(echo "${STRUCT_ALL_JSON}" | jq -r '[.Struct[] | select(.type == "1" and .owner == "'"${PLAYER_3_ID}"'")] | .[0].id // empty' 2>/dev/null || echo "")
-PLAYER_4_CMD_SHIP_ID=$(echo "${STRUCT_ALL_JSON}" | jq -r '[.Struct[] | select(.type == "1" and .owner == "'"${PLAYER_4_ID}"'")] | .[0].id // empty' 2>/dev/null || echo "")
+PLAYER_2_CMD_SHIP_ID=$(get_command_ship_id "${PLAYER_2_ID}" "${PLAYER_2_FLEET_ID}")
+PLAYER_3_CMD_SHIP_ID=$(get_command_ship_id "${PLAYER_3_ID}" "${PLAYER_3_FLEET_ID}")
+PLAYER_4_CMD_SHIP_ID=$(get_command_ship_id "${PLAYER_4_ID}" "${PLAYER_4_FLEET_ID}")
 
 # Player 3's command ship is used extensively in combat phases
 COMMAND_SHIP_ID="${PLAYER_3_CMD_SHIP_ID}"
@@ -4323,7 +5357,21 @@ info "Planet detail query (Player 2's planet):"
 query query structs planet "${PLAYER_2_PLANET_ID}" 2>/dev/null | jq -r '"  id=\(.Planet.id) owner=\(.Planet.owner) status=\(.Planet.status)"' || echo "  (query failed)"
 
 info "Planet attribute query:"
-query query structs planet-attribute "${PLAYER_2_PLANET_ID}" 2>/dev/null | jq -r '"  landSlots=\(.landSlots) waterSlots=\(.waterSlots)"' || echo "  (query failed)"
+PLANET_QUERY_HEIGHT=$(query status | jq -er '.sync_info.latest_block_height
+    | select(type == "string" and test("^[1-9][0-9]*$"))')
+P2_PLANET_QUERY=$(query query structs planet "${PLAYER_2_PLANET_ID}" --height "${PLANET_QUERY_HEIGHT}")
+P2_EXPECTED_SHIELD=$(echo "${P2_PLANET_QUERY}" | jq -er --arg id "${PLAYER_2_PLANET_ID}" '
+    select(.Planet.id == $id) | .planetAttributes | select(type == "object")
+    | if has("planetaryShield") then .planetaryShield else "0" end
+    | select(type == "string" and test("^(0|[1-9][0-9]*)$"))
+    | select(length < 20 or (length == 20 and . <= "18446744073709551615"))')
+P2_QUERY_SHIELD=$(query query structs planet-attribute "${PLAYER_2_PLANET_ID}" planetaryShield \
+    --height "${PLANET_QUERY_HEIGHT}" | jq -er '
+    select(type == "object") | select((keys - ["attribute"] | length) == 0)
+    | if has("attribute") then .attribute else "0" end
+    | select(type == "string" and test("^(0|[1-9][0-9]*)$"))
+    | select(length < 20 or (length == 20 and . <= "18446744073709551615"))')
+assert_eq "Planet shield attribute matches its detail query at the same height" "${P2_EXPECTED_SHIELD}" "${P2_QUERY_SHIELD}"
 
 info "Planets by player (Player 2):"
 query query structs planet-all-by-player "${PLAYER_2_ID}" 2>/dev/null | jq -r '.Planet[]? | "  \(.id)"' || echo "  (none)"
@@ -4352,17 +5400,12 @@ if [ "${SKIP_MINING}" = true ]; then
     info "Skipping mine shaft build, mining, refinery, and refining (--skip-mining)"
 else
     # ─── Build Mine Shaft (struct type 14, land, slot 1) ───
-    STRUCT_COUNT_BEFORE=$(query query structs struct-all | jq '.Struct | length' 2>/dev/null || echo 0)
-
-    PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
     wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
     run_tx "Initiating Mine Shaft build (type=14, ambit=land, slot=1)" \
         tx structs struct-build-initiate "${PLAYER_2_ID}" 14 land 1 --from player_2
 
-    STRUCT_ALL_JSON=$(query query structs struct-all)
-    STRUCT_COUNT_AFTER=$(echo "${STRUCT_ALL_JSON}" | jq '.Struct | length' 2>/dev/null || echo 0)
-    MINER_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-    assert_new_struct "Miner struct ID" "${MINER_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 14
+    MINER_STRUCT_ID=$(get_created_struct_id "${PLAYER_2_ID}" 14)
+    assert_new_struct "Miner struct ID" "${MINER_STRUCT_ID}" "${PLAYER_2_ID}" 14
     echo "  Miner Struct ID: ${MINER_STRUCT_ID}"
 
     run_compute "Building Mine Shaft ${MINER_STRUCT_ID}" \
@@ -4391,15 +5434,13 @@ else
     assert_gt "Player 2 ore after mining" 0 "${P2_ORE}"
 
     # ─── Build Refinery (struct type 15 = Ore Refinery, land, slot 2) ───
-    PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
     wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
     run_tx "Initiating Refinery build (type=15, ambit=land, slot=2)" \
         tx structs struct-build-initiate "${PLAYER_2_ID}" 15 land 2 --from player_2
 
     # Find the new struct
-    STRUCT_ALL_JSON=$(query query structs struct-all)
-    REFINERY_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-    assert_new_struct "Refinery struct ID" "${REFINERY_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 15
+    REFINERY_STRUCT_ID=$(get_created_struct_id "${PLAYER_2_ID}" 15)
+    assert_new_struct "Refinery struct ID" "${REFINERY_STRUCT_ID}" "${PLAYER_2_ID}" 15
     echo "  Refinery Struct ID: ${REFINERY_STRUCT_ID}"
 
     run_compute "Building Refinery ${REFINERY_STRUCT_ID}" \
@@ -4414,8 +5455,34 @@ else
 
     # ─── Refine ore ───
     # NOTE: old command was struct-refine-compute, now struct-ore-refine-compute
+    # Resolve here as well as in banking phases so --resume does not depend on
+    # an earlier phase having populated PLAYER_2_VAULT.
+    PLAYER_2_VAULT=$(get_vault_address "${PLAYER_2_ID}")
+    REFINE_VAULT_BEFORE=$(get_balance "${PLAYER_2_VAULT}" ualpha)
+    REFINE_ORE_BEFORE=$(query query structs player "${PLAYER_2_ID}" | jq -er '.gridAttributes.ore')
     run_compute "Refining ore" \
         tx structs struct-ore-refine-compute "${REFINERY_STRUCT_ID}" --from player_2
+    assert_eq "Refinement credits exactly one Alpha to player vault" \
+        "$((REFINE_VAULT_BEFORE + 1000000))" "$(get_balance "${PLAYER_2_VAULT}" ualpha)"
+    assert_eq "Refinement consumes exactly one stored ore" \
+        "$((REFINE_ORE_BEFORE - 1))" "$(query query structs player "${PLAYER_2_ID}" | jq -er '.gridAttributes.ore')"
+    # The event's legacy primaryAddress remains signing identity metadata.
+    # Indexers must use vaultAddress as the credited account; amount is Alpha.
+    REFINE_TX_HASH=$(_tx_json "${LAST_TX_OUTPUT}" | jq -r '.txhash // empty')
+    REFINE_EVENT_MATCH=false
+    if [ -n "${REFINE_TX_HASH}" ]; then
+        REFINE_EVENT_MATCH=$(query query tx "${REFINE_TX_HASH}" | jq -r \
+            --arg owner "${PLAYER_2_ID}" --arg vault "${PLAYER_2_VAULT}" \
+            --arg primary "${PLAYER_2_ADDRESS}" '
+            [(.events // [])[]
+             | select(.type == "structs.structs.EventAlphaRefine")
+             | .attributes[] | select(.key == "eventAlphaRefineDetail")
+             | .value | fromjson] as $details
+            | ($details | length) == 1 and
+              ($details[0] | .playerId == $owner and .vaultAddress == $vault and
+               .primaryAddress == $primary and (.amount | tostring) == "1")')
+    fi
+    assert_eq "Refinement event identifies the vault credit and player" "true" "${REFINE_EVENT_MATCH}"
 fi
 
 fi # phase 7
@@ -4438,55 +5505,64 @@ info "Player 2 structsLoad before build-initiate: ${P2_LOAD_BEFORE_CANCEL}"
 
 # struct-type query coverage
 info "Querying struct types:"
-query query structs struct-type 18 2>/dev/null | jq -r '.StructType | "  Type \(.id): \(.type) buildDraw=\(.buildDraw) category=\(.category)"' || echo "  (query failed)"
+CANCEL_TYPE_JSON=$(query query structs struct-type 18)
+CANCEL_BUILD_DRAW=$(echo "${CANCEL_TYPE_JSON}" | jq -er '.StructType.buildDraw | select(type == "string" and test("^[0-9]+$"))')
+assert_gt "Cancel fixture type has positive build draw" 0 "${CANCEL_BUILD_DRAW}"
+echo "${CANCEL_TYPE_JSON}" | jq -r '.StructType | "  Type \(.id): \(.type) buildDraw=\(.buildDraw) category=\(.category)"'
 
 # Initiate the build (Ore Bunker type 18, land). Both the slot and the build
 # itself are conditional: with mining enabled Phase 7 has already taken land
 # slots 1 and 2 for the Mine Shaft and Refinery, and their 500k+500k passive
 # draw can leave Player 2 without the 750k of grid headroom an Ore Bunker needs.
-# Neither is a defect, so this phase skips rather than fails; the cancel path
-# itself is covered deterministically by msg_server_struct_build_cancel_test.go.
+# Missing fixture resources leave this selected phase incomplete. Record a
+# failure instead of reporting a passing lifecycle without exercising cancel.
 CANCEL_SLOT=$(first_free_slot planet "${PLAYER_2_PLANET_ID}" land)
 CANCEL_STRUCT_ID=""
 if [ -z "${CANCEL_SLOT}" ]; then
-    info "SKIP 7b: Player 2's planet has no free land slot for the cancel test"
+    info "Incomplete 7b: Player 2's planet has no free land slot for the cancel test"
 else
-    PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
     wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
-    run_tx_tolerate_reject "Initiating Ore Bunker build (type=18, land, slot=${CANCEL_SLOT})" \
+    run_tx "Initiating Ore Bunker build (type=18, land, slot=${CANCEL_SLOT})" \
         tx structs struct-build-initiate "${PLAYER_2_ID}" 18 land "${CANCEL_SLOT}" --from player_2
 
-    STRUCT_ALL_JSON=$(query query structs struct-all)
-    CANCEL_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-    if [ -z "${CANCEL_STRUCT_ID}" ] || [ "${CANCEL_STRUCT_ID}" = "${PREV_NEWEST_STRUCT_ID}" ]; then
+    CANCEL_STRUCT_ID=$(get_created_struct_id "${PLAYER_2_ID}" 18)
+    if [ -z "${CANCEL_STRUCT_ID}" ]; then
         CANCEL_STRUCT_ID=""
-        info "SKIP 7b: build-initiate rejected — $(echo "${LAST_TX_OUTPUT}" | grep -o 'failed to execute message[^[]*' | head -1)"
+        info "Incomplete 7b: build-initiate rejected — $(echo "${LAST_TX_OUTPUT}" | grep -o 'failed to execute message[^[]*' | head -1)"
     else
-        assert_new_struct "Ore Bunker for cancel initiated" "${CANCEL_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 18
+        assert_new_struct "Ore Bunker for cancel initiated" "${CANCEL_STRUCT_ID}" "${PLAYER_2_ID}" 18
         info "Struct to cancel: ${CANCEL_STRUCT_ID}"
     fi
 fi
 
+assert_not_empty "Build-cancel fixture must be created" "${CANCEL_STRUCT_ID}"
 if [ -n "${CANCEL_STRUCT_ID}" ]; then
-    # Check if struct is built yet (may auto-complete with low difficulty)
+    # Build initiation reserves load; cancellation requires an unbuilt struct.
     CANCEL_JSON=$(query query structs struct "${CANCEL_STRUCT_ID}" 2>/dev/null || echo '{}')
-    CANCEL_BUILT=$(jqr "${CANCEL_JSON}" '.structAttributes.isBuilt' 'true')
-    info "Struct isBuilt after initiate: ${CANCEL_BUILT} (may auto-complete at low difficulty)"
+    # Proto JSON omits false. Accept that only inside the expected object's
+    # complete envelope; a failed query or malformed flag must still fail.
+    CANCEL_BUILT=$(echo "${CANCEL_JSON}" | jq -er --arg id "${CANCEL_STRUCT_ID}" --arg owner "${PLAYER_2_ID}" '
+        if (.Struct | type) == "object" and .Struct.id == $id and .Struct.owner == $owner
+            and .Struct.type == "18" and (.structAttributes | type) == "object"
+            and .structAttributes.isMaterialized == true then
+            .structAttributes | (if has("isBuilt") then .isBuilt else false end)
+            | if type == "boolean" then tostring else error("invalid built flag") end
+        else error("invalid cancellation fixture") end' 2>/dev/null || echo 'invalid')
+    assert_eq "Cancel fixture is still building" "false" "${CANCEL_BUILT}"
 
     # Verify structsLoad increased (buildDraw added)
     P2_JSON_MID=$(query query structs player "${PLAYER_2_ID}")
     P2_LOAD_MID=$(jqr "${P2_JSON_MID}" '.gridAttributes.structsLoad' '0')
     info "Player 2 structsLoad after build-initiate: ${P2_LOAD_MID}"
-    assert_gt "StructsLoad increased from build-initiate" "${P2_LOAD_BEFORE_CANCEL}" "${P2_LOAD_MID}"
+    assert_eq "Build initiation reserves the exact build draw" "$((P2_LOAD_BEFORE_CANCEL + CANCEL_BUILD_DRAW))" "${P2_LOAD_MID}"
 
     # Cancel the build
     run_tx "Cancelling Ore Bunker build" \
         tx structs struct-build-cancel "${CANCEL_STRUCT_ID}" --from player_2
 
-    # Verify struct is gone
-    CANCEL_GONE=$(query query structs struct "${CANCEL_STRUCT_ID}" 2>/dev/null || echo '{}')
-    CANCEL_GONE_BUILT=$(jqr "${CANCEL_GONE}" '.structAttributes.isBuilt' '')
-    info "Struct after cancel: isBuilt='${CANCEL_GONE_BUILT}'"
+    # Cancellation marks the struct destroyed; physical deletion happens later.
+    CANCEL_GONE=$(struct_state_after_last_tx "${CANCEL_STRUCT_ID}")
+    assert_eq "Cancelled struct is destroyed" "true" "$(jqr "${CANCEL_GONE}" '.structAttributes.isDestroyed' 'false')"
 
     # Verify structsLoad decreased back
     P2_JSON_AFTER=$(query query structs player "${PLAYER_2_ID}")
@@ -4494,7 +5570,7 @@ if [ -n "${CANCEL_STRUCT_ID}" ]; then
     info "Player 2 structsLoad after cancel: ${P2_LOAD_AFTER_CANCEL}"
     assert_eq "StructsLoad restored after cancel" "${P2_LOAD_BEFORE_CANCEL}" "${P2_LOAD_AFTER_CANCEL}"
 else
-    info "SKIP: Could not initiate build for cancel test"
+    info "Incomplete 7b: cancellation did not execute"
 fi
 
 # struct-type-all query coverage
@@ -4518,43 +5594,48 @@ section "PHASE 7c: Struct Trash"
 # building) struct; it deliberately skips a build-compute so it does not pay the
 # peak-difficulty proof-of-work (this phase initiates and would compute immediately, so
 # difficulty has not decayed). Trashing a fully BUILT struct is covered deterministically
-# by the Go unit test TestMsgStructTrash. Skips gracefully if the build cannot be initiated.
+# by the Go unit test TestMsgStructTrash. A missing fixture fails this selected phase.
 
 P2_TRASH_LOAD_BASELINE=$(jqr "$(query query structs player "${PLAYER_2_ID}")" '.gridAttributes.structsLoad' '0')
 info "Player 2 structsLoad before trash-target build: ${P2_TRASH_LOAD_BASELINE}"
 
 # Same load squeeze as 7b: with mining enabled the extractor+refinery can leave
-# Player 2 short of the Ore Bunker's 750k buildDraw. Skip with the chain's reason.
-TRASH_SLOT=$(first_free_slot planet "${PLAYER_2_PLANET_ID}" land)
+# Player 2 short of the Ore Bunker's build draw. The preceding cancellation
+# also leaves rubble temporarily; wait for the existing bounded sweep window.
+TRASH_TYPE_JSON=$(query query structs struct-type 18)
+TRASH_BUILD_DRAW=$(echo "${TRASH_TYPE_JSON}" | jq -er '.StructType.buildDraw | select(type == "string" and test("^[0-9]+$"))')
+TRASH_BUILD_CHARGE=$(echo "${TRASH_TYPE_JSON}" | jq -er '.StructType.buildCharge | select(type == "string" and test("^[0-9]+$"))')
+assert_gt "Trash fixture type has positive build draw" 0 "${TRASH_BUILD_DRAW}"
+TRASH_SLOT=$(wait_for_free_slot planet "${PLAYER_2_PLANET_ID}" land)
 TRASH_STRUCT_ID=""
 if [ -z "${TRASH_SLOT}" ]; then
-    info "SKIP 7c: Player 2's planet has no free land slot for the trash test"
+    info "Incomplete 7c: Player 2's planet has no free land slot for the trash test"
 else
-    PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-    wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
-    run_tx_tolerate_reject "Initiating Ore Bunker for trash (type=18, land, slot=${TRASH_SLOT})" \
+    wait_for_charge "${PLAYER_2_ID}" "${TRASH_BUILD_CHARGE}"
+    run_tx "Initiating Ore Bunker for trash (type=18, land, slot=${TRASH_SLOT})" \
         tx structs struct-build-initiate "${PLAYER_2_ID}" 18 land "${TRASH_SLOT}" --from player_2
 
-    TRASH_STRUCT_ID=$(get_newest_struct_id)
-    if [ -z "${TRASH_STRUCT_ID}" ] || [ "${TRASH_STRUCT_ID}" = "${PREV_NEWEST_STRUCT_ID}" ]; then
+    TRASH_STRUCT_ID=$(get_created_struct_id "${PLAYER_2_ID}" 18)
+    if [ -z "${TRASH_STRUCT_ID}" ]; then
         TRASH_STRUCT_ID=""
-        info "SKIP 7c: build-initiate rejected — $(echo "${LAST_TX_OUTPUT}" | grep -o 'failed to execute message[^[]*' | head -1)"
+        info "Incomplete 7c: build-initiate rejected — $(echo "${LAST_TX_OUTPUT}" | grep -o 'failed to execute message[^[]*' | head -1)"
     fi
 fi
 
+assert_not_empty "Trash fixture must be created" "${TRASH_STRUCT_ID}"
 if [ -n "${TRASH_STRUCT_ID}" ]; then
     info "Trash target struct: ${TRASH_STRUCT_ID} (still building)"
 
     P2_TRASH_LOAD_MID=$(jqr "$(query query structs player "${PLAYER_2_ID}")" '.gridAttributes.structsLoad' '0')
-    info "Player 2 structsLoad after build-initiate: ${P2_TRASH_LOAD_MID}"
+    assert_eq "Trash fixture reserves the exact build draw" "$((P2_TRASH_LOAD_BASELINE + TRASH_BUILD_DRAW))" "${P2_TRASH_LOAD_MID}"
 
     # Trash the struct. This consumes the struct type's build charge.
-    wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
+    wait_for_charge "${PLAYER_2_ID}" "${TRASH_BUILD_CHARGE}"
     run_tx "Trashing Ore Bunker ${TRASH_STRUCT_ID}" \
         tx structs struct-trash "${TRASH_STRUCT_ID}" --from player_2
 
     # Authoritative check: the struct is now flagged destroyed.
-    TRASH_GONE_JSON=$(query query structs struct "${TRASH_STRUCT_ID}" 2>/dev/null || echo '{}')
+    TRASH_GONE_JSON=$(struct_state_after_last_tx "${TRASH_STRUCT_ID}")
     assert_eq "7c — struct is destroyed after trash" "true" "$(jqr "${TRASH_GONE_JSON}" '.structAttributes.isDestroyed' 'false')"
 
     P2_TRASH_LOAD_AFTER=$(jqr "$(query query structs player "${PLAYER_2_ID}")" '.gridAttributes.structsLoad' '0')
@@ -4575,14 +5656,12 @@ section "PHASE 8: Player 3 Combat Setup"
 echo "  Player 3 Planet: ${PLAYER_3_PLANET_ID}"
 
 # ─── Build Guided Missile Destroyer (type 9, land, slot 1) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
 run_tx "Initiating Guided Missile Destroyer (type=9, ambit=land, slot=1)" \
     tx structs struct-build-initiate "${PLAYER_3_ID}" 9 land 1 --from player_3
 
-STRUCT_ALL_JSON=$(query query structs struct-all)
-DESTROYER_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "Destroyer struct ID" "${DESTROYER_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 9
+DESTROYER_STRUCT_ID=$(get_created_struct_id "${PLAYER_3_ID}" 9)
+assert_new_struct "Destroyer struct ID" "${DESTROYER_STRUCT_ID}" "${PLAYER_3_ID}" 9
 echo "  Destroyer Struct ID: ${DESTROYER_STRUCT_ID}"
 
 # ─── Pre-seed builds for other players while P3's Destroyer computes ────────
@@ -4590,25 +5669,21 @@ echo "  Destroyer Struct ID: ${DESTROYER_STRUCT_ID}"
 # P2 and P4 have independent charge — no waiting on P3.
 
 info "Pre-seeding P2 Defender Destroyer (type=9, land, slot=0) — needed Phase 11"
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
 run_tx "Pre-seed: P2 Defender Destroyer (type=9, land, slot=0)" \
     tx structs struct-build-initiate "${PLAYER_2_ID}" 9 land 0 --from player_2
 
-STRUCT_ALL_JSON=$(query query structs struct-all)
-DEFENDER_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "Defender struct ID" "${DEFENDER_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 9
+DEFENDER_STRUCT_ID=$(get_created_struct_id "${PLAYER_2_ID}" 9)
+assert_new_struct "Defender struct ID" "${DEFENDER_STRUCT_ID}" "${PLAYER_2_ID}" 9
 echo "  Defender Struct ID: ${DEFENDER_STRUCT_ID} (pre-seeded, compute deferred to Phase 11)"
 
 info "Pre-seeding P4 Field Generator (type=20, land, slot=0) — needed Phase 15"
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
 wait_for_charge "${PLAYER_4_ID}" "${CHARGE_BUILD}"
 run_tx "Pre-seed: P4 Field Generator (type=20, land, slot=0)" \
     tx structs struct-build-initiate "${PLAYER_4_ID}" 20 land 0 --from player_4
 
-STRUCT_ALL_JSON=$(query query structs struct-all)
-GENERATOR_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "Generator struct ID" "${GENERATOR_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 20
+GENERATOR_STRUCT_ID=$(get_created_struct_id "${PLAYER_4_ID}" 20)
+assert_new_struct "Generator struct ID" "${GENERATOR_STRUCT_ID}" "${PLAYER_4_ID}" 20
 echo "  Generator Struct ID: ${GENERATOR_STRUCT_ID} (pre-seeded, compute deferred to Phase 15)"
 
 # ─── Now compute P3's Destroyer (P2 Defender and P4 Generator age during this) ───
@@ -4689,6 +5764,14 @@ if run_phase 1000; then
 
 section "PHASE 10: Planet Raid (SHIELDS_VULNERABLE)"
 
+# ─── Required raid command and fleet preparation ───
+combat_require_command PLAYER_2_CMD_SHIP_ID 2 "raid defender Command Ship" || exit 1
+combat_require_command COMMAND_SHIP_ID 3 "raid attacker Command Ship" || exit 1
+PLAYER_3_CMD_SHIP_ID="${COMMAND_SHIP_ID}"
+combat_move_fleet 2 "${PLAYER_2_PLANET_ID}" || exit 1
+combat_move_fleet 3 "${PLAYER_2_PLANET_ID}" || exit 1
+# ─── Required raid command and fleet preparation complete ───
+
 P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
 P2_SHIELD=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.planetaryShield' '0')
 P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
@@ -4698,88 +5781,47 @@ P2_CMD_JSON=$(query query structs struct "${PLAYER_2_CMD_SHIP_ID}" || echo '{}')
 P2_CMD_ONLINE=$(jqr "${P2_CMD_JSON}" '.structAttributes.isOnline' 'false')
 assert_eq "P2 Command Ship online before raid scenarios" "true" "${P2_CMD_ONLINE}"
 
-# ─── Mining/refining pause while under raid (v0.21.0) ───
-# Phase 9 parks P3's fleet on P2's planet (LocationListStart set) and often
-# destroys the miner. Rebuild an Ore Extractor if needed so the mine-pause
-# and clock-shift assertions have an active mining system to observe.
+# ─── Required mining/refining pause coverage ───
+# Combat may have destroyed either ore system. Recover exact current identities,
+# finish pending builds or rebuild/activate; unavailable required roles fail.
 if [ "${SKIP_MINING}" = true ]; then
     info "Skipping mining/refining-pause assertions (--skip-mining)"
 else
-    MINER_JSON=$(query query structs struct "${MINER_STRUCT_ID}" || echo '{}')
-    MINER_ONLINE=$(jqr "${MINER_JSON}" '.structAttributes.isOnline' 'false')
-    MINER_DESTROYED=$(jqr "${MINER_JSON}" '.structAttributes.isDestroyed' 'true')
-    if [ "${MINER_DESTROYED}" = "true" ]; then
-        info "Miner ${MINER_STRUCT_ID} destroyed in Phase 9; rebuilding for raid-pause coverage"
-        # The kill only just happened, so the corpse still holds its land slot
-        # until the rubble sweep runs (StructSweepDelay=5). Prefer any already-free
-        # slot (planet land usually has spare capacity); otherwise wait out rubble.
-        # Never hardcode the dead miner's slot — that races the BeginBlocker sweep.
-        REBUILD_SLOT=$(wait_for_free_slot planet "${PLAYER_2_PLANET_ID}" land)
-        if [ -z "${REBUILD_SLOT}" ]; then
-            info "SKIP: no free land slot on ${PLAYER_2_PLANET_ID} after rubble sweep; raid-pause mining assertions skipped"
-            MINER_STRUCT_ID=""
-        else
-            wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
-            PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-            run_tx_tolerate_reject "Rebuilding Ore Extractor for raid-pause tests (type=14, land, slot=${REBUILD_SLOT})" \
-                tx structs struct-build-initiate "${PLAYER_2_ID}" 14 land "${REBUILD_SLOT}" --from player_2
-            STRUCT_ALL_JSON=$(query query structs struct-all)
-            MINER_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-            if [ -z "${MINER_STRUCT_ID}" ] || [ "${MINER_STRUCT_ID}" = "${PREV_NEWEST_STRUCT_ID}" ]; then
-                info "SKIP: rebuild-initiate rejected — $(echo "${LAST_TX_OUTPUT}" | grep -o 'failed to execute message[^[]*' | head -1)"
-                MINER_STRUCT_ID=""
-            else
-                assert_new_struct "Rebuilt miner struct ID" "${MINER_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 14
-                run_compute "Building rebuilt Ore Extractor ${MINER_STRUCT_ID}" \
-                    tx structs struct-build-compute "${MINER_STRUCT_ID}" --from player_2
-                MINER_JSON=$(query query structs struct "${MINER_STRUCT_ID}")
-                assert_eq "Rebuilt miner online" "true" "$(jqr "${MINER_JSON}" '.structAttributes.isOnline' 'false')"
-            fi
-        fi
-    elif [ "${MINER_ONLINE}" != "true" ]; then
-        # The miner still occupies land slot 1, so reactivate it rather than
-        # rebuilding into a taken slot.
-        info "Miner ${MINER_STRUCT_ID} offline; reactivating for raid-pause coverage"
-        wait_for_charge "${PLAYER_2_ID}" "${CHARGE_ACTIVATE}"
-        run_tx "Reactivating Ore Extractor ${MINER_STRUCT_ID} for raid-pause tests" \
-            tx structs struct-activate "${MINER_STRUCT_ID}" --from player_2
-        MINER_JSON=$(query query structs struct "${MINER_STRUCT_ID}")
-        assert_eq "Reactivated miner online" "true" "$(jqr "${MINER_JSON}" '.structAttributes.isOnline' 'false')"
-    fi
-
-    if [ -z "${MINER_STRUCT_ID}" ]; then
-        info "Skipping raid-pause mining assertions (no miner could be rebuilt)"
-    else
-        P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
-        P2_RAIDER_ARRIVED=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockRaiderArrived' '0')
-        P2_MINE_CLOCK_BEFORE=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartOreMine' '0')
-        P2_REFINE_CLOCK_BEFORE=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartOreRefine' '0')
-        P2_MINE_QTY=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.oreMiningActiveQuantity' '0')
-        P2_REFINE_QTY=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.oreRefiningActiveQuantity' '0')
-        info "Raid pause pre-check: blockRaiderArrived=${P2_RAIDER_ARRIVED} mineClock=${P2_MINE_CLOCK_BEFORE} refineClock=${P2_REFINE_CLOCK_BEFORE} mineQty=${P2_MINE_QTY} refineQty=${P2_REFINE_QTY}"
-        assert_gt "blockRaiderArrived set while P3 fleet is on P2 planet" "0" "${P2_RAIDER_ARRIVED}"
-        assert_gt "oreMiningActiveQuantity while miner is online" "0" "${P2_MINE_QTY}"
-
-        run_tx_expect_fail "Ore mine compute fast-fails during raid (should fail)" \
-            tx structs struct-ore-mine-compute "${MINER_STRUCT_ID}" --from player_2
-
-        if [ -n "${REFINERY_STRUCT_ID}" ] && [ "${P2_REFINE_QTY}" != "0" ]; then
-            run_tx_expect_fail "Ore refine compute fast-fails during raid (should fail)" \
-                tx structs struct-ore-refine-compute "${REFINERY_STRUCT_ID}" --from player_2
-        else
-            info "Skipping refine-during-raid assertion (no active refinery)"
-        fi
-    fi
+    combat_require_struct MINER_STRUCT_ID 2 14 planet "${PLAYER_2_PLANET_ID}" land "raid-pause Ore Extractor" || exit 1
+    combat_require_struct REFINERY_STRUCT_ID 2 15 planet "${PLAYER_2_PLANET_ID}" land "raid-pause Ore Refinery" || exit 1
+    P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}") || exit 1
+    printf '%s' "${P2_PLANET_JSON}" | jq -e -s --arg planet "${PLAYER_2_PLANET_ID}" --arg owner "${PLAYER_2_ID}" --arg raider "${PLAYER_3_FLEET_ID}" '
+        def positive: type == "string" and test("^[1-9][0-9]*$")
+            and (length < 20 or (length == 20 and . <= "18446744073709551615"));
+        length == 1 and (.[0] |
+        .Planet.id == $planet and .Planet.owner == $owner and .Planet.locationListStart == $raider
+        and (.planetAttributes.blockRaiderArrived | positive)
+        and (.planetAttributes.blockStartOreMine | positive)
+        and (.planetAttributes.blockStartOreRefine | positive)
+        and (.planetAttributes.oreMiningActiveQuantity | positive)
+        and (.planetAttributes.oreRefiningActiveQuantity | positive))' >/dev/null || {
+        echo "Required raid-pause planet, raider or active ore clocks unavailable" >&2
+        exit 1
+    }
+    P2_RAIDER_ARRIVED=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockRaiderArrived')
+    P2_MINE_CLOCK_BEFORE=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartOreMine')
+    P2_REFINE_CLOCK_BEFORE=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartOreRefine')
+    info "Raid pause: required mining/refining systems online; arrival=${P2_RAIDER_ARRIVED}, mine=${P2_MINE_CLOCK_BEFORE}, refine=${P2_REFINE_CLOCK_BEFORE}"
+    run_tx_expect_reject_matching "Ore mine compute refuses because of the raid" "is under raid: mining is paused until the raid ends" \
+        tx structs struct-ore-mine-compute "${MINER_STRUCT_ID}" --from player_2
+    run_tx_expect_reject_matching "Ore refine compute refuses because of the raid" "is under raid: refining is paused until the raid ends" \
+        tx structs struct-ore-refine-compute "${REFINERY_STRUCT_ID}" --from player_2
 fi
+# ─── Required mining/refining pause coverage complete ───
 
 # ─── Scenario A (expected bad): raid cannot be won while defender CMD online ───
 
 assert_eq "blockStartRaid unset while defender Command Ship is online" "0" "${P2_RAID_CLOCK}"
 
-run_tx_expect_fail "Raid complete while defender Command Ship online (should fail)" \
+run_tx_expect_reject_matching "Raid complete while defender Command Ship online" "shields_active" \
     tx structs planet-raid-complete "${PLAYER_3_FLEET_ID}" deadbeef 1 --from player_3
 
-run_tx_expect_fail "Raid compute fast-fails while shields are up (should fail)" \
+run_tx_expect_reject_matching "Raid compute fast-fails while shields are up" "shields are not vulnerable: no active raid window" \
     tx structs planet-raid-compute "${PLAYER_3_FLEET_ID}" --from player_3
 
 # ─── Scenario B: defender CMD offline opens the vulnerability window ───
@@ -4801,7 +5843,7 @@ P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
 P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
 assert_eq "blockStartRaid cleared when defender Command Ship back online" "0" "${P2_RAID_CLOCK}"
 
-run_tx_expect_fail "Raid complete after shields restored (should fail)" \
+run_tx_expect_reject_matching "Raid complete after shields restored" "shields_active" \
     tx structs planet-raid-complete "${PLAYER_3_FLEET_ID}" deadbeef 1 --from player_3
 
 # ─── Scenario D (good): raid succeeds while defender CMD is offline ───
@@ -4813,56 +5855,34 @@ P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
 P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
 assert_gt "blockStartRaid re-anchored for the raid attempt" "0" "${P2_RAID_CLOCK}"
 
-P3_JSON=$(query query structs player "${PLAYER_3_ID}")
-P2_JSON=$(query query structs player "${PLAYER_2_ID}")
-P3_ORE_BEFORE=$(jqr "${P3_JSON}" '.gridAttributes.ore' '0')
-P2_ORE_BEFORE=$(jqr "${P2_JSON}" '.gridAttributes.ore' '0')
-info "Player 3 ore before raid: ${P3_ORE_BEFORE}"
-info "Player 2 ore before raid: ${P2_ORE_BEFORE}"
-
+# ─── Confirmed raid outcome and exact ore accounting ───
+RAID_BEFORE=$(raid_state_at_height "$(get_block_height)") || exit 1
+printf '%s' "${RAID_BEFORE}" | python3 "${GENERATOR_TEST_DIR}/raid_result.py" before >/dev/null || exit 1
 run_compute "Completing planet raid (defender Command Ship offline)" \
     tx structs planet-raid-compute "${PLAYER_3_FLEET_ID}" --from player_3
-
-P3_JSON=$(query query structs player "${PLAYER_3_ID}")
-P2_JSON=$(query query structs player "${PLAYER_2_ID}")
-P3_ORE_AFTER=$(jqr "${P3_JSON}" '.gridAttributes.ore' '0')
-P2_ORE_AFTER=$(jqr "${P2_JSON}" '.gridAttributes.ore' '0')
-info "Player 3 ore after raid: ${P3_ORE_AFTER}"
-info "Player 2 ore after raid: ${P2_ORE_AFTER}"
-echo "  Raid results: P3 ore ${P3_ORE_BEFORE} -> ${P3_ORE_AFTER}, P2 ore ${P2_ORE_BEFORE} -> ${P2_ORE_AFTER}"
-
-if [ "${SKIP_MINING}" = true ]; then
-    info "Skipping ore-theft assertion (--skip-mining, no ore to steal)"
-else
-    assert_eq "P2 ore emptied by raid" "0" "${P2_ORE_AFTER}"
-    assert_gt "P3 ore increased by raid" "${P3_ORE_BEFORE}" "${P3_ORE_AFTER}"
-fi
-
-# A successful raid sends the attacking fleet home and clears the queue counter
-FLEET_3_JSON=$(query query structs fleet "${PLAYER_3_FLEET_ID}")
-FLEET_3_LOC=$(jqr "${FLEET_3_JSON}" '.Fleet.locationId')
-assert_eq "P3 fleet returned home after successful raid" "${PLAYER_3_PLANET_ID}" "${FLEET_3_LOC}"
-P2_QUEUE_COUNT=$(query query structs planet "${PLAYER_2_PLANET_ID}" | jq -r '.Planet.locationListCount // "0"')
-assert_eq "P2 planet locationListCount 0 after raid recall" "0" "${P2_QUEUE_COUNT}"
-
-# Raid over: the vulnerability clock must be cleared
-P2_PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
-P2_RAID_CLOCK=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartRaid' '0')
-assert_eq "blockStartRaid cleared after raid completed" "0" "${P2_RAID_CLOCK}"
+RAID_TX_HASH=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash') || exit 1
+RAID_RECEIPT=$(query query tx "${RAID_TX_HASH}") || exit 1
+RAID_HEIGHT=$(printf '%s' "${RAID_RECEIPT}" | python3 "${GENERATOR_TEST_DIR}/raid_result.py" receipt \
+    --before <(printf '%s' "${RAID_BEFORE}") --txhash "${RAID_TX_HASH}") || exit 1
+RAID_AFTER=$(raid_state_at_height "${RAID_HEIGHT}") || exit 1
+RAID_VERIFIED=$(printf '%s' "${RAID_AFTER}" | python3 "${GENERATOR_TEST_DIR}/raid_result.py" after \
+    --before <(printf '%s' "${RAID_BEFORE}") --receipt <(printf '%s' "${RAID_RECEIPT}") --txhash "${RAID_TX_HASH}") || exit 1
+assert_eq "Raid events, exact ore transfer, fleet recall and pause clocks verified" "${RAID_HEIGHT}" "$(jqr "${RAID_VERIFIED}" '.height')"
+info "Raid seized $(jqr "${RAID_VERIFIED}" '.seized_ore') ore at height ${RAID_HEIGHT}"
+P2_PLANET_JSON=$(jqr "${RAID_AFTER}" '.planet')
+# ─── Confirmed raid outcome and exact ore accounting complete ───
 
 # ─── Post-raid: ore clocks shifted, raider-arrived cleared, mining works again ───
 if [ "${SKIP_MINING}" = true ]; then
     info "Skipping post-raid ore-clock assertions (--skip-mining)"
-elif [ -z "${MINER_STRUCT_ID}" ]; then
-    # The pre-raid block never captured P2_MINE_CLOCK_BEFORE, so there is
-    # nothing to compare the post-raid clock against.
-    info "Skipping post-raid ore-clock assertions (no miner during raid)"
 else
     P2_RAIDER_ARRIVED_AFTER=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockRaiderArrived' '0')
     P2_MINE_CLOCK_AFTER=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartOreMine' '0')
+    P2_REFINE_CLOCK_AFTER=$(jqr "${P2_PLANET_JSON}" '.planetAttributes.blockStartOreRefine' '0')
     assert_eq "blockRaiderArrived cleared after raid ended" "0" "${P2_RAIDER_ARRIVED_AFTER}"
     assert_gt "mine clock shifted forward by raid pause" "${P2_MINE_CLOCK_BEFORE}" "${P2_MINE_CLOCK_AFTER}"
-    info "Mine clock ${P2_MINE_CLOCK_BEFORE} -> ${P2_MINE_CLOCK_AFTER} after raid pause shift"
+    assert_gt "refine clock shifted forward by raid pause" "${P2_REFINE_CLOCK_BEFORE}" "${P2_REFINE_CLOCK_AFTER}"
+    info "Ore clocks after raid pause: mine ${P2_MINE_CLOCK_BEFORE} -> ${P2_MINE_CLOCK_AFTER}, refine ${P2_REFINE_CLOCK_BEFORE} -> ${P2_REFINE_CLOCK_AFTER}"
 
     run_compute "Mining ore after raid ends (planet productive again)" \
         tx structs struct-ore-mine-compute "${MINER_STRUCT_ID}" --from player_2
@@ -4888,32 +5908,32 @@ if run_phase 1100; then
 
 section "PHASE 11: Counter-Attack"
 
-echo "  Player 3's fleet may have retreated after raid"
-
-# Move Player 3's fleet back to Player 2's planet (fleet-move has no charge cost)
-run_tx "Moving Player 3's fleet back to Player 2's planet" \
-    tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_2_PLANET_ID}" --from player_3
-
-# Player 2's Destroyer was pre-seeded in Phase 8 — difficulty has decayed significantly
-info "Computing P2 Defender Destroyer ${DEFENDER_STRUCT_ID} (pre-seeded in Phase 8)"
-run_compute "Building Player 2's Destroyer ${DEFENDER_STRUCT_ID}" \
-    tx structs struct-build-compute "${DEFENDER_STRUCT_ID}" --from player_2
-
-DEFENDER_JSON=$(query query structs struct "${DEFENDER_STRUCT_ID}")
-assert_eq "Defender built" "true" "$(jqr "${DEFENDER_JSON}" '.structAttributes.isBuilt' 'false')"
-
-# Player 2 attacks Command Ship
-CMDSHIP_JSON=$(query query structs struct "${COMMAND_SHIP_ID}" || echo '{}')
-CMDSHIP_HEALTH_BEFORE=$(jqr "${CMDSHIP_JSON}" '.structAttributes.health' '0')
-info "Command Ship health before counter-attack: ${CMDSHIP_HEALTH_BEFORE}"
-
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_ATTACK_DEFAULT}"
-run_tx "Player 2 attacks Player 3's Command Ship" \
-    tx structs struct-attack "${DEFENDER_STRUCT_ID}" "${COMMAND_SHIP_ID}" primaryWeapon --from player_2
-
-CMDSHIP_JSON=$(query query structs struct "${COMMAND_SHIP_ID}" || echo '{}')
-CMDSHIP_HEALTH_AFTER=$(jqr "${CMDSHIP_JSON}" '.structAttributes.health' '0')
-info "Command Ship health after counter-attack: ${CMDSHIP_HEALTH_AFTER}"
+# Recover commands in their current ambits and the pre-seeded Tank in any
+# build state. A repeated run may have a wounded command: replace it only if
+# it cannot survive the volley, so this phase always exercises its counter.
+combat_require_command PLAYER_2_CMD_SHIP_ID 2 "P11 defender Command Ship" || exit 1
+combat_require_command COMMAND_SHIP_ID 3 "P11 target Command Ship" || exit 1
+P11_COMMAND_JSON=$(query query structs struct "${COMMAND_SHIP_ID}") || exit 1
+P11_COMMAND_HEALTH=$(printf '%s' "${P11_COMMAND_JSON}" | jq -er '.structAttributes.health | select(type == "string" and test("^[1-6]$"))') || exit 1
+if [ "${P11_COMMAND_HEALTH}" -le 2 ]; then
+    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}" || exit 1
+    run_tx "P11: Replace Command Ship too damaged to counter" \
+        tx structs struct-trash "${COMMAND_SHIP_ID}" --from player_3 || exit 1
+    combat_require_command COMMAND_SHIP_ID 3 "P11 replacement Command Ship" || exit 1
+fi
+P11_COMMAND_JSON=$(query query structs struct "${COMMAND_SHIP_ID}") || exit 1
+P11_COMMAND_AMBIT=$(printf '%s' "${P11_COMMAND_JSON}" | jq -er '.Struct.operatingAmbit | select(. == "land" or . == "water" or . == "air" or . == "space")') || exit 1
+if [ "${P11_COMMAND_AMBIT}" != land ]; then
+    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}" || exit 1
+    run_tx "P11: Move Command Ship into Tank weapon range" \
+        tx structs struct-move "${COMMAND_SHIP_ID}" fleet land --from player_3 || exit 1
+fi
+PLAYER_3_CMD_SHIP_ID=${COMMAND_SHIP_ID}
+combat_move_fleet 2 "${PLAYER_2_PLANET_ID}" || exit 1
+combat_move_fleet 3 "${PLAYER_2_PLANET_ID}" || exit 1
+# The shared oracle requires the Command Ship's two-damage counter. Counter
+# damage bypasses Tank armor; a wounded Tank may legitimately be destroyed.
+ev_attack P11 DEFENDER_STRUCT_ID 2 9 land COMMAND_SHIP_ID 3 1 land primaryWeapon "${PLAYER_2_PLANET_ID}" || exit 1
 
 fi # phase 11
 
@@ -4925,218 +5945,57 @@ if run_phase 1200; then
 
 section "PHASE 12: Complex Battle Setup"
 
-# Player 3 needs extra capacity to support the full combat fleet (8+ structs).
-# Their initial 5M delegation isn't enough, so delegate the remaining 5M.
-run_tx "Additional delegation for Player 3 (fleet capacity)" \
-    tx staking delegate "${VALIDATOR_ADDRESS}" 5000000ualpha --from player_3
+# Player 3 needs extra capacity for the full combat fleet. Supply enough new
+# fuel for the former 5M increment even at the 50% minimum, before commission.
+# Earlier address operations can leave no spendable coins on the signing key.
+fund_vault_alpha "${PLAYER_3_ID}" 10000000
+run_tx "Additional vault infusion for Player 3 (fleet capacity)" \
+    tx structs reactor-infuse "${VALIDATOR_ADDRESS}" 10000000ualpha --from player_3
 
-# ─── Move Player 3's fleet home before building (fleet can't build while away) ───
-run_tx "Moving Player 3's fleet home for building" \
-    tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_3_PLANET_ID}" --from player_3
+combat_require_command PLAYER_2_CMD_SHIP_ID 2 "P12 P2 Command Ship" || exit 1
+combat_require_command COMMAND_SHIP_ID 3 "P12 P3 Command Ship" || exit 1
+PLAYER_3_CMD_SHIP_ID=${COMMAND_SHIP_ID}
+combat_move_fleet 2 "${PLAYER_2_PLANET_ID}" || exit 1
+combat_move_fleet 3 "${PLAYER_3_PLANET_ID}" || exit 1
 
-# ═══════════════════════════════════════════════════════════════
-# BATCH INITIATE: All builds for Phases 12-14
-# Difficulty decays with block age, so initiating all builds now means
-# each subsequent compute runs against a much lower difficulty.
-# P2 builds are interleaved since players have independent charge.
-# ═══════════════════════════════════════════════════════════════
+# Reserve missing roles first so their proof ages accumulate together. Existing
+# live roles and pending builds are reused; slots come from the current fleet.
+# The P2 Battleship must stay unbuilt for Phase 13's targeting refusal.
+combat_require_struct SAM_STRUCT_ID 3 10 fleet "${PLAYER_3_FLEET_ID}" land "P12 SAM" "" player_3 prepare || exit 1
+combat_require_struct P2_BATTLESHIP_ID 2 2 fleet "${PLAYER_2_FLEET_ID}" space "P13 unbuilt Battleship" "" player_2 pending || exit 1
+combat_require_struct SUB_STRUCT_ID 3 13 fleet "${PLAYER_3_FLEET_ID}" water "P12 Submersible" "" player_3 prepare || exit 1
+combat_require_struct INTERCEPTOR_ID 2 7 fleet "${PLAYER_2_FLEET_ID}" air "P14 Interceptor" "" player_2 prepare || exit 1
+combat_require_struct BATTLESHIP_1_ID 3 2 fleet "${PLAYER_3_FLEET_ID}" space "P12 Battleship 1" "" player_3 prepare || exit 1
+combat_require_struct BATTLESHIP_2_ID 3 2 fleet "${PLAYER_3_FLEET_ID}" space "P12 Battleship 2" "${BATTLESHIP_1_ID}" player_3 prepare || exit 1
+combat_require_struct STEALTH_BOMBER_ID 3 6 fleet "${PLAYER_3_FLEET_ID}" air "P13b Stealth Bomber" "" player_3 prepare || exit 1
+combat_require_struct CRUISER_ID 3 11 fleet "${PLAYER_3_FLEET_ID}" water "P14 Cruiser" "" player_3 prepare || exit 1
 
-info "Batch-initiating all builds for Phases 12-14 (difficulty decays while computing)"
+# Finish only the roles needed now; later phases retain their proof-aging head start.
+combat_require_struct SAM_STRUCT_ID 3 10 fleet "${PLAYER_3_FLEET_ID}" land "P12 SAM" || exit 1
+combat_require_struct SUB_STRUCT_ID 3 13 fleet "${PLAYER_3_FLEET_ID}" water "P12 Submersible" || exit 1
+combat_require_struct BATTLESHIP_1_ID 3 2 fleet "${PLAYER_3_FLEET_ID}" space "P12 Battleship 1" "${BATTLESHIP_2_ID}" || exit 1
+combat_require_struct BATTLESHIP_2_ID 3 2 fleet "${PLAYER_3_FLEET_ID}" space "P12 Battleship 2" "${BATTLESHIP_1_ID}" || exit 1
 
-# ─── P3: SAM Launcher (type 10, land, slot 2) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating SAM Launcher (type=10, land, slot=2)" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 10 land 2 --from player_3
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-SAM_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "SAM struct ID" "${SAM_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 10
-echo "  SAM Struct ID: ${SAM_STRUCT_ID}"
-
-# ─── P2: Battleship (type 2, space, slot 1) — independent charge, no wait ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P2 Battleship (type=2, space, slot=1)" \
-    tx structs struct-build-initiate "${PLAYER_2_ID}" 2 space 1 --from player_2
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-P2_BATTLESHIP_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "Player 2 Battleship struct ID" "${P2_BATTLESHIP_ID}" "${PREV_NEWEST_STRUCT_ID}" 2
-echo "  P2 Battleship Struct ID: ${P2_BATTLESHIP_ID} (compute deferred to Phase 13)"
-
-# ─── P3: Submarine (type 13, water, slot 1) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Submarine (type=13, water, slot=1)" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 13 water 1 --from player_3
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-SUB_STRUCT_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "Submarine struct ID" "${SUB_STRUCT_ID}" "${PREV_NEWEST_STRUCT_ID}" 13
-echo "  Submarine Struct ID: ${SUB_STRUCT_ID}"
-
-# ─── P2: Interceptor (type 7, air, slot 0) — P2 charge recovered ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P2 Interceptor (type=7, air, slot=0)" \
-    tx structs struct-build-initiate "${PLAYER_2_ID}" 7 air 0 --from player_2
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-INTERCEPTOR_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "Interceptor struct ID" "${INTERCEPTOR_ID}" "${PREV_NEWEST_STRUCT_ID}" 7
-echo "  P2 Interceptor Struct ID: ${INTERCEPTOR_ID} (compute deferred to Phase 14)"
-
-# ─── P3: Battleship #1 (type 2, space, slot 2) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Battleship #1 (type=2, space, slot=2)" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 2 space 2 --from player_3
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-BATTLESHIP_1_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "Battleship #1 struct ID" "${BATTLESHIP_1_ID}" "${PREV_NEWEST_STRUCT_ID}" 2
-echo "  Battleship #1 Struct ID: ${BATTLESHIP_1_ID}"
-
-# ─── P3: Battleship #2 (type 2, space, slot 0) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Battleship #2 (type=2, space, slot=0)" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 2 space 0 --from player_3
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-BATTLESHIP_2_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "Battleship #2 struct ID" "${BATTLESHIP_2_ID}" "${PREV_NEWEST_STRUCT_ID}" 2
-echo "  Battleship #2 Struct ID: ${BATTLESHIP_2_ID}"
-
-# ─── P3: Stealth Bomber (type 6, air, slot 0) — needed Phase 13b ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Stealth Bomber (type=6, air, slot=0)" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 6 air 0 --from player_3
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-STEALTH_BOMBER_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "Stealth Bomber struct ID" "${STEALTH_BOMBER_ID}" "${PREV_NEWEST_STRUCT_ID}" 6
-echo "  Stealth Bomber Struct ID: ${STEALTH_BOMBER_ID} (compute deferred to Phase 13b)"
-
-# ─── P3: Cruiser (type 11, water, slot 0) — needed Phase 14 ───
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-STRUCT_COUNT_BEFORE=$(query query structs struct-all | jq '.Struct | length' 2>/dev/null || echo 0)
-run_tx "Initiating Cruiser (type=11, water, slot=0)" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 11 water 0 --from player_3
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-STRUCT_COUNT_AFTER=$(echo "${STRUCT_ALL_JSON}" | jq '.Struct | length' 2>/dev/null || echo 0)
-if [ "${STRUCT_COUNT_AFTER}" -gt "${STRUCT_COUNT_BEFORE}" ]; then
-    CRUISER_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-else
-    CRUISER_ID=""
-    echo -e "  ${RED}Cruiser build failed (Player 3 may lack capacity) — Phase 14 will be skipped${NC}"
+# Preserve a separate main Tank and a full-health armor-piercing target. A
+# resumed wounded AP target must be replaced before Phase 13 measures two damage.
+combat_require_struct DESTROYER_STRUCT_ID 3 9 fleet "${PLAYER_3_FLEET_ID}" land "P12 main Tank" || exit 1
+combat_require_struct AP_TANK_ID 3 9 fleet "${PLAYER_3_FLEET_ID}" land "P13 armor target" "${DESTROYER_STRUCT_ID}" || exit 1
+P12_AP_JSON=$(query query structs struct "${AP_TANK_ID}") || exit 1
+P12_AP_HEALTH=$(printf '%s' "${P12_AP_JSON}" | jq -er '.structAttributes.health | select(type == "string" and test("^[1-3]$"))') || exit 1
+if [ "${P12_AP_HEALTH}" -lt 3 ]; then
+    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}" || exit 1
+    run_tx "P12: Replace wounded armor-piercing target" tx structs struct-trash "${AP_TANK_ID}" --from player_3 || exit 1
+    combat_require_struct AP_TANK_ID 3 9 fleet "${PLAYER_3_FLEET_ID}" land "P13 replacement armor target" "${DESTROYER_STRUCT_ID}" || exit 1
 fi
-echo "  Cruiser Struct ID: ${CRUISER_ID:-NONE} (compute deferred to Phase 14)"
+P12_AP_JSON=$(query query structs struct "${AP_TANK_ID}") || exit 1
+[ "$(printf '%s' "${P12_AP_JSON}" | jq -er '.structAttributes.health')" = 3 ] || exit 1
 
-info "All 8 builds initiated. Computing Phase 12 builds now (others age in parallel)."
-
-# ═══════════════════════════════════════════════════════════════
-# COMPUTE Phase 12 builds — each subsequent compute benefits from aging
-# ═══════════════════════════════════════════════════════════════
-
-# ─── Compute SAM Launcher ───
-run_compute "Building SAM Launcher ${SAM_STRUCT_ID}" \
-    tx structs struct-build-compute "${SAM_STRUCT_ID}" --from player_3
-
-assert_eq "SAM built" "true" "$(query query structs struct "${SAM_STRUCT_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── Compute Submarine (aged during SAM compute) ───
-run_compute "Building Submarine ${SUB_STRUCT_ID}" \
-    tx structs struct-build-compute "${SUB_STRUCT_ID}" --from player_3
-
-assert_eq "Submarine built" "true" "$(query query structs struct "${SUB_STRUCT_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── Compute Battleship #1 (aged during SAM + Sub computes) ───
-run_compute "Building Galactic Battleship ${BATTLESHIP_1_ID}" \
-    tx structs struct-build-compute "${BATTLESHIP_1_ID}" --from player_3
-
-assert_eq "Battleship #1 built" "true" "$(query query structs struct "${BATTLESHIP_1_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── Compute Battleship #2 (aged during SAM + Sub + BB1 computes) ───
-run_compute "Building Galactic Battleship #2 ${BATTLESHIP_2_ID}" \
-    tx structs struct-build-compute "${BATTLESHIP_2_ID}" --from player_3
-
-assert_eq "Battleship #2 built" "true" "$(query query structs struct "${BATTLESHIP_2_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── P3: Tank #2 (type 9, land, slot 0) — armour-piercing target for Phase 13 ───
-# Dedicated target so the AP test never disturbs the main Tank's HP.
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P3 Tank #2 (type=9, land, slot=0) — armour piercing target" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 9 land 0 --from player_3
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-AP_TANK_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "P3 Tank #2 struct ID" "${AP_TANK_ID}" "${PREV_NEWEST_STRUCT_ID}" 9
-echo "  P3 Tank #2 Struct ID: ${AP_TANK_ID}"
-
-run_compute "Building P3 Tank #2 ${AP_TANK_ID}" \
-    tx structs struct-build-compute "${AP_TANK_ID}" --from player_3
-
-assert_eq "P3 Tank #2 built" "true" "$(query query structs struct "${AP_TANK_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ═══════════════════════════════════════════════════════════════
-# Batch deactivation (v0.20.0): struct-deactivate-batch
-# Uses P3's two freshly-built Battleships (online) as a self-contained
-# target set, then reactivates them so later phases are unaffected.
-# ═══════════════════════════════════════════════════════════════
-
-BB1_ONLINE_BEFORE=$(jqr "$(query query structs struct "${BATTLESHIP_1_ID}")" '.structAttributes.isOnline' 'false')
-BB2_ONLINE_BEFORE=$(jqr "$(query query structs struct "${BATTLESHIP_2_ID}")" '.structAttributes.isOnline' 'false')
-assert_eq "Battleship #1 online before batch deactivate" "true" "${BB1_ONLINE_BEFORE}"
-assert_eq "Battleship #2 online before batch deactivate" "true" "${BB2_ONLINE_BEFORE}"
-
-# Atomicity: a batch containing a bogus ID must fail without deactivating any struct
-run_tx_expect_fail "Batch deactivate with a bogus ID (should fail atomically)" \
-    tx structs struct-deactivate-batch "${BATTLESHIP_1_ID},invalid-struct" --from player_3
-
-BB1_ONLINE_AFTER_FAIL=$(jqr "$(query query structs struct "${BATTLESHIP_1_ID}")" '.structAttributes.isOnline' 'false')
-assert_eq "Battleship #1 still online after failed batch (atomic)" "true" "${BB1_ONLINE_AFTER_FAIL}"
-
-# Happy path: deactivate both battleships in one transaction (deactivate is not charge-gated)
-run_tx "Batch deactivating P3 Battleships" \
-    tx structs struct-deactivate-batch "${BATTLESHIP_1_ID},${BATTLESHIP_2_ID}" --from player_3
-
-# Batch deactivate commits asynchronously; poll (up to ~10s) for both to
-# report offline instead of relying on run_tx's fixed sleep. Falls through on
-# timeout so a genuine regression still fails the assertions below.
-#
-# NOTE: isOnline is a proto3 bool, so the query JSON OMITS it when false (an
-# offline struct has no .structAttributes.isOnline key at all). The fallback
-# here must therefore be 'false' — an absent field means offline. While the
-# struct is still online (or the tx hasn't committed) isOnline is present as
-# true, so the loop keeps polling until the deactivate lands.
-for _ in $(seq 1 10); do
-    BB1_OFFLINE=$(jqr "$(query query structs struct "${BATTLESHIP_1_ID}")" '.structAttributes.isOnline' 'false')
-    BB2_OFFLINE=$(jqr "$(query query structs struct "${BATTLESHIP_2_ID}")" '.structAttributes.isOnline' 'false')
-    if [ "${BB1_OFFLINE}" = "false" ] && [ "${BB2_OFFLINE}" = "false" ]; then
-        break
-    fi
-    sleep 1
-done
-assert_eq "Battleship #1 offline after batch deactivate" "false" "${BB1_OFFLINE}"
-assert_eq "Battleship #2 offline after batch deactivate" "false" "${BB2_OFFLINE}"
-
-# Cleanup: reactivate both (activation IS charge-gated) so downstream phases see them online
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
-run_tx "Reactivating P3 Battleship #1 (batch cleanup)" \
-    tx structs struct-activate "${BATTLESHIP_1_ID}" --from player_3
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
-run_tx "Reactivating P3 Battleship #2 (batch cleanup)" \
-    tx structs struct-activate "${BATTLESHIP_2_ID}" --from player_3
-
-BB1_ONLINE_RESTORED=$(jqr "$(query query structs struct "${BATTLESHIP_1_ID}")" '.structAttributes.isOnline' 'false')
-BB2_ONLINE_RESTORED=$(jqr "$(query query structs struct "${BATTLESHIP_2_ID}")" '.structAttributes.isOnline' 'false')
-assert_eq "Battleship #1 back online after batch cleanup" "true" "${BB1_ONLINE_RESTORED}"
-assert_eq "Battleship #2 back online after batch cleanup" "true" "${BB2_ONLINE_RESTORED}"
+# Batch atomicity must fail for the intended missing object, then both status
+# changes and both cleanup activations must match delivered events and state.
+p12_batch_step reject || exit 1
+p12_batch_step offline || exit 1
+p12_batch_step first || exit 1
+p12_batch_step second || exit 1
 
 fi # phase 12
 
@@ -5148,91 +6007,42 @@ if run_phase 1300; then
 
 section "PHASE 13: Defense Setup & Coordinated Attack"
 
-# Move fleet to Player 2's planet for combat (fleet-move has no charge cost)
-run_tx "Moving Player 3's fleet to Player 2's planet" \
-    tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_2_PLANET_ID}" --from player_3
+# Restore the whole matchup on direct resume. The pending P2 ship preserves
+# the intended unbuilt refusal; a previously completed one cannot stand in.
+ar_require_command 2 || exit 1
+ar_require_command 3 || exit 1
+combat_move_fleet 2 "${PLAYER_2_PLANET_ID}" || exit 1
+combat_move_fleet 3 "${PLAYER_3_PLANET_ID}" || exit 1
+combat_require_struct P2_BATTLESHIP_ID 2 2 fleet "${PLAYER_2_FLEET_ID}" space "P13 unbuilt Battleship" "" player_2 pending || exit 1
+combat_require_struct SAM_STRUCT_ID 3 10 fleet "${PLAYER_3_FLEET_ID}" land "P13 SAM" || exit 1
+combat_require_struct SUB_STRUCT_ID 3 13 fleet "${PLAYER_3_FLEET_ID}" water "P13 Submersible" || exit 1
+combat_require_struct BATTLESHIP_1_ID 3 2 fleet "${PLAYER_3_FLEET_ID}" space "P13 Battleship 1" "${BATTLESHIP_2_ID:-}" || exit 1
+combat_require_struct BATTLESHIP_2_ID 3 2 fleet "${PLAYER_3_FLEET_ID}" space "P13 Battleship 2" "${BATTLESHIP_1_ID}" || exit 1
+combat_require_struct DESTROYER_STRUCT_ID 3 9 fleet "${PLAYER_3_FLEET_ID}" land "P13 main Tank" || exit 1
+combat_require_struct AP_TANK_ID 3 9 fleet "${PLAYER_3_FLEET_ID}" land "P13 armor target" "${DESTROYER_STRUCT_ID}" || exit 1
+P13_AP_JSON=$(query query structs struct "${AP_TANK_ID}") || exit 1
+P13_AP_HEALTH=$(printf '%s' "${P13_AP_JSON}" | jq -er '.structAttributes.health | select(type == "string" and test("^[1-3]$"))') || exit 1
+if [ "${P13_AP_HEALTH}" -lt 3 ]; then
+    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}" || exit 1
+    run_tx "P13: Replace wounded armor target" tx structs struct-trash "${AP_TANK_ID}" --from player_3 || exit 1
+    combat_require_struct AP_TANK_ID 3 9 fleet "${PLAYER_3_FLEET_ID}" land "P13 replacement armor target" "${DESTROYER_STRUCT_ID}" || exit 1
+fi
+combat_clear_target_defenders 2 "${P2_BATTLESHIP_ID}" || exit 1
+combat_clear_target_defenders 3 "${COMMAND_SHIP_ID}" || exit 1
+combat_clear_target_defenders 3 "${AP_TANK_ID}" || exit 1
+combat_move_fleet 3 "${PLAYER_2_PLANET_ID}" || exit 1
+p13_attack unbuilt "${BATTLESHIP_1_ID}" "${P2_BATTLESHIP_ID}" 3 2 secondaryWeapon || exit 1
+combat_require_struct P2_BATTLESHIP_ID 2 2 fleet "${PLAYER_2_FLEET_ID}" space "P13 attacker Battleship" || exit 1
+p13_attack range "${P2_BATTLESHIP_ID}" "${COMMAND_SHIP_ID}" 2 3 primaryWeapon || exit 1
+p13_attack armour "${P2_BATTLESHIP_ID}" "${AP_TANK_ID}" 2 3 primaryWeapon || exit 1
 
-# Move Command Ship to space ambit
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
-run_tx "Moving Command Ship to space ambit" \
-    tx structs struct-move "${COMMAND_SHIP_ID}" fleet space --from player_3
-
-# ─── Set up defense network: all units defend the Command Ship ───
+# All four defenders can counter into space. The first three in store order
+# destroy the attacker before its volley; the fourth and target cannot counter.
 for DEF_ID in "${SAM_STRUCT_ID}" "${SUB_STRUCT_ID}" "${BATTLESHIP_1_ID}" "${BATTLESHIP_2_ID}"; do
-    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_DEFEND}"
-    run_tx "Setting ${DEF_ID} to defend Command Ship ${COMMAND_SHIP_ID}" \
-        tx structs struct-defense-set "${DEF_ID}" "${COMMAND_SHIP_ID}" --from player_3
+    ar_defense_set 3 "${DEF_ID}" "${COMMAND_SHIP_ID}" || exit 1
 done
-
-# Verify defenders are set
-CMDSHIP_DEFENDERS=$(query query structs struct "${COMMAND_SHIP_ID}" | jq -r '.structDefenders | length' 2>/dev/null || echo "0")
-assert_gt "Command Ship has defenders" 0 "${CMDSHIP_DEFENDERS}"
-info "Command Ship defender count: ${CMDSHIP_DEFENDERS}"
-
-# ─── v0.19.0: a not-yet-built struct cannot be attacked ───
-# The P2 Battleship was build-initiated in Phase 12 but has not been computed
-# yet (the compute is just below), so it is materialized but not Built. An
-# attack against it must be rejected with the "unbuilt" targeting reason,
-# regardless of online/offline state. CanAttack checks Built before ambit, so
-# a built P3 Battleship firing its space-capable secondary is enough to prove
-# the rule. wait_for_charge ensures the failure is the build check, not charge.
-P2_BB_JSON=$(query query structs struct "${P2_BATTLESHIP_ID}")
-P2_BB_PREBUILD_BUILT=$(jqr "${P2_BB_JSON}" '.structAttributes.isBuilt' 'false')
-assert_eq "P2 Battleship not yet built (pre-compute)" "false" "${P2_BB_PREBUILD_BUILT}"
-
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ATTACK_BATTLESHIP}"
-run_tx_expect_fail "Attack against a not-yet-built struct rejected (v0.19.0)" \
-    tx structs struct-attack "${BATTLESHIP_1_ID}" "${P2_BATTLESHIP_ID}" secondaryWeapon --from player_3
-
-# ─── Player 2's Battleship was pre-seeded in Phase 12 — compute now (heavily aged) ───
-info "Computing P2 Battleship ${P2_BATTLESHIP_ID} (pre-seeded in Phase 12)"
-run_compute "Building Player 2's Battleship ${P2_BATTLESHIP_ID}" \
-    tx structs struct-build-compute "${P2_BATTLESHIP_ID}" --from player_2
-
-assert_eq "Player 2 Battleship built" "true" "$(query query structs struct "${P2_BATTLESHIP_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── v0.18.0 Battleship rebalance: primary is armour-piercing, land/water only ───
-# The unguided primary (PrimaryWeaponAmbits=6: water+land) can no longer
-# target space — the guided secondary (SecondaryWeaponAmbits=16: space) covers it.
-
-# Negative: Battleship primary cannot target the space-ambit Command Ship.
-# Wait for full primary charge first so the failure is the ambit check, not charge.
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_ATTACK_BATTLESHIP_PRIMARY}"
-run_tx_expect_fail "Battleship primary (land/water) rejected against space target" \
-    tx structs struct-attack "${P2_BATTLESHIP_ID}" "${COMMAND_SHIP_ID}" primaryWeapon --from player_2
-
-# ─── Armour piercing: Battleship primary vs Tank (AttackReduction=1) ───
-# P3 Tank #2 (built in Phase 12, full HP, land ambit on P3's fleet at this
-# planet). The armour-piercing primary negates the Tank's reduction, so the
-# full 2 damage lands. A non-piercing weapon would only deal 1 (2 - 1).
-AP_TANK_HP_BEFORE=$(query query structs struct "${AP_TANK_ID}" | jq -r '.structAttributes.health // "0"')
-P2_BB_HP_BEFORE=$(query query structs struct "${P2_BATTLESHIP_ID}" | jq -r '.structAttributes.health // "0"')
-info "P3 Tank #2 health before armour-piercing attack: ${AP_TANK_HP_BEFORE}"
-
-run_tx "P2 Battleship fires armour-piercing primary at P3 Tank #2" \
-    tx structs struct-attack "${P2_BATTLESHIP_ID}" "${AP_TANK_ID}" primaryWeapon --from player_2
-
-AP_TANK_HP_AFTER=$(query query structs struct "${AP_TANK_ID}" | jq -r '.structAttributes.health // "0"')
-P2_BB_HP_AFTER=$(query query structs struct "${P2_BATTLESHIP_ID}" | jq -r '.structAttributes.health // "0"')
-assert_eq "Armour piercing negates Tank reduction (full 2 damage)" "2" "$((AP_TANK_HP_BEFORE - AP_TANK_HP_AFTER))"
-assert_eq "Battleship unharmed (Tank cannot counter into space)" "${P2_BB_HP_BEFORE}" "${P2_BB_HP_AFTER}"
-
-# Attack the defended Command Ship with the guided secondary (space ambit)
-CMDSHIP_JSON=$(query query structs struct "${COMMAND_SHIP_ID}" || echo '{}')
-CMDSHIP_HP_BEFORE=$(jqr "${CMDSHIP_JSON}" '.structAttributes.health' '0')
-info "Command Ship health before defended attack: ${CMDSHIP_HP_BEFORE}"
-
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_ATTACK_BATTLESHIP}"
-run_tx "Player 2 attacks the defended Command Ship (guided secondary)" \
-    tx structs struct-attack "${P2_BATTLESHIP_ID}" "${COMMAND_SHIP_ID}" secondaryWeapon --from player_2
-
-CMDSHIP_JSON=$(query query structs struct "${COMMAND_SHIP_ID}" || echo '{}')
-CMDSHIP_HP_AFTER=$(jqr "${CMDSHIP_JSON}" '.structAttributes.health' '0')
-info "Command Ship health after defended attack: ${CMDSHIP_HP_AFTER}"
-echo "  (Defenders may have blocked/intercepted the attack)"
-
-BLOCK_HEIGHT=$(query query structs block-height | jq -r '.blockHeight // empty' 2>/dev/null || echo "?")
-info "Current block height: ${BLOCK_HEIGHT}"
+p13_attack defended "${P2_BATTLESHIP_ID}" "${COMMAND_SHIP_ID}" 2 3 secondaryWeapon \
+    "${SAM_STRUCT_ID} ${SUB_STRUCT_ID} ${BATTLESHIP_1_ID} ${BATTLESHIP_2_ID}" || exit 1
 
 fi # phase 13
 
@@ -5244,69 +6054,85 @@ if run_phase 1350; then
 
 section "PHASE 13b: Defense Clear & Stealth Systems"
 
-# ─── struct-defense-clear: clear one defender, verify, re-set ───
-# SAM is currently defending the Command Ship from Phase 13.
-# Defense relationships are stored in structDefenders on the PROTECTED struct,
-# not on the defending struct. Query the Command Ship to check.
-CMD_JSON=$(query query structs struct "${COMMAND_SHIP_ID}" 2>/dev/null || echo '{}')
-SAM_IN_DEFENDERS=$(echo "${CMD_JSON}" | jq -r --arg sid "${SAM_STRUCT_ID}" '[.structDefenders // [] | .[] | select(. == $sid)] | first // ""' 2>/dev/null || echo "")
-info "SAM (${SAM_STRUCT_ID}) in Command Ship defenders: '${SAM_IN_DEFENDERS}'"
+# Restore each required fixture even when entering directly on resume or when
+# the earlier battle destroyed it. A missing role is a failure, never a skip.
+ar_require_command 3
+combat_move_fleet 3 "${PLAYER_3_PLANET_ID}"
+combat_require_struct SAM_STRUCT_ID 3 10 fleet "${PLAYER_3_FLEET_ID}" land "P13b SAM"
+combat_require_struct STEALTH_BOMBER_ID 3 6 fleet "${PLAYER_3_FLEET_ID}" air "P13b Stealth Bomber"
 
+p13b_assert_defense() {
+    local expected="$1" command defender
+    command=$(query query structs struct "${COMMAND_SHIP_ID}") || return 1
+    defender=$(query query structs struct "${SAM_STRUCT_ID}") || return 1
+    assert_eq "P13b SAM defense relationship (${expected})" true "$(jq -n \
+        --argjson command "${command}" --argjson defender "${defender}" \
+        --arg commandId "${COMMAND_SHIP_ID}" --arg defenderId "${SAM_STRUCT_ID}" \
+        --arg owner "${PLAYER_3_ID}" --argjson expected "${expected}" '
+        $command.Struct.id == $commandId and $defender.Struct.id == $defenderId and
+        $command.Struct.owner == $owner and $defender.Struct.owner == $owner and
+        $command.structAttributes.isBuilt == true and $defender.structAttributes.isBuilt == true and
+        (($command.structAttributes.isDestroyed // false) == false) and
+        (($defender.structAttributes.isDestroyed // false) == false) and
+        ([$command.structDefenders[]? | select(. == $defenderId)] | length) == (if $expected then 1 else 0 end) and
+        ($defender.structAttributes.protectedStructIndex // "0") == (if $expected then ($commandId | ltrimstr("5-")) else "0" end)')"
+}
+
+# Establish the assignment explicitly: clearing an already-unassigned SAM would
+# not exercise teardown. Both the protected list and reverse index must agree.
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_DEFEND}"
+run_tx "P13b: establish SAM defense assignment" \
+    tx structs struct-defense-set "${SAM_STRUCT_ID}" "${COMMAND_SHIP_ID}" --from player_3
+p13b_assert_defense true
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_DEFEND}"
 run_tx "Clearing SAM defense assignment" \
     tx structs struct-defense-clear "${SAM_STRUCT_ID}" --from player_3
-
-CMD_JSON=$(query query structs struct "${COMMAND_SHIP_ID}" 2>/dev/null || echo '{}')
-SAM_CLEARED=$(echo "${CMD_JSON}" | jq -r --arg sid "${SAM_STRUCT_ID}" '[.structDefenders // [] | .[] | select(. == $sid)] | first // ""' 2>/dev/null || echo "")
-assert_eq "SAM defense cleared" "" "${SAM_CLEARED}"
-
-# Re-set defense for later phases
+p13b_assert_defense false
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_DEFEND}"
 run_tx "Re-setting SAM to defend Command Ship" \
     tx structs struct-defense-set "${SAM_STRUCT_ID}" "${COMMAND_SHIP_ID}" --from player_3
+p13b_assert_defense true
 
-CMD_JSON=$(query query structs struct "${COMMAND_SHIP_ID}" 2>/dev/null || echo '{}')
-SAM_RESET=$(echo "${CMD_JSON}" | jq -r --arg sid "${SAM_STRUCT_ID}" '[.structDefenders // [] | .[] | select(. == $sid)] | first // ""' 2>/dev/null || echo "")
-assert_eq "SAM defense re-set" "${SAM_STRUCT_ID}" "${SAM_RESET}"
+p13b_assert_stealth() {
+    local expected="$1" payload
+    payload=$(query query structs struct "${STEALTH_BOMBER_ID}") || return 1
+    assert_eq "P13b living Bomber hidden=${expected}" true "$(printf '%s' "${payload}" | jq -r \
+        --arg id "${STEALTH_BOMBER_ID}" --arg owner "${PLAYER_3_ID}" --argjson expected "${expected}" '
+        .Struct.id == $id and .Struct.owner == $owner and .Struct.type == "6" and
+        .structAttributes.isBuilt == true and .structAttributes.isOnline == true and
+        ((.structAttributes.isDestroyed // false) == false) and
+        ((.structAttributes.isHidden // false) == $expected)')"
+}
 
-# ─── Stealth Bomber was pre-seeded in Phase 12 — compute now (heavily aged) ───
-# Move fleet home first (needed for stealth tests — struct must be commandable)
-run_tx "Moving Player 3's fleet home for stealth tests" \
-    tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_3_PLANET_ID}" --from player_3
-
-if [ -n "${STEALTH_BOMBER_ID}" ]; then
-    info "Computing Stealth Bomber ${STEALTH_BOMBER_ID} (pre-seeded in Phase 12)"
-    run_compute "Building Stealth Bomber ${STEALTH_BOMBER_ID}" \
-        tx structs struct-build-compute "${STEALTH_BOMBER_ID}" --from player_3
-
-    SB_JSON=$(query query structs struct "${STEALTH_BOMBER_ID}" 2>/dev/null || echo '{}')
-    SB_BUILT=$(jqr "${SB_JSON}" '.structAttributes.isBuilt' 'false')
-    assert_eq "Stealth Bomber built" "true" "${SB_BUILT}"
-
-    # ─── struct-stealth-activate ───
+# A resumed Bomber may already be hidden. Normalize and prove visible before
+# testing a new activation, so a successful no-op cannot satisfy the check.
+SB_JSON=$(query query structs struct "${STEALTH_BOMBER_ID}")
+SB_HIDDEN=$(printf '%s' "${SB_JSON}" | jq -r '.structAttributes.isHidden // false')
+if [ "${SB_HIDDEN}" = true ]; then
     wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
-    run_tx "Activating stealth on Stealth Bomber" \
-        tx structs struct-stealth-activate "${STEALTH_BOMBER_ID}" --from player_3
-
-    SB_JSON=$(query query structs struct "${STEALTH_BOMBER_ID}" 2>/dev/null || echo '{}')
-    SB_HIDDEN=$(jqr "${SB_JSON}" '.structAttributes.isHidden' 'false')
-    assert_eq "Stealth Bomber hidden after activate" "true" "${SB_HIDDEN}"
-
-    # ─── struct-stealth-deactivate ───
-    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
-    run_tx "Deactivating stealth on Stealth Bomber" \
+    run_tx "P13b: reveal resumed Stealth Bomber" \
         tx structs struct-stealth-deactivate "${STEALTH_BOMBER_ID}" --from player_3
-
-    SB_JSON=$(query query structs struct "${STEALTH_BOMBER_ID}" 2>/dev/null || echo '{}')
-    SB_HIDDEN_AFTER=$(jqr "${SB_JSON}" '.structAttributes.isHidden' 'false')
-    assert_eq "Stealth Bomber visible after deactivate" "false" "${SB_HIDDEN_AFTER}"
-
-    # struct-attribute query coverage
-    info "Struct attribute query coverage:"
-    query query structs struct-attribute "${STEALTH_BOMBER_ID}" 2>/dev/null | jq -r '"  isBuilt=\(.isBuilt) isOnline=\(.isOnline) health=\(.health)"' || echo "  (query failed)"
-else
-    info "SKIP: Could not build Stealth Bomber for stealth tests"
 fi
+p13b_assert_stealth false
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
+run_tx "Activating stealth on Stealth Bomber" \
+    tx structs struct-stealth-activate "${STEALTH_BOMBER_ID}" --from player_3
+p13b_assert_stealth true
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
+run_tx "Deactivating stealth on Stealth Bomber" \
+    tx structs struct-stealth-deactivate "${STEALTH_BOMBER_ID}" --from player_3
+p13b_assert_stealth false
+
+# The dedicated attribute query must agree with the struct query too.
+SB_ATTRIBUTE_HEIGHT=$(query query structs block-height | jq -er '.blockHeight | select(type == "string" and test("^[1-9][0-9]*$"))')
+SB_JSON=$(query query structs struct "${STEALTH_BOMBER_ID}" --height "${SB_ATTRIBUTE_HEIGHT}")
+SB_ATTRIBUTES=$(query query structs struct-attribute "${STEALTH_BOMBER_ID}" status --height "${SB_ATTRIBUTE_HEIGHT}")
+assert_eq "P13b Bomber attribute query matches live visible state" true "$(jq -n \
+    --argjson state "${SB_JSON}" --argjson attribute "${SB_ATTRIBUTES}" --arg id "${STEALTH_BOMBER_ID}" '
+    $state.Struct.id == $id and $state.structAttributes.isBuilt == true and $state.structAttributes.isOnline == true and
+    (($state.structAttributes.isHidden // false) == false) and (($state.structAttributes.isDestroyed // false) == false) and
+    ($attribute.attribute | type) == "string" and ($attribute.attribute | test("^[1-9][0-9]*$")) and
+    $state.structAttributes.status == $attribute.attribute')"
 
 fi # phase 13b
 
@@ -5318,61 +6144,31 @@ if run_phase 1400; then
 
 section "PHASE 14: Secondary Weapons & Defensive Maneuvers"
 
-if [ -z "${CRUISER_ID}" ]; then
-    info "Skipping Phase 14 (Cruiser build failed in Phase 12)"
+# Restore required roles before attacking, including on --resume-from 14.
+# A dead or absent earlier fixture must be rebuilt, never counted as a skip.
+ar_require_command 3
+ar_require_command 2
+combat_require_struct CRUISER_ID 3 11 fleet "${PLAYER_3_FLEET_ID}" water "P14 Cruiser"
+combat_require_struct INTERCEPTOR_ID 2 7 fleet "${PLAYER_2_FLEET_ID}" air "P14 Interceptor"
+combat_require_struct STEALTH_BOMBER_ID 3 6 fleet "${PLAYER_3_FLEET_ID}" air "P14 Stealth Bomber"
+SB_JSON=$(query query structs struct "${STEALTH_BOMBER_ID}")
+SB_HIDDEN=$(printf '%s' "${SB_JSON}" | jq -r --arg id "${STEALTH_BOMBER_ID}" 'select(.Struct.id == $id) | .structAttributes.isHidden // false')
+if [ "${SB_HIDDEN}" = true ]; then
+    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
+    run_tx "P14: reveal resumed Stealth Bomber" tx structs struct-stealth-deactivate "${STEALTH_BOMBER_ID}" --from player_3
 else
+    assert_eq "P14 Stealth Bomber starts visible" false "${SB_HIDDEN}"
+fi
+combat_move_fleet 2 "${PLAYER_2_PLANET_ID}"
+combat_move_fleet 3 "${PLAYER_2_PLANET_ID}"
 
-# Fleet is at home after Phase 13b stealth tests — no move needed
-# Cruiser and Interceptor were pre-seeded in Phase 12 — just compute
+for P14_CASE in P14_1 P14_2; do
+    ev_attack "${P14_CASE}" CRUISER_ID 3 11 water INTERCEPTOR_ID 2 7 air secondaryWeapon "${PLAYER_2_PLANET_ID}"
+done
 
-# ─── Compute Cruiser (pre-seeded in Phase 12, heavily aged) ───
-info "Cruiser (type=11) has a secondary weapon effective against air units"
-info "Computing Cruiser ${CRUISER_ID} (pre-seeded in Phase 12)"
-run_compute "Building Cruiser ${CRUISER_ID}" \
-    tx structs struct-build-compute "${CRUISER_ID}" --from player_3
-
-assert_eq "Cruiser built" "true" "$(query query structs struct "${CRUISER_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# Move fleet to Player 2's planet for combat (fleet-move has no charge cost)
-run_tx "Moving Player 3's fleet to Player 2's planet" \
-    tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_2_PLANET_ID}" --from player_3
-
-# ─── Compute Interceptor (pre-seeded in Phase 12, heavily aged) ───
-info "Interceptor (type=7) has Defensive Maneuvers -- can try to dodge unguided attacks"
-info "Computing P2 Interceptor ${INTERCEPTOR_ID} (pre-seeded in Phase 12)"
-run_compute "Building Interceptor ${INTERCEPTOR_ID}" \
-    tx structs struct-build-compute "${INTERCEPTOR_ID}" --from player_2
-
-INTERCEPTOR_JSON=$(query query structs struct "${INTERCEPTOR_ID}")
-assert_eq "Interceptor built" "true" "$(jqr "${INTERCEPTOR_JSON}" '.structAttributes.isBuilt' 'false')"
-assert_eq "Interceptor type" "7" "$(jqr "${INTERCEPTOR_JSON}" '.Struct.type')"
-
-# ─── Cruiser attacks Interceptor with secondary weapon (2 rounds) ───
-INTERCEPTOR_HP_BEFORE=$(jqr "${INTERCEPTOR_JSON}" '.structAttributes.health' '0')
-info "Interceptor health before attacks: ${INTERCEPTOR_HP_BEFORE}"
-
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
-run_tx "Cruiser attacks Interceptor with secondaryWeapon (round 1)" \
-    tx structs struct-attack "${CRUISER_ID}" "${INTERCEPTOR_ID}" secondaryWeapon --from player_3
-
-INTERCEPTOR_JSON=$(query query structs struct "${INTERCEPTOR_ID}" || echo '{}')
-INTERCEPTOR_HP_MID=$(jqr "${INTERCEPTOR_JSON}" '.structAttributes.health' '0')
-info "Interceptor health after round 1: ${INTERCEPTOR_HP_MID} (may have dodged)"
-
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
-run_tx "Cruiser attacks Interceptor with secondaryWeapon (round 2)" \
-    tx structs struct-attack "${CRUISER_ID}" "${INTERCEPTOR_ID}" secondaryWeapon --from player_3
-
-INTERCEPTOR_JSON=$(query query structs struct "${INTERCEPTOR_ID}" || echo '{}')
-INTERCEPTOR_HP_AFTER=$(jqr "${INTERCEPTOR_JSON}" '.structAttributes.health' '0')
-info "Interceptor health after round 2: ${INTERCEPTOR_HP_AFTER}"
-
-echo ""
-echo "  NOTE: The Interceptor has Defensive Maneuvers, so it may have dodged"
-echo "  unguided attacks from the Cruiser's secondary weapon."
-
-BLOCK_HEIGHT=$(query query structs block-height | jq -r '.blockHeight // empty' 2>/dev/null || echo "?")
-info "Final block height: ${BLOCK_HEIGHT}"
+# Rebuild the target while commands are still online if either earlier hit
+# destroyed it. No build or movement is needed during the offline assertion.
+combat_require_struct INTERCEPTOR_ID 2 7 fleet "${PLAYER_2_FLEET_ID}" air "P14 offline target"
 
 # ═══════════════════════════════════════════════════════════════
 # v0.19.0: attack / defense / stealth no longer require the Command Ship
@@ -5389,16 +6185,9 @@ run_tx "P3 deactivates Command Ship (command-ship-not-required test)" \
 CS_OFFLINE=$(query query structs struct "${COMMAND_SHIP_ID}" | jq -r '.structAttributes.isOnline // "false"')
 assert_eq "P3 Command Ship offline for the test" "false" "${CS_OFFLINE}"
 
-# Attack works with the Command Ship offline (only if the Interceptor survived
-# the earlier rounds — it may have been destroyed or dodged).
-INTERCEPTOR_HP_NOW=$(query query structs struct "${INTERCEPTOR_ID}" | jq -r '.structAttributes.health // "0"')
-if [ "${INTERCEPTOR_HP_NOW}" != "0" ]; then
-    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
-    run_tx "Cruiser attacks Interceptor with Command Ship offline (v0.19.0)" \
-        tx structs struct-attack "${CRUISER_ID}" "${INTERCEPTOR_ID}" secondaryWeapon --from player_3
-else
-    info "Interceptor already destroyed — skipping the command-ship-offline attack assertion"
-fi
+# A delivered attack and exact canonical outcome are required. The checker
+# also binds the same live, offline Command Ship to both historical snapshots.
+ev_attack P14_OFFLINE CRUISER_ID 3 11 water INTERCEPTOR_ID 2 7 air secondaryWeapon "${PLAYER_2_PLANET_ID}" "${COMMAND_SHIP_ID}"
 
 # Defensive assignment set/clear works with the Command Ship offline. Use the
 # Cruiser (freshly built, guaranteed alive) so we do not depend on SAM's combat
@@ -5406,19 +6195,36 @@ fi
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_DEFEND}"
 run_tx "Set Cruiser to defend Command Ship (Command Ship offline, v0.19.0)" \
     tx structs struct-defense-set "${CRUISER_ID}" "${COMMAND_SHIP_ID}" --from player_3
+CMD_JSON=$(query query structs struct "${COMMAND_SHIP_ID}")
+CRUISER_JSON=$(query query structs struct "${CRUISER_ID}")
+assert_eq "P14 offline defense registered on both structs" true "$(jq -n --argjson command "${CMD_JSON}" --argjson cruiser "${CRUISER_JSON}" --arg id "${COMMAND_SHIP_ID}" --arg defender "${CRUISER_ID}" '
+    $command.Struct.id == $id and $cruiser.Struct.id == $defender and
+    (($command.structAttributes.isOnline // false) == false) and
+    ([$command.structDefenders[] | select(. == $defender)] | length) == 1 and
+    $cruiser.structAttributes.protectedStructIndex == ($id | ltrimstr("5-"))')"
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_DEFEND}"
 run_tx "Clear Cruiser defense (Command Ship offline, v0.19.0)" \
     tx structs struct-defense-clear "${CRUISER_ID}" --from player_3
+CMD_JSON=$(query query structs struct "${COMMAND_SHIP_ID}")
+CRUISER_JSON=$(query query structs struct "${CRUISER_ID}")
+assert_eq "P14 offline defense cleared on both structs" true "$(jq -n --argjson command "${CMD_JSON}" --argjson cruiser "${CRUISER_JSON}" --arg id "${COMMAND_SHIP_ID}" --arg defender "${CRUISER_ID}" '
+    $command.Struct.id == $id and $cruiser.Struct.id == $defender and
+    (($command.structAttributes.isOnline // false) == false) and
+    ([$command.structDefenders[]? | select(. == $defender)] | length) == 0 and
+    ($cruiser.structAttributes.protectedStructIndex // "0") == "0"')"
 
-# Stealth toggle works with the Command Ship offline.
-if [ -n "${STEALTH_BOMBER_ID}" ]; then
-    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
-    run_tx "Activate stealth with Command Ship offline (v0.19.0)" \
-        tx structs struct-stealth-activate "${STEALTH_BOMBER_ID}" --from player_3
-    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
-    run_tx "Deactivate stealth with Command Ship offline (v0.19.0)" \
-        tx structs struct-stealth-deactivate "${STEALTH_BOMBER_ID}" --from player_3
-fi
+# Stealth is required even when this phase is entered directly on resume.
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
+run_tx "Activate stealth with Command Ship offline (v0.19.0)" \
+    tx structs struct-stealth-activate "${STEALTH_BOMBER_ID}" --from player_3
+SB_JSON=$(query query structs struct "${STEALTH_BOMBER_ID}")
+assert_eq "P14 Stealth Bomber hidden with Command Ship offline" true "$(printf '%s' "${SB_JSON}" | jq -er --arg id "${STEALTH_BOMBER_ID}" '.Struct.id == $id and .structAttributes.isBuilt == true and .structAttributes.isOnline == true and .structAttributes.isHidden == true')"
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
+run_tx "Deactivate stealth with Command Ship offline (v0.19.0)" \
+    tx structs struct-stealth-deactivate "${STEALTH_BOMBER_ID}" --from player_3
+SB_JSON=$(query query structs struct "${STEALTH_BOMBER_ID}")
+assert_eq "P14 Stealth Bomber visible with Command Ship offline" true "$(printf '%s' "${SB_JSON}" | jq -er --arg id "${STEALTH_BOMBER_ID}" '.Struct.id == $id and .structAttributes.isBuilt == true and .structAttributes.isOnline == true and ((.structAttributes.isHidden // false) == false)')"
+assert_eq "P14 Command Ship remains offline after defense and stealth" activate "$(combat_fixture_state "${COMMAND_SHIP_ID}" "${PLAYER_3_ID}" 1 "${PLAYER_3_FLEET_ID}" space)"
 
 # Restore the Command Ship online so the remaining phases are unaffected.
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
@@ -5426,8 +6232,6 @@ run_tx "P3 re-activates Command Ship (cleanup)" \
     tx structs struct-activate "${COMMAND_SHIP_ID}" --from player_3
 CS_BACK_ONLINE=$(query query structs struct "${COMMAND_SHIP_ID}" | jq -r '.structAttributes.isOnline // "false"')
 assert_eq "P3 Command Ship back online after offline test" "true" "${CS_BACK_ONLINE}"
-
-fi # cruiser available
 
 fi # phase 14
 
@@ -5440,65 +6244,106 @@ if run_phase 1500; then
 section "PHASE 15: Power Generator (Player 4)"
 
 echo "  Player 4 Planet: ${PLAYER_4_PLANET_ID}"
-echo "  Using Field Generator (struct type 20, land, slot 0)"
-echo "  GeneratingRate=2, PassiveDraw=500000, MaxHealth=8 (armour, AttackReduction=1)"
+echo "  Using Field Generator (struct type 20, land)"
 
-# ─── Snapshot Player 4's capacity before building ───
-P4_JSON=$(query query structs player "${PLAYER_4_ID}")
-P4_CAP_BEFORE=$(jqr "${P4_JSON}" '.gridAttributes.capacity' '0')
+# Restore fixtures on fresh and resumed runs. Completing an existing build or
+# reactivating a fueled generator must finish before capturing its baseline.
+ar_require_command 4
+ar_require_command 3
+combat_move_fleet 4 "${PLAYER_4_PLANET_ID}"
+combat_require_struct GENERATOR_STRUCT_ID 4 20 planet "${PLAYER_4_PLANET_ID}" land "P15 Field Generator"
+combat_require_struct DESTROYER_STRUCT_ID 3 9 fleet "${PLAYER_3_FLEET_ID}" land "P15 Tank"
+combat_clear_target_defenders 4 "${GENERATOR_STRUCT_ID}"
+PLAYER_4_VAULT=$(get_vault_address "${PLAYER_4_ID}")
+GEN_READY=false
+for GEN_WAIT in $(seq 1 30); do
+    GEN_FIXTURE=$(generator_fixture_snapshot)
+    GEN_BASELINE=$(printf '%s' "${GEN_FIXTURE}" | python3 "${GENERATOR_TEST_DIR}/generator_lifecycle.py" \
+        "${GENERATOR_STRUCT_ID}" "${PLAYER_4_ID}" "${PLAYER_4_VAULT}" "${PLAYER_4_PLANET_ID}")
+    GEN_READY=$(printf '%s' "${GEN_BASELINE}" | jq -r '.ready')
+    [ "${GEN_READY}" != true ] || break
+    sleep "${SLEEP}"
+done
+if [ "${GEN_READY}" != true ]; then
+    echo "FAIL: Generator restoration did not finish within the fixture allowance" >&2
+    exit 1
+fi
+GEN_JSON=$(printf '%s' "${GEN_FIXTURE}" | jq -c '.generator')
+P4_JSON=$(printf '%s' "${GEN_FIXTURE}" | jq -c '.player')
+P4_CAP_BEFORE=$(printf '%s' "${GEN_BASELINE}" | jq -r '.capacityBefore')
+P4_CAP_EXPECTED_INFUSED=$(printf '%s' "${GEN_BASELINE}" | jq -r '.capacityAfterInfusion')
+P4_CAP_EXPECTED_DESTROYED=$(printf '%s' "${GEN_BASELINE}" | jq -r '.capacityAfterDestruction')
 P4_LOAD_BEFORE=$(jqr "${P4_JSON}" '.gridAttributes.structsLoad' '0')
-info "Player 4 capacity before generator: ${P4_CAP_BEFORE}"
-info "Player 4 structsLoad before generator: ${P4_LOAD_BEFORE}"
-
-# ─── Generator was pre-seeded in Phase 8 — compute now (massively aged) ───
-info "Computing Field Generator ${GENERATOR_STRUCT_ID} (pre-seeded in Phase 8)"
-run_compute "Building Field Generator ${GENERATOR_STRUCT_ID}" \
-    tx structs struct-build-compute "${GENERATOR_STRUCT_ID}" --from player_4
-
-# Verify it was built and went online automatically
-GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}")
-GEN_BUILT=$(jqr "${GEN_JSON}" '.structAttributes.isBuilt' 'false')
-GEN_ONLINE=$(jqr "${GEN_JSON}" '.structAttributes.isOnline' 'false')
-GEN_TYPE=$(jqr "${GEN_JSON}" '.Struct.type')
-assert_eq "Generator built" "true" "${GEN_BUILT}"
-assert_eq "Generator online after build" "true" "${GEN_ONLINE}"
-assert_eq "Generator type" "20" "${GEN_TYPE}"
+assert_eq "Generator ready with reconciled fuel and capacity" true "${GEN_READY}"
+info "Player 4 capacity before top-up: ${P4_CAP_BEFORE}; after removal: ${P4_CAP_EXPECTED_DESTROYED}"
 
 # ─── Infuse alpha into the generator (must be online) ───
+# Generator fuel is burned from the player vault, independently of key funds.
+PLAYER_4_VAULT=$(get_vault_address "${PLAYER_4_ID}")
+fund_vault_alpha "${PLAYER_4_ID}" 1000000
+# Funding can advance the chain: refresh the baseline before submitting the burn.
+GEN_FIXTURE=$(generator_fixture_snapshot)
+GEN_BASELINE=$(printf '%s' "${GEN_FIXTURE}" | python3 "${GENERATOR_TEST_DIR}/generator_lifecycle.py" \
+    "${GENERATOR_STRUCT_ID}" "${PLAYER_4_ID}" "${PLAYER_4_VAULT}" "${PLAYER_4_PLANET_ID}")
+printf '%s' "${GEN_BASELINE}" | jq -e '.ready == true' >/dev/null
+GEN_BEFORE_HEIGHT=$(printf '%s' "${GEN_FIXTURE}" | jq -er '.height')
+P4_JSON=$(printf '%s' "${GEN_FIXTURE}" | jq -c '.player')
+P4_LOAD_BEFORE=$(jqr "${P4_JSON}" '.gridAttributes.structsLoad' '0')
+P4_PRIMARY=$(printf '%s' "${GEN_FIXTURE}" | jq -er '.player.Player.primaryAddress | select(type == "string" and length > 0)')
+P4_CAP_BEFORE=$(printf '%s' "${GEN_BASELINE}" | jq -er '.capacityBefore')
+P4_CAP_EXPECTED_INFUSED=$(printf '%s' "${GEN_BASELINE}" | jq -er '.capacityAfterInfusion')
+P4_CAP_EXPECTED_DESTROYED=$(printf '%s' "${GEN_BASELINE}" | jq -er '.capacityAfterDestruction')
+GEN_FUEL_EXPECTED=$(printf '%s' "${GEN_BASELINE}" | jq -er '.fuelAfterInfusion')
+P4_VAULT_BEFORE_GENERATOR=$(get_balance_at_height "${PLAYER_4_VAULT}" ualpha "${GEN_BEFORE_HEIGHT}")
+P4_SIGNING_BEFORE_GENERATOR=$(get_balance_at_height "${PLAYER_4_ADDRESS}" ualpha "${GEN_BEFORE_HEIGHT}")
+P4_VAULT_EXPECTED=$(python3 -c 'import sys; n=int(sys.argv[1]); assert n >= 1000000; print(n-1000000)' "${P4_VAULT_BEFORE_GENERATOR}")
+GEN_MODULE=$(query query auth module-account structs --height "${GEN_BEFORE_HEIGHT}" | jq -er '
+    .account | select(.type == "/cosmos.auth.v1beta1.ModuleAccount") | .value
+    | select(.name == "structs") | .address | select(type == "string" and length > 0)')
 INFUSE_AMOUNT="1000000ualpha"
 info "Infusing ${INFUSE_AMOUNT} into generator (GeneratingRate=2, expected power=2000000)"
 
 run_tx "Infusing ${INFUSE_AMOUNT} into generator ${GENERATOR_STRUCT_ID}" \
     tx structs struct-generator-infuse "${GENERATOR_STRUCT_ID}" "${INFUSE_AMOUNT}" --from player_4
 
-# Verify fuel was added to the struct
-GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}")
+GEN_TXHASH=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))')
+GEN_RECEIPT=$(query query tx "${GEN_TXHASH}")
+GEN_INFUSE_HEIGHT=$(printf '%s' "${GEN_RECEIPT}" | python3 "${GENERATOR_TEST_DIR}/generator_infuse.py" \
+    "${GEN_TXHASH}" "${GENERATOR_STRUCT_ID}" "${PLAYER_4_ID}" "${PLAYER_4_VAULT}" "${P4_PRIMARY}" \
+    "${PLAYER_4_ADDRESS}" "${GEN_MODULE}" "${GEN_FUEL_EXPECTED}" "${P4_CAP_EXPECTED_INFUSED}")
+python3 -c 'import sys; assert int(sys.argv[1]) > int(sys.argv[2])' "${GEN_INFUSE_HEIGHT}" "${GEN_BEFORE_HEIGHT}"
+GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}" --height "${GEN_INFUSE_HEIGHT}")
 GEN_FUEL=$(jqr "${GEN_JSON}" '.gridAttributes.fuel' '0')
 info "Generator fuel after infusion: ${GEN_FUEL}"
-assert_gt "Generator has fuel" 0 "${GEN_FUEL}"
+assert_eq "Generator receives exactly the infused fuel" "${GEN_FUEL_EXPECTED}" "${GEN_FUEL}"
+assert_eq "Generator infusion debits the player vault" "${P4_VAULT_EXPECTED}" "$(get_balance_at_height "${PLAYER_4_VAULT}" ualpha "${GEN_INFUSE_HEIGHT}")"
+assert_eq "Generator infusion preserves signing-key funds" "${P4_SIGNING_BEFORE_GENERATOR}" "$(get_balance_at_height "${PLAYER_4_ADDRESS}" ualpha "${GEN_INFUSE_HEIGHT}")"
 
 # Generator remains online — verify
 GEN_ONLINE_AFTER_INFUSE=$(jqr "${GEN_JSON}" '.structAttributes.isOnline' 'false')
 assert_eq "Generator still online after infuse" "true" "${GEN_ONLINE_AFTER_INFUSE}"
 
 # ─── Verify Player 4's capacity increased from generator power ───
-P4_JSON=$(query query structs player "${PLAYER_4_ID}")
+P4_JSON=$(query query structs player "${PLAYER_4_ID}" --height "${GEN_INFUSE_HEIGHT}")
 P4_CAP_AFTER_GEN=$(jqr "${P4_JSON}" '.gridAttributes.capacity' '0')
 P4_LOAD_AFTER_GEN=$(jqr "${P4_JSON}" '.gridAttributes.structsLoad' '0')
 info "Player 4 capacity after generator online: ${P4_CAP_AFTER_GEN} (was ${P4_CAP_BEFORE})"
 info "Player 4 structsLoad after generator online: ${P4_LOAD_AFTER_GEN} (was ${P4_LOAD_BEFORE})"
-assert_gt "Player 4 capacity increased from generator" "${P4_CAP_BEFORE}" "${P4_CAP_AFTER_GEN}"
+assert_eq "Player 4 receives exact generator capacity" "${P4_CAP_EXPECTED_INFUSED}" "${P4_CAP_AFTER_GEN}"
 
-# Generator power contribution is reflected in the player's capacity increase
-# (verified above), not necessarily in the struct's own gridAttributes.power.
-GEN_POWER=$(jqr "${GEN_JSON}" '.gridAttributes.power' '0')
-info "Generator gridAttributes.power: ${GEN_POWER} (power reflected in player capacity, not struct)"
+# This fixture burns one Alpha at its published generating rate of two. With
+# zero commission its output is credited to the player, not the struct grid.
+GEN_POWER=$((P4_CAP_AFTER_GEN - P4_CAP_BEFORE))
+info "Generator contribution to player capacity: ${GEN_POWER}"
 
 # ─── Verify generator energy can support allocations ───
-# Player 4 should have more available capacity now
-P4_AVAIL_CAP=$(( P4_CAP_AFTER_GEN - P4_LOAD_AFTER_GEN ))
-info "Player 4 available capacity (capacity - structsLoad): ${P4_AVAIL_CAP}"
-assert_gt "Player 4 has available capacity for allocations" 0 "${P4_AVAIL_CAP}"
+# Outbound allocation uses primary capacity minus allocation load. Struct load
+# and secondary capacity belong to the separate building/gameplay headroom check.
+GENERATOR_TEST_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+P4_ALLOCATABLE=$(echo "${P4_JSON}" | python3 "${GENERATOR_TEST_DIR}/player_allocatable_capacity.py")
+P4_AVAIL_CAP=$(echo "${P4_ALLOCATABLE}" | jq -er '.allocatableCapacity')
+info "Player 4 allocatable primary capacity: ${P4_AVAIL_CAP}"
+assert_eq "Player 4 has available capacity for allocations" "true" "$(echo "${P4_ALLOCATABLE}" | jq -r '.hasCapacity')"
 
 # ─── Now destroy the generator: Player 3 attacks ───
 info "--- Destruction Phase ---"
@@ -5506,17 +6351,10 @@ echo "  Player 3 will move fleet to Player 4's planet and destroy the generator"
 echo "  Generator MaxHealth=8 + armour (AttackReduction=1): Tank (type=9, land) 2 dmg → 1 net per shot → 8 rounds"
 echo "  NOTE: Command Ship (space ambit) cannot target land structs — using Tank instead"
 
-# Move Player 3's fleet to Player 4's planet (fleet-move has no charge cost)
-run_tx "Moving Player 3's fleet to Player 4's planet (${PLAYER_4_PLANET_ID})" \
-    tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_4_PLANET_ID}" --from player_3
-
-# Verify fleet location
-FLEET_3_JSON=$(query query structs fleet "${PLAYER_3_FLEET_ID}")
-FLEET_3_LOC=$(jqr "${FLEET_3_JSON}" '.Fleet.locationId')
-info "Player 3 fleet location: ${FLEET_3_LOC}"
+combat_move_fleet 3 "${PLAYER_4_PLANET_ID}"
 
 # Record generator health before attacks
-GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}" || echo '{}')
+GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}")
 GEN_HP_BEFORE=$(jqr "${GEN_JSON}" '.structAttributes.health' '0')
 info "Generator health before attacks: ${GEN_HP_BEFORE} (MaxHealth=8; armour reduces each 2-dmg Tank hit to 1 net)"
 
@@ -5526,7 +6364,7 @@ wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
 run_tx "Attack round 1: Tank -> Generator (armour: 2 dmg → 1 net)" \
     tx structs struct-attack "${DESTROYER_STRUCT_ID}" "${GENERATOR_STRUCT_ID}" primaryWeapon --from player_3
 
-GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}" || echo '{}')
+GEN_JSON=$(generator_state_after_attack "${GEN_HP_BEFORE}")
 GEN_HP_MID=$(jqr "${GEN_JSON}" '.structAttributes.health' '0')
 info "Generator health after round 1: ${GEN_HP_MID} (was ${GEN_HP_BEFORE})"
 # Armour: a 2-damage Tank hit lands only 1 net damage on the generator.
@@ -5541,33 +6379,35 @@ for round in 2 3 4 5 6 7 8 9 10 11 12; do
     wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
     run_tx "Attack round ${round}: Tank -> Generator" \
         tx structs struct-attack "${DESTROYER_STRUCT_ID}" "${GENERATOR_STRUCT_ID}" primaryWeapon --from player_3
-    GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}" || echo '{}')
+    GEN_JSON=$(generator_state_after_attack "${GEN_HP_NOW}")
     GEN_HP_NOW=$(jqr "${GEN_JSON}" '.structAttributes.health' '0')
     info "Generator health after round ${round}: ${GEN_HP_NOW}"
 done
 
-GEN_JSON=$(query query structs struct "${GENERATOR_STRUCT_ID}" || echo '{}')
+# Keep the last confirmed attack-height state, even if the sweep has since run.
 GEN_HP_AFTER=$(jqr "${GEN_JSON}" '.structAttributes.health' '0')
 GEN_DESTROYED=$(jqr "${GEN_JSON}" '.structAttributes.isDestroyed' 'false')
 info "Generator health after destruction loop: ${GEN_HP_AFTER}"
 info "Generator isDestroyed: ${GEN_DESTROYED}"
 assert_eq "Generator destroyed (health=0)" "0" "${GEN_HP_AFTER}"
+assert_eq "Generator destroyed flag is set" "true" "${GEN_DESTROYED}"
 
 # ─── Verify Player 4's capacity decreased — energy no longer generated ───
-P4_JSON=$(query query structs player "${PLAYER_4_ID}")
+GEN_DESTROY_HEIGHT=$(generator_destruction_height)
+P4_JSON=$(query query structs player "${PLAYER_4_ID}" --height "${GEN_DESTROY_HEIGHT}")
 P4_CAP_AFTER_DESTROY=$(jqr "${P4_JSON}" '.gridAttributes.capacity' '0')
 P4_LOAD_AFTER_DESTROY=$(jqr "${P4_JSON}" '.gridAttributes.structsLoad' '0')
 info "Player 4 capacity after generator destroyed: ${P4_CAP_AFTER_DESTROY} (was ${P4_CAP_AFTER_GEN} with generator)"
 info "Player 4 structsLoad after generator destroyed: ${P4_LOAD_AFTER_DESTROY} (was ${P4_LOAD_AFTER_GEN})"
-assert_lt "Player 4 capacity decreased after generator destroyed" "${P4_CAP_AFTER_GEN}" "${P4_CAP_AFTER_DESTROY}"
+assert_eq "Player 4 capacity removes all generator power including resumed fuel" "${P4_CAP_EXPECTED_DESTROYED}" "${P4_CAP_AFTER_DESTROY}"
 
-# Generator fuel/power should be zero after destruction
+# The one-position fixture's burned fuel is removed by bounded destruction.
+# Exact removal of its capacity contribution was checked above.
 GEN_FUEL_AFTER=$(jqr "${GEN_JSON}" '.gridAttributes.fuel' '0')
-GEN_POWER_AFTER=$(jqr "${GEN_JSON}" '.gridAttributes.power' '0')
 info "Generator fuel after destruction: ${GEN_FUEL_AFTER} (was ${GEN_FUEL})"
-info "Generator power after destruction: ${GEN_POWER_AFTER} (was ${GEN_POWER})"
 assert_eq "Generator fuel zeroed after destruction" "0" "${GEN_FUEL_AFTER}"
-assert_eq "Generator power zeroed after destruction" "0" "${GEN_POWER_AFTER}"
+assert_eq "Generator destruction preserves already-debited vault funds" "${P4_VAULT_EXPECTED}" "$(get_balance_at_height "${PLAYER_4_VAULT}" ualpha "${GEN_DESTROY_HEIGHT}")"
+assert_eq "Generator destruction preserves signing-key funds" "${P4_SIGNING_BEFORE_GENERATOR}" "$(get_balance_at_height "${PLAYER_4_ADDRESS}" ualpha "${GEN_DESTROY_HEIGHT}")"
 
 echo ""
 echo "  Summary: Generator built, infused (power=${GEN_POWER}), then destroyed."
@@ -5583,32 +6423,121 @@ if run_phase 1550; then
 
 section "PHASE 15b: Player Operations"
 
-# ─── player-send: Player 2 sends tokens to Player 3 ───
+# ─── player-send: fund a signing key from its vault, then send to Player 3 ───
 # NOTE: Player 5 lost PermissionAssets (8) in Phase 4e, so we use Player 2 instead.
-P2_BALANCE_BEFORE=$(get_balance "${PLAYER_2_ADDRESS}" "ualpha")
-P3_BALANCE_BEFORE=$(get_balance "${PLAYER_3_ADDRESS}" "ualpha")
-info "Player 2 ualpha before send: ${P2_BALANCE_BEFORE}"
-info "Player 3 ualpha before send: ${P3_BALANCE_BEFORE}"
-
+# Earlier address operations can sweep all signing-address funds into the vault.
 SEND_AMOUNT="100000"
+PLAYER_2_VAULT=$(get_vault_address "${PLAYER_2_ID}")
+fund_vault_alpha "${PLAYER_2_ID}" "${SEND_AMOUNT}"
+P2_VAULT_BEFORE_SEND=$(get_balance "${PLAYER_2_VAULT}" ualpha)
+P2_KEY_BEFORE_FUND=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
+run_tx "Fund Player 2 signing key from its vault via player-send" \
+    tx structs player-send "${PLAYER_2_VAULT}" "${PLAYER_2_ADDRESS}" "${SEND_AMOUNT}ualpha" --from player_2
+assert_eq "Vault debited exactly for signing-key funding" \
+    "$((P2_VAULT_BEFORE_SEND - SEND_AMOUNT))" "$(get_balance "${PLAYER_2_VAULT}" ualpha)"
+assert_eq "Signing key credited exactly from vault" \
+    "$((P2_KEY_BEFORE_FUND + SEND_AMOUNT))" "$(get_balance "${PLAYER_2_ADDRESS}" ualpha)"
+
+P2_BALANCE_BEFORE=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
+P3_BALANCE_BEFORE=$(get_balance "${PLAYER_3_ADDRESS}" ualpha)
 run_tx "Player 2 sending ${SEND_AMOUNT}ualpha to Player 3 via player-send" \
     tx structs player-send "${PLAYER_2_ADDRESS}" "${PLAYER_3_ADDRESS}" "${SEND_AMOUNT}ualpha" --from player_2
+P2_BALANCE_AFTER=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
+P3_BALANCE_AFTER=$(get_balance "${PLAYER_3_ADDRESS}" ualpha)
+assert_eq "Player 2 debited exactly by player-send" \
+    "$((P2_BALANCE_BEFORE - SEND_AMOUNT))" "${P2_BALANCE_AFTER}"
+assert_eq "Player 3 credited exactly by player-send, including an empty account" \
+    "$((P3_BALANCE_BEFORE + SEND_AMOUNT))" "${P3_BALANCE_AFTER}"
 
-P2_BALANCE_AFTER=$(get_balance "${PLAYER_2_ADDRESS}" "ualpha")
-P3_BALANCE_AFTER=$(get_balance "${PLAYER_3_ADDRESS}" "ualpha")
-info "Player 2 ualpha after send: ${P2_BALANCE_AFTER}"
-info "Player 3 ualpha after send: ${P3_BALANCE_AFTER}"
+# Use a fresh player: earlier guild joins can leave in-flight redelegations that
+# correctly block primary-address movement. This fixture has no such operations.
+ROTATION_KEY="vault_rotation_$(date +%s)_$$"
+ROTATION_SECOND_KEY="${ROTATION_KEY}_secondary"
+structsd ${PARAMS_KEYS} keys add "${ROTATION_KEY}" --no-backup >/dev/null
+ROTATION_ADDRESS=$(structsd ${PARAMS_KEYS} keys show "${ROTATION_KEY}" | jq -er '.address | select(type == "string" and length > 0)')
+ROTATION_VALIDATOR=$(jqr "$(query query structs reactor "${REACTOR_ID}")" '.Reactor.validator' '')
+assert_not_empty "Rotation fixture validator exists" "${ROTATION_VALIDATOR}"
+run_tx "Fund primary-rotation fixture" \
+    tx bank send "${BOB_ADDRESS}" "${ROTATION_ADDRESS}" 4000000ualpha --from bob
+run_tx "Create rotation player through initial delegation" \
+    tx staking delegate "${ROTATION_VALIDATOR}" 2000000ualpha --from "${ROTATION_KEY}"
+ROTATION_PLAYER=$(query query structs address "${ROTATION_ADDRESS}" | jq -er '.playerId | select(type == "string" and length > 0)')
+ROTATION_VAULT=$(get_vault_address "${ROTATION_PLAYER}")
+fund_vault_alpha "${ROTATION_PLAYER}" 1000000
+run_tx "Create independent vault stake before primary rotation" \
+    tx structs reactor-infuse "${ROTATION_VALIDATOR}" 500000ualpha --from "${ROTATION_KEY}"
+ROTATION_VAULT_BALANCE=$(get_balance "${ROTATION_VAULT}" ualpha)
+ROTATION_VAULT_SHARES=$(get_fixture_delegation_shares "${ROTATION_VAULT}" "${ROTATION_VALIDATOR}")
 
-# Player 3 should have received the tokens
-if [ -n "${P3_BALANCE_BEFORE}" ] && [ -n "${P3_BALANCE_AFTER}" ] && [ "${P3_BALANCE_BEFORE}" != "0" ]; then
-    assert_gt "Player 3 balance increased after player-send" "${P3_BALANCE_BEFORE}" "${P3_BALANCE_AFTER}"
+ROTATION_CHAIN_ID=$(query status | jq -er '.node_info.network | select(type == "string" and length > 0)')
+ROTATION_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROTATION_PROOF=$(cd "${ROTATION_REPO}" && go run ./tests/tools/addressproof \
+    -chain-id "${ROTATION_CHAIN_ID}" -player "${ROTATION_PLAYER}" -nonce 0) || ROTATION_PROOF=""
+if parse_address_proof "${ROTATION_PROOF}" && \
+    structsd ${PARAMS_KEYS} keys import-hex "${ROTATION_SECOND_KEY}" "${PRIVKEY}" >/dev/null 2>&1; then
+ROTATION_SECOND_ADDRESS="${ADDRESS}"
+ROTATION_PUBKEY="${PROOF_PUBKEY}"
+ROTATION_SIGNATURE="${PROOF_SIGNATURE}"
+unset PRIVKEY ROTATION_PROOF
+assert_eq "Rotation proof matches imported key" "${ROTATION_SECOND_ADDRESS}" \
+    "$(structsd ${PARAMS_KEYS} keys show "${ROTATION_SECOND_KEY}" | jq -er '.address | select(type == "string" and length > 0)')"
+run_tx "Register rotation secondary with full permissions" \
+    tx structs address-register "${ROTATION_PLAYER}" "${ROTATION_SECOND_ADDRESS}" \
+    "${ROTATION_PUBKEY}" "${ROTATION_SIGNATURE}" 33554431 --from "${ROTATION_KEY}"
+ROTATION_PRIMARY_BALANCE=$(get_balance "${ROTATION_ADDRESS}" ualpha)
+ROTATION_PRIMARY_SHARES=$(get_fixture_delegation_shares "${ROTATION_ADDRESS}" "${ROTATION_VALIDATOR}")
+ROTATION_EXPECTED_SHARES=$(python3 "${ROTATION_REPO}/tests/sum_staking_shares.py" "${ROTATION_VAULT_SHARES}" "${ROTATION_PRIMARY_SHARES}")
+run_tx "Rotate primary to the new key" \
+    tx structs player-update-primary-address "${ROTATION_SECOND_ADDRESS}" --from "${ROTATION_KEY}"
+assert_eq "New primary address installed" "${ROTATION_SECOND_ADDRESS}" \
+    "$(jqr "$(query query structs player "${ROTATION_PLAYER}")" '.Player.primaryAddress' '')"
+assert_eq "Rotation preserves vault association" "${ROTATION_VAULT}" "$(get_vault_address "${ROTATION_PLAYER}")"
+# ─── rotation exact balance accounting ───
+ROTATION_MINIMUM_BALANCE=$(python3 - "${ROTATION_VAULT_BALANCE}" "${ROTATION_PRIMARY_BALANCE}" <<'PY_ROTATION'
+import re
+import sys
+values = sys.argv[1:]
+if not all(re.fullmatch(r"0|[1-9][0-9]*", value) for value in values):
+    raise SystemExit("invalid rotation balance")
+print(sum(map(int, values)))
+PY_ROTATION
+)
+ROTATION_VAULT_BALANCE=$(get_balance "${ROTATION_VAULT}" ualpha)
+ROTATION_OLD_PRIMARY_BALANCE=$(get_balance "${ROTATION_ADDRESS}" ualpha)
+assert_ge "Rotation sweeps spendable balance and settled rewards to vault" \
+    "${ROTATION_MINIMUM_BALANCE}" "${ROTATION_VAULT_BALANCE}"
+assert_eq "Rotation clears old primary spendable funds" "0" "${ROTATION_OLD_PRIMARY_BALANCE}"
+# ─── rotation exact balance accounting complete ───
+assert_eq "Rotation merges primary stake with existing vault delegation" "${ROTATION_EXPECTED_SHARES}" \
+    "$(get_fixture_delegation_shares "${ROTATION_VAULT}" "${ROTATION_VALIDATOR}")"
+assert_eq "Rotation removes old primary delegation" "0.000000000000000000" \
+    "$(get_fixture_delegation_shares "${ROTATION_ADDRESS}" "${ROTATION_VALIDATOR}" empty)"
+run_tx "New primary signs restoration of original primary" \
+    tx structs player-update-primary-address "${ROTATION_ADDRESS}" --from "${ROTATION_SECOND_KEY}"
+assert_eq "Original primary restored" "${ROTATION_ADDRESS}" \
+    "$(jqr "$(query query structs player "${ROTATION_PLAYER}")" '.Player.primaryAddress' '')"
+run_tx "Revoke the rotation secondary" \
+    tx structs address-revoke "${ROTATION_SECOND_ADDRESS}" --from "${ROTATION_KEY}"
+# ─── rotation revoked spend accounting ───
+ROTATION_BEFORE_REVOKED_SPEND=$(get_balance "${ROTATION_VAULT}" ualpha)
+assert_ge "Restoration and revocation preserve vault funds including settled rewards" \
+    "${ROTATION_VAULT_BALANCE}" "${ROTATION_BEFORE_REVOKED_SPEND}"
+run_tx_expect_fail_noauto "Revoked rotation key cannot spend player vault funds" \
+    tx structs vault-send "${ROTATION_PLAYER}" "${PLAYER_2_ID}" 1ualpha --from "${ROTATION_SECOND_KEY}"
+ROTATION_AFTER_REVOKED_SPEND=$(get_balance "${ROTATION_VAULT}" ualpha)
+assert_eq "Rejected revoked-key transfer preserves vault balance" "${ROTATION_BEFORE_REVOKED_SPEND}" "${ROTATION_AFTER_REVOKED_SPEND}"
+# ─── rotation revoked spend accounting complete ───
+assert_eq "Restoration leaves original primary without delegated stake" "0.000000000000000000" \
+    "$(get_fixture_delegation_shares "${ROTATION_ADDRESS}" "${ROTATION_VALIDATOR}" empty)"
+assert_eq "Revoked secondary retains no delegated stake" "0.000000000000000000" \
+    "$(get_fixture_delegation_shares "${ROTATION_SECOND_ADDRESS}" "${ROTATION_VALIDATOR}" empty)"
+assert_eq "Restoration and revocation preserve vault delegation" "${ROTATION_EXPECTED_SHARES}" \
+    "$(get_fixture_delegation_shares "${ROTATION_VAULT}" "${ROTATION_VALIDATOR}")"
+else
+    echo -e "  ${RED}FAIL${NC}: rotation proof generation, validation or key import failed"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+    unset PRIVKEY ROTATION_PROOF
 fi
-
-# Note: the PermAll gate for player-update-primary-address is covered in the
-# Player 5 permission phase (self-update while reduced / restored). The happy
-# path that swaps onto a second address still needs a crypto proof signature,
-# which is complex to generate in bash, so that case stays skipped here.
-info "player-update-primary-address second-address swap: SKIP (requires crypto proof)"
 
 fi # phase 15b
 
@@ -5619,6 +6548,14 @@ if run_phase 1600; then
 # ═════════════════════════════════════════════════════════════════════════════
 
 section "PHASE 16: Provider & Agreement System"
+
+# Settlement also uses these Python helpers. Resume can skip the generator
+# phase that first used them, so resolve the path again before any phase-16 work.
+GENERATOR_TEST_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+PLAYER_1_VAULT=$(get_vault_address "${PLAYER_1_ID}")
+PLAYER_2_VAULT=$(get_vault_address "${PLAYER_2_ID}")
+PLAYER_3_VAULT=$(get_vault_address "${PLAYER_3_ID}")
 
 # provider-create [substation id] [rate] [access policy] [provider penalty] [consumer penalty]
 #                  [capacity min] [capacity max] [duration min] [duration max]
@@ -5632,9 +6569,8 @@ PROVIDER_DUR_MAX=10000
 
 # ─── Negative test: bad rate (no denomination) should be rejected ───
 BAD_RATE="1"
-# The rejection is a client-side CLI parse error rather than a chain code:
-# autocli binds the rate positional to a Coin flag, so "1" never leaves the
-# machine. run_tx_expect_fail accepts any failure, which is what that means here.
+# AutoCLI binds the rate positional to a Coin flag. Require its exact parse
+# refusal below; an unrelated transport/permission failure is not this control.
 run_tx_expect_fail "Alice attempting provider-create with bad rate (no denom)" \
     tx structs provider-create "${SUBSTATION_ID}" \
     "${BAD_RATE}" "${PROVIDER_ACCESS}" \
@@ -5643,9 +6579,10 @@ run_tx_expect_fail "Alice attempting provider-create with bad rate (no denom)" \
     "${PROVIDER_DUR_MIN}" "${PROVIDER_DUR_MAX}" \
     --from alice
 
-PROVIDER_ALL_BEFORE=$(query query structs provider-all 2>/dev/null || echo '{}')
-BAD_PROVIDER_ID=$(echo "${PROVIDER_ALL_BEFORE}" | jq -r '.Provider[-1].id // empty' 2>/dev/null || echo "")
-assert_eq "Bad rate provider rejected (no provider created)" "" "${BAD_PROVIDER_ID}"
+# This is client validation. A global provider inventory cannot prove it: an
+# existing provider is unrelated, and an unavailable query is not an empty list.
+assert_eq "Bad provider rate refused by CLI coin parser" \
+    'invalid argument "1" for "--1" flag: invalid input format' "${LAST_TX_OUTPUT}"
 
 # ─── Good provider creation with proper coin denomination ───
 PROVIDER_RATE="1ualpha"
@@ -5659,7 +6596,7 @@ run_tx "Alice creating energy provider on substation" \
     --from alice
 
 # Find the provider
-PROVIDER_ID=$(get_newest_provider_id)
+PROVIDER_ID=$(get_created_provider_id "${PLAYER_1_ID}" "${SUBSTATION_ID}")
 info "Provider ID: ${PROVIDER_ID}"
 
 if [ -n "${PROVIDER_ID}" ]; then
@@ -5672,23 +6609,36 @@ if [ -n "${PROVIDER_ID}" ]; then
     info "Provider created: rate=${PROV_RATE_AMOUNT}${PROV_RATE_DENOM}"
 
     # ─── provider-update-access-policy ───
+    # Compare complete provider records after each update. Protobuf JSON may
+    # omit the zero-valued openMarket enum; normalize only that valid default.
+    PROV_RECORD_FILTER='.Provider | select(type == "object" and .id == $id) | if has("accessPolicy") then . else .accessPolicy = "openMarket" end'
+    PROV_EXPECTED=$(query query structs provider "${PROVIDER_ID}" | jq -ceS --arg id "${PROVIDER_ID}" "${PROV_RECORD_FILTER}")
     run_tx "Updating provider access policy to 'open-market'" \
         tx structs provider-update-access-policy "${PROVIDER_ID}" "open-market" --from alice
+    PROV_EXPECTED=$(echo "${PROV_EXPECTED}" | jq -ceS --arg value "openMarket" '.accessPolicy = $value')
+    PROV_ACTUAL=$(query query structs provider "${PROVIDER_ID}" | jq -ceS --arg id "${PROVIDER_ID}" "${PROV_RECORD_FILTER}")
+    assert_eq "Provider accessPolicy update preserves other terms" "${PROV_EXPECTED}" "${PROV_ACTUAL}"
 
-    PROV_JSON=$(query query structs provider "${PROVIDER_ID}" 2>/dev/null || echo '{}')
-    PROV_ACCESS=$(jqr "${PROV_JSON}" '.Provider.accessPolicy' '')
-    info "Provider access policy after update: ${PROV_ACCESS}"
 
     # Set back to guild
     run_tx "Setting provider access policy back to 'guild-market'" \
         tx structs provider-update-access-policy "${PROVIDER_ID}" "guild-market" --from alice
+    PROV_EXPECTED=$(echo "${PROV_EXPECTED}" | jq -ceS --arg value "guildMarket" '.accessPolicy = $value')
+    PROV_ACTUAL=$(query query structs provider "${PROVIDER_ID}" | jq -ceS --arg id "${PROVIDER_ID}" "${PROV_RECORD_FILTER}")
+    assert_eq "Provider accessPolicy update preserves other terms" "${PROV_EXPECTED}" "${PROV_ACTUAL}"
 
     # ─── provider-update-capacity-minimum / maximum ───
     run_tx "Updating provider capacity minimum to 50000" \
         tx structs provider-update-capacity-minimum "${PROVIDER_ID}" 50000 --from alice
+    PROV_EXPECTED=$(echo "${PROV_EXPECTED}" | jq -ceS --arg value "50000" '.capacityMinimum = $value')
+    PROV_ACTUAL=$(query query structs provider "${PROVIDER_ID}" | jq -ceS --arg id "${PROVIDER_ID}" "${PROV_RECORD_FILTER}")
+    assert_eq "Provider capacityMinimum update preserves other terms" "${PROV_EXPECTED}" "${PROV_ACTUAL}"
 
     run_tx "Updating provider capacity maximum to 10000000" \
         tx structs provider-update-capacity-maximum "${PROVIDER_ID}" 10000000 --from alice
+    PROV_EXPECTED=$(echo "${PROV_EXPECTED}" | jq -ceS --arg value "10000000" '.capacityMaximum = $value')
+    PROV_ACTUAL=$(query query structs provider "${PROVIDER_ID}" | jq -ceS --arg id "${PROVIDER_ID}" "${PROV_RECORD_FILTER}")
+    assert_eq "Provider capacityMaximum update preserves other terms" "${PROV_EXPECTED}" "${PROV_ACTUAL}"
 
     # ─── provider-update-duration-minimum / maximum ───
     # Kept at 1 deliberately. A capacity change re-prices the unearned span and
@@ -5701,23 +6651,24 @@ if [ -n "${PROVIDER_ID}" ]; then
     # tripling the agreement collateral, which Player 2 needs for later phases.
     run_tx "Updating provider duration minimum to 1" \
         tx structs provider-update-duration-minimum "${PROVIDER_ID}" 1 --from alice
+    PROV_EXPECTED=$(echo "${PROV_EXPECTED}" | jq -ceS --arg value "1" '.durationMinimum = $value')
+    PROV_ACTUAL=$(query query structs provider "${PROVIDER_ID}" | jq -ceS --arg id "${PROVIDER_ID}" "${PROV_RECORD_FILTER}")
+    assert_eq "Provider durationMinimum update preserves other terms" "${PROV_EXPECTED}" "${PROV_ACTUAL}"
 
     run_tx "Updating provider duration maximum to 50000" \
         tx structs provider-update-duration-maximum "${PROVIDER_ID}" 50000 --from alice
+    PROV_EXPECTED=$(echo "${PROV_EXPECTED}" | jq -ceS --arg value "50000" '.durationMaximum = $value')
+    PROV_ACTUAL=$(query query structs provider "${PROVIDER_ID}" | jq -ceS --arg id "${PROVIDER_ID}" "${PROV_RECORD_FILTER}")
+    assert_eq "Provider durationMaximum update preserves other terms" "${PROV_EXPECTED}" "${PROV_ACTUAL}"
 
-    # Verify updates
-    PROV_JSON=$(query query structs provider "${PROVIDER_ID}" 2>/dev/null || echo '{}')
-    PROV_CAP_MIN=$(jqr "${PROV_JSON}" '.Provider.capacityMinimum' '0')
-    PROV_DUR_MAX=$(jqr "${PROV_JSON}" '.Provider.durationMaximum' '0')
-    assert_eq "Provider capacity minimum updated" "50000" "${PROV_CAP_MIN}"
-    assert_eq "Provider duration maximum updated" "50000" "${PROV_DUR_MAX}"
 
     # ─── agreement-open: Player 2 opens an agreement ───
     # Collateral = duration * capacity * rate
-    AGREE_DURATION=40
+    AGREE_DURATION=$((40 * FIXTURE_DURATION_MULTIPLIER))
     AGREE_CAPACITY=50000
 
-    P2_ALPHA_BEFORE=$(get_balance "${PLAYER_2_ADDRESS}" "ualpha")
+    fund_vault_alpha "${PLAYER_2_ID}" $((AGREE_DURATION * AGREE_CAPACITY + 20 * (AGREE_CAPACITY + 25000)))
+    P2_ALPHA_BEFORE=$(get_balance "${PLAYER_2_VAULT}" "ualpha")
     info "Player 2 ualpha before agreement: ${P2_ALPHA_BEFORE}"
 
     # The policy above is guild-market, so CanOpenAgreement demands PermProviderOpen
@@ -5727,11 +6678,32 @@ if [ -n "${PROVIDER_ID}" ]; then
     run_tx "Granting Player 2 PermProviderOpen on provider (guild-market access)" \
         tx structs permission-grant-on-object "${PROVIDER_ID}" "${PLAYER_2_ID}" "${PERM_PROVIDER_OPEN}" --from alice
 
+    # ─── agreement-open collateral accounting ───
+    # This is the fresh provider's first agreement: no prior load may be billed
+    # by the opening checkpoint. Fees use the signing address, not this vault.
+    PROV_OPEN_JSON=$(query query structs provider "${PROVIDER_ID}")
+    PROV_OPEN_LOAD=$(echo "${PROV_OPEN_JSON}" | jq -er '.gridAttributes | select(type == "object") | if has("load") then .load else "0" end | select(type == "string")')
+    assert_eq "Fresh provider has no prior agreement load" "0" "${PROV_OPEN_LOAD}"
+    PROV_OPEN_COLL_ADDR=$(query query structs provider-collateral-address "${PROVIDER_ID}" | jq -er '.internalAddressAssociation[0].address | select(type == "string" and length > 0)')
+    PROV_OPEN_COLL_BEFORE=$(get_balance "${PROV_OPEN_COLL_ADDR}" ualpha)
+    P2_OPEN_VAULT_BEFORE=$(get_balance "${PLAYER_2_VAULT}" ualpha)
+    PROV_OPEN_EARN_ADDR=$(query query structs provider-earnings-address "${PROVIDER_ID}" | jq -er --arg id "${PROVIDER_ID}" '.internalAddressAssociation | select(length == 1 and .[0].objectId == $id) | .[0].address | select(type == "string" and length > 0)')
+    PROV_OPEN_EARN_BEFORE=$(get_balance "${PROV_OPEN_EARN_ADDR}" ualpha)
+    AGREE_SERVICE_TERMS=$(jq -nc --arg provider "${PROVIDER_ID}" --arg owner "${PLAYER_2_ID}" --arg capacity "${AGREE_CAPACITY}" --arg vault "${PLAYER_2_VAULT}" --arg pool "${PROV_OPEN_COLL_ADDR}" '{provider_id:$provider, consumer_owner:$owner, capacity:$capacity, consumer_vault:$vault, collateral_address:$pool}')
+    AGREE_TERMS_TEST_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+    # These fixture values are small, fixed integers (40 * 50000 * rate 1).
+    AGREE_OPEN_COLLATERAL=$((AGREE_DURATION * AGREE_CAPACITY))
     run_tx "Player 2 opening agreement with provider (dur=${AGREE_DURATION}, cap=${AGREE_CAPACITY})" \
         tx structs agreement-open "${PROVIDER_ID}" "${AGREE_DURATION}" "${AGREE_CAPACITY}" --from player_2
+    AGREE_SERVICE_TERMS=$(record_agreement_terms open "${AGREE_DURATION}" "${AGREE_SERVICE_TERMS}")
+    assert_eq "Confirmed open funds exact collateral" "${AGREE_OPEN_COLLATERAL}" "$(printf '%s' "${AGREE_SERVICE_TERMS}" | jq -r '.principal')"
+    PROV_OPEN_JSON=$(query query structs provider "${PROVIDER_ID}")
+    PROV_OPEN_LOAD=$(echo "${PROV_OPEN_JSON}" | jq -er '.gridAttributes | select(type == "object") | if has("load") then .load else "0" end | select(type == "string")')
+    assert_eq "Agreement open installs exact provider load" "${AGREE_CAPACITY}" "${PROV_OPEN_LOAD}"
+    # ─── agreement-open collateral accounting complete ───
 
-    # Find the agreement
-    AGREE_ID=$(get_newest_agreement_id "${PROVIDER_ID}")
+    # Identify this open from the confirmed transaction, not the newest list row.
+    AGREE_ID=$(get_opened_agreement_id "${PROVIDER_ID}" "${PLAYER_2_ID}" "${AGREE_CAPACITY}")
     info "Agreement ID: ${AGREE_ID}"
 
     if [ -n "${AGREE_ID}" ]; then
@@ -5787,62 +6759,122 @@ if [ -n "${PROVIDER_ID}" ]; then
         # ─── agreement-capacity-increase ───
         run_tx "Increasing agreement capacity by 25000" \
             tx structs agreement-capacity-increase "${AGREE_ID}" 25000 --from player_2
+        AGREE_SERVICE_TERMS=$(record_agreement_terms increase 25000 "${AGREE_SERVICE_TERMS}")
 
-        AGREE_JSON=$(query query structs agreement "${AGREE_ID}" 2>/dev/null || echo '{}')
+        AGREE_JSON=$(query query structs agreement "${AGREE_ID}")
         AGREE_CAP_AFTER=$(jqr "${AGREE_JSON}" '.Agreement.capacity' '0')
         info "Agreement capacity after increase: ${AGREE_CAP_AFTER}"
-        assert_gt "Agreement capacity increased" "${AGREE_CAP_CURRENT}" "${AGREE_CAP_AFTER}"
+        AGREE_EXPECTED_CAPACITY=$((AGREE_CAPACITY + 25000))
+        assert_eq "Agreement capacity increased by exact amount" "${AGREE_EXPECTED_CAPACITY}" "${AGREE_CAP_AFTER}"
+        AGREE_RESIZE_POWER=$(query query structs allocation "${AGREE_ALLOC_ID}" | jq -er '.gridAttributes.power | select(type == "string")')
+        AGREE_RESIZE_LOAD=$(query query structs provider "${PROVIDER_ID}" | jq -er '.gridAttributes.load | select(type == "string")')
+        assert_eq "Resized agreement allocation power" "${AGREE_EXPECTED_CAPACITY}" "${AGREE_RESIZE_POWER}"
+        assert_eq "Resized agreement provider load" "${AGREE_EXPECTED_CAPACITY}" "${AGREE_RESIZE_LOAD}"
 
         # ─── agreement-capacity-decrease ───
         run_tx "Decreasing agreement capacity by 10000" \
             tx structs agreement-capacity-decrease "${AGREE_ID}" 10000 --from player_2
+        AGREE_SERVICE_TERMS=$(record_agreement_terms decrease 10000 "${AGREE_SERVICE_TERMS}")
 
-        AGREE_JSON=$(query query structs agreement "${AGREE_ID}" 2>/dev/null || echo '{}')
+        AGREE_JSON=$(query query structs agreement "${AGREE_ID}")
         AGREE_CAP_AFTER_DEC=$(jqr "${AGREE_JSON}" '.Agreement.capacity' '0')
         info "Agreement capacity after decrease: ${AGREE_CAP_AFTER_DEC}"
-        assert_gt "Agreement capacity decreased" "${AGREE_CAP_AFTER_DEC}" "${AGREE_CAP_AFTER}"
+        AGREE_EXPECTED_CAPACITY=$((AGREE_CAPACITY + 25000 - 10000))
+        assert_eq "Agreement capacity decreased by exact amount" "${AGREE_EXPECTED_CAPACITY}" "${AGREE_CAP_AFTER_DEC}"
+        AGREE_RESIZE_POWER=$(query query structs allocation "${AGREE_ALLOC_ID}" | jq -er '.gridAttributes.power | select(type == "string")')
+        AGREE_RESIZE_LOAD=$(query query structs provider "${PROVIDER_ID}" | jq -er '.gridAttributes.load | select(type == "string")')
+        assert_eq "Resized agreement allocation power" "${AGREE_EXPECTED_CAPACITY}" "${AGREE_RESIZE_POWER}"
+        assert_eq "Resized agreement provider load" "${AGREE_EXPECTED_CAPACITY}" "${AGREE_RESIZE_LOAD}"
 
         # ─── agreement-duration-increase ───
-        AGREE_END_BEFORE_DUR=$(jqr "${AGREE_JSON}" '.Agreement.endBlock' '0')
+        AGREE_END_BEFORE_DUR=$(echo "${AGREE_JSON}" | jq -er '.Agreement.endBlock | select(type == "string" and test("^[0-9]+$"))')
+        AGREE_EXPECTED_END=$(python3 -c 'import sys; end=int(sys.argv[1]); assert 0 <= end <= 2**64-21; print(end+20)' "${AGREE_END_BEFORE_DUR}")
+        AGREE_BEFORE_EXTENSION=$(echo "${AGREE_JSON}" | jq -ceS '.Agreement | del(.endBlock)')
+        AGREE_EXTENSION_COLLATERAL=$((20 * AGREE_EXPECTED_CAPACITY))
         run_tx "Increasing agreement duration by 20" \
             tx structs agreement-duration-increase "${AGREE_ID}" 20 --from player_2
+        AGREE_SERVICE_TERMS=$(record_agreement_terms extend 20 "${AGREE_SERVICE_TERMS}")
+        AGREE_TOTAL_PRINCIPAL=$(python3 -c 'import sys; print(sum(map(int, sys.argv[1:])))' "${AGREE_OPEN_COLLATERAL}" "${AGREE_EXTENSION_COLLATERAL}")
+        assert_eq "Confirmed extension funds only the added service" "${AGREE_TOTAL_PRINCIPAL}" "$(printf '%s' "${AGREE_SERVICE_TERMS}" | jq -r '.principal')"
 
-        AGREE_JSON=$(query query structs agreement "${AGREE_ID}" 2>/dev/null || echo '{}')
+        AGREE_JSON=$(query query structs agreement "${AGREE_ID}")
         AGREE_END_AFTER_DUR=$(jqr "${AGREE_JSON}" '.Agreement.endBlock' '0')
         info "Agreement endBlock after duration increase: ${AGREE_END_AFTER_DUR} (was ${AGREE_END_BEFORE_DUR})"
-        assert_gt "Agreement endBlock increased" "${AGREE_END_BEFORE_DUR}" "${AGREE_END_AFTER_DUR}"
+        assert_eq "Agreement endBlock increased by exactly 20" "${AGREE_EXPECTED_END}" "${AGREE_END_AFTER_DUR}"
+        assert_eq "Duration extension preserves other agreement fields" "${AGREE_BEFORE_EXTENSION}" \
+            "$(echo "${AGREE_JSON}" | jq -ceS '.Agreement | del(.endBlock)')"
+        assert_eq "Duration extension preserves allocation power" "${AGREE_EXPECTED_CAPACITY}" \
+            "$(query query structs allocation "${AGREE_ALLOC_ID}" | jq -er '.gridAttributes.power | select(type == "string")')"
+        assert_eq "Duration extension preserves provider load" "${AGREE_EXPECTED_CAPACITY}" \
+            "$(query query structs provider "${PROVIDER_ID}" | jq -er '.gridAttributes.load | select(type == "string")')"
 
         # ─── agreement-close ───
+        # This healthy fixture has rate 1 and zero cancellation penalties. The
+        # transcript retains every capacity window and rounding credit; the
+        # provider checkpoint is not a pricing clock for captured agreements.
+        AGREE_CLOSE_PROVIDER=$(query query structs provider "${PROVIDER_ID}")
+        echo "${AGREE_CLOSE_PROVIDER}" | jq -e '.Provider | .rate.denom == "ualpha" and .rate.amount == "1" and (.providerCancellationPenalty | test("^0(\\.0+)?$")) and (.consumerCancellationPenalty | test("^0(\\.0+)?$"))' >/dev/null
         run_tx "Closing agreement" \
             tx structs agreement-close "${AGREE_ID}" --from player_2
+        AGREE_SERVICE_TERMS=$(record_agreement_terms close 0 "${AGREE_SERVICE_TERMS}")
+        AGREE_CLOSE_EXPECTED=$(python3 "${AGREE_TERMS_TEST_DIR}/agreement_terms.py" balances "${AGREE_SERVICE_TERMS}" "${P2_OPEN_VAULT_BEFORE}" "${PROV_OPEN_COLL_BEFORE}" "${PROV_OPEN_EARN_BEFORE}")
+        assert_eq "Close refunds exact unused collateral" "$(printf '%s' "${AGREE_CLOSE_EXPECTED}" | jq -r '.vault')" "$(get_balance "${PLAYER_2_VAULT}" ualpha)"
+        assert_eq "Completed claim releases all its collateral" "$(printf '%s' "${AGREE_CLOSE_EXPECTED}" | jq -r '.collateral')" "$(get_balance "${PROV_OPEN_COLL_ADDR}" ualpha)"
+        assert_eq "Provider receives exact elapsed-block earnings" "$(printf '%s' "${AGREE_CLOSE_EXPECTED}" | jq -r '.earnings')" "$(get_balance "${PROV_OPEN_EARN_ADDR}" ualpha)"
+        # ─── agreement-close accounting complete ───
 
-        # Verify agreement is closed (no longer queryable)
-        AGREE_JSON=$(query query structs agreement "${AGREE_ID}" 2>/dev/null || echo '{}')
-        AGREE_CLOSED_CHECK=$(jqr "${AGREE_JSON}" '.Agreement.id' '')
-        assert_eq "Agreement closed (removed)" "" "${AGREE_CLOSED_CHECK}"
+        # Verify teardown, including both temporary grants in this small fixture.
+        assert_object_missing "Agreement closed (removed)" agreement "${AGREE_ID}"
+        assert_object_missing "Closed agreement allocation removed" allocation "${AGREE_ALLOC_ID}"
+        PROV_CLOSED_LOAD=$(query query structs provider "${PROVIDER_ID}" | jq -er '.gridAttributes | select(type == "object") | if has("load") then .load else "0" end | select(type == "string")')
+        assert_eq "Agreement close releases provider load" "0" "${PROV_CLOSED_LOAD}"
+        assert_eq "Agreement close clears owner agreement grant" "0" "$(get_permission_value_for_player "${AGREE_ID}" "${PLAYER_2_ID}")"
+        assert_eq "Agreement close clears owner allocation grant" "0" "$(get_permission_value_for_player "${AGREE_ALLOC_ID}" "${PLAYER_2_ID}")"
     else
-        info "SKIP: Could not open agreement"
+        assert_not_empty "Required agreement lifecycle fixture was created" "${AGREE_ID}"
     fi
 
     # ─── provider-withdraw-balance ───
     # Query provider collateral/earnings addresses
-    PROV_COLLATERAL=$(query query structs provider-collateral-address "${PROVIDER_ID}" 2>/dev/null || echo '{}')
-    PROV_COLL_ADDR=$(echo "${PROV_COLLATERAL}" | jq -r '.internalAddressAssociation[0].address // empty' 2>/dev/null || echo "")
+    PROV_COLLATERAL=$(query query structs provider-collateral-address "${PROVIDER_ID}")
+    PROV_COLL_ADDR=$(echo "${PROV_COLLATERAL}" | jq -er '.internalAddressAssociation[0].address | select(type == "string" and length > 0)')
     info "Provider collateral address: ${PROV_COLL_ADDR}"
 
-    run_tx "Withdrawing provider balance to alice" \
-        tx structs provider-withdraw-balance "${PROVIDER_ID}" "${PLAYER_1_ADDRESS}" --from alice
+    PROV_EARN_ADDR=$(query query structs provider-earnings-address "${PROVIDER_ID}" | jq -er '.internalAddressAssociation[0].address | select(length > 0)')
+    PROV_EARN_BEFORE=$(get_balance "${PROV_EARN_ADDR}" ualpha)
+    ALICE_VAULT_BEFORE_WITHDRAW=$(get_balance "${PLAYER_1_VAULT}" ualpha)
+    ALICE_VAULT_EXPECTED_WITHDRAW=$(python3 -c 'import sys; vault, earnings = map(int, sys.argv[1:]); assert min(vault, earnings) >= 0; print(vault+earnings)' "${ALICE_VAULT_BEFORE_WITHDRAW}" "${PROV_EARN_BEFORE}")
+    run_tx "Withdrawing provider balance to Alice vault" \
+        tx structs provider-withdraw-balance "${PROVIDER_ID}" --from alice
+    assert_eq "Provider earnings reach Alice vault without transaction fees" \
+        "${ALICE_VAULT_EXPECTED_WITHDRAW}" "$(get_balance "${PLAYER_1_VAULT}" ualpha)"
+    assert_eq "Provider earnings pool emptied" "0" "$(get_balance "${PROV_EARN_ADDR}" ualpha)"
 
     # ─── provider-delete ───
+    PROV_DELETE_LOAD=$(query query structs provider "${PROVIDER_ID}" | jq -er '.gridAttributes | select(type == "object") | if has("load") then .load else "0" end | select(type == "string")')
+    assert_eq "Provider drain fixture has no active agreements" "0" "${PROV_DELETE_LOAD}"
+    # Give both pools a positive balance even when prior settlement left no dust.
+    run_tx "Seeding provider collateral drain with 1 ualpha" \
+        tx bank send "${ALICE_ADDRESS}" "${PROV_COLL_ADDR}" 1ualpha --from alice
+    run_tx "Seeding provider earnings drain with 1 ualpha" \
+        tx bank send "${ALICE_ADDRESS}" "${PROV_EARN_ADDR}" 1ualpha --from alice
+    PROV_DELETE_COLL_BEFORE=$(get_balance "${PROV_COLL_ADDR}" ualpha)
+    PROV_DELETE_EARN_BEFORE=$(get_balance "${PROV_EARN_ADDR}" ualpha)
+    PROV_DELETE_VAULT_BEFORE=$(get_balance "${PLAYER_1_VAULT}" ualpha)
+    PROV_DELETE_EXPECTED_VAULT=$(python3 -c 'import sys
+vault, collateral, earnings = map(int, sys.argv[1:])
+assert vault >= 0 and collateral > 0 and earnings > 0
+print(vault+collateral+earnings)' "${PROV_DELETE_VAULT_BEFORE}" "${PROV_DELETE_COLL_BEFORE}" "${PROV_DELETE_EARN_BEFORE}")
     run_tx "Deleting provider" \
         tx structs provider-delete "${PROVIDER_ID}" --from alice
 
-    # Verify provider is gone
-    PROV_GONE=$(query query structs provider "${PROVIDER_ID}" 2>/dev/null || echo '{}')
-    PROV_GONE_ID=$(jqr "${PROV_GONE}" '.Provider.id' '')
-    assert_eq "Provider deleted" "" "${PROV_GONE_ID}"
+    assert_object_missing "Provider deleted" provider "${PROVIDER_ID}"
+    assert_eq "Provider deletion drains both pools to owner vault" "${PROV_DELETE_EXPECTED_VAULT}" "$(get_balance "${PLAYER_1_VAULT}" ualpha)"
+    assert_eq "Deleted provider collateral pool is empty" "0" "$(get_balance "${PROV_COLL_ADDR}" ualpha)"
+    assert_eq "Deleted provider earnings pool is empty" "0" "$(get_balance "${PROV_EARN_ADDR}" ualpha)"
+    # ─── provider-delete accounting complete ───
 else
-    info "SKIP: Could not create provider"
+    assert_not_empty "Required provider lifecycle fixture was created" "${PROVIDER_ID}"
 fi
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -5868,30 +6900,38 @@ fi
 
 section "PHASE 16b: Agreement Settlement Accounting"
 
-# The agreements below are small, but the shared substation has been through the
-# whole phase above, so check there is room rather than reporting capacity
-# exhaustion as a settlement failure.
-SETTLE_SUB_JSON=$(query query structs substation "${SUBSTATION_ID}" 2>/dev/null || echo '{}')
-SETTLE_SUB_CAP=$(jqr "${SETTLE_SUB_JSON}" '.gridAttributes.capacity' '0')
-SETTLE_SUB_LOAD=$(jqr "${SETTLE_SUB_JSON}" '.gridAttributes.load' '0')
-SETTLE_SUB_FREE=$((SETTLE_SUB_CAP - SETTLE_SUB_LOAD))
-info "Substation ${SUBSTATION_ID} free capacity: ${SETTLE_SUB_FREE} (cap=${SETTLE_SUB_CAP}, load=${SETTLE_SUB_LOAD})"
+SETTLE_GUILD_VAULT=$(get_vault_address "${GUILD_ID}")
+SETTLE_OWNER_VAULT=$(get_vault_address "${PLAYER_1_ID}")
+assert_not_empty "Settlement guild vault resolved" "${SETTLE_GUILD_VAULT}"
+assert_not_empty "Settlement owner vault resolved" "${SETTLE_OWNER_VAULT}"
 
 # Agreement A + B run concurrently; C is opened after both have closed.
 SETTLE_CAP_A=2000
 SETTLE_CAP_B=3000
 SETTLE_CAP_C=2000
-SETTLE_DUR_A=120
-SETTLE_DUR_B=120
+SETTLE_DUR_A=$((120 * FIXTURE_DURATION_MULTIPLIER))
+SETTLE_DUR_B=$((120 * FIXTURE_DURATION_MULTIPLIER))
 SETTLE_DUR_C=5     # must be >= the provider duration minimum below
 
-# get_balance on an empty address returns 0, which would turn the exact balance
-# assertions below into vacuous passes. Skip rather than pretend to have tested
-# settlement. Phase 2 and recover_state both set these, so this only trips if the
-# keyring lookup failed.
-if [ -z "${PLAYER_2_ADDRESS}" ] || [ -z "${PLAYER_3_ADDRESS}" ]; then
+# ─── settlement fixture headroom ───
+# This shared substation may already be overloaded. Clamp free capacity to zero
+# and compare uint64 values outside signed shell arithmetic.
+SETTLE_SUB_JSON=$(query query structs substation "${SUBSTATION_ID}")
+SETTLE_SUB_HEADROOM=$(echo "${SETTLE_SUB_JSON}" | jq -ce --arg id "${SUBSTATION_ID}" 'select(.Substation.id == $id)' | python3 "${GENERATOR_TEST_DIR}/player_allocatable_capacity.py" --required-capacity "$((SETTLE_CAP_A + SETTLE_CAP_B))")
+SETTLE_SUB_FREE=$(echo "${SETTLE_SUB_HEADROOM}" | jq -er '.allocatableCapacity')
+SETTLE_SUB_HAS_ROOM=$(echo "${SETTLE_SUB_HEADROOM}" | jq -r '.hasCapacity')
+info "Substation ${SUBSTATION_ID} free capacity: ${SETTLE_SUB_FREE}"
+assert_eq "Settlement fixture has capacity for both agreements" "true" "${SETTLE_SUB_HAS_ROOM}"
+# ─── settlement fixture headroom complete ───
+
+# Missing vaults or insufficient fixture capacity are failures, not successful
+# coverage with the settlement cases skipped. Guard execution after recording
+# those failures so empty-address balance queries cannot pass vacuously.
+assert_not_empty "Settlement player 2 vault resolved" "${PLAYER_2_VAULT}"
+assert_not_empty "Settlement player 3 vault resolved" "${PLAYER_3_VAULT}"
+if [ -z "${PLAYER_2_VAULT}" ] || [ -z "${PLAYER_3_VAULT}" ]; then
     info "SKIP: player 2/3 addresses unresolved"
-elif [ "${SETTLE_SUB_FREE}" -lt $((SETTLE_CAP_A + SETTLE_CAP_B)) ] 2>/dev/null; then
+elif [ "${SETTLE_SUB_HAS_ROOM}" != true ]; then
     info "SKIP: substation has ${SETTLE_SUB_FREE} free capacity, need $((SETTLE_CAP_A + SETTLE_CAP_B))"
 else
 
@@ -5900,26 +6940,31 @@ SETTLE_RATE="1ualpha"
 SETTLE_PROVIDER_PENALTY="0.5"
 SETTLE_CONSUMER_PENALTY="0.25"
 
-run_tx "Creating provider for settlement accounting (penalties ${SETTLE_PROVIDER_PENALTY}/${SETTLE_CONSUMER_PENALTY})" \
+run_tx "Creating guild-owned provider for settlement accounting (penalties ${SETTLE_PROVIDER_PENALTY}/${SETTLE_CONSUMER_PENALTY})" \
     tx structs provider-create "${SUBSTATION_ID}" \
     "${SETTLE_RATE}" "open-market" \
     "${SETTLE_PROVIDER_PENALTY}" "${SETTLE_CONSUMER_PENALTY}" \
     1000 100000 \
     5 100000 \
-    --from alice
+    --owner-id "${GUILD_ID}" --from alice
 
-SETTLE_PROV_ID=$(get_newest_provider_id)
+SETTLE_PROV_ID=$(get_created_provider_id "${GUILD_ID}" "${SUBSTATION_ID}")
 assert_not_empty "Settlement provider created" "${SETTLE_PROV_ID}"
 
 if [ -z "${SETTLE_PROV_ID}" ]; then
     info "SKIP: could not create settlement provider"
 else
 
-SETTLE_PROV_JSON=$(query query structs provider "${SETTLE_PROV_ID}" 2>/dev/null || echo '{}')
-info "Settlement provider penalties: provider=$(jqr "${SETTLE_PROV_JSON}" '.Provider.providerCancellationPenalty' '?'), consumer=$(jqr "${SETTLE_PROV_JSON}" '.Provider.consumerCancellationPenalty' '?')"
+# ─── settlement provider terms and pools ───
+SETTLE_PROV_JSON=$(query query structs provider "${SETTLE_PROV_ID}")
+SETTLE_EXPECTED_TERMS=$(jq -cnS --arg id "${SETTLE_PROV_ID}" --arg owner "${GUILD_ID}" --arg station "${SUBSTATION_ID}" '{id:$id, owner:$owner, substationId:$station, rate:{denom:"ualpha",amount:"1"}, accessPolicy:"openMarket", capacityMinimum:"1000", capacityMaximum:"100000", durationMinimum:"5", durationMaximum:"100000", providerCancellationPenalty:"0.500000000000000000", consumerCancellationPenalty:"0.250000000000000000"}')
+SETTLE_ACTUAL_TERMS=$(echo "${SETTLE_PROV_JSON}" | jq -ceS '.Provider | select(type == "object") | if has("accessPolicy") then . else .accessPolicy="openMarket" end | {id, owner, substationId, rate, accessPolicy, capacityMinimum, capacityMaximum, durationMinimum, durationMaximum, providerCancellationPenalty, consumerCancellationPenalty}')
+assert_eq "Settlement provider terms match accounting assumptions" "${SETTLE_EXPECTED_TERMS}" "${SETTLE_ACTUAL_TERMS}"
 
-SETTLE_COLL_ADDR=$(query query structs provider-collateral-address "${SETTLE_PROV_ID}" 2>/dev/null | jq -r '.internalAddressAssociation[0].address // empty' 2>/dev/null || echo "")
-SETTLE_EARN_ADDR=$(query query structs provider-earnings-address "${SETTLE_PROV_ID}" 2>/dev/null | jq -r '.internalAddressAssociation[0].address // empty' 2>/dev/null || echo "")
+SETTLE_COLL_ADDR=$(query query structs provider-collateral-address "${SETTLE_PROV_ID}" | jq -er --arg id "${SETTLE_PROV_ID}" '.internalAddressAssociation | select(length == 1 and .[0].objectId == $id) | .[0].address | select(type == "string" and length > 0)')
+SETTLE_EARN_ADDR=$(query query structs provider-earnings-address "${SETTLE_PROV_ID}" | jq -er --arg id "${SETTLE_PROV_ID}" '.internalAddressAssociation | select(length == 1 and .[0].objectId == $id) | .[0].address | select(type == "string" and length > 0)')
+assert_eq "Settlement collateral and earnings pools are distinct" "false" "$([ "${SETTLE_COLL_ADDR}" = "${SETTLE_EARN_ADDR}" ] && echo true || echo false)"
+# ─── settlement provider terms and pools complete ───
 assert_not_empty "Settlement collateral pool address" "${SETTLE_COLL_ADDR}"
 assert_not_empty "Settlement earnings pool address" "${SETTLE_EARN_ADDR}"
 
@@ -5936,37 +6981,39 @@ assert_eq "Fresh earnings pool is empty" "0" "$(get_balance "${SETTLE_EARN_ADDR}
 # Collateral is duration * capacity * rate, taken from the message parameters
 # alone, so it does not drift with block height.
 SETTLE_COLL_A=$((SETTLE_DUR_A * SETTLE_CAP_A))
+fund_vault_alpha "${PLAYER_2_ID}" "${SETTLE_COLL_A}"
 run_tx "Player 2 opening settlement agreement A (dur=${SETTLE_DUR_A}, cap=${SETTLE_CAP_A})" \
     tx structs agreement-open "${SETTLE_PROV_ID}" "${SETTLE_DUR_A}" "${SETTLE_CAP_A}" --from player_2
 
-SETTLE_AGREE_A=$(get_newest_agreement_id "${SETTLE_PROV_ID}")
+SETTLE_A_RECORD=$(get_opened_agreement_record "${SETTLE_PROV_ID}" "${PLAYER_2_ID}" "${SETTLE_CAP_A}")
+SETTLE_AGREE_A=$(echo "${SETTLE_A_RECORD}" | jq -er '.id')
+SETTLE_ALLOC_A=$(echo "${SETTLE_A_RECORD}" | jq -er '.allocationId | select(type == "string" and test("^6-[0-9]+$"))')
 assert_not_empty "Settlement agreement A opened" "${SETTLE_AGREE_A}"
-assert_eq "Pool holds agreement A collateral" "${SETTLE_COLL_A}" "$(get_balance "${SETTLE_COLL_ADDR}" ualpha)"
+# ─── opening A snapshot conservation ───
+# EndBlock can already have moved earned revenue. Read both pools at the same
+# committed height; the original deposit must still be present across them.
+SETTLE_A_HEIGHT=$(get_block_height)
+SETTLE_A_POOL=$(get_balance_at_height "${SETTLE_COLL_ADDR}" ualpha "${SETTLE_A_HEIGHT}")
+SETTLE_A_EARN=$(get_balance_at_height "${SETTLE_EARN_ADDR}" ualpha "${SETTLE_A_HEIGHT}")
+SETTLE_A_TERMS=$(printf '%s' "${SETTLE_A_RECORD}" | jq -ce --arg duration "${SETTLE_DUR_A}" --arg capacity "${SETTLE_CAP_A}" '[{start:.startBlock,duration:$duration,capacity:$capacity}]')
+SETTLE_A_SNAPSHOT=$(python3 "${GENERATOR_TEST_DIR}/settlement_open_snapshot.py" "${SETTLE_A_HEIGHT}" "${SETTLE_A_POOL}" "${SETTLE_A_EARN}" "${SETTLE_A_TERMS}")
+assert_eq "Agreement A deposit and unpaid holdback remain covered" true "$(printf '%s' "${SETTLE_A_SNAPSHOT}" | jq -r '.verified')"
+# ─── opening A snapshot conservation complete ───
 
 # ─── Agreement B (player_3), sharing the same pool ───
 # Player 3's liquid balance is often near zero by this point (delegations and
-# earlier spends). Without a top-up the open fails on affordability, and
-# get_newest_agreement_id then returns A again — which used to let every
-# "both agreements" check fail as a false cascade rather than a clear skip.
+# earlier spends). Fund the intended fixture before opening; agreement discovery
+# below requires a matching event from this specific delivered transaction.
 SETTLE_COLL_B=$((SETTLE_DUR_B * SETTLE_CAP_B))
-SETTLE_P3_BAL=$(get_balance "${PLAYER_3_ADDRESS}" ualpha)
 SETTLE_P3_NEED=$((SETTLE_COLL_B + 100000))
-if [ "${SETTLE_P3_BAL}" -lt "${SETTLE_P3_NEED}" ] 2>/dev/null; then
-    SETTLE_P3_TOPUP=$((SETTLE_P3_NEED - SETTLE_P3_BAL))
-    info "Player 3 has ${SETTLE_P3_BAL}ualpha, needs ${SETTLE_P3_NEED} for agreement B; topping up ${SETTLE_P3_TOPUP}"
-    run_tx "Funding player_3 for settlement agreement B" \
-        tx bank send "${BOB_ADDRESS}" "${PLAYER_3_ADDRESS}" "${SETTLE_P3_TOPUP}ualpha" --from bob
-fi
+fund_vault_alpha "${PLAYER_3_ID}" "${SETTLE_P3_NEED}"
 
 run_tx "Player 3 opening settlement agreement B (dur=${SETTLE_DUR_B}, cap=${SETTLE_CAP_B})" \
     tx structs agreement-open "${SETTLE_PROV_ID}" "${SETTLE_DUR_B}" "${SETTLE_CAP_B}" --from player_3
 
-SETTLE_AGREE_B=$(get_newest_agreement_id "${SETTLE_PROV_ID}")
-# A failed open leaves A as the newest agreement for this provider. Treat that
-# as "B did not open" so we do not assert against A's id under B's name.
-if [ -n "${SETTLE_AGREE_A}" ] && [ "${SETTLE_AGREE_B}" = "${SETTLE_AGREE_A}" ]; then
-    SETTLE_AGREE_B=""
-fi
+SETTLE_B_RECORD=$(get_opened_agreement_record "${SETTLE_PROV_ID}" "${PLAYER_3_ID}" "${SETTLE_CAP_B}")
+SETTLE_AGREE_B=$(echo "${SETTLE_B_RECORD}" | jq -er '.id')
+SETTLE_ALLOC_B=$(echo "${SETTLE_B_RECORD}" | jq -er '.allocationId | select(type == "string" and test("^6-[0-9]+$"))')
 assert_not_empty "Settlement agreement B opened" "${SETTLE_AGREE_B}"
 
 if [ -z "${SETTLE_AGREE_B}" ]; then
@@ -5980,73 +7027,127 @@ else
 
 assert_eq "Agreement B is distinct from A" "false" "$([ "${SETTLE_AGREE_A}" = "${SETTLE_AGREE_B}" ] && echo true || echo false)"
 
-# Opening B checkpoints the provider first, which sweeps A's accrued revenue
-# (minus the provider-cancellation fraction left in the pool) into earnings.
-# The deposits are still fully accounted for across the two pools; expecting
-# them to sit untouched in collateral alone fails as soon as a block elapses
-# between the two opens.
-SETTLE_POOL_BOTH=$(get_balance "${SETTLE_COLL_ADDR}" ualpha)
-SETTLE_EARN_BOTH=$(get_balance "${SETTLE_EARN_ADDR}" ualpha)
+# ─── opening B snapshot conservation ───
+# Opening B checkpoints A's elapsed earnings. Pin both pool balances to one
+# committed height so an expiry between RPCs cannot be counted twice or disappear.
+# Their sum must still conserve both deposits.
+SETTLE_BOTH_HEIGHT=$(get_block_height)
+SETTLE_POOL_BOTH=$(get_balance_at_height "${SETTLE_COLL_ADDR}" ualpha "${SETTLE_BOTH_HEIGHT}")
+SETTLE_EARN_BOTH=$(get_balance_at_height "${SETTLE_EARN_ADDR}" ualpha "${SETTLE_BOTH_HEIGHT}")
 info "Pool with both agreements open: ${SETTLE_POOL_BOTH} + earnings ${SETTLE_EARN_BOTH} (A=${SETTLE_COLL_A}, B=${SETTLE_COLL_B})"
-assert_eq "Deposits still fully accounted after both opens" "$((SETTLE_COLL_A + SETTLE_COLL_B))" "$((SETTLE_POOL_BOTH + SETTLE_EARN_BOTH))"
-assert_ge "Collateral pool still holds at least B's deposit" "${SETTLE_COLL_B}" "${SETTLE_POOL_BOTH}"
+SETTLE_BOTH_TERMS=$(printf '%s' "${SETTLE_B_RECORD}" | jq -ce --argjson a "${SETTLE_A_TERMS}" --arg duration "${SETTLE_DUR_B}" --arg capacity "${SETTLE_CAP_B}" '$a + [{start:.startBlock,duration:$duration,capacity:$capacity}]')
+SETTLE_BOTH_SNAPSHOT=$(python3 "${GENERATOR_TEST_DIR}/settlement_open_snapshot.py" "${SETTLE_BOTH_HEIGHT}" "${SETTLE_POOL_BOTH}" "${SETTLE_EARN_BOTH}" "${SETTLE_BOTH_TERMS}")
+assert_eq "Both deposits and unpaid holdbacks remain covered" true "$(printf '%s' "${SETTLE_BOTH_SNAPSHOT}" | jq -r '.verified')"
+# ─── opening B snapshot conservation complete ───
 
-SETTLE_LOAD_BOTH=$(jqr "$(query query structs provider "${SETTLE_PROV_ID}" 2>/dev/null || echo '{}')" '.gridAttributes.load' '0')
+SETTLE_LOAD_BOTH=$(get_provider_load "${SETTLE_PROV_ID}")
 assert_eq "Provider load is both capacities" "$((SETTLE_CAP_A + SETTLE_CAP_B))" "${SETTLE_LOAD_BOTH}"
 
 # ─── Close A, and check it did not eat into B ───
 # This is the assertion the whole section exists for. The double settlement paid
 # A out twice, and the second payout could only come from B's collateral.
-SETTLE_B_JSON=$(query query structs agreement "${SETTLE_AGREE_B}" 2>/dev/null || echo '{}')
-SETTLE_B_END=$(jqr "${SETTLE_B_JSON}" '.Agreement.endBlock' '0')
+SETTLE_B_JSON=$(query query structs agreement "${SETTLE_AGREE_B}")
+SETTLE_B_BEFORE_A=$(echo "${SETTLE_B_JSON}" | jq -ceS --arg id "${SETTLE_AGREE_B}" --arg allocation "${SETTLE_ALLOC_B}" '.Agreement | select(type == "object" and .id == $id and .allocationId == $allocation)')
+SETTLE_B_ALLOC_BEFORE_A=$(query query structs allocation "${SETTLE_ALLOC_B}" | jq -ceS --arg id "${SETTLE_ALLOC_B}" 'select(.Allocation.id == $id and (.gridAttributes | type == "object")) | {Allocation, gridAttributes}')
+SETTLE_B_END=$(echo "${SETTLE_B_JSON}" | jq -er '.Agreement.endBlock | select(type == "string")')
 
-P2_BEFORE_CLOSE=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
+SETTLE_A_END=$(query query structs agreement "${SETTLE_AGREE_A}" | jq -er '.Agreement.endBlock | select(type == "string")')
+P2_BEFORE_CLOSE=$(get_balance "${PLAYER_2_VAULT}" ualpha)
 
 run_tx "Closing settlement agreement A" \
     tx structs agreement-close "${SETTLE_AGREE_A}" --from player_2
 
-assert_eq "Settlement agreement A removed" "" "$(jqr "$(query query structs agreement "${SETTLE_AGREE_A}" 2>/dev/null || echo '{}')" '.Agreement.id' '')"
-assert_not_empty "Settlement agreement B still open" "$(jqr "$(query query structs agreement "${SETTLE_AGREE_B}" 2>/dev/null || echo '{}')" '.Agreement.id' '')"
+assert_object_missing "Settlement agreement A removed" agreement "${SETTLE_AGREE_A}"
+assert_object_missing "Settlement agreement A allocation removed" allocation "${SETTLE_ALLOC_A}"
+SETTLE_B_AFTER_A=$(query query structs agreement "${SETTLE_AGREE_B}" | jq -ceS --arg id "${SETTLE_AGREE_B}" '.Agreement | select(type == "object" and .id == $id)')
+SETTLE_B_ALLOC_AFTER_A=$(query query structs allocation "${SETTLE_ALLOC_B}" | jq -ceS --arg id "${SETTLE_ALLOC_B}" 'select(.Allocation.id == $id and (.gridAttributes | type == "object")) | {Allocation, gridAttributes}')
+assert_eq "Closing A preserves agreement B's complete record" "${SETTLE_B_BEFORE_A}" "${SETTLE_B_AFTER_A}"
+assert_eq "Closing A preserves B's allocation and power" "${SETTLE_B_ALLOC_BEFORE_A}" "${SETTLE_B_ALLOC_AFTER_A}"
 
-# Player 2 pays fees out of the same balance, so only the direction is asserted
-# here; the exact figures below are all taken from the fee-free module accounts.
-assert_gt "Player 2 refunded on close" "${P2_BEFORE_CLOSE}" "$(get_balance "${PLAYER_2_ADDRESS}" ualpha)"
+# The refund uses the delivered close block; the vault pays no transaction fees.
+# Check the exact entitlement as well as the shared-pool coverage below.
+P2_EXPECTED_AFTER_CLOSE=$(expected_settlement_consumer_vault "${P2_BEFORE_CLOSE}" "${SETTLE_A_END}" "${SETTLE_CAP_A}")
+P2_AFTER_CLOSE=$(get_balance "${PLAYER_2_VAULT}" ualpha)
+assert_eq "Player 2 receives exact refund after consumer penalty" "${P2_EXPECTED_AFTER_CLOSE}" "${P2_AFTER_CLOSE}"
 
-# B is still owed the unearned part of its collateral plus the provider
-# cancellation penalty accrued so far, and the penalty fraction is still in the
-# pool because Checkpoint deliberately leaves it there. Unearned collateral
-# alone is the conservative floor.
+# B is still owed unearned collateral plus the provider cancellation holdback.
+# Unearned collateral alone is the conservative floor. The pool and the service
+# height used to price that floor must refer to the same committed block.
 SETTLE_HEIGHT=$(get_block_height)
-SETTLE_B_UNEARNED=$(( (SETTLE_B_END - SETTLE_HEIGHT) * SETTLE_CAP_B ))
-[ "${SETTLE_B_UNEARNED}" -lt 0 ] 2>/dev/null && SETTLE_B_UNEARNED=0
-SETTLE_POOL_AFTER_A=$(get_balance "${SETTLE_COLL_ADDR}" ualpha)
+SETTLE_POOL_AFTER_A=$(get_balance_at_height "${SETTLE_COLL_ADDR}" ualpha "${SETTLE_HEIGHT}")
+SETTLE_B_COVERAGE=$(python3 -c 'import json, re, sys
+assert all(re.fullmatch(r"0|[1-9][0-9]*", value) for value in sys.argv[1:]), "invalid settlement amount or height"
+end, height, capacity, pool = map(int, sys.argv[1:])
+assert 0 < height <= 2**63-1 and height < end < 2**64, "B must still be live for the early-close fixture"
+assert 0 < capacity < 2**64
+unearned = (end-height)*capacity
+print(json.dumps({"unearned": str(unearned), "covered": pool >= unearned}))' "${SETTLE_B_END}" "${SETTLE_HEIGHT}" "${SETTLE_CAP_B}" "${SETTLE_POOL_AFTER_A}")
+SETTLE_B_UNEARNED=$(echo "${SETTLE_B_COVERAGE}" | jq -er '.unearned')
 info "Pool after closing A: ${SETTLE_POOL_AFTER_A}; B unearned collateral at block ${SETTLE_HEIGHT}: ${SETTLE_B_UNEARNED}"
-assert_ge "Pool still covers agreement B after A settled" "${SETTLE_B_UNEARNED}" "${SETTLE_POOL_AFTER_A}"
+assert_eq "Pool still covers agreement B after A settled" "true" "$(echo "${SETTLE_B_COVERAGE}" | jq -r '.covered')"
 
-SETTLE_LOAD_AFTER_A=$(jqr "$(query query structs provider "${SETTLE_PROV_ID}" 2>/dev/null || echo '{}')" '.gridAttributes.load' '0')
+SETTLE_LOAD_AFTER_A=$(get_provider_load "${SETTLE_PROV_ID}")
 assert_eq "Only agreement A's load was released" "${SETTLE_CAP_B}" "${SETTLE_LOAD_AFTER_A}"
 
 # ─── Close B, and check its consumer was still paid ───
-P3_BEFORE_CLOSE=$(get_balance "${PLAYER_3_ADDRESS}" ualpha)
+P3_BEFORE_CLOSE=$(get_balance "${PLAYER_3_VAULT}" ualpha)
 
 run_tx "Closing settlement agreement B" \
     tx structs agreement-close "${SETTLE_AGREE_B}" --from player_3
 
-assert_eq "Settlement agreement B removed" "" "$(jqr "$(query query structs agreement "${SETTLE_AGREE_B}" 2>/dev/null || echo '{}')" '.Agreement.id' '')"
-assert_gt "Player 3 refunded on close (not shorted by A's teardown)" "${P3_BEFORE_CLOSE}" "$(get_balance "${PLAYER_3_ADDRESS}" ualpha)"
+assert_object_missing "Settlement agreement B removed" agreement "${SETTLE_AGREE_B}"
+assert_object_missing "Settlement agreement B allocation removed" allocation "${SETTLE_ALLOC_B}"
+P3_EXPECTED_AFTER_CLOSE=$(expected_settlement_consumer_vault "${P3_BEFORE_CLOSE}" "${SETTLE_B_END}" "${SETTLE_CAP_B}")
+P3_AFTER_CLOSE=$(get_balance "${PLAYER_3_VAULT}" ualpha)
+assert_eq "Player 3 receives exact refund without funding A's teardown" "${P3_EXPECTED_AFTER_CLOSE}" "${P3_AFTER_CLOSE}"
 
-SETTLE_LOAD_EMPTY=$(jqr "$(query query structs provider "${SETTLE_PROV_ID}" 2>/dev/null || echo '{}')" '.gridAttributes.load' '0')
+SETTLE_LOAD_EMPTY=$(get_provider_load "${SETTLE_PROV_ID}")
 assert_eq "Provider load back to zero after both settled" "0" "${SETTLE_LOAD_EMPTY}"
 
-# Conservation ceiling. Every ualpha that entered the pool has now either been
-# refunded, moved to earnings, or is dust still in the pool, so earnings plus the
-# remainder can never exceed the deposits. This is a sanity guard rather than a
-# regression test — the two assertions that actually catch a double settlement
-# are the pool-covers-B check and player 3's refund, both above.
+# ─── dual-agreement exact conservation ───
+# Both vaults pay no transaction fees. Count their actual refunds alongside both
+# remaining pools, so a lost coin cannot hide under the old conservation ceiling.
 SETTLE_POOL_END=$(get_balance "${SETTLE_COLL_ADDR}" ualpha)
 SETTLE_EARN_END=$(get_balance "${SETTLE_EARN_ADDR}" ualpha)
-info "After both closes: pool=${SETTLE_POOL_END}, earnings=${SETTLE_EARN_END}, deposited=$((SETTLE_COLL_A + SETTLE_COLL_B))"
-assert_ge "Deposits cover earnings plus pool remainder" "$((SETTLE_EARN_END + SETTLE_POOL_END))" "$((SETTLE_COLL_A + SETTLE_COLL_B))"
+SETTLE_CONSERVED=$(python3 -c 'import sys
+p2_before, p2_after, p3_before, p3_after, collateral, earnings, deposit_a, deposit_b = map(int, sys.argv[1:])
+assert min(p2_before, p3_before, collateral, earnings, deposit_a, deposit_b) >= 0
+refund_a, refund_b = p2_after-p2_before, p3_after-p3_before
+assert min(refund_a, refund_b) >= 0
+print(str(refund_a+refund_b+collateral+earnings == deposit_a+deposit_b).lower())' "${P2_BEFORE_CLOSE}" "${P2_AFTER_CLOSE}" "${P3_BEFORE_CLOSE}" "${P3_AFTER_CLOSE}" "${SETTLE_POOL_END}" "${SETTLE_EARN_END}" "${SETTLE_COLL_A}" "${SETTLE_COLL_B}")
+assert_eq "Both deposits exactly reconcile with refunds and provider pools" "true" "${SETTLE_CONSERVED}"
+# ─── dual-agreement exact conservation complete ───
+
+# ─── dual-agreement earned revenue ───
+# Both capacities are divisible by four, so neither the half-rate checkpoint
+# nor quarter-rate cancellation penalty leaves fractional-coin dust here.
+SETTLE_EXPECTED_EARNINGS=$(python3 -c 'import sys
+a, b, before_a, expected_a, before_b, expected_b = map(int, sys.argv[1:])
+print(a+b-(expected_a-before_a)-(expected_b-before_b))' "${SETTLE_COLL_A}" "${SETTLE_COLL_B}" "${P2_BEFORE_CLOSE}" "${P2_EXPECTED_AFTER_CLOSE}" "${P3_BEFORE_CLOSE}" "${P3_EXPECTED_AFTER_CLOSE}")
+assert_eq "Settled provider receives all earned service and cancellation revenue" "${SETTLE_EXPECTED_EARNINGS}" "${SETTLE_EARN_END}"
+assert_eq "No earned provider holdback remains in collateral" "0" "${SETTLE_POOL_END}"
+# ─── dual-agreement earned revenue complete ───
+
+# Both agreements are closed and settled, so their load no longer accrues earnings. The default recipient must be the guild vault, even though the
+# human owner signs and pays transaction fees from a separate address.
+SETTLE_TREASURY_BEFORE_WITHDRAW=$(get_balance "${SETTLE_GUILD_VAULT}" ualpha)
+SETTLE_OWNER_BEFORE_WITHDRAW=$(get_balance "${SETTLE_OWNER_VAULT}" ualpha)
+SETTLE_MEMBER_BEFORE_WITHDRAW=$(get_balance "${PLAYER_2_VAULT}" ualpha)
+SETTLE_TREASURY_EXPECTED_WITHDRAW=$(python3 -c 'import sys; vault, earnings = map(int, sys.argv[1:]); assert min(vault, earnings) >= 0; print(vault+earnings)' "${SETTLE_TREASURY_BEFORE_WITHDRAW}" "${SETTLE_EARN_END}")
+run_tx_expect_permission_denied "Membership alone cannot withdraw guild provider earnings" \
+    tx structs provider-withdraw-balance "${SETTLE_PROV_ID}" --from player_2
+assert_eq "Rejected withdrawal preserves guild provider earnings" "${SETTLE_EARN_END}" "$(get_balance "${SETTLE_EARN_ADDR}" ualpha)"
+assert_eq "Rejected withdrawal preserves guild collateral" "${SETTLE_POOL_END}" "$(get_balance "${SETTLE_COLL_ADDR}" ualpha)"
+assert_eq "Rejected withdrawal preserves guild vault" "${SETTLE_TREASURY_BEFORE_WITHDRAW}" "$(get_balance "${SETTLE_GUILD_VAULT}" ualpha)"
+assert_eq "Rejected withdrawal preserves owner vault" "${SETTLE_OWNER_BEFORE_WITHDRAW}" "$(get_balance "${SETTLE_OWNER_VAULT}" ualpha)"
+assert_eq "Rejected withdrawal preserves member vault" "${SETTLE_MEMBER_BEFORE_WITHDRAW}" "$(get_balance "${PLAYER_2_VAULT}" ualpha)"
+run_tx "Withdrawing guild provider earnings to its default vault" \
+    tx structs provider-withdraw-balance "${SETTLE_PROV_ID}" --from alice
+assert_eq "Guild vault receives exact provider earnings" "${SETTLE_TREASURY_EXPECTED_WITHDRAW}" "$(get_balance "${SETTLE_GUILD_VAULT}" ualpha)"
+assert_eq "Provider withdrawal does not credit the owner's personal vault" "${SETTLE_OWNER_BEFORE_WITHDRAW}" "$(get_balance "${SETTLE_OWNER_VAULT}" ualpha)"
+assert_eq "Guild provider earnings pool is drained" "0" "$(get_balance "${SETTLE_EARN_ADDR}" ualpha)"
+assert_eq "Provider withdrawal preserves guild collateral" "${SETTLE_POOL_END}" "$(get_balance "${SETTLE_COLL_ADDR}" ualpha)"
+assert_eq "Provider withdrawal preserves member vault" "${SETTLE_MEMBER_BEFORE_WITHDRAW}" "$(get_balance "${PLAYER_2_VAULT}" ualpha)"
 
 fi # settlement agreement B opened
 
@@ -6056,28 +7157,36 @@ fi # settlement agreement B opened
 # re-entrant settlement then paid the consumer a provider-cancellation penalty
 # out of a share that was already empty.
 SETTLE_COLL_C=$((SETTLE_DUR_C * SETTLE_CAP_C))
+fund_vault_alpha "${PLAYER_2_ID}" "${SETTLE_COLL_C}"
 SETTLE_POOL_PRE_C=$(get_balance "${SETTLE_COLL_ADDR}" ualpha)
 SETTLE_EARN_PRE_C=$(get_balance "${SETTLE_EARN_ADDR}" ualpha)
+SETTLE_EARN_EXPECTED_C=$(python3 -c 'import sys; earnings, collateral = map(int, sys.argv[1:]); assert earnings >= 0 and collateral >= 0; print(earnings+collateral)' "${SETTLE_EARN_PRE_C}" "${SETTLE_COLL_C}")
+# Establish the no-refund balance before delivery can reach the expiry block.
+P2_PRE_C=$(get_balance "${PLAYER_2_VAULT}" ualpha)
+P2_EXPECTED_POST_C=$(python3 -c 'import sys; balance, collateral = map(int, sys.argv[1:]); assert balance >= collateral >= 0; print(balance-collateral)' "${P2_PRE_C}" "${SETTLE_COLL_C}")
 
 run_tx "Player 2 opening settlement agreement C to expire (dur=${SETTLE_DUR_C}, cap=${SETTLE_CAP_C})" \
     tx structs agreement-open "${SETTLE_PROV_ID}" "${SETTLE_DUR_C}" "${SETTLE_CAP_C}" --from player_2
 
-SETTLE_AGREE_C=$(get_newest_agreement_id "${SETTLE_PROV_ID}")
+SETTLE_C_RECORD=$(get_opened_agreement_record "${SETTLE_PROV_ID}" "${PLAYER_2_ID}" "${SETTLE_CAP_C}")
+SETTLE_AGREE_C=$(echo "${SETTLE_C_RECORD}" | jq -er '.id')
+SETTLE_ALLOC_C=$(echo "${SETTLE_C_RECORD}" | jq -er '.allocationId | select(type == "string" and test("^6-[0-9]+$"))')
 assert_not_empty "Settlement agreement C opened" "${SETTLE_AGREE_C}"
 
-SETTLE_C_END=$(jqr "$(query query structs agreement "${SETTLE_AGREE_C}" 2>/dev/null || echo '{}')" '.Agreement.endBlock' '0')
+SETTLE_C_EXPIRY=$(echo "${SETTLE_C_RECORD}" | jq -c '{Agreement: .}' | python3 "${GENERATOR_TEST_DIR}/agreement_expiry_height.py" "${SETTLE_AGREE_C}")
+SETTLE_C_END=$(echo "${SETTLE_C_EXPIRY}" | jq -er '.endBlock')
+SETTLE_C_WAIT=$(echo "${SETTLE_C_EXPIRY}" | jq -er '.waitHeight')
 info "Agreement C endBlock: ${SETTLE_C_END}"
 
-P2_BEFORE_EXPIRY=$(get_balance "${PLAYER_2_ADDRESS}" ualpha)
-
 # Expiry fires in the EndBlocker of the end block itself; wait past it.
-if wait_for_block $((SETTLE_C_END + 2)) 120; then
-    assert_eq "Expired agreement removed by EndBlocker" "" "$(jqr "$(query query structs agreement "${SETTLE_AGREE_C}" 2>/dev/null || echo '{}')" '.Agreement.id' '')"
+if wait_for_block "${SETTLE_C_WAIT}" 120; then
+    assert_object_missing "Expired agreement removed by EndBlocker" agreement "${SETTLE_AGREE_C}"
+    assert_object_missing "Expired agreement C allocation is removed" allocation "${SETTLE_ALLOC_C}"
 
     # An expired agreement owes the consumer nothing: they received the service
     # they paid for, and the provider keeps the cancellation penalty because they
     # did not cancel. Player 2 sends no transaction here, so this figure is exact.
-    assert_eq "Expiry pays the consumer nothing" "${P2_BEFORE_EXPIRY}" "$(get_balance "${PLAYER_2_ADDRESS}" ualpha)"
+    assert_eq "Expiry pays the consumer nothing" "${P2_EXPECTED_POST_C}" "$(get_balance "${PLAYER_2_VAULT}" ualpha)"
 
     SETTLE_EARN_POST_C=$(get_balance "${SETTLE_EARN_ADDR}" ualpha)
     SETTLE_POOL_POST_C=$(get_balance "${SETTLE_COLL_ADDR}" ualpha)
@@ -6085,24 +7194,125 @@ if wait_for_block $((SETTLE_C_END + 2)) 120; then
 
     # The whole deposit becomes provider revenue, split between checkpointed
     # earnings and the penalty they keep.
-    assert_eq "Expired collateral became provider earnings" "$((SETTLE_EARN_PRE_C + SETTLE_COLL_C))" "${SETTLE_EARN_POST_C}"
+    assert_eq "Expired collateral became provider earnings" "${SETTLE_EARN_EXPECTED_C}" "${SETTLE_EARN_POST_C}"
     assert_eq "Pool back to its pre-agreement dust after expiry" "${SETTLE_POOL_PRE_C}" "${SETTLE_POOL_POST_C}"
 
-    SETTLE_LOAD_POST_C=$(jqr "$(query query structs provider "${SETTLE_PROV_ID}" 2>/dev/null || echo '{}')" '.gridAttributes.load' '0')
+    SETTLE_LOAD_POST_C=$(get_provider_load "${SETTLE_PROV_ID}")
     assert_eq "Provider load released exactly once on expiry" "0" "${SETTLE_LOAD_POST_C}"
 else
-    info "SKIP: chain did not reach agreement C end block in time"
+    assert_eq "Chain reaches settlement agreement C expiry height" "true" "false"
+fi
+
+# ─── Guild-owned consumer agreement ───
+SETTLE_DUR_D=20
+SETTLE_CAP_D=2000
+SETTLE_COLL_D=$((SETTLE_DUR_D * SETTLE_CAP_D))
+fund_vault_alpha "${GUILD_ID}" "${SETTLE_COLL_D}"
+SETTLE_TREASURY_BEFORE_D=$(get_balance "${SETTLE_GUILD_VAULT}" ualpha)
+SETTLE_OWNER_BEFORE_D=$(get_balance "${SETTLE_OWNER_VAULT}" ualpha)
+SETTLE_EARN_BEFORE_D=$(get_balance "${SETTLE_EARN_ADDR}" ualpha)
+SETTLE_POOL_BEFORE_D=$(get_balance "${SETTLE_COLL_ADDR}" ualpha)
+SETTLE_TREASURY_EXPECTED_D=$(python3 -c 'import sys; balance, collateral = map(int, sys.argv[1:]); assert balance >= collateral >= 0; print(balance-collateral)' "${SETTLE_TREASURY_BEFORE_D}" "${SETTLE_COLL_D}")
+SETTLE_EARN_EXPECTED_D=$(python3 -c 'import sys; earnings, collateral = map(int, sys.argv[1:]); assert earnings >= 0 and collateral >= 0; print(earnings+collateral)' "${SETTLE_EARN_BEFORE_D}" "${SETTLE_COLL_D}")
+run_tx "Guild opens its own consumer agreement" \
+    tx structs agreement-open "${SETTLE_PROV_ID}" "${SETTLE_DUR_D}" "${SETTLE_CAP_D}" --owner-id "${GUILD_ID}" --from alice
+SETTLE_D_RECORD=$(get_opened_agreement_record "${SETTLE_PROV_ID}" "${GUILD_ID}" "${SETTLE_CAP_D}")
+SETTLE_AGREE_D=$(echo "${SETTLE_D_RECORD}" | jq -er '.id')
+SETTLE_ALLOC_D=$(echo "${SETTLE_D_RECORD}" | jq -er '.allocationId | select(type == "string" and test("^6-[0-9]+$"))')
+assert_not_empty "Guild consumer agreement created" "${SETTLE_AGREE_D}"
+SETTLE_D_JSON=$(echo "${SETTLE_D_RECORD}" | jq -c '{Agreement: .}')
+assert_eq "Agreement consumer is the guild" "${GUILD_ID}" "$(jqr "${SETTLE_D_JSON}" '.Agreement.owner' '')"
+assert_eq "Guild agreement collateral debits the guild vault" "${SETTLE_TREASURY_EXPECTED_D}" "$(get_balance "${SETTLE_GUILD_VAULT}" ualpha)"
+assert_eq "Guild agreement leaves the signing owner's personal vault unchanged" "${SETTLE_OWNER_BEFORE_D}" "$(get_balance "${SETTLE_OWNER_VAULT}" ualpha)"
+SETTLE_D_EXPIRY=$(echo "${SETTLE_D_JSON}" | python3 "${GENERATOR_TEST_DIR}/agreement_expiry_height.py" "${SETTLE_AGREE_D}")
+SETTLE_D_END=$(echo "${SETTLE_D_EXPIRY}" | jq -er '.endBlock')
+SETTLE_D_WAIT=$(echo "${SETTLE_D_EXPIRY}" | jq -er '.waitHeight')
+if wait_for_block "${SETTLE_D_WAIT}" 120; then
+    assert_object_missing "Expired guild agreement is removed" agreement "${SETTLE_AGREE_D}"
+    assert_object_missing "Expired agreement D allocation is removed" allocation "${SETTLE_ALLOC_D}"
+    assert_eq "Guild consumer receives no refund for fully served agreement" "${SETTLE_TREASURY_EXPECTED_D}" "$(get_balance "${SETTLE_GUILD_VAULT}" ualpha)"
+    assert_eq "Guild agreement deposit becomes provider earnings" "${SETTLE_EARN_EXPECTED_D}" "$(get_balance "${SETTLE_EARN_ADDR}" ualpha)"
+    assert_eq "Guild expiry leaves the signing owner's personal vault unchanged" "${SETTLE_OWNER_BEFORE_D}" "$(get_balance "${SETTLE_OWNER_VAULT}" ualpha)"
+    assert_eq "Guild agreement releases its collateral pool balance" "${SETTLE_POOL_BEFORE_D}" "$(get_balance "${SETTLE_COLL_ADDR}" ualpha)"
+    assert_eq "Guild agreement releases provider load" "0" "$(get_provider_load "${SETTLE_PROV_ID}")"
+else
+    assert_eq "Chain reaches guild agreement expiry height" "true" "false"
 fi
 
 # ─── Clean up ───
+SETTLE_TREASURY_BEFORE_DELETE=$(get_balance "${SETTLE_GUILD_VAULT}" ualpha)
+SETTLE_OWNER_BEFORE_DELETE=$(get_balance "${SETTLE_OWNER_VAULT}" ualpha)
+SETTLE_COLL_BEFORE_DELETE=$(get_balance "${SETTLE_COLL_ADDR}" ualpha)
+SETTLE_EARN_BEFORE_DELETE=$(get_balance "${SETTLE_EARN_ADDR}" ualpha)
+SETTLE_TREASURY_EXPECTED_DELETE=$(python3 -c 'import sys; vault, collateral, earnings = map(int, sys.argv[1:]); assert min(vault, collateral, earnings) >= 0; print(vault+collateral+earnings)' "${SETTLE_TREASURY_BEFORE_DELETE}" "${SETTLE_COLL_BEFORE_DELETE}" "${SETTLE_EARN_BEFORE_DELETE}")
 run_tx "Deleting settlement provider" \
     tx structs provider-delete "${SETTLE_PROV_ID}" --from alice
 
-assert_eq "Settlement provider deleted" "" "$(jqr "$(query query structs provider "${SETTLE_PROV_ID}" 2>/dev/null || echo '{}')" '.Provider.id' '')"
+assert_object_missing "Settlement provider deleted" provider "${SETTLE_PROV_ID}"
+assert_eq "Provider deletion sends all remaining pools to guild vault" "${SETTLE_TREASURY_EXPECTED_DELETE}" "$(get_balance "${SETTLE_GUILD_VAULT}" ualpha)"
+assert_eq "Provider deletion leaves owner's personal vault unchanged" "${SETTLE_OWNER_BEFORE_DELETE}" "$(get_balance "${SETTLE_OWNER_VAULT}" ualpha)"
+assert_eq "Deleted provider collateral pool is empty" "0" "$(get_balance "${SETTLE_COLL_ADDR}" ualpha)"
+assert_eq "Deleted provider earnings pool is empty" "0" "$(get_balance "${SETTLE_EARN_ADDR}" ualpha)"
 
 fi # settlement pool addresses
 fi # settlement provider
 fi # settlement substation capacity
+
+# ─── pending provider lifecycle ───
+section "PHASE 16c: Withdrawal and Deletion With Live Contracts"
+
+PENDING_HEADROOM=$(query query structs substation "${SUBSTATION_ID}" | jq -ce --arg id "${SUBSTATION_ID}" 'select(.Substation.id == $id)' | python3 "${GENERATOR_TEST_DIR}/player_allocatable_capacity.py" --required-capacity 5000)
+printf '%s' "${PENDING_HEADROOM}" | jq -e '.hasCapacity == true' >/dev/null
+run_tx "Creating guild provider for pending-contract transitions" \
+    tx structs provider-create "${SUBSTATION_ID}" 1ualpha open-market 0.5 0.25 1000 100000 5 100000 --owner-id "${GUILD_ID}" --from alice
+PENDING_PROVIDER=$(get_created_provider_id "${GUILD_ID}" "${SUBSTATION_ID}")
+PENDING_PROVIDER_JSON=$(query query structs provider "${PENDING_PROVIDER}")
+printf '%s' "${PENDING_PROVIDER_JSON}" | jq -e --arg id "${PENDING_PROVIDER}" --arg owner "${GUILD_ID}" --arg station "${SUBSTATION_ID}" '.Provider | .id == $id and .owner == $owner and .substationId == $station and .rate == {denom:"ualpha",amount:"1"} and .providerCancellationPenalty == "0.500000000000000000" and .consumerCancellationPenalty == "0.250000000000000000"' >/dev/null
+PENDING_COLLATERAL=$(query query structs provider-collateral-address "${PENDING_PROVIDER}" | jq -er --arg id "${PENDING_PROVIDER}" '.internalAddressAssociation | select(length == 1 and .[0].objectId == $id) | .[0].address | select(type == "string" and length > 0)')
+PENDING_EARNINGS=$(query query structs provider-earnings-address "${PENDING_PROVIDER}" | jq -er --arg id "${PENDING_PROVIDER}" '.internalAddressAssociation | select(length == 1 and .[0].objectId == $id) | .[0].address | select(type == "string" and length > 0)')
+PENDING_GUILD_VAULT=$(get_vault_address "${GUILD_ID}")
+PENDING_PERSONAL_VAULT=$(get_vault_address "${PLAYER_1_ID}")
+assert_eq "Fresh pending provider has no collateral" 0 "$(get_balance "${PENDING_COLLATERAL}" ualpha)"
+assert_eq "Fresh pending provider has no earnings" 0 "$(get_balance "${PENDING_EARNINGS}" ualpha)"
+PENDING_STATE=$(jq -cn --arg provider "${PENDING_PROVIDER}" --arg owner "${GUILD_ID}" --arg source "${SUBSTATION_ID}" --arg vault "${PENDING_GUILD_VAULT}" --arg personal "${PENDING_PERSONAL_VAULT}" --arg collateral "${PENDING_COLLATERAL}" --arg earnings "${PENDING_EARNINGS}" --arg balance "$(get_balance "${PENDING_GUILD_VAULT}" ualpha)" --arg personal_balance "$(get_balance "${PENDING_PERSONAL_VAULT}" ualpha)" '{provider_id:$provider,provider_owner:$owner,source_id:$source,owner_vault:$vault,personal_vault:$personal,collateral_address:$collateral,earnings_address:$earnings,initial_owner_balance:$balance,initial_personal_balance:$personal_balance,agreements:[]}')
+
+# A long service window leaves time for receipt queries; the oracle still
+# refuses a withdrawal/deletion that reaches expiry instead of this live path.
+fund_vault_alpha "${PLAYER_2_ID}" 2000000
+PENDING_OPEN=$(jq -cn --arg owner "${PLAYER_2_ID}" --arg vault "${PLAYER_2_VAULT}" --arg balance "$(get_balance "${PLAYER_2_VAULT}" ualpha)" '{consumer_owner:$owner,consumer_vault:$vault,initial_balance:$balance,capacity:"2000",duration:"1000"}')
+run_tx "Opening first contract for pending provider transitions" \
+    tx structs agreement-open "${PENDING_PROVIDER}" 1000 2000 --from player_2
+PENDING_STATE=$(record_provider_lifecycle_step open "${PENDING_OPEN}" "${PENDING_STATE}")
+fund_vault_alpha "${PLAYER_3_ID}" 3000000
+PENDING_OPEN=$(jq -cn --arg owner "${PLAYER_3_ID}" --arg vault "${PLAYER_3_VAULT}" --arg balance "$(get_balance "${PLAYER_3_VAULT}" ualpha)" '{consumer_owner:$owner,consumer_vault:$vault,initial_balance:$balance,capacity:"3000",duration:"1000"}')
+run_tx "Opening second contract for pending provider transitions" \
+    tx structs agreement-open "${PENDING_PROVIDER}" 1000 3000 --from player_3
+PENDING_STATE=$(record_provider_lifecycle_step open "${PENDING_OPEN}" "${PENDING_STATE}")
+PENDING_A=$(printf '%s' "${PENDING_STATE}" | jq -er '.agreements[0].agreement_id')
+PENDING_B=$(printf '%s' "${PENDING_STATE}" | jq -er '.agreements[1].agreement_id')
+
+# The withdrawal checkpoints elapsed blocks itself. No background billing worker
+# or historical claim query is required.
+PENDING_NEXT_BLOCK=$(printf '%s' "${PENDING_STATE}" | python3 -c 'import json,sys; print(int(json.load(sys.stdin)["agreements"][1]["start"])+1)')
+wait_for_block "${PENDING_NEXT_BLOCK}"
+run_tx "Withdrawing earnings while both contracts remain live" \
+    tx structs provider-withdraw-balance "${PENDING_PROVIDER}" --from alice
+PENDING_STATE=$(record_provider_lifecycle_step withdraw '{}' "${PENDING_STATE}")
+
+# Deletion settles both consumers before draining the remaining pools to the
+# guild vault. Confirm exact transaction transfers and resulting balances.
+run_tx "Deleting provider while both contracts remain live" \
+    tx structs provider-delete "${PENDING_PROVIDER}" --from alice
+PENDING_STATE=$(record_provider_lifecycle_step delete '{}' "${PENDING_STATE}")
+assert_object_missing "Pending provider physically removed" provider "${PENDING_PROVIDER}"
+assert_object_missing "First pending contract physically removed" agreement "${PENDING_A}"
+assert_object_missing "Second pending contract physically removed" agreement "${PENDING_B}"
+assert_object_missing "First pending allocation physically removed" allocation "$(printf '%s' "${PENDING_STATE}" | jq -er '.agreements[0].allocation_id')"
+assert_object_missing "Second pending allocation physically removed" allocation "$(printf '%s' "${PENDING_STATE}" | jq -er '.agreements[1].allocation_id')"
+PENDING_BALANCES=$(jq -cn --arg guild "${PENDING_GUILD_VAULT}" --arg personal "${PENDING_PERSONAL_VAULT}" --arg a "${PLAYER_2_VAULT}" --arg b "${PLAYER_3_VAULT}" --arg collateral "${PENDING_COLLATERAL}" --arg earnings "${PENDING_EARNINGS}" --arg gv "$(get_balance "${PENDING_GUILD_VAULT}" ualpha)" --arg pv "$(get_balance "${PENDING_PERSONAL_VAULT}" ualpha)" --arg av "$(get_balance "${PLAYER_2_VAULT}" ualpha)" --arg bv "$(get_balance "${PLAYER_3_VAULT}" ualpha)" --arg cv "$(get_balance "${PENDING_COLLATERAL}" ualpha)" --arg ev "$(get_balance "${PENDING_EARNINGS}" ualpha)" '{($guild):$gv,($personal):$pv,($a):$av,($b):$bv,($collateral):$cv,($earnings):$ev}')
+PENDING_VERIFIED=$(printf '%s' "${PENDING_BALANCES}" | python3 "${GENERATOR_TEST_DIR}/provider_lifecycle_accounting.py" verify "${PENDING_STATE}")
+assert_eq "Pending withdrawal/deletion pays exact consumer and guild totals" true "$(printf '%s' "${PENDING_VERIFIED}" | jq -r '.verified')"
+# ─── pending provider lifecycle complete ───
 
 fi # phase 16
 
@@ -6273,6 +7483,8 @@ info "UGC phase complete"
 fi # phase 18
 
 
+source "${GENERATOR_TEST_DIR}/fleet_fixture.sh"
+
 if run_phase 2300; then
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -6306,10 +7518,10 @@ for FP_NUM in 1 2 3 4 5; do
     eval "FP_${FP_NUM}_ADDRESS=${ADDR}"
 
     run_tx "Funding ${FPLAYER_KEY}" \
-        tx bank send "${BOB_ADDRESS}" "${ADDR}" 10000000ualpha --from bob
+        tx bank send "${BOB_ADDRESS}" "${ADDR}" 15000000ualpha --from bob
 
     run_tx "Delegating for ${FPLAYER_KEY}" \
-        tx staking delegate "${VALIDATOR_ADDRESS}" 5000000ualpha --from "${FPLAYER_KEY}"
+        tx staking delegate "${VALIDATOR_ADDRESS}" 10000000ualpha --from "${FPLAYER_KEY}"
 
     ADDR_JSON=$(query query structs address "${ADDR}")
     FP_PID=$(jqr "${ADDR_JSON}" '.playerId')
@@ -6317,21 +7529,36 @@ for FP_NUM in 1 2 3 4 5; do
     assert_not_empty "Fleet Player ${FP_NUM} ID" "${FP_PID}"
     echo "  Fleet Player ${FP_NUM} ID: ${FP_PID}"
 
-    PJSON=$(query query structs player "${FP_PID}")
-    PCAP=$(jqr "${PJSON}" '.gridAttributes.capacity')
-
-    run_tx "Creating allocation for fleet player ${FP_NUM}" \
-        tx structs allocation-create "${FP_PID}" "${PCAP}" \
-        --controller "${PLAYER_1_ID}" --allocation-type dynamic --from "${FPLAYER_KEY}"
-
-    FP_ALLOC_ID=$(get_latest_allocation_for_source "${FP_PID}")
+    # Reuse the connected feeder, or finish one left between create/connect.
+    FP_ALLOC_ID=$(get_fixture_feeder "${FP_PID}" "${SUBSTATION_ID}" "${PLAYER_1_ID}")
+    if [ -z "${FP_ALLOC_ID}" ]; then
+        FP_ALLOC_ID=$(get_fixture_feeder "${FP_PID}" "" "${PLAYER_1_ID}")
+    fi
+    if [ -z "${FP_ALLOC_ID}" ]; then
+        PJSON=$(query query structs player "${FP_PID}")
+        PCAP=$(printf '%s' "${PJSON}" | python3 "${ALLOCATION_TEST_DIR}/player_allocatable_capacity.py" | jq -er 'select(.hasCapacity == true) | .allocatableCapacity')
+        run_tx "Creating allocation for fleet player ${FP_NUM}" \
+            tx structs allocation-create "${FP_PID}" "${PCAP}" \
+            --controller "${PLAYER_1_ID}" --allocation-type dynamic --from "${FPLAYER_KEY}"
+        FP_ALLOC_ID=$(get_created_grid_id allocation "${FP_PID}" "${PLAYER_1_ID}")
+    fi
     eval "FP_${FP_NUM}_ALLOC_ID=${FP_ALLOC_ID}"
 
-    run_tx "Fleet player ${FP_NUM} joining guild" \
-        tx structs guild-membership-join "${GUILD_ID}" "${REACTOR_ID}-${ADDR}" --from "${FPLAYER_KEY}"
-
-    run_tx "Connecting fleet player ${FP_NUM} allocation to substation" \
-        tx structs substation-allocation-connect "${FP_ALLOC_ID}" "${SUBSTATION_ID}" --from alice
+    PJSON=$(query query structs player "${FP_PID}")
+    FP_GUILD=$(printf '%s' "${PJSON}" | jq -er --arg id "${FP_PID}" '.Player | select(.id == $id) | .guildId // ""')
+    if [ "${FP_GUILD}" != "${GUILD_ID}" ]; then
+        run_tx "Fleet player ${FP_NUM} joining guild" \
+            tx structs guild-membership-join "${GUILD_ID}" "${REACTOR_ID}-${ADDR}" --from "${FPLAYER_KEY}"
+    fi
+    FP_DEST=$(query query structs allocation "${FP_ALLOC_ID}" | jq -er --arg id "${FP_ALLOC_ID}" '.Allocation | select(.id == $id) | .destinationId // ""')
+    if [ "${FP_DEST}" != "${SUBSTATION_ID}" ]; then
+        run_tx "Connecting fleet player ${FP_NUM} allocation to substation" \
+            tx structs substation-allocation-connect "${FP_ALLOC_ID}" "${SUBSTATION_ID}" --from alice
+    fi
+    assert_eq "FP ${FP_NUM} feeder association" "${FP_ALLOC_ID}" "$(get_fixture_feeder "${FP_PID}" "${SUBSTATION_ID}" "${PLAYER_1_ID}")"
+    PJSON=$(query query structs player "${FP_PID}")
+    assert_eq "FP ${FP_NUM} guild" "${GUILD_ID}" "$(jqr "${PJSON}" '.Player.guildId')"
+    assert_eq "FP ${FP_NUM} substation" "${SUBSTATION_ID}" "$(jqr "${PJSON}" '.Player.substationId')"
 done
 
 echo ""
@@ -6346,8 +7573,12 @@ for FP_NUM in 1 2 3 4 5; do
     eval "FP_PID=\${FP_${FP_NUM}_ID}"
     FPLAYER_KEY="fplayer_${FP_NUM}"
 
-    run_tx "Fleet Player ${FP_NUM} exploring planet" \
-        tx structs planet-explore "${FP_PID}" --from "${FPLAYER_KEY}"
+    PJSON=$(query query structs player "${FP_PID}")
+    PLANET_ID=$(printf '%s' "${PJSON}" | jq -er --arg id "${FP_PID}" '.Player | select(.id == $id) | .planetId // ""')
+    if [ -z "${PLANET_ID}" ]; then
+        run_tx "Fleet Player ${FP_NUM} exploring planet" \
+            tx structs planet-explore "${FP_PID}" --from "${FPLAYER_KEY}"
+    fi
 
     PJSON=$(query query structs player "${FP_PID}")
     PLANET_ID=$(jqr "${PJSON}" '.Player.planetId')
@@ -6362,6 +7593,8 @@ done
 # ─── Verify Command Ships ───
 info "Verifying command ships"
 for FP_NUM in 1 2 3 4 5; do
+    fp_require_command "${FP_NUM}"
+    fp_move_home "${FP_NUM}"
     eval "FLEET_ID=\${FP_${FP_NUM}_FLEET_ID}"
     FLEET_JSON=$(query_fleet "${FLEET_ID}")
     CMD_STRUCT=$(jqr "${FLEET_JSON}" '.Fleet.commandStruct')
@@ -6407,6 +7640,11 @@ if run_phase 2350; then
 
 section "PHASE 17b: Fleet Queue Limit"
 
+for FP_NUM in 1 2 3 4 5; do
+    fp_require_command "${FP_NUM}"
+    fp_move_home "${FP_NUM}"
+done
+
 FP_TARGET_PLANET="${FP_1_PLANET_ID}"
 FP_F1="${FP_1_FLEET_ID}"
 FP_F2="${FP_2_FLEET_ID}"
@@ -6415,10 +7653,10 @@ info "Target planet: ${FP_TARGET_PLANET} (FP 1's home); visitors F2=${FP_F2} F3=
 
 # Helper: read locationListCount (protobuf omitempty => missing means 0)
 fp_queue_count() {
-    query_planet "$1" | jq -r '.Planet.locationListCount // "0"' 2>/dev/null || echo "0"
+    query_planet "$1" | jq -er --arg id "$1" '.Planet | select(.id == $id) | .locationListCount // "0"'
 }
 fp_queue_extra() {
-    query_planet "$1" | jq -r '.Planet.locationListExtra // "0"' 2>/dev/null || echo "0"
+    query_planet "$1" | jq -er --arg id "$1" '.Planet | select(.id == $id) | .locationListExtra // "0"'
 }
 
 assert_eq "Target planet starts with locationListExtra 0" "0" "$(fp_queue_extra "${FP_TARGET_PLANET}")"
@@ -6445,7 +7683,7 @@ assert_eq "FP Fleet 1 status onStation" "onStation" "${F1_STATUS}"
 
 # ─── Second visitor rejected (queue_full) ───
 wait_for_charge "${FP_3_ID}" "${CHARGE_MOVE}"
-run_tx_expect_fail "FP Fleet 3 blocked while queue full (should fail)" \
+run_tx_expect_reject_matching "FP Fleet 3 blocked while queue full" "queue_full" \
     tx structs fleet-move "${FP_F3}" "${FP_TARGET_PLANET}" --from fplayer_3
 
 F3_JSON=$(query_fleet "${FP_F3}")
@@ -6489,7 +7727,7 @@ assert_eq "Count 1 after F2 revisit" "1" "$(fp_queue_count "${FP_TARGET_PLANET}"
 assert_eq "Start is F2 after revisit" "${FP_F2}" "$(get_planet_field "${FP_TARGET_PLANET}" "locationListStart")"
 
 wait_for_charge "${FP_3_ID}" "${CHARGE_MOVE}"
-run_tx_expect_fail "FP Fleet 3 still blocked during F2 revisit (should fail)" \
+run_tx_expect_reject_matching "FP Fleet 3 still blocked during F2 revisit" "queue_full" \
     tx structs fleet-move "${FP_F3}" "${FP_TARGET_PLANET}" --from fplayer_3
 
 # Leave F2 on the target for Phase 17c single-visitor combat
@@ -6517,66 +7755,39 @@ FP_F1="${FP_1_FLEET_ID}"
 FP_F2="${FP_2_FLEET_ID}"
 
 fp_queue_count() {
-    query_planet "$1" | jq -r '.Planet.locationListCount // "0"' 2>/dev/null || echo "0"
+    query_planet "$1" | jq -er --arg id "$1" '.Planet | select(.id == $id) | .locationListCount // "0"'
 }
 
-# Ensure F2 is the sole visitor (Phase 17b leaves them there; re-park if needed).
-F2_JSON=$(query_fleet "${FP_F2}")
-F2_LOC=$(jqr "${F2_JSON}" '.Fleet.locationId')
-if [ "${F2_LOC}" != "${FP_TARGET_PLANET}" ]; then
-    wait_for_charge "${FP_2_ID}" "${CHARGE_MOVE}"
-    run_tx "Parking FP Fleet 2 on target for combat phase" \
-        tx structs fleet-move "${FP_F2}" "${FP_TARGET_PLANET}" --from fplayer_2
-fi
+# A direct phase-17c resume may follow a completed or interrupted battle.
+for FP_NUM in 1 2 3 4 5; do
+    fp_require_command "${FP_NUM}"
+    fp_move_home "${FP_NUM}"
+done
+fp_move 2 "${FP_TARGET_PLANET}"
 assert_eq "Combat setup: F2 on target" "${FP_TARGET_PLANET}" "$(get_fleet_field "${FP_F2}" "locationId")"
 assert_eq "Combat setup: queue count 1" "1" "$(fp_queue_count "${FP_TARGET_PLANET}")"
 
-info "Recording initial health"
-echo "  FP_CS_1 (${FP_CS_1}): HP=$(get_hp "${FP_CS_1}")"
-echo "  FP_CS_2 (${FP_CS_2}): HP=$(get_hp "${FP_CS_2}")"
+# Preserve surviving hulls. Either opening attack may destroy a damaged command;
+# restore it before the next required scenario instead of skipping that scenario.
+fp_attack 1 2 "Home fleet hit sole visitor"
+fp_require_command 1
+fp_require_command 2
+fp_move 2 "${FP_TARGET_PLANET}"
+fp_attack 2 1 "Front visitor hit home fleet"
+fp_require_command 1
 
-# Home fleet can attack the sole visitor (front of list)
-info "Test 1: F1 (home) → F2 (sole visitor / front of list)"
-wait_for_charge "${FP_1_ID}" "${CHARGE_ATTACK_DEFAULT}"
-FP_CS2_HP_BEFORE=$(get_hp "${FP_CS_2}")
-run_tx "F1 (home) attacks FP_CS_2 on F2" \
-    tx structs struct-attack "${FP_CS_1}" "${FP_CS_2}" primaryWeapon --from fplayer_1
-FP_CS2_HP=$(get_hp "${FP_CS_2}")
-echo "  FP_CS_2 HP: ${FP_CS2_HP} (was ${FP_CS2_HP_BEFORE})"
-assert_eq "Home fleet hit sole visitor" "true" "$([ "${FP_CS2_HP}" -lt "${FP_CS2_HP_BEFORE}" ] && echo true || echo false)"
-
-# Front visitor can attack the home fleet
-info "Test 2: F2 (front visitor) → F1 (home)"
-wait_for_charge "${FP_2_ID}" "${CHARGE_ATTACK_DEFAULT}"
-FP_CS1_HP_BEFORE=$(get_hp "${FP_CS_1}")
-run_tx "F2 attacks FP_CS_1 on F1 (front visitor reaches home fleet)" \
-    tx structs struct-attack "${FP_CS_2}" "${FP_CS_1}" primaryWeapon --from fplayer_2
-FP_CS1_HP=$(get_hp "${FP_CS_1}")
-echo "  FP_CS_1 HP: ${FP_CS1_HP} (was ${FP_CS1_HP_BEFORE})"
-assert_eq "Front visitor hit home fleet" "true" "$([ "${FP_CS1_HP}" -lt "${FP_CS1_HP_BEFORE}" ] && echo true || echo false)"
-
-# Destroy F2's Command Ship → fleet recalled home, queue cleared
 info "Destroying FP_CS_2 to clear the queue"
-FP_CS2_HP=$(get_hp "${FP_CS_2}")
+FP_CS2_HP=$(query query structs struct "${FP_CS_2}" | jq -er --arg id "${FP_CS_2}" \
+    'select(.Struct.id == $id) | .structAttributes.health | select(. == "1" or . == "2" or . == "3" or . == "4" or . == "5" or . == "6")')
 ATTACK_COUNT=0
-while [ "${FP_CS2_HP}" -gt 0 ] 2>/dev/null && [ "${ATTACK_COUNT}" -lt 8 ]; do
+while [ "${FP_CS2_HP}" -gt 0 ] && [ "${ATTACK_COUNT}" -lt 3 ]; do
     ATTACK_COUNT=$((ATTACK_COUNT + 1))
-    wait_for_charge "${FP_1_ID}" "${CHARGE_ATTACK_DEFAULT}"
-    run_tx "F1 attacks FP_CS_2 (#${ATTACK_COUNT}, HP=${FP_CS2_HP})" \
-        tx structs struct-attack "${FP_CS_1}" "${FP_CS_2}" primaryWeapon --from fplayer_1
-    FP_CS2_HP=$(get_hp "${FP_CS_2}")
-    echo "  FP_CS_2 HP after attack #${ATTACK_COUNT}: ${FP_CS2_HP}"
+    fp_require_command 1
+    fp_attack 1 2 "F1 destroys visitor command (attack ${ATTACK_COUNT})"
+    FP_CS2_HP="${FP_LAST_TARGET_HEALTH}"
 done
-
-sleep 6
-FP_CS2_HP_CHECK=$(get_hp "${FP_CS_2}")
-if [ "${FP_CS2_HP_CHECK}" = "0" ]; then
-    echo -e "  ${GREEN}PASS${NC}: FP_CS_2 destroyed (HP=0)"
-    PASS_COUNT=$((PASS_COUNT + 1))
-else
-    echo -e "  ${RED}FAIL${NC}: FP_CS_2 still alive (HP=${FP_CS2_HP_CHECK})"
-    FAIL_COUNT=$((FAIL_COUNT + 1))
-fi
+assert_eq "FP_CS_2 destroyed in confirmed attack" "0" "${FP_CS2_HP}"
+[ "${FP_CS2_HP}" = "0" ]
 
 F2_JSON=$(query_fleet "${FP_F2}")
 F2_LOC=$(jqr "${F2_JSON}" '.Fleet.locationId')
@@ -6632,66 +7843,72 @@ fi
 assert_not_empty "Player 6 address" "${PLAYER_6_ADDRESS}"
 
 run_tx "Funding player_6 from bob" \
-    tx bank send "${BOB_ADDRESS}" "${PLAYER_6_ADDRESS}" 45000000ualpha --from bob
+    tx bank send "${BOB_ADDRESS}" "${PLAYER_6_ADDRESS}" 85000000ualpha --from bob
 
-run_tx "Delegating 40000000ualpha from player_6 to validator" \
-    tx staking delegate "${VALIDATOR_ADDRESS}" 40000000ualpha --from player_6
+run_tx "Delegating 80000000ualpha from player_6 to validator" \
+    tx staking delegate "${VALIDATOR_ADDRESS}" 80000000ualpha --from player_6
 
 ADDR_JSON_6=$(query query structs address "${PLAYER_6_ADDRESS}")
 PLAYER_6_ID=$(jqr "${ADDR_JSON_6}" '.playerId')
 assert_not_empty "Player 6 ID" "${PLAYER_6_ID}"
 echo "  Player 6 ID: ${PLAYER_6_ID}"
 
-# Create allocation (controller = alice), holding back capacity for P6's own builds.
-#
-# Allocating the whole capacity would leave P6 funding every struct out of its share
-# of alice's substation, and that share is (substation capacity - load) /
-# connectionCount — around 1.8M across 34 connections, against a phase that keeps a
-# dozen builds pending at once and so holds all of their buildDraw simultaneously.
-# Reserving here rather than allocating less of a smaller stake is deliberate: every
-# other player on that substation lives on the same 1/34 share, so the pool must not
-# shrink to pay for this.
-P6_JSON=$(query query structs player "${PLAYER_6_ID}")
-P6_CAP=$(jqr "${P6_JSON}" '.gridAttributes.capacity')
-assert_gt "Player 6 capacity" 0 "${P6_CAP}"
-echo "  Player 6 capacity: ${P6_CAP}"
-
-P6_BUILD_RESERVE=8000000
-P6_ALLOC_POWER=$((P6_CAP - P6_BUILD_RESERVE))
-assert_gt "Player 6 allocatable capacity after the build reserve" 0 "${P6_ALLOC_POWER}"
-echo "  Player 6 allocating ${P6_ALLOC_POWER}, reserving ${P6_BUILD_RESERVE} for builds"
-
-run_tx "Creating allocation from Player 6 (controller=alice)" \
-    tx structs allocation-create "${PLAYER_6_ID}" "${P6_ALLOC_POWER}" \
-    --controller "${PLAYER_1_ID}" --allocation-type dynamic --from player_6
-
-P6_ALLOC_ID=$(get_latest_allocation_for_source "${PLAYER_6_ID}")
+# ─── Extended feeder recovery ───
+# Resolve one connected (or interrupted, unconnected) feeder. Resizing releases
+# its own load, while other allocations and the build reserve stay protected.
+P6_SETUP_HEIGHT=$(get_block_height)
+P6_ALLOC_ID=$(get_fixture_feeder "${PLAYER_6_ID}" "${SUBSTATION_ID}" "${PLAYER_1_ID}" "${P6_SETUP_HEIGHT}")
+if [ -z "${P6_ALLOC_ID}" ]; then
+    P6_ALLOC_ID=$(get_fixture_feeder "${PLAYER_6_ID}" "" "${PLAYER_1_ID}" "${P6_SETUP_HEIGHT}")
+fi
+P6_ALLOC_JSON=null
+if [ -n "${P6_ALLOC_ID}" ]; then
+    P6_ALLOC_JSON=$(query query structs allocation "${P6_ALLOC_ID}" --height "${P6_SETUP_HEIGHT}")
+fi
+P6_JSON=$(query query structs player "${PLAYER_6_ID}" --height "${P6_SETUP_HEIGHT}")
+P6_SETUP=$(jq -nc --argjson player "${P6_JSON}" --argjson allocation "${P6_ALLOC_JSON}" \
+    '{player:$player,allocation:$allocation}' | python3 "${GENERATOR_TEST_DIR}/extended_battle_setup.py" \
+    "${PLAYER_6_ID}" "${PLAYER_1_ID}" "${SUBSTATION_ID}" 8000000)
+P6_ALLOC_POWER=$(printf '%s' "${P6_SETUP}" | jq -er '.power')
+if [ -z "${P6_ALLOC_ID}" ]; then
+    run_tx "Creating allocation from Player 6 (controller=alice)" \
+        tx structs allocation-create "${PLAYER_6_ID}" "${P6_ALLOC_POWER}" \
+        --controller "${PLAYER_1_ID}" --allocation-type dynamic --from player_6
+    P6_ALLOC_ID=$(get_created_grid_id allocation "${PLAYER_6_ID}" "${PLAYER_1_ID}")
+elif [ "$(printf '%s' "${P6_SETUP}" | jq -r '.needsUpdate')" = true ]; then
+    run_tx "Resizing Player 6 fixture allocation" \
+        tx structs allocation-update "${P6_ALLOC_ID}" "${P6_ALLOC_POWER}" --from player_6
+fi
 assert_not_empty "Player 6 allocation ID" "${P6_ALLOC_ID}"
-echo "  Player 6 Allocation ID: ${P6_ALLOC_ID}"
+assert_eq "Player 6 feeder has exact reserved power" "${P6_ALLOC_POWER}" \
+    "$(query query structs allocation "${P6_ALLOC_ID}" | jq -er '.gridAttributes.power')"
 
-# Join guild and connect to substation
-run_tx "Player 6 joining guild" \
-    tx structs guild-membership-join "${GUILD_ID}" "${REACTOR_ID}-${PLAYER_6_ADDRESS}" --from player_6
-
-run_tx "Connecting Player 6 allocation to substation" \
-    tx structs substation-allocation-connect "${P6_ALLOC_ID}" "${SUBSTATION_ID}" --from alice
-
-# Explore planet (creates command ship + fleet)
-run_tx "Player 6 exploring a planet" \
-    tx structs planet-explore "${PLAYER_6_ID}" --from player_6
+if [ "$(printf '%s' "${P6_JSON}" | jq -er '.Player.guildId // ""')" != "${GUILD_ID}" ]; then
+    run_tx "Player 6 joining guild" \
+        tx structs guild-membership-join "${GUILD_ID}" "${REACTOR_ID}-${PLAYER_6_ADDRESS}" --from player_6
+fi
+if [ "$(printf '%s' "${P6_SETUP}" | jq -r '.destinationId')" = "" ]; then
+    run_tx "Connecting Player 6 allocation to substation" \
+        tx structs substation-allocation-connect "${P6_ALLOC_ID}" "${SUBSTATION_ID}" --from alice
+fi
+assert_eq "Player 6 feeder destination" "${SUBSTATION_ID}" \
+    "$(query query structs allocation "${P6_ALLOC_ID}" | jq -er '.Allocation.destinationId')"
 
 P6_JSON=$(query query structs player "${PLAYER_6_ID}")
-PLAYER_6_PLANET_ID=$(jqr "${P6_JSON}" '.Player.planetId')
+assert_eq "Player 6 guild membership" "${GUILD_ID}" "$(jqr "${P6_JSON}" '.Player.guildId')"
+PLAYER_6_PLANET_ID=$(printf '%s' "${P6_JSON}" | jq -r '.Player.planetId // ""')
+if [ -z "${PLAYER_6_PLANET_ID}" ]; then
+    run_tx "Player 6 exploring a planet" \
+        tx structs planet-explore "${PLAYER_6_ID}" --from player_6
+    P6_JSON=$(query query structs player "${PLAYER_6_ID}")
+    PLAYER_6_PLANET_ID=$(jqr "${P6_JSON}" '.Player.planetId')
+fi
 PLAYER_6_FLEET_ID=$(jqr "${P6_JSON}" '.Player.fleetId')
 assert_not_empty "Player 6 planet" "${PLAYER_6_PLANET_ID}"
 assert_not_empty "Player 6 fleet" "${PLAYER_6_FLEET_ID}"
-echo "  Player 6 Planet: ${PLAYER_6_PLANET_ID}  Fleet: ${PLAYER_6_FLEET_ID}"
-
-# Discover P6's command ship (newest struct after explore)
-STRUCT_ALL_JSON=$(query query structs struct-all)
-P6_COMMAND_SHIP_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_not_empty "Player 6 Command Ship ID" "${P6_COMMAND_SHIP_ID}"
-echo "  Player 6 Command Ship: ${P6_COMMAND_SHIP_ID}"
+combat_require_command P6_COMMAND_SHIP_ID 6 "extended battle command"
+combat_move_fleet 6 "${PLAYER_6_PLANET_ID}" player_6
+# ─── Extended feeder recovery complete ───
 
 fi # phase EB1
 
@@ -6714,217 +7931,28 @@ info "Types needed: 3(Starfighter), 4(Frigate), 5(Pursuit Fighter), 8(Mobile Art
 # Interleave across players for charge efficiency
 # ═══════════════════════════════════════════════════════════════
 
-info "Batch-initiating all extended battle builds"
-
-# P3's fleet may be away after Phase 17c combat — move home first
-run_tx "Moving P3 fleet home before building" \
-    tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_3_PLANET_ID}" --from player_3
-
-# ─── P3: Pursuit Fighter (type 5, air, slot 1) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Pursuit Fighter (type=5, air, slot=1) for P3" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 5 air 1 --from player_3
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-EB_PURSUIT_FIGHTER_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "Pursuit Fighter struct ID" "${EB_PURSUIT_FIGHTER_ID}" "${PREV_NEWEST_STRUCT_ID}" 5
-echo "  Pursuit Fighter ID: ${EB_PURSUIT_FIGHTER_ID}"
-
-# ─── P6: Starfighter (type 3, space, slot 0) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Starfighter (type=3, space, slot=0) for P6" \
-    tx structs struct-build-initiate "${PLAYER_6_ID}" 3 space 0 --from player_6
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-EB_STARFIGHTER_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "Starfighter struct ID" "${EB_STARFIGHTER_ID}" "${PREV_NEWEST_STRUCT_ID}" 3
-echo "  Starfighter ID: ${EB_STARFIGHTER_ID}"
-
-# ─── P6: Frigate (type 4, space, slot 1) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Frigate (type=4, space, slot=1) for P6" \
-    tx structs struct-build-initiate "${PLAYER_6_ID}" 4 space 1 --from player_6
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-EB_FRIGATE_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "Frigate struct ID" "${EB_FRIGATE_ID}" "${PREV_NEWEST_STRUCT_ID}" 4
-echo "  Frigate ID: ${EB_FRIGATE_ID}"
-
-# ─── P6: Mobile Artillery (type 8, land, slot 0) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Mobile Artillery (type=8, land, slot=0) for P6" \
-    tx structs struct-build-initiate "${PLAYER_6_ID}" 8 land 0 --from player_6
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-EB_MOBILE_ART_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "Mobile Artillery struct ID" "${EB_MOBILE_ART_ID}" "${PREV_NEWEST_STRUCT_ID}" 8
-echo "  Mobile Artillery ID: ${EB_MOBILE_ART_ID}"
-
-# ─── P6: Destroyer-water (type 12, water, slot 0) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating Destroyer-water (type=12, water, slot=0) for P6" \
-    tx structs struct-build-initiate "${PLAYER_6_ID}" 12 water 0 --from player_6
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-EB_DESTROYER_W_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "Destroyer-water struct ID" "${EB_DESTROYER_W_ID}" "${PREV_NEWEST_STRUCT_ID}" 12
-echo "  Destroyer-water ID: ${EB_DESTROYER_W_ID}"
-
-# ─── P6: Battleship (type 2, space, slot 2) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P6 Battleship (type=2, space, slot=2) for P6" \
-    tx structs struct-build-initiate "${PLAYER_6_ID}" 2 space 2 --from player_6
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-EB_P6_BATTLESHIP_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "P6 Battleship struct ID" "${EB_P6_BATTLESHIP_ID}" "${PREV_NEWEST_STRUCT_ID}" 2
-echo "  P6 Battleship ID: ${EB_P6_BATTLESHIP_ID}"
-
-# ─── P6: Tank (type 9, land, slot 1) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P6 Tank (type=9, land, slot=1) for P6" \
-    tx structs struct-build-initiate "${PLAYER_6_ID}" 9 land 1 --from player_6
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-EB_P6_TANK_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "P6 Tank struct ID" "${EB_P6_TANK_ID}" "${PREV_NEWEST_STRUCT_ID}" 9
-echo "  P6 Tank ID: ${EB_P6_TANK_ID}"
-
-# ─── P6: Cruiser (type 11, water, slot 1) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P6 Cruiser (type=11, water, slot=1) for P6" \
-    tx structs struct-build-initiate "${PLAYER_6_ID}" 11 water 1 --from player_6
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-EB_P6_CRUISER_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "P6 Cruiser struct ID" "${EB_P6_CRUISER_ID}" "${PREV_NEWEST_STRUCT_ID}" 11
-echo "  P6 Cruiser ID: ${EB_P6_CRUISER_ID}"
-
-# ─── P6: High Altitude Interceptor (type 7, air, slot 0) — for evasion testing ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P6 HAI (type=7, air, slot=0) for evasion testing" \
-    tx structs struct-build-initiate "${PLAYER_6_ID}" 7 air 0 --from player_6
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-EB_P6_HAI_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "P6 HAI struct ID" "${EB_P6_HAI_ID}" "${PREV_NEWEST_STRUCT_ID}" 7
-echo "  P6 HAI ID: ${EB_P6_HAI_ID}"
-
-# ─── P3: Mobile Artillery (type 8, land, slot 3) — for PDC immunity test ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P3 Mobile Artillery (type=8, land, slot=3) for P3" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 8 land 3 --from player_3
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-EB_P3_MOBILE_ART_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "P3 Mobile Artillery initiated" "${EB_P3_MOBILE_ART_ID}" "${PREV_NEWEST_STRUCT_ID}" 8
-echo "  P3 Mobile Artillery ID: ${EB_P3_MOBILE_ART_ID}"
-
-# ─── P6: PDC (type 19, land, slot 2) — planetary struct for defense cannon test ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P6 PDC (type=19, land, slot=2) for PDC test" \
-    tx structs struct-build-initiate "${PLAYER_6_ID}" 19 land 2 --from player_6
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-EB_PDC_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "P6 PDC initiated" "${EB_PDC_ID}" "${PREV_NEWEST_STRUCT_ID}" 19
-echo "  P6 PDC ID: ${EB_PDC_ID}"
-
-# ─── P6: Ore Extractor (type 14, land, slot 3) — non-PDC planet struct for PDC cross-defense test ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P6 Ore Extractor (type=14, land, slot=3) for PDC cross-defense test" \
-    tx structs struct-build-initiate "${PLAYER_6_ID}" 14 land 3 --from player_6
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-EB_ORE_EXTRACTOR_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "P6 Ore Extractor initiated" "${EB_ORE_EXTRACTOR_ID}" "${PREV_NEWEST_STRUCT_ID}" 14
-echo "  P6 Ore Extractor ID: ${EB_ORE_EXTRACTOR_ID}"
-
-info "All 12 extended battle builds initiated. Computing now (difficulty decays with age)."
-
-# ═══════════════════════════════════════════════════════════════
-# COMPUTE: Build all extended battle structs
-# P3's Pursuit Fighter first (lets P6's builds age further)
-# Then P6's builds in sequence
-# ═══════════════════════════════════════════════════════════════
-
-# ─── Compute P3 Pursuit Fighter ───
-run_compute "Building Pursuit Fighter ${EB_PURSUIT_FIGHTER_ID}" \
-    tx structs struct-build-compute "${EB_PURSUIT_FIGHTER_ID}" --from player_3
-
-assert_eq "Pursuit Fighter built" "true" "$(query query structs struct "${EB_PURSUIT_FIGHTER_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── Compute P6 Starfighter ───
-run_compute "Building Starfighter ${EB_STARFIGHTER_ID}" \
-    tx structs struct-build-compute "${EB_STARFIGHTER_ID}" --from player_6
-
-assert_eq "Starfighter built" "true" "$(query query structs struct "${EB_STARFIGHTER_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── Compute P6 Frigate ───
-run_compute "Building Frigate ${EB_FRIGATE_ID}" \
-    tx structs struct-build-compute "${EB_FRIGATE_ID}" --from player_6
-
-assert_eq "Frigate built" "true" "$(query query structs struct "${EB_FRIGATE_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── Compute P6 Mobile Artillery ───
-run_compute "Building Mobile Artillery ${EB_MOBILE_ART_ID}" \
-    tx structs struct-build-compute "${EB_MOBILE_ART_ID}" --from player_6
-
-assert_eq "Mobile Artillery built" "true" "$(query query structs struct "${EB_MOBILE_ART_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── Compute P6 Destroyer-water ───
-run_compute "Building Destroyer-water ${EB_DESTROYER_W_ID}" \
-    tx structs struct-build-compute "${EB_DESTROYER_W_ID}" --from player_6
-
-assert_eq "Destroyer-water built" "true" "$(query query structs struct "${EB_DESTROYER_W_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── Compute P6 Battleship ───
-run_compute "Building P6 Battleship ${EB_P6_BATTLESHIP_ID}" \
-    tx structs struct-build-compute "${EB_P6_BATTLESHIP_ID}" --from player_6
-
-assert_eq "P6 Battleship built" "true" "$(query query structs struct "${EB_P6_BATTLESHIP_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── Compute P6 Tank ───
-run_compute "Building P6 Tank ${EB_P6_TANK_ID}" \
-    tx structs struct-build-compute "${EB_P6_TANK_ID}" --from player_6
-
-assert_eq "P6 Tank built" "true" "$(query query structs struct "${EB_P6_TANK_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── Compute P6 Cruiser ───
-run_compute "Building P6 Cruiser ${EB_P6_CRUISER_ID}" \
-    tx structs struct-build-compute "${EB_P6_CRUISER_ID}" --from player_6
-
-assert_eq "P6 Cruiser built" "true" "$(query query structs struct "${EB_P6_CRUISER_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── Compute P6 HAI ───
-run_compute "Building P6 HAI ${EB_P6_HAI_ID}" \
-    tx structs struct-build-compute "${EB_P6_HAI_ID}" --from player_6
-
-assert_eq "P6 HAI built" "true" "$(query query structs struct "${EB_P6_HAI_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── Compute P3 Mobile Artillery ───
-run_compute "Building P3 Mobile Artillery ${EB_P3_MOBILE_ART_ID}" \
-    tx structs struct-build-compute "${EB_P3_MOBILE_ART_ID}" --from player_3
-
-assert_eq "P3 Mobile Artillery built" "true" "$(query query structs struct "${EB_P3_MOBILE_ART_ID}" | jq -r '.structAttributes.isBuilt')"
-
-# ─── Compute P6 PDC ───
-run_compute "Building P6 PDC ${EB_PDC_ID}" \
-    tx structs struct-build-compute "${EB_PDC_ID}" --from player_6
-
-assert_eq "P6 PDC built" "true" "$(query query structs struct "${EB_PDC_ID}" | jq -r '.structAttributes.isBuilt')"
+# Reuse living roles and finish interrupted builds; never build into a fixed
+# occupied slot on resume. Prepare every role before computing so newly missing
+# fixtures still age together, as they do in the fresh extended battle.
+combat_move_fleet 3 "${PLAYER_3_PLANET_ID}" player_3
+combat_move_fleet 6 "${PLAYER_6_PLANET_ID}" player_6
+extended_battle_roles() {
+    local mode="$1"
+    combat_require_struct EB_PURSUIT_FIGHTER_ID 3 5 fleet "${PLAYER_3_FLEET_ID}" air "EB Pursuit Fighter" "" player_3 "${mode}"
+    combat_require_struct EB_STARFIGHTER_ID 6 3 fleet "${PLAYER_6_FLEET_ID}" space "EB Starfighter" "" player_6 "${mode}"
+    combat_require_struct EB_FRIGATE_ID 6 4 fleet "${PLAYER_6_FLEET_ID}" space "EB Frigate" "" player_6 "${mode}"
+    combat_require_struct EB_MOBILE_ART_ID 6 8 fleet "${PLAYER_6_FLEET_ID}" land "EB Mobile Artillery" "" player_6 "${mode}"
+    combat_require_struct EB_DESTROYER_W_ID 6 12 fleet "${PLAYER_6_FLEET_ID}" water "EB Destroyer" "" player_6 "${mode}"
+    combat_require_struct EB_P6_BATTLESHIP_ID 6 2 fleet "${PLAYER_6_FLEET_ID}" space "EB Battleship" "" player_6 "${mode}"
+    combat_require_struct EB_P6_TANK_ID 6 9 fleet "${PLAYER_6_FLEET_ID}" land "EB Tank" "" player_6 "${mode}"
+    combat_require_struct EB_P6_CRUISER_ID 6 11 fleet "${PLAYER_6_FLEET_ID}" water "EB Cruiser" "" player_6 "${mode}"
+    combat_require_struct EB_P6_HAI_ID 6 7 fleet "${PLAYER_6_FLEET_ID}" air "EB Interceptor" "" player_6 "${mode}"
+    combat_require_struct EB_P3_MOBILE_ART_ID 3 8 fleet "${PLAYER_3_FLEET_ID}" land "EB P3 Mobile Artillery" "" player_3 "${mode}"
+    combat_require_struct EB_PDC_ID 6 19 planet "${PLAYER_6_PLANET_ID}" land "EB PDC" "" player_6 "${mode}"
+    combat_require_struct EB_ORE_EXTRACTOR_ID 6 14 planet "${PLAYER_6_PLANET_ID}" land "EB Ore Extractor" "" player_6 "${mode}"
+}
+extended_battle_roles prepare
+extended_battle_roles ready
 
 # Verify PDC added a defensive cannon to P6's planet
 P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
@@ -6932,16 +7960,11 @@ P6_DEF_CANNON_QTY=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.defensiveCannonQu
 assert_gt "P6 planet has defensive cannons" 0 "${P6_DEF_CANNON_QTY}"
 info "P6 planet defensive cannon quantity: ${P6_DEF_CANNON_QTY}"
 
-# ─── Compute P6 Ore Extractor ───
-run_compute "Building P6 Ore Extractor ${EB_ORE_EXTRACTOR_ID}" \
-    tx structs struct-build-compute "${EB_ORE_EXTRACTOR_ID}" --from player_6
 
-assert_eq "P6 Ore Extractor built" "true" "$(query query structs struct "${EB_ORE_EXTRACTOR_ID}" | jq -r '.structAttributes.isBuilt')"
-
-info "All 14 fleet-capable struct types now exist across P3 and P6 (+ P6 HAI for evasion, Ore Extractor for PDC test)"
+info "Extended battle additions are ready; assembly restores the remaining fleet roles"
 info "  Types 1-13: Command Ship, Battleship, Starfighter, Frigate, Pursuit Fighter,"
 info "              Stealth Bomber, HAI, Mobile Artillery, Tank, SAM, Cruiser, Destroyer(W), Submersible"
-info "  P6 HAI (type 7, air/0) built for defensiveManeuver evasion testing"
+info "  P6 HAI (type 7, air) ready for defensiveManeuver evasion testing"
 
 fi # phase EB2
 
@@ -6956,23 +7979,21 @@ section "PHASE EB3: Fleet Assembly & Positioning"
 # Fleet units are built directly on their final fleet slots (Movable=false).
 # Only the Command Ship may struct-move (ambit changes).
 
-# ─── Move P3's fleet home for assembly ───
-run_tx "Moving P3's fleet home for extended battle assembly" \
-    tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_3_PLANET_ID}" --from player_3
+# Restore the ordinary-phase roles after earlier combat or a direct resume.
+combat_move_fleet 3 "${PLAYER_3_PLANET_ID}" player_3
+combat_move_fleet 6 "${PLAYER_6_PLANET_ID}" player_6
+ar_require_command 3
+ar_require_command 6
+combat_require_struct DESTROYER_STRUCT_ID 3 9 fleet "${PLAYER_3_FLEET_ID}" land "EB P3 Tank"
+combat_require_struct SAM_STRUCT_ID 3 10 fleet "${PLAYER_3_FLEET_ID}" land "EB P3 SAM"
+combat_require_struct SUB_STRUCT_ID 3 13 fleet "${PLAYER_3_FLEET_ID}" water "EB P3 Submersible"
+combat_require_struct BATTLESHIP_1_ID 3 2 fleet "${PLAYER_3_FLEET_ID}" space "EB P3 Battleship 1"
+combat_require_struct BATTLESHIP_2_ID 3 2 fleet "${PLAYER_3_FLEET_ID}" space "EB P3 Battleship 2" "${BATTLESHIP_1_ID}"
+combat_require_struct STEALTH_BOMBER_ID 3 6 fleet "${PLAYER_3_FLEET_ID}" air "EB P3 Stealth Bomber"
+combat_require_struct CRUISER_ID 3 11 fleet "${PLAYER_3_FLEET_ID}" water "EB P3 Cruiser"
 
-# ─── P6 Command Ship to space ambit ───
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-run_tx "Moving P6 Command Ship to fleet (space)" \
-    tx structs struct-move "${P6_COMMAND_SHIP_ID}" fleet space --from player_6
-
-info "P6 fleet assembled: CS(space), Starfighter(space/0), Frigate(space/1), Battleship(space/2),"
-info "  MobileArt(land/0), Tank(land/1), Destroyer(water/0), Cruiser(water/1), HAI(air/0)"
-info "P6 planet structs: PDC(land/2), Ore Extractor(land/3)"
-info "P3 fleet now also has: Pursuit Fighter(air/1), Mobile Artillery(land/3) for PDC immunity test"
-
-# ─── Move P3's fleet to P6's planet for battle ───
-run_tx "Moving P3's fleet to P6's planet for battle" \
-    tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_6_PLANET_ID}" --from player_3
+info "Extended battle roles are ready in their required ambits; existing slot positions are preserved"
+combat_move_fleet 3 "${PLAYER_6_PLANET_ID}" player_3
 
 info "P3's fleet is now at P6's planet — battle positions set"
 
@@ -6985,6 +8006,10 @@ if run_phase 2800; then
 # ═════════════════════════════════════════════════════════════════════════════
 
 section "PHASE EB4: Defense Configurations"
+
+combat_clear_target_defenders 6 "${EB_MOBILE_ART_ID}"
+combat_clear_target_defenders 6 "${EB_P6_BATTLESHIP_ID}"
+combat_clear_target_defenders 3 "${BATTLESHIP_1_ID}"
 
 # ─── P6: Tank defends Mobile Artillery (same-ambit defense, both land) ───
 wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
@@ -7044,6 +8069,32 @@ EB_DESTROYED=0
 
 # Combat helpers (eb_health, eb_attack, etc.) are defined at top-level so
 # they remain available when --resume-from skips this phase.
+
+# ─── Required negative targeting before destructive combat ───
+# Rejections must precede the attacks that can destroy these same fixtures.
+# A space-only Starfighter cannot isolate stealth on an air target: CanAttack
+# checks range first. The Frigate primary supports both space and air.
+info "── Required negative targeting and stealth ──"
+eb_attack_should_fail "Tank(land-only) → Battleship(space) — wrong ambit" \
+    "${DESTROYER_STRUCT_ID}" "${EB_P6_BATTLESHIP_ID}" 3
+eb_attack_should_fail "Pursuit Fighter(air-only) → Tank(land) — wrong ambit" \
+    "${EB_PURSUIT_FIGHTER_ID}" "${EB_P6_TANK_ID}" 3
+eb_attack_should_fail "Starfighter(space-only) → SAM(land) — wrong ambit" \
+    "${EB_STARFIGHTER_ID}" "${SAM_STRUCT_ID}" 6
+SB_HIDDEN=$(query query structs struct "${STEALTH_BOMBER_ID}" | jq -er --arg id "${STEALTH_BOMBER_ID}" '
+    select(.Struct.id == $id) | .structAttributes | select(type == "object") |
+    (if has("isHidden") then .isHidden else false end) | select(type == "boolean") | tostring')
+if [ "${SB_HIDDEN}" = "false" ]; then
+    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
+    run_tx "Activating stealth on Stealth Bomber" \
+        tx structs struct-stealth-activate "${STEALTH_BOMBER_ID}" --from player_3
+fi
+eb_attack_should_fail "Stealth: P6 Frigate(space) → hidden Stealth Bomber(air)" \
+    "${EB_FRIGATE_ID}" "${STEALTH_BOMBER_ID}" 6 hidden
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
+run_tx "Deactivating stealth on Stealth Bomber" \
+    tx structs struct-stealth-deactivate "${STEALTH_BOMBER_ID}" --from player_3
+# ─── Required negative targeting complete ───
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GROUP A: Same-Ambit Combat
@@ -7124,8 +8175,14 @@ eb_attack "Cross: P3 Cruiser(water) → P6 Tank(land)" \
     "${CRUISER_ID}" "${EB_P6_TANK_ID}" primaryWeapon 3
 
 # B6: P6 Frigate (space, weapons=space+air) → P3 Pursuit Fighter (air)
-eb_attack "Cross: P6 Frigate(space) → P3 Pursuit Fighter(air)" \
-    "${EB_FRIGATE_ID}" "${EB_PURSUIT_FIGHTER_ID}" primaryWeapon 6
+# Restore the exact roles after earlier attrition. Guided evasion is possible,
+# but the air-only Pursuit Fighter must never counter the space Frigate.
+ar_require_command 2
+ar_require_command 3
+ar_require_command 6
+ar_park_as_head 3
+ev_attack EB_B6 EB_FRIGATE_ID 6 4 space EB_PURSUIT_FIGHTER_ID 3 5 air primaryWeapon
+# Required Frigate cross-ambit attack complete
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GROUP C: Special Mechanics
@@ -7133,443 +8190,37 @@ eb_attack "Cross: P6 Frigate(space) → P3 Pursuit Fighter(air)" \
 
 info "── Group C: Special Mechanics ──"
 
-# C1: Stealth — activate stealth, verify cross-ambit attack fails against hidden
-info "Testing stealth mechanics with Stealth Bomber"
-SB_ALIVE=$(eb_health "${STEALTH_BOMBER_ID}")
-if [ "${SB_ALIVE}" != "0" ]; then
-    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
-    run_tx "Activating stealth on Stealth Bomber" \
-        tx structs struct-stealth-activate "${STEALTH_BOMBER_ID}" --from player_3
+# C1b: A blocker sorting before a lethal counter may not absorb a dead volley.
+# Restore all four roles, prepare exactly one bomber health, and require the
+# Tank-before-HAI ordering plus exact receipt and canonical-state evidence.
+da_run
+# Required dead-bomber ordering complete
 
-    # P6 Starfighter (space) tries to attack hidden Stealth Bomber (air)
-    # Different ambit + hidden = should fail
-    SB_ALIVE_CHECK=$(eb_health "${EB_STARFIGHTER_ID}")
-    if [ "${SB_ALIVE_CHECK}" != "0" ]; then
-        eb_attack_should_fail "Stealth: P6 Starfighter(space) → hidden Stealth Bomber(air)" \
-            "${EB_STARFIGHTER_ID}" "${STEALTH_BOMBER_ID}" 6
-    else
-        info "SKIP: Starfighter destroyed, cannot test stealth cross-ambit failure"
-    fi
+# C2: Required block with the original Battleship/Frigate/Starfighter matchup.
+bc_run
+# Required two-defender blocking complete
 
-    # Deactivate stealth for remaining tests
-    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
-    run_tx "Deactivating stealth on Stealth Bomber" \
-        tx structs struct-stealth-deactivate "${STEALTH_BOMBER_ID}" --from player_3
-else
-    info "SKIP: Stealth Bomber destroyed, cannot test stealth mechanics"
-fi
+# C3: Required damage reduction with restored Tank roles and exact receipts.
+da_armour
+# Required Tank armour complete
 
-# C1b: Dead-attacker defender ordering (v0.20.0 regression) ─────────────────────
-# Guards the "dead bomber deals damage" fix (player 1-61 report). When defender
-# counters destroy the attacker, NO block volley may land: a blocker must not
-# absorb damage from an attacker the counters already killed.
-#
-# Setup: P3's air Stealth Bomber attacks the land P6 Mobile Artillery, which is
-# defended by the land P6 Tank (a valid blocker for a land target that cannot
-# counter into air) plus the air-capable P6 HAI (a counter). The Tank was built
-# before the HAI, so it sorts ahead of it in defender iteration order — the
-# arrangement that exposed the bug (blocker processed before the lethal counter).
-#
-# The HAI counter is only 1 damage, so the bomber is first softened with one HAI
-# strike (2 dmg) to make the counter lethal; otherwise the dead-attacker path
-# would not be exercised. The precise, order-controlled unit test is
-# TestMsgStructAttackBlockerSortedBeforeLethalCounter; this is the live-chain
-# end-to-end confirmation. All assertions are conditional on the bomber actually
-# dying so this never produces a false failure if balance numbers change.
-info "Testing dead-attacker defender ordering (v0.20.0): bomber vs Tank-blocked, counter-defended land target"
-DA_SB_HP=$(eb_health "${STEALTH_BOMBER_ID}")
-DA_MA_HP=$(eb_health "${EB_MOBILE_ART_ID}")
-DA_TANK_HP=$(eb_health "${EB_P6_TANK_ID}")
-DA_HAI_HP=$(eb_health "${EB_P6_HAI_ID}")
-if [ "${DA_SB_HP}" != "0" ] && [ "${DA_MA_HP}" != "0" ] && [ "${DA_TANK_HP}" != "0" ] && [ "${DA_HAI_HP}" != "0" ]; then
-    # Add the air-capable HAI as a counter defender alongside the land Tank
-    # blocker (the Tank already defends the Mobile Artillery from PHASE EB4).
-    # HAI is not assigned elsewhere, so this does not disturb other defenses.
-    wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
-    run_tx "P6 HAI defends Mobile Artillery (air counter alongside Tank blocker)" \
-        tx structs struct-defense-set "${EB_P6_HAI_ID}" "${EB_MOBILE_ART_ID}" --from player_6
+# C4: Required sustained combat from full health through confirmed destruction.
+da_sustained
+# Required sustained combat complete
 
-    # Soften the bomber so the combined counters are lethal (HAI primary = 2).
-    eb_attack "Dead-attacker setup: P6 HAI(air) softens P3 Stealth Bomber(air)" \
-        "${EB_P6_HAI_ID}" "${STEALTH_BOMBER_ID}" primaryWeapon 6
-
-    # Reveal the bomber if it re-hid, then fire at the defended land target.
-    SB_HIDDEN=$(query query structs struct "${STEALTH_BOMBER_ID}" 2>/dev/null | jq -r '.structAttributes.isHidden // "false"' 2>/dev/null || echo "false")
-    if [ "${SB_HIDDEN}" = "true" ]; then
-        wait_for_charge "${PLAYER_3_ID}" "${CHARGE_ACTIVATE}"
-        run_tx "Deactivating stealth on Stealth Bomber for dead-attacker test" \
-            tx structs struct-stealth-deactivate "${STEALTH_BOMBER_ID}" --from player_3
-    fi
-
-    DA_TANK_BEFORE=$(eb_health "${EB_P6_TANK_ID}")
-    DA_MA_BEFORE=$(eb_health "${EB_MOBILE_ART_ID}")
-
-    eb_attack "Dead-attacker: P3 Stealth Bomber(air) → P6 Mobile Artillery(land) [Tank blocker + HAI counter]" \
-        "${STEALTH_BOMBER_ID}" "${EB_MOBILE_ART_ID}" primaryWeapon 3
-
-    DA_SB_AFTER=$(eb_health "${STEALTH_BOMBER_ID}")
-    DA_TANK_AFTER=$(eb_health "${EB_P6_TANK_ID}")
-    DA_MA_AFTER=$(eb_health "${EB_MOBILE_ART_ID}")
-    info "  Result: Bomber HP→${DA_SB_AFTER}, Tank(blocker) HP ${DA_TANK_BEFORE}→${DA_TANK_AFTER}, MobileArt(target) HP ${DA_MA_BEFORE}→${DA_MA_AFTER}"
-
-    if [ "${DA_SB_AFTER}" = "0" ]; then
-        info "  Bomber destroyed by counters — asserting no block/volley damage landed"
-        assert_eq "v0.20.0: blocker Tank undamaged when counters destroyed the attacker" "${DA_TANK_BEFORE}" "${DA_TANK_AFTER}"
-        assert_eq "v0.20.0: target undamaged when counters destroyed the attacker" "${DA_MA_BEFORE}" "${DA_MA_AFTER}"
-    else
-        info "  Bomber survived the counters (HP=${DA_SB_AFTER}); dead-attacker invariant not exercised this run"
-    fi
-else
-    info "SKIP: bomber/target/Tank/HAI not all alive for dead-attacker ordering test"
-fi
-
-# C2: Blocking — Attack P6 Battleship (defended by Frigate + Starfighter)
-# At least one defender should attempt to block
-info "Testing blocking: attack P6 Battleship (defended by Frigate + Starfighter)"
-P6_BB_HP_BEFORE=$(eb_health "${EB_P6_BATTLESHIP_ID}")
-P6_FRIG_HP_BEFORE=$(eb_health "${EB_FRIGATE_ID}")
-P6_STAR_HP_BEFORE=$(eb_health "${EB_STARFIGHTER_ID}")
-
-BB2_ALIVE=$(eb_health "${BATTLESHIP_2_ID}")
-if [ "${BB2_ALIVE}" != "0" ]; then
-    # v0.18.0: space target requires the guided secondary. Note the P6
-    # Battleship's signal jamming may evade guided attacks (2/3 chance).
-    eb_attack "Blocking: P3 Battleship #2 → P6 Battleship (defended, guided secondary)" \
-        "${BATTLESHIP_2_ID}" "${EB_P6_BATTLESHIP_ID}" secondaryWeapon 3
-
-    P6_BB_HP_AFTER=$(eb_health "${EB_P6_BATTLESHIP_ID}")
-    P6_FRIG_HP_AFTER=$(eb_health "${EB_FRIGATE_ID}")
-    P6_STAR_HP_AFTER=$(eb_health "${EB_STARFIGHTER_ID}")
-    info "  P6 Battleship HP: ${P6_BB_HP_BEFORE}→${P6_BB_HP_AFTER}"
-    info "  P6 Frigate HP: ${P6_FRIG_HP_BEFORE}→${P6_FRIG_HP_AFTER}"
-    info "  P6 Starfighter HP: ${P6_STAR_HP_BEFORE}→${P6_STAR_HP_AFTER}"
-    echo "  (If a defender blocked, its HP decreased instead of the Battleship's)"
-else
-    info "SKIP: Battleship #2 destroyed, cannot test blocking"
-fi
-
-# C3: Damage reduction — attack P6 Tank (AttackReduction=1)
-# Use P3 Tank (type 9, land→land, damage=2) or P3 Cruiser (water→land) as fallback.
-# SAM can't target land (PrimaryWeaponAmbits=space+air).
-info "Testing damage reduction on P6 Tank (AttackReduction=1)"
-P6_TANK_HP=$(eb_health "${EB_P6_TANK_ID}")
-if [ "${P6_TANK_HP}" != "0" ]; then
-    P3_TANK_ALIVE=$(eb_health "${DESTROYER_STRUCT_ID}")
-    if [ "${P3_TANK_ALIVE}" != "0" ]; then
-        eb_attack "Damage Reduction: P3 Tank(land) → P6 Tank(land, reduction=1)" \
-            "${DESTROYER_STRUCT_ID}" "${EB_P6_TANK_ID}" primaryWeapon 3
-        P6_TANK_HP_AFTER=$(eb_health "${EB_P6_TANK_ID}")
-        info "  P6 Tank HP after (with reduction): ${P6_TANK_HP}→${P6_TANK_HP_AFTER}"
-        echo "  (Tank has AttackReduction=1, so 2 damage becomes 1)"
-    elif [ -n "${CRUISER_ID}" ] && [ "$(eb_health "${CRUISER_ID}")" != "0" ]; then
-        info "P3 Tank destroyed, using Cruiser for damage reduction test"
-        eb_attack "Damage Reduction: P3 Cruiser(water) → P6 Tank(land, reduction=1)" \
-            "${CRUISER_ID}" "${EB_P6_TANK_ID}" primaryWeapon 3
-        P6_TANK_HP_AFTER=$(eb_health "${EB_P6_TANK_ID}")
-        info "  P6 Tank HP after (with reduction): ${P6_TANK_HP}→${P6_TANK_HP_AFTER}"
-    else
-        info "SKIP: No P3 land-capable attacker alive for damage reduction test"
-    fi
-else
-    info "SKIP: P6 Tank already destroyed"
-fi
-
-# C4: Sustained combat — keep attacking P6 Starfighter until destroyed
-info "Testing sustained combat: repeatedly attack P6 Starfighter until destroyed"
-STAR_HP=$(eb_health "${EB_STARFIGHTER_ID}")
-SUSTAINED_ROUNDS=0
-while [ "${STAR_HP}" != "0" ] && [ "${SUSTAINED_ROUNDS}" -lt 4 ]; do
-    SUSTAINED_ROUNDS=$((SUSTAINED_ROUNDS + 1))
-    # Use P3's Battleship #1 (space → space, same ambit)
-    BB1_ALIVE=$(eb_health "${BATTLESHIP_1_ID}")
-    if [ "${BB1_ALIVE}" = "0" ]; then
-        info "  Battleship #1 destroyed, stopping sustained attack"
-        break
-    fi
-    eb_attack "Sustained round ${SUSTAINED_ROUNDS}: P3 BB#1 → P6 Starfighter (guided secondary)" \
-        "${BATTLESHIP_1_ID}" "${EB_STARFIGHTER_ID}" secondaryWeapon 3
-    STAR_HP=$(eb_health "${EB_STARFIGHTER_ID}")
-done
-if [ "${STAR_HP}" = "0" ]; then
-    info "  Starfighter destroyed after ${SUSTAINED_ROUNDS} sustained rounds"
-else
-    info "  Starfighter survived ${SUSTAINED_ROUNDS} rounds (HP=${STAR_HP})"
-fi
-
-# C5: Command Ship local weapon — P3 Command Ship → P6 unit in same ambit
-info "Testing Command Ship local weapon (targets same ambit)"
-CS_HP=$(eb_health "${COMMAND_SHIP_ID}")
-if [ "${CS_HP}" != "0" ]; then
-    P6_BB_HP=$(eb_health "${EB_P6_BATTLESHIP_ID}")
-    if [ "${P6_BB_HP}" != "0" ]; then
-        eb_attack "Command Ship local weapon: P3 CS(space) → P6 Battleship(space)" \
-            "${COMMAND_SHIP_ID}" "${EB_P6_BATTLESHIP_ID}" primaryWeapon 3
-    else
-        info "SKIP: P6 Battleship destroyed, trying P6 Frigate"
-        P6_FRIG_HP=$(eb_health "${EB_FRIGATE_ID}")
-        if [ "${P6_FRIG_HP}" != "0" ]; then
-            eb_attack "Command Ship local weapon: P3 CS(space) → P6 Frigate(space)" \
-                "${COMMAND_SHIP_ID}" "${EB_FRIGATE_ID}" primaryWeapon 3
-        else
-            info "SKIP: No viable space targets for Command Ship test"
-        fi
-    fi
-else
-    info "SKIP: Command Ship destroyed"
-fi
+# C5: Required local-weapon range refusal and same-ambit attack.
+da_command
+# Required command local weapon complete
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GROUP E: Planetary Defense Cannon (PDC) Tests
-# ─────────────────────────────────────────────────────────────────────────────
-#
-# The PDC (type 19) is a planet-category struct that adds defensiveCannonQuantity
-# to the planet. After every attack action against a planet-category struct, the
-# planet's cannon count is dealt as damage to the attacker (if counterable).
-#
-# P6's planet has: PDC (land/2), Ore Extractor (land/3).
-# The Ore Extractor (type 14) has no counter-attack, no evasion, no post-
-# destruction damage — so the ONLY damage an attacker receives from hitting it
-# is PDC fire.
-#
-# Test order: E1-E4 keep the PDC alive (attack the Ore Extractor or fleet
-# structs, not the PDC). E5 attacks the PDC directly. E6-E9 test PDC
-# destruction and aftermath.
-# ─────────────────────────────────────────────────────────────────────────────
-
-info "── Group E: Planetary Defense Cannon (PDC) Tests ──"
-info "P6's planet has a PDC (cannon qty) and an Ore Extractor (no counter/evasion)."
-info "Tests verify PDC fires when OTHER planet structs are attacked, not just itself."
-
-# ─── E1: PDC fires when Ore Extractor is attacked (PDC is NOT the target) ───
-# P3 Battleship #1 (type 2, space, counterable) → P6 Ore Extractor (type 14, planet-category, land)
-# Ore Extractor has CounterAttack=0, no evasion, no PostDestructionDamage.
-# The ONLY source of damage to the attacker is the PDC.
-PDC_HP=$(eb_health "${EB_PDC_ID}")
-EXTRACTOR_HP=$(eb_health "${EB_ORE_EXTRACTOR_ID}")
-BB1_HP=$(eb_health "${BATTLESHIP_1_ID}")
-if [ "${PDC_HP}" != "0" ] && [ "${EXTRACTOR_HP}" != "0" ] && [ "${BB1_HP}" != "0" ]; then
-    P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
-    E1_CANNON_QTY=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.defensiveCannonQuantity' '0')
-    BB1_HP_BEFORE=$(eb_health "${BATTLESHIP_1_ID}")
-
-    eb_attack "E1: P3 BB#1(counterable) → P6 Ore Extractor (PDC not target)" \
-        "${BATTLESHIP_1_ID}" "${EB_ORE_EXTRACTOR_ID}" primaryWeapon 3
-
-    BB1_HP_AFTER=$(eb_health "${BATTLESHIP_1_ID}")
-    BB1_HP_LOST=$((BB1_HP_BEFORE - BB1_HP_AFTER))
-
-    if [ "${BB1_HP_LOST}" -gt 0 ] 2>/dev/null; then
-        echo -e "  ${GREEN}PASS${NC}: E1 — Attacker took damage from PDC while targeting Ore Extractor (HP ${BB1_HP_BEFORE}→${BB1_HP_AFTER})"
-        PASS_COUNT=$((PASS_COUNT + 1))
-    else
-        echo -e "  ${RED}FAIL${NC}: E1 — Attacker should have taken PDC damage (HP ${BB1_HP_BEFORE}→${BB1_HP_AFTER})"
-        FAIL_COUNT=$((FAIL_COUNT + 1))
-    fi
-
-    # E2: Verify exact PDC damage equals defensiveCannonQuantity
-    if [ "${E1_CANNON_QTY}" != "0" ] && [ "${BB1_HP_LOST}" -gt 0 ] 2>/dev/null; then
-        assert_eq "E2 — PDC damage equals defensiveCannonQuantity" "${E1_CANNON_QTY}" "${BB1_HP_LOST}"
-    else
-        info "SKIP E2: cannon qty=${E1_CANNON_QTY}, HP lost=${BB1_HP_LOST}"
-    fi
-else
-    info "SKIP E1/E2: PDC(HP=${PDC_HP}), Ore Extractor(HP=${EXTRACTOR_HP}), or BB#1(HP=${BB1_HP}) destroyed"
-fi
-
-# ─── E3: Non-counterable attacker vs Ore Extractor — PDC should NOT fire ───
-# P3 Mobile Artillery (type 8, AttackCounterable=false) → P6 Ore Extractor
-# Ore Extractor has no counter, so Mobile Art should take zero damage.
-PDC_HP=$(eb_health "${EB_PDC_ID}")
-EXTRACTOR_HP=$(eb_health "${EB_ORE_EXTRACTOR_ID}")
-P3_MA_HP=$(eb_health "${EB_P3_MOBILE_ART_ID}")
-if [ "${PDC_HP}" != "0" ] && [ "${EXTRACTOR_HP}" != "0" ] && [ "${P3_MA_HP}" != "0" ]; then
-    P3_MA_HP_BEFORE=$(eb_health "${EB_P3_MOBILE_ART_ID}")
-
-    eb_attack "E3: P3 Mobile Art(non-counterable) → P6 Ore Extractor" \
-        "${EB_P3_MOBILE_ART_ID}" "${EB_ORE_EXTRACTOR_ID}" primaryWeapon 3
-
-    P3_MA_HP_AFTER=$(eb_health "${EB_P3_MOBILE_ART_ID}")
-
-    assert_eq "E3 — Non-counterable attacker took no PDC damage" "${P3_MA_HP_BEFORE}" "${P3_MA_HP_AFTER}"
-else
-    info "SKIP E3: PDC(HP=${PDC_HP}), Ore Extractor(HP=${EXTRACTOR_HP}), or Mobile Art(HP=${P3_MA_HP}) destroyed"
-fi
-
-# ─── E4: Fleet-vs-fleet combat does NOT trigger PDC ───
-# P3 Tank (type 9, counterable, land) → P6 Mobile Art (type 8, fleet-category, land)
-# P6 Mobile Art has CounterAttack=0, no evasion, no PostDestructionDamage.
-# Since the target is fleet-category, trackTargetedPlanet() won't track the planet
-# and the PDC should NOT fire. Attacker HP should be unchanged.
-PDC_HP=$(eb_health "${EB_PDC_ID}")
-TANK_HP=$(eb_health "${DESTROYER_STRUCT_ID}")
-P6_MA_HP=$(eb_health "${EB_MOBILE_ART_ID}")
-if [ "${PDC_HP}" != "0" ] && [ "${TANK_HP}" != "0" ] && [ "${P6_MA_HP}" != "0" ]; then
-    TANK_HP_BEFORE=$(eb_health "${DESTROYER_STRUCT_ID}")
-
-    eb_attack "E4: P3 Tank(counterable) → P6 Mobile Art(fleet-category, no counter)" \
-        "${DESTROYER_STRUCT_ID}" "${EB_MOBILE_ART_ID}" primaryWeapon 3
-
-    TANK_HP_AFTER=$(eb_health "${DESTROYER_STRUCT_ID}")
-
-    assert_eq "E4 — No PDC damage when attacking fleet-category struct" "${TANK_HP_BEFORE}" "${TANK_HP_AFTER}"
-else
-    info "SKIP E4: PDC(HP=${PDC_HP}), Tank(HP=${TANK_HP}), or P6 Mobile Art(HP=${P6_MA_HP}) destroyed"
-fi
-
-# ─── E4b: Soften PDC to HP=2 for the E5 killing-blow test ───
-# PDC MaxHealth is now 6 (v0.18.0). E5's Tank (primaryWeaponDamage=2) must
-# deliver the killing blow, so soften the PDC down to HP=2 first. Use the
-# non-counterable Mobile Art (2 dmg) so the attacker survives any PDC fire;
-# from a full 6 HP this takes ~2 hits (6→4→2).
-for soften_round in 1 2 3 4 5; do
-    PDC_HP=$(eb_health "${EB_PDC_ID}")
-    P3_MA_HP=$(eb_health "${EB_P3_MOBILE_ART_ID}")
-    if [ "${PDC_HP}" = "0" ] || [ "${PDC_HP}" -le 2 ] 2>/dev/null; then
-        break
-    fi
-    if [ "${P3_MA_HP}" = "0" ]; then
-        info "SKIP E4b soften: P3 Mobile Art destroyed (PDC HP=${PDC_HP})"
-        break
-    fi
-    eb_attack "E4b: P3 Mobile Art(non-counterable) → P6 PDC (soften toward HP=2)" \
-        "${EB_P3_MOBILE_ART_ID}" "${EB_PDC_ID}" primaryWeapon 3
-done
-PDC_HP=$(eb_health "${EB_PDC_ID}")
-info "E4b: PDC softened to HP=${PDC_HP} (target HP=2 for E5 killing blow)"
-
-# ─── E5: Counterable attacker vs PDC directly — destroyed PDC does not counter ───
-# P3 Tank (type 9, counterable, land) → P6 PDC (type 19, planet-category, land)
-# Tank primaryWeaponDamage=2, PDC softened to HP=2 in E4b, so PDC is destroyed.
-# A destroyed PDC does not fire counter-damage — Tank HP should be unchanged.
-PDC_HP=$(eb_health "${EB_PDC_ID}")
-TANK_HP=$(eb_health "${DESTROYER_STRUCT_ID}")
-if [ "${PDC_HP}" != "0" ] && [ "${TANK_HP}" != "0" ]; then
-    PDC_HP_BEFORE=$(eb_health "${EB_PDC_ID}")
-    TANK_HP_BEFORE=$(eb_health "${DESTROYER_STRUCT_ID}")
-
-    # Snapshot shield BEFORE E5 so we can measure the drop after PDC destruction
-    P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
-    E6_SHIELD_BEFORE=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.planetaryShield' '0')
-    info "E6: Planetary shield before PDC destruction: ${E6_SHIELD_BEFORE}"
-
-    eb_attack "E5: P3 Tank(counterable) → P6 PDC(planet-category)" \
-        "${DESTROYER_STRUCT_ID}" "${EB_PDC_ID}" primaryWeapon 3
-
-    PDC_HP_AFTER=$(eb_health "${EB_PDC_ID}")
-    TANK_HP_AFTER=$(eb_health "${DESTROYER_STRUCT_ID}")
-
-    assert_eq "E5 — Destroyed PDC does not counter-damage attacker" "${TANK_HP_BEFORE}" "${TANK_HP_AFTER}"
-
-    info "  PDC HP: ${PDC_HP_BEFORE}→${PDC_HP_AFTER}"
-else
-    # Still need a shield baseline if E5 is skipped
-    P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
-    E6_SHIELD_BEFORE=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.planetaryShield' '0')
-    info "SKIP E5: PDC(HP=${PDC_HP}) or Tank(HP=${TANK_HP}) destroyed"
-    info "E6: Planetary shield snapshot: ${E6_SHIELD_BEFORE}"
-fi
-
-# ─── E7: PDC killing blow — PDC should STILL fire (Bug 1 regression test) ───
-# E5's Tank normally destroys the PDC, so this block usually SKIPS. If a
-# future change leaves the PDC alive into E7, a counterable attacker (BB#1)
-# destroys it here. Under Bug 1, DestroyAndCommit() decrements
-# defensiveCannonQuantity before ResolvePlanetaryDefense() runs, so the PDC
-# fails to fire on the killing blow; this test EXPECTS the PDC to still fire.
-PDC_HP=$(eb_health "${EB_PDC_ID}")
-BB1_HP=$(eb_health "${BATTLESHIP_1_ID}")
-if [ "${PDC_HP}" != "0" ] && [ "${BB1_HP}" != "0" ]; then
-    BB1_HP_BEFORE=$(eb_health "${BATTLESHIP_1_ID}")
-
-    info "E7: PDC at HP=${PDC_HP} — attacking with BB#1 to destroy it"
-    eb_attack "E7: P3 BB#1(counterable) → P6 PDC(killing blow)" \
-        "${BATTLESHIP_1_ID}" "${EB_PDC_ID}" primaryWeapon 3
-
-    PDC_HP_AFTER=$(eb_health "${EB_PDC_ID}")
-    BB1_HP_AFTER=$(eb_health "${BATTLESHIP_1_ID}")
-
-    assert_eq "E7 — PDC destroyed" "0" "${PDC_HP_AFTER}"
-
-    BB1_HP_LOST=$((BB1_HP_BEFORE - BB1_HP_AFTER))
-    if [ "${BB1_HP_LOST}" -gt 0 ] 2>/dev/null; then
-        echo -e "  ${GREEN}PASS${NC}: E7 — PDC fired on killing blow (attacker HP ${BB1_HP_BEFORE}→${BB1_HP_AFTER})"
-        PASS_COUNT=$((PASS_COUNT + 1))
-    else
-        echo -e "  ${RED}FAIL${NC}: E7 — PDC should fire even when destroyed (Bug 1: attacker HP ${BB1_HP_BEFORE}→${BB1_HP_AFTER})"
-        FAIL_COUNT=$((FAIL_COUNT + 1))
-    fi
-else
-    if [ "${PDC_HP}" = "0" ]; then
-        info "SKIP E7: PDC already destroyed (expected HP=1 after E5)"
-    else
-        info "SKIP E7: BB#1(HP=${BB1_HP}) destroyed"
-    fi
-fi
-
-# ─── E8: defensiveCannonQuantity drops to 0 after PDC destruction ───
-P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
-E8_CANNON_QTY=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.defensiveCannonQuantity' '0')
-assert_eq "E8 — defensiveCannonQuantity is 0 after PDC destroyed" "0" "${E8_CANNON_QTY}"
-
-# ─── E9: Planetary shield decreased after PDC destruction ───
-E9_SHIELD_AFTER=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.planetaryShield' '0')
-E9_SHIELD_DIFF=$((E6_SHIELD_BEFORE - E9_SHIELD_AFTER))
-info "E9: Planetary shield after PDC destruction: ${E9_SHIELD_AFTER} (decreased by ${E9_SHIELD_DIFF})"
-# PDC contributes PlanetaryShieldContribution=13 (v0.18.0 rebase)
-assert_eq "E9 — Planetary shield decreased by PDC contribution (13)" "13" "${E9_SHIELD_DIFF}"
-
-# ─── E10: After PDC destroyed, Ore Extractor attack yields NO PDC damage ───
-# With cannon count = 0, attacking a planet-category struct should not damage
-# the attacker via PDC fire.
-EXTRACTOR_HP=$(eb_health "${EB_ORE_EXTRACTOR_ID}")
-BB1_HP=$(eb_health "${BATTLESHIP_1_ID}")
-if [ "${EXTRACTOR_HP}" != "0" ] && [ "${BB1_HP}" != "0" ]; then
-    BB1_HP_BEFORE=$(eb_health "${BATTLESHIP_1_ID}")
-
-    eb_attack "E10: P3 BB#1 → P6 Ore Extractor (PDC destroyed, no cannon)" \
-        "${BATTLESHIP_1_ID}" "${EB_ORE_EXTRACTOR_ID}" primaryWeapon 3
-
-    BB1_HP_AFTER=$(eb_health "${BATTLESHIP_1_ID}")
-
-    assert_eq "E10 — No PDC damage after PDC destroyed" "${BB1_HP_BEFORE}" "${BB1_HP_AFTER}"
-else
-    info "SKIP E10: Ore Extractor(HP=${EXTRACTOR_HP}) or BB#1(HP=${BB1_HP}) destroyed"
-fi
-
-# ─────────────────────────────────────────────────────────────────────────────
-# GROUP D: Negative Targeting Tests (attacks that should fail)
-# ─────────────────────────────────────────────────────────────────────────────
-
-info "── Group D: Negative Targeting Tests ──"
-
-# D1: P3 Tank (weapons=land only) → P6 Battleship (space) — should fail
-P6_BB_ALIVE=$(eb_health "${EB_P6_BATTLESHIP_ID}")
-TANK_ALIVE=$(eb_health "${DESTROYER_STRUCT_ID}")
-if [ "${P6_BB_ALIVE}" != "0" ] && [ "${TANK_ALIVE}" != "0" ]; then
-    eb_attack_should_fail "Tank(land-only) → Battleship(space) — wrong ambit" \
-        "${DESTROYER_STRUCT_ID}" "${EB_P6_BATTLESHIP_ID}" 3
-else
-    info "SKIP: Tank or P6 Battleship destroyed for negative test D1"
-fi
-
-# D2: P3 Pursuit Fighter (weapons=air only) → P6 Tank (land) — should fail
-PF_ALIVE=$(eb_health "${EB_PURSUIT_FIGHTER_ID}")
-P6_TANK_ALIVE=$(eb_health "${EB_P6_TANK_ID}")
-if [ "${PF_ALIVE}" != "0" ] && [ "${P6_TANK_ALIVE}" != "0" ]; then
-    eb_attack_should_fail "Pursuit Fighter(air-only) → Tank(land) — wrong ambit" \
-        "${EB_PURSUIT_FIGHTER_ID}" "${EB_P6_TANK_ID}" 3
-else
-    info "SKIP: Pursuit Fighter or P6 Tank destroyed for negative test D2"
-fi
-
-# D3: P6 Starfighter (weapons=space only) → P3 SAM (land) — should fail
-STAR_ALIVE=$(eb_health "${EB_STARFIGHTER_ID}")
-SAM_ALIVE=$(eb_health "${SAM_STRUCT_ID}")
-if [ "${STAR_ALIVE}" != "0" ] && [ "${SAM_ALIVE}" != "0" ]; then
-    eb_attack_should_fail "Starfighter(space-only) → SAM(land) — wrong ambit" \
-        "${EB_STARFIGHTER_ID}" "${SAM_STRUCT_ID}" 6
-else
-    info "SKIP: Starfighter or SAM destroyed for negative test D3"
-fi
+# Required live-cannon damage (E1/E2), non-counterable immunity (E3), fleet
+# immunity (E4), softening (E4b), killing blow (E5), cannon/shield removal
+# (E8/E9), and the same extractor attacked after cannon destruction (E10).
+# Cannon damage uses the count surviving the volley, so a destroyed cannon
+# does not fire. All cases check receipts and delivery-height stored state.
+pd_run
+# Required planetary cannon sequence complete
 
 fi # phase EB5
 
@@ -7633,1006 +8284,104 @@ if run_phase 3050; then
 
 section "PHASE EV1: Evasion Testing"
 
-info "Testing unit evasion mechanics: signalJamming (guided evasion 2/3)"
-info "  and defensiveManeuver (unguided evasion 2/3)"
-info "  Evasion is probabilistic — expect ~2/3 of shots to evade"
+info "Every evasion attempt is required; destroyed roles are rebuilt before use"
+info "Each outcome is checked against the receipt and committed state; the random sample is not a probability test"
 
-# ─── Group 1: Signal Jamming — P6 HAI (guided) → P3 PF (signalJamming) ───
-# HAI (type 7): guided primary, ambits air+space
-# Pursuit Fighter (type 5): signalJamming, guidedDefensiveSuccessRate 2/3
-info "── Signal Jamming: P6 HAI → P3 Pursuit Fighter (air→air) ──"
+combat_require_struct P6_COMMAND_SHIP_ID 6 1 fleet "${PLAYER_6_FLEET_ID}" space "EV P6 Command Ship"
+combat_require_struct COMMAND_SHIP_ID 3 1 fleet "${PLAYER_3_FLEET_ID}" space "EV P3 Command Ship"
+PLAYER_3_CMD_SHIP_ID="${COMMAND_SHIP_ID}"
+combat_move_fleet 6 "${PLAYER_6_PLANET_ID}"
+combat_move_fleet 3 "${PLAYER_6_PLANET_ID}"
+EV_CONFIRMED=0
+EV_EVADED=0
 
-eb_attack "EV1: P6 HAI → P3 PF (guided vs signalJamming)" \
-    "${EB_P6_HAI_ID}" "${EB_PURSUIT_FIGHTER_ID}" primaryWeapon 6
+# HAI guided primary versus Pursuit Fighter signal jamming (air -> air).
+for EV_CASE in EV1 EV2 EV3; do
+    ev_attack "${EV_CASE}" EB_P6_HAI_ID 6 7 air EB_PURSUIT_FIGHTER_ID 3 5 air primaryWeapon
+done
 
-eb_attack "EV2: P6 HAI → P3 PF (guided vs signalJamming)" \
-    "${EB_P6_HAI_ID}" "${EB_PURSUIT_FIGHTER_ID}" primaryWeapon 6
+# Command Ship guided primary versus Battleship signal jamming (space -> space).
+for EV_CASE in EV4 EV5; do
+    ev_attack "${EV_CASE}" P6_COMMAND_SHIP_ID 6 1 space BATTLESHIP_2_ID 3 2 space primaryWeapon
+done
 
-eb_attack "EV3: P6 HAI → P3 PF (guided vs signalJamming)" \
-    "${EB_P6_HAI_ID}" "${EB_PURSUIT_FIGHTER_ID}" primaryWeapon 6
+# Cruiser unguided secondary versus HAI defensive maneuver (water -> air).
+for EV_CASE in EV6 EV7; do
+    ev_attack "${EV_CASE}" CRUISER_ID 3 11 water EB_P6_HAI_ID 6 7 air secondaryWeapon
+done
 
-# ─── Group 2: Signal Jamming — P6 CS (guided local) → P3 BB#2 (signalJamming) ───
-# Command Ship (type 1): guided primary, ambits local (space→space)
-# Battleship (type 2): signalJamming, guidedDefensiveSuccessRate 2/3
-info "── Signal Jamming: P6 CS → P3 Battleship#2 (space→space) ──"
+# Destroyer guided primary versus Cruiser signal jamming (water -> water).
+ev_attack EV8 EB_DESTROYER_W_ID 6 12 water CRUISER_ID 3 11 water primaryWeapon
 
-eb_attack "EV4: P6 CS → P3 BB#2 (guided vs signalJamming)" \
-    "${P6_COMMAND_SHIP_ID}" "${BATTLESHIP_2_ID}" primaryWeapon 6
-
-eb_attack "EV5: P6 CS → P3 BB#2 (guided vs signalJamming)" \
-    "${P6_COMMAND_SHIP_ID}" "${BATTLESHIP_2_ID}" primaryWeapon 6
-
-# ─── Group 3: Defensive Maneuver — P3 Cruiser (unguided secondary) → P6 HAI ───
-# Cruiser (type 11): unguided secondary, only unguided weapon that targets air
-# HAI (type 7): defensiveManeuver, unguidedDefensiveSuccessRate 2/3
-info "── Defensive Maneuver: P3 Cruiser → P6 HAI (water→air, unguided secondary) ──"
-
-eb_attack "EV6: P3 Cruiser → P6 HAI (unguided vs defensiveManeuver)" \
-    "${CRUISER_ID}" "${EB_P6_HAI_ID}" secondaryWeapon 3
-
-eb_attack "EV7: P3 Cruiser → P6 HAI (unguided vs defensiveManeuver)" \
-    "${CRUISER_ID}" "${EB_P6_HAI_ID}" secondaryWeapon 3
-
-# ─── Group 4: Signal Jamming — P6 Destroyer (guided) → P3 Cruiser (signalJamming) ───
-# Destroyer (type 12): guided primary, ambits water+air
-# Cruiser (type 11): signalJamming, guidedDefensiveSuccessRate 2/3
-info "── Signal Jamming: P6 Destroyer → P3 Cruiser (water→water) ──"
-
-eb_attack "EV8: P6 Destroyer → P3 Cruiser (guided vs signalJamming)" \
-    "${EB_DESTROYER_W_ID}" "${CRUISER_ID}" primaryWeapon 6
-
-info "Evasion testing complete: ${EB_ATTACKS} total EB attacks, ${EB_DESTROYED} total destroyed"
+assert_eq "All eight scheduled evasion attacks were verified" 8 "${EV_CONFIRMED}"
+info "Evasion outcomes: ${EV_EVADED} evaded, $((EV_CONFIRMED - EV_EVADED)) hit; no probability claim from eight attempts"
 
 fi # phase EV1
 
 if run_phase 3100; then
+section "PHASE AR1: Attack Run — Required Fighters"
 
-# ═════════════════════════════════════════════════════════════════════════════
-#  PHASE AR1: Attack Run — Build 6 Starfighters
-# ═════════════════════════════════════════════════════════════════════════════
-
-section "PHASE AR1: Attack Run — Build Starfighters"
-
-info "Building 6 Starfighters across P2/P3/P6 for Attack Run (secondaryWeapon) testing"
-
-# P2 needs extra capacity to support 3 new structs
-run_tx "Additional delegation for Player 2 (fleet capacity)" \
-    tx staking delegate "${VALIDATOR_ADDRESS}" 2000000ualpha --from player_2
-
-# P3's fleet is at P6's planet after EB3 — move home for building
-run_tx "Moving P3 fleet home for Attack Run builds" \
-    tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_3_PLANET_ID}" --from player_3
-
-# ═══════════════════════════════════════════════════════════════
-# BATCH INITIATE: 6 Starfighters (type 3, space ambit)
-# P2: space slots 0, 2, 3  (slot 1 used by P2 Battleship)
-# P3: space slots 1, 3     (slot 0 used by BB2, slot 2 freed by BB1 move)
-# P6: space slot 3          (safe — 0/1 may need sweep, 2 was BB)
-# ═══════════════════════════════════════════════════════════════
-
-info "Batch-initiating all Attack Run Starfighter builds"
-
-# ─── P2: Starfighter #1 (space, slot 0) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P2 Starfighter #1 (type=3, space, slot=0)" \
-    tx structs struct-build-initiate "${PLAYER_2_ID}" 3 space 0 --from player_2
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-AR_P2_SF1_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "AR P2 Starfighter #1 ID" "${AR_P2_SF1_ID}" "${PREV_NEWEST_STRUCT_ID}" 3
-echo "  AR P2 SF#1 ID: ${AR_P2_SF1_ID}"
-
-# ─── P2: Starfighter #2 (space, slot 2) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P2 Starfighter #2 (type=3, space, slot=2)" \
-    tx structs struct-build-initiate "${PLAYER_2_ID}" 3 space 2 --from player_2
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-AR_P2_SF2_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "AR P2 Starfighter #2 ID" "${AR_P2_SF2_ID}" "${PREV_NEWEST_STRUCT_ID}" 3
-echo "  AR P2 SF#2 ID: ${AR_P2_SF2_ID}"
-
-# ─── P2: Starfighter #3 (space, slot 3) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P2 Starfighter #3 (type=3, space, slot=3)" \
-    tx structs struct-build-initiate "${PLAYER_2_ID}" 3 space 3 --from player_2
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-AR_P2_SF3_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "AR P2 Starfighter #3 ID" "${AR_P2_SF3_ID}" "${PREV_NEWEST_STRUCT_ID}" 3
-echo "  AR P2 SF#3 ID: ${AR_P2_SF3_ID}"
-
-# ─── P3: Starfighter #1 (space, slot 1) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P3 Starfighter #1 (type=3, space, slot=1)" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 3 space 1 --from player_3
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-AR_P3_SF1_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "AR P3 Starfighter #1 ID" "${AR_P3_SF1_ID}" "${PREV_NEWEST_STRUCT_ID}" 3
-echo "  AR P3 SF#1 ID: ${AR_P3_SF1_ID}"
-
-# ─── P3: Starfighter #2 (space, slot 3) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P3 Starfighter #2 (type=3, space, slot=3)" \
-    tx structs struct-build-initiate "${PLAYER_3_ID}" 3 space 3 --from player_3
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-AR_P3_SF2_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "AR P3 Starfighter #2 ID" "${AR_P3_SF2_ID}" "${PREV_NEWEST_STRUCT_ID}" 3
-echo "  AR P3 SF#2 ID: ${AR_P3_SF2_ID}"
-
-# ─── P6: Starfighter (space, slot 3) ───
-PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-run_tx "Initiating P6 Starfighter (type=3, space, slot=3)" \
-    tx structs struct-build-initiate "${PLAYER_6_ID}" 3 space 3 --from player_6
-
-STRUCT_ALL_JSON=$(query query structs struct-all)
-AR_P6_SF_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-assert_new_struct "AR P6 Starfighter ID" "${AR_P6_SF_ID}" "${PREV_NEWEST_STRUCT_ID}" 3
-echo "  AR P6 SF ID: ${AR_P6_SF_ID}"
-
-info "All 6 Attack Run builds initiated. Computing now (difficulty decays with age)."
-
-# ═══════════════════════════════════════════════════════════════
-# COMPUTE: Interleave across players for aging benefit
-# ═══════════════════════════════════════════════════════════════
-
-run_compute "Building P2 Starfighter #1 ${AR_P2_SF1_ID}" \
-    tx structs struct-build-compute "${AR_P2_SF1_ID}" --from player_2
-
-assert_eq "P2 SF#1 built" "true" "$(query query structs struct "${AR_P2_SF1_ID}" | jq -r '.structAttributes.isBuilt')"
-
-run_compute "Building P3 Starfighter #1 ${AR_P3_SF1_ID}" \
-    tx structs struct-build-compute "${AR_P3_SF1_ID}" --from player_3
-
-assert_eq "P3 SF#1 built" "true" "$(query query structs struct "${AR_P3_SF1_ID}" | jq -r '.structAttributes.isBuilt')"
-
-run_compute "Building P6 Starfighter ${AR_P6_SF_ID}" \
-    tx structs struct-build-compute "${AR_P6_SF_ID}" --from player_6
-
-assert_eq "P6 SF built" "true" "$(query query structs struct "${AR_P6_SF_ID}" | jq -r '.structAttributes.isBuilt')"
-
-run_compute "Building P2 Starfighter #2 ${AR_P2_SF2_ID}" \
-    tx structs struct-build-compute "${AR_P2_SF2_ID}" --from player_2
-
-assert_eq "P2 SF#2 built" "true" "$(query query structs struct "${AR_P2_SF2_ID}" | jq -r '.structAttributes.isBuilt')"
-
-run_compute "Building P3 Starfighter #2 ${AR_P3_SF2_ID}" \
-    tx structs struct-build-compute "${AR_P3_SF2_ID}" --from player_3
-
-assert_eq "P3 SF#2 built" "true" "$(query query structs struct "${AR_P3_SF2_ID}" | jq -r '.structAttributes.isBuilt')"
-
-run_compute "Building P2 Starfighter #3 ${AR_P2_SF3_ID}" \
-    tx structs struct-build-compute "${AR_P2_SF3_ID}" --from player_2
-
-assert_eq "P2 SF#3 built" "true" "$(query query structs struct "${AR_P2_SF3_ID}" | jq -r '.structAttributes.isBuilt')"
-
-info "All 6 Attack Run Starfighters built"
-
-# ═══════════════════════════════════════════════════════════════
-# AR3 DEFENDER POOL
-#
-# AR3's Groups B/C/D used to aim the defender matrix at the EB-era structs, and by
-# AR3 most of those are rubble: EB5 kills P6's Battleship and Destroyer, and AR3
-# Group A kills the Command Ship the whole matrix defends. A destroyed struct
-# still loads — as a phantom whose owner is the empty string — so
-# struct-defense-set answers with a permission denial, which is 26 red lines that
-# read like a permission bug and are really an absent struct.
-#
-# The phase cannot be arranged around the survivors instead. IsSuccessful seeds
-# evasion and every individual shot from the block AppHash plus a per-player
-# nonce, so which structs live through a fixed attack sequence differs run to run;
-# any comment naming the post-EB5 survivors is a guess that ages into a lie.
-#
-# So build a pool here and let AR3 resolve target and defender at use time.
-# Slots come from wait_for_free_slot rather than literals for the same reason the
-# survivors cannot be predicted: what EB5 left free varies with those rolls.
-# Total added load is about 645k against P6's 8M build reserve.
-# ═══════════════════════════════════════════════════════════════
-
-info "── Building the AR3 defender pool on P6's fleet ──"
-
-AR_POOL_WANTED=0
-AR_POOL_BUILT=0
-
-# AR_POOL_PENDING holds one "var|label|id" record per initiated build, so the
-# compute pass can name the variable it has to clear when a build never
-# finishes. Newline-delimited rather than an array, for bash 3.2.
-AR_POOL_PENDING=""
-
-# ar_pool_initiate <out_var> <label> <type_id> <ambit>
-# Starts one build on P6's fleet and assigns its id to out_var, or the empty
-# string when there is no free slot. Writes through a named variable rather than
-# stdout because run_tx prints there. Every caller treats an empty id as "this
-# corner of the matrix is unavailable", which AR3's guards then report rather
-# than fail on.
-#
-# Initiating only, with ar_pool_compute doing the work afterwards, is the point:
-# see the note there. An initiated struct occupies its slot immediately —
-# isBuilt is a later flag, not what the slot array tracks — so the back-to-back
-# wait_for_free_slot calls below still hand out distinct slots.
-ar_pool_initiate() {
-    local out_var="$1" label="$2" type_id="$3" ambit="$4"
-    local slot prev_id new_id
-    AR_POOL_WANTED=$((AR_POOL_WANTED + 1))
-    eval "${out_var}=''"
-
-    slot=$(wait_for_free_slot fleet "${PLAYER_6_FLEET_ID}" "${ambit}")
-    if [ -z "${slot}" ]; then
-        info "AR pool: P6's fleet has no free ${ambit} slot for ${label}; skipping"
-        return 0
-    fi
-
-    prev_id=$(get_newest_struct_id)
-    wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-    run_tx "Initiating AR pool ${label} (type=${type_id}, ${ambit}, slot=${slot})" \
-        tx structs struct-build-initiate "${PLAYER_6_ID}" "${type_id}" "${ambit}" "${slot}" --from player_6
-
-    new_id=$(get_newest_struct_id)
-    if [ -z "${new_id}" ] || [ "${new_id}" = "${prev_id}" ]; then
-        info "AR pool: ${label} was not created; skipping"
-        return 0
-    fi
-
-    eval "${out_var}='${new_id}'"
-    AR_POOL_PENDING="${AR_POOL_PENDING}${out_var}|${label}|${new_id}
-"
-    echo "  AR pool ${label}: ${new_id} (initiated)"
-}
-
-# ar_pool_compute: solve every pending build, in the order they were started.
-#
-# All the initiates come first for the same reason the Starfighter batch above
-# interleaves its computes: a build's proof-of-work difficulty is
-# CalculateDifficulty(age, BuildDifficulty), and age is blocks since
-# blockStartBuild, so a build gets cheaper the longer it has been waiting.
-# Solving one struct at a time each faces its puzzle at age ~0, which is the
-# hardest it will ever be, and none of the time spent grinding is credited to
-# the others. Starting them all first means every subsequent compute is easier
-# than the one before it. Oldest-first for the same reason: the cheapest wins
-# come out early, which buys the youngest builds the most age.
-ar_pool_compute() {
-    local out_var label struct_id
-    [ -z "${AR_POOL_PENDING}" ] && return 0
-    while IFS='|' read -r out_var label struct_id; do
-        [ -z "${struct_id}" ] && continue
-        run_compute "Building AR pool ${label} ${struct_id}" \
-            tx structs struct-build-compute "${struct_id}" --from player_6
-        if [ "$(query query structs struct "${struct_id}" | jq -r '.structAttributes.isBuilt' 2>/dev/null)" != "true" ]; then
-            info "AR pool: ${label} ${struct_id} did not finish building; skipping"
-            eval "${out_var}=''"
-            continue
-        fi
-        AR_POOL_BUILT=$((AR_POOL_BUILT + 1))
-    done <<EOF
-${AR_POOL_PENDING}
-EOF
-}
-
-# The Command Ship is the pool's only HP-6 struct and so the primary target.
-# BuildLimit is 1 and build-initiate checks it against typeCount, which
-# DestroyAndCommit decrements — so P6 may hold exactly one at a time. Reuse the
-# living one rather than asking for a second: in a full run that is the EB-era
-# ship, and the spares below are what cover Group A killing it. On a `--phase AR3`
-# rerun the ship is already gone and the rebuild is what gives the phase a target
-# at all.
-AR_P6_CS_ID=""
-if [ "$(eb_health "${P6_COMMAND_SHIP_ID}")" != "0" ]; then
-    AR_P6_CS_ID="${P6_COMMAND_SHIP_ID}"
-    info "AR pool: reusing P6's live Command Ship ${AR_P6_CS_ID} (BuildLimit 1)"
-else
-    ar_pool_initiate AR_P6_CS_ID "Command Ship" 1 space
-fi
-
-# Cross-ambit defenders first, because their ambits are the uncontested ones.
-# Neither can block a space attack — only counter — so they take no damage from
-# the attacks they defend against and last the whole phase.
-ar_pool_initiate AR_P6_MA_ID "Mobile Artillery" 8 land
-ar_pool_initiate AR_P6_DD_ID "Destroyer" 12 water
-
-# Space is the contested ambit: it holds P6's own Attack Run Starfighter and, in a
-# full run, the Command Ship as well, leaving perhaps two of four slots free. The
-# Starfighter's attackRun secondary reaches space only (SecondaryWeaponAmbits 16),
-# so a spare target has to live there too and cannot be pushed into land or water.
-# Whatever does not fit is skipped by wait_for_free_slot and reported by the guards
-# in AR3, which makes the order below a priority list.
-#
-# Targets outrank blockers, on the evidence of the run that established this. Every
-# group needs a live target, and each attack chips at it: the Command Ship fell in
-# B2 and the one spare in C1, which cost Group D all four of its attacks. A blocker
-# only needs replacing if it dies, and it takes damage solely on the volleys it
-# blocks — blocker #1 came out of the same run at HP 2 while blocker #2 was never
-# called on at all. So build both targets before the second blocker; no group ever
-# needs two space defenders at once anyway.
-ar_pool_initiate AR_P6_BB1_ID "Battleship #1 (blocker)" 2 space
-ar_pool_initiate AR_P6_SPARE1_ID "Frigate spare #1 (target)" 4 space
-ar_pool_initiate AR_P6_SPARE2_ID "Frigate spare #2 (target)" 4 space
-ar_pool_initiate AR_P6_BB2_ID "Battleship #2 (spare blocker)" 2 space
-
-info "AR pool builds initiated. Computing now (difficulty decays with age)."
-ar_pool_compute
-
-info "AR3 defender pool: ${AR_POOL_BUILT} of ${AR_POOL_WANTED} requested builds completed"
-echo "  target=${AR_P6_CS_ID:-none} blockers=${AR_P6_BB1_ID:-none},${AR_P6_BB2_ID:-none}"
-echo "  cross-ambit=${AR_P6_MA_ID:-none},${AR_P6_DD_ID:-none} spares=${AR_P6_SPARE1_ID:-none},${AR_P6_SPARE2_ID:-none}"
-
+# Three distinct P2 fighters, two P3 fighters and one P6 fighter. Reuse living
+# roles and rebuild losses using actual occupancy; command ships have separate slots.
+fund_vault_alpha "${PLAYER_2_ID}" 4000000
+run_tx "Additional vault infusion for Player 2 (fleet capacity)" \
+    tx structs reactor-infuse "${VALIDATOR_ADDRESS}" 4000000ualpha --from player_2
+for AR_PLAYER in 2 3 6; do ar_require_command "${AR_PLAYER}"; done
+ar_require_fighter AR_P2_SF1_ID 2
+ar_require_fighter AR_P2_SF2_ID 2
+ar_require_fighter AR_P2_SF3_ID 2
+ar_require_fighter AR_P3_SF1_ID 3
+ar_require_fighter AR_P3_SF2_ID 3
+ar_require_fighter AR_P6_SF1_ID 6
 fi # phase AR1
 
 if run_phase 3200; then
-
-# ═════════════════════════════════════════════════════════════════════════════
-#  PHASE AR2: Attack Run — Fleet Assembly & Positioning
-# ═════════════════════════════════════════════════════════════════════════════
-
 section "PHASE AR2: Attack Run — Fleet Assembly"
-
-# struct-build-initiate already places fleet-category structs on the fleet,
-# so no struct-move calls are needed for the newly built Starfighters.
-# However, the P2 Command Ship needs its operating ambit changed to space
-# so that Attack Run (space-to-space) weapons can target it.
-wait_for_charge "${PLAYER_2_ID}" "${CHARGE_MOVE}"
-run_tx "Moving P2 Command Ship to fleet (space ambit)" \
-    tx structs struct-move "${PLAYER_2_CMD_SHIP_ID}" fleet space --from player_2
-
-# ─── Position fleets for battle at P6's planet ───
-# v0.21.0: raid-queue capacity is 1 + locationListExtra (default extra=0 =>
-# one visitor). Only P2 parks as the HEAD visitor. Dual-visitor TAIL→HEAD
-# Attack Run cases (former A2/B3/D3) are covered by swapping P3 in as HEAD
-# against P6 instead — see AR3 Group A2'/B3'/D3'.
-run_tx "Moving P2's fleet to P6's planet for Attack Run" \
-    tx structs fleet-move "${PLAYER_2_FLEET_ID}" "${PLAYER_6_PLANET_ID}" --from player_2
-
-P6_QUEUE_COUNT=$(query query structs planet "${PLAYER_6_PLANET_ID}" | jq -r '.Planet.locationListCount // "0"')
-assert_eq "P6 planet queue count after P2 arrive" "1" "${P6_QUEUE_COUNT}"
-
-# Confirm a second visitor is rejected under the default capacity.
-run_tx_expect_fail "P3 blocked from P6 planet while P2 occupies the sole queue slot (should fail)" \
+for AR_PLAYER in 2 3 6; do ar_require_command "${AR_PLAYER}"; done
+ar_park_as_head 2
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
+run_tx_expect_reject_matching "P3 cannot enter P6's full raid queue" "queue_full" \
     tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_6_PLANET_ID}" --from player_3
-
-info "Attack Run fleets: P2 is sole visitor (HEAD) at P6; P3 stays home until swap slots"
-info "  P2 (HEAD): CS(space), SF#1(space/0), SF#2(space/2), SF#3(space/3)"
-info "  P3 (HOME, pending swap): SF#1(space/1), SF#2(space/3)"
-info "  P6 (HOME): CS(space), SF(space/3), BB(space/2), MobArt(land/0), Destroyer(water)"
-
+ar_verify_head 2
+AR_P3_LOCATION=$(combat_fleet_location 3)
+assert_eq "Rejected second visitor stays home" "${PLAYER_3_PLANET_ID}" "${AR_P3_LOCATION}"
+[ "${AR_P3_LOCATION}" = "${PLAYER_3_PLANET_ID}" ]
 fi # phase AR2
 
 if run_phase 3300; then
-
-# ═════════════════════════════════════════════════════════════════════════════
-#  PHASE AR3: Attack Run — 15 Secondary Weapon Attacks
-# ═════════════════════════════════════════════════════════════════════════════
-
 section "PHASE AR3: Attack Run — Combat"
-
-# AR_PLANNED is the number of attacks this phase is written to perform: A1-A3,
-# B1-B3, C1-C2, D1-D4, E1-E3. It is the denominator for the coverage line at the
-# end, so keep it in step when adding or removing an attack.
 AR_PLANNED=15
 AR_ATTACKS=0
 AR_EXECUTED=0
 AR_DESTROYED=0
 
-# Reuse eb_health from EB5 (already defined)
-# Track Attack Run stats with local counters
-ar_attack() {
-    local desc="$1"
-    local attacker="$2"
-    local target="$3"
-    local from_player="$4"
-
-    AR_ATTACKS=$((AR_ATTACKS + 1))
-
-    local atk_hp_before
-    atk_hp_before=$(eb_health "${attacker}")
-    local tgt_hp_before
-    tgt_hp_before=$(eb_health "${target}")
-
-    info "[AR Attack ${AR_ATTACKS}] ${desc}"
-    echo "  Attacker: ${attacker} (HP=${atk_hp_before})  Target: ${target} (HP=${tgt_hp_before})"
-
-    if [ "${atk_hp_before}" = "0" ]; then
-        echo "  SKIP: Attacker already destroyed"
-        return
-    fi
-    if [ "${tgt_hp_before}" = "0" ]; then
-        echo "  SKIP: Target already destroyed"
-        return
-    fi
-
-    local charge
-    charge=$(_secondary_charge 3)
-    wait_for_charge "$(eval echo "\${PLAYER_${from_player}_ID}")" "${charge}"
-    run_tx "${desc}" \
-        tx structs struct-attack "${attacker}" "${target}" secondaryWeapon --from "player_${from_player}"
-    AR_EXECUTED=$((AR_EXECUTED + 1))
-
-    local atk_hp_after
-    atk_hp_after=$(eb_health "${attacker}")
-    local tgt_hp_after
-    tgt_hp_after=$(eb_health "${target}")
-
-    echo "  Result: Attacker HP ${atk_hp_before}→${atk_hp_after}  Target HP ${tgt_hp_before}→${tgt_hp_after}"
-
-    if [ "${tgt_hp_after}" = "0" ]; then
-        info "  TARGET DESTROYED"
-        AR_DESTROYED=$((AR_DESTROYED + 1))
-    fi
-    if [ "${atk_hp_after}" = "0" ]; then
-        info "  ATTACKER DESTROYED (counter-attack)"
-        AR_DESTROYED=$((AR_DESTROYED + 1))
-    fi
-}
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Reachability under v0.21.0 capacity-1 (only one visitor):
-#   Active visitor (HEAD, Forward=""): can attack anyone on P6's planet
-#   P6 (HOME):                         can attack HEAD = the active visitor
-# Dual-visitor TAIL→HEAD adjacency is impossible at default capacity; P3's
-# Attack Run slots swap P3 in as HEAD against P6 instead (A2'/B3'/D3').
-#
-# There used to be a list of the post-EB5 survivors here. It could never hold:
-# IsSuccessful seeds evasion and each individual shot from the block AppHash plus
-# a per-player nonce, so the same attack sequence leaves a different set of
-# structs standing every run. Targets and defenders therefore come from ar_live
-# below, resolved at the moment of use against the AR1 pool, and a corner of the
-# matrix whose structs are all gone reports itself rather than failing.
-# ─────────────────────────────────────────────────────────────────────────────
-
-# AR_DEFENDING holds the defender:protected pairs currently in force. There is no
-# CLI query for a struct's defender state, so tracking it here is the only way to
-# know whether a clear has anything to clear.
-AR_DEFENDING=""
-
-# ar_defense_set <defender> <protected> <player_key> <player_id>
-# Returns non-zero without counting a failure when either struct is gone. That is
-# the case this phase kept reporting as a permission denial: a destroyed struct
-# still loads, as a phantom owned by the empty string, so the permission check is
-# what refuses it and the real cause — an absent struct — never appears.
-ar_defense_set() {
-    local defender="$1" protected="$2" player_key="$3" player_id="$4"
-    if [ -z "${defender}" ] || [ "$(eb_health "${defender}")" = "0" ]; then
-        echo -e "  ${YELLOW}SKIP defense-set${NC}: defender ${defender:-none} is destroyed or was never built"
-        return 1
-    fi
-    if [ -z "${protected}" ] || [ "$(eb_health "${protected}")" = "0" ]; then
-        echo -e "  ${YELLOW}SKIP defense-set${NC}: protected struct ${protected:-none} is destroyed or was never built"
-        return 1
-    fi
-    wait_for_charge "${player_id}" "${CHARGE_DEFEND}"
-    run_tx "Setting ${defender} to defend ${protected}" \
-        tx structs struct-defense-set "${defender}" "${protected}" --from "${player_key}"
-    AR_DEFENDING="${AR_DEFENDING} ${defender}:${protected}"
-    return 0
-}
-
-# ar_defense_clear <defender> <player_key> <player_id>
-# Only clears a defence this run actually established, and only while both ends of
-# it survive: destroying either the defender or the struct it protects tears the
-# record down through DestroyStructDefender, and a clear afterwards is refused
-# with "is not_defending but must be defending".
-ar_defense_clear() {
-    local defender="$1" player_key="$2" player_id="$3"
-    local pair protected=""
-    for pair in ${AR_DEFENDING}; do
-        if [ "${pair%%:*}" = "${defender}" ]; then
-            protected="${pair#*:}"
-            break
-        fi
-    done
-    if [ -z "${protected}" ]; then
-        echo -e "  ${YELLOW}SKIP defense-clear${NC}: ${defender:-none} is not defending anything this run"
-        return 0
-    fi
-
-    local remaining=""
-    for pair in ${AR_DEFENDING}; do
-        if [ "${pair%%:*}" != "${defender}" ]; then
-            remaining="${remaining} ${pair}"
-        fi
-    done
-    AR_DEFENDING="${remaining}"
-
-    if [ "$(eb_health "${defender}")" = "0" ] || [ "$(eb_health "${protected}")" = "0" ]; then
-        echo -e "  ${YELLOW}SKIP defense-clear${NC}: ${defender} or ${protected} died, so the record is already gone"
-        return 0
-    fi
-
-    wait_for_charge "${player_id}" "${CHARGE_DEFEND}"
-    run_tx "Clearing ${defender} defense" \
-        tx structs struct-defense-clear "${defender}" --from "${player_key}"
-}
-
-# ar_p6_target: whichever P6 space struct is still worth shooting at. The Command
-# Ship is the HP-6 primary; the Frigate spares exist for after it falls, since
-# five unblocked Attack Run volleys at roughly 2 damage each outlast any hull in
-# the game.
-ar_p6_target() {
-    ar_live "${AR_P6_CS_ID:-}" "${P6_COMMAND_SHIP_ID:-}" \
-        "${AR_P6_SPARE1_ID:-}" "${AR_P6_SPARE2_ID:-}"
-}
-
-# ar_p6_blocker: a live same-ambit (space) defender, which can both block and
-# counter. ar_p6_counter_land / _water are the cross-ambit defenders, which counter
-# only and so survive the attacks they defend against.
-ar_p6_blocker() { ar_live "${AR_P6_BB1_ID:-}" "${AR_P6_BB2_ID:-}" "${EB_P6_BATTLESHIP_ID:-}"; }
-ar_p6_counter_land() { ar_live "${AR_P6_MA_ID:-}" "${EB_MOBILE_ART_ID:-}"; }
-ar_p6_counter_water() { ar_live "${AR_P6_DD_ID:-}" "${EB_DESTROYER_W_ID:-}"; }
-
-# ar_park_as_head <fleet_id> <player_key> <player_id> <target_planet>
-# Sends whoever is currently visiting target_planet home first if needed, then
-# parks fleet_id as the sole HEAD visitor (capacity-1 raid queue).
-ar_park_as_head() {
-    local fleet_id="$1"
-    local player_key="$2"
-    local player_id="$3"
-    local target_planet="$4"
-
-    local start
-    start=$(query query structs planet "${target_planet}" | jq -r '.Planet.locationListStart // empty')
-    if [ -n "${start}" ] && [ "${start}" != "${fleet_id}" ]; then
-        if [ "${start}" = "${PLAYER_2_FLEET_ID}" ]; then
-            wait_for_charge "${PLAYER_2_ID}" "${CHARGE_MOVE}"
-            run_tx "AR swap: sending P2 home to free queue slot" \
-                tx structs fleet-move "${PLAYER_2_FLEET_ID}" "${PLAYER_2_PLANET_ID}" --from player_2
-        elif [ "${start}" = "${PLAYER_3_FLEET_ID}" ]; then
-            wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
-            run_tx "AR swap: sending P3 home to free queue slot" \
-                tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_3_PLANET_ID}" --from player_3
-        fi
-    fi
-
-    local loc
-    loc=$(query_fleet "${fleet_id}" | jq -r '.Fleet.locationId // empty')
-    if [ "${loc}" != "${target_planet}" ]; then
-        wait_for_charge "${player_id}" "${CHARGE_MOVE}"
-        run_tx "AR swap: parking ${player_key} fleet as sole HEAD visitor" \
-            tx structs fleet-move "${fleet_id}" "${target_planet}" --from "${player_key}"
-    fi
-}
-
-# ─────────────────────────────────────────────────────────────────────────────
-# GROUP A: No Defenders (3 attacks)
-# ─────────────────────────────────────────────────────────────────────────────
-
-info "── Group A: No Defenders ──"
-
-# A1: P2 SF#1 → P6 target (baseline Attack Run — HEAD attacks home fleet)
-ar_park_as_head "${PLAYER_2_FLEET_ID}" "player_2" "${PLAYER_2_ID}" "${PLAYER_6_PLANET_ID}"
-ar_attack "AR A1: P2 SF#1 → P6 target (no defenders)" \
-    "${AR_P2_SF1_ID}" "$(ar_p6_target)" 2
-
-# A2': P3 as HEAD → P6 target (replaces former TAIL→HEAD P3→P2 under capacity 1)
-ar_park_as_head "${PLAYER_3_FLEET_ID}" "player_3" "${PLAYER_3_ID}" "${PLAYER_6_PLANET_ID}"
-ar_attack "AR A2: P3 SF#1 → P6 target as HEAD (capacity-1 swap)" \
-    "${AR_P3_SF1_ID}" "$(ar_p6_target)" 3
-
-# A3: P6 SF → P2 CS — restore P2 as HEAD so home can hit the visitor
-ar_park_as_head "${PLAYER_2_FLEET_ID}" "player_2" "${PLAYER_2_ID}" "${PLAYER_6_PLANET_ID}"
-ar_attack "AR A3: P6 SF → P2 CS (no defenders)" \
-    "${AR_P6_SF_ID}" "${PLAYER_2_CMD_SHIP_ID}" 6
-
-# ─────────────────────────────────────────────────────────────────────────────
-# GROUP B: Single Defender (3 attacks)
-# ─────────────────────────────────────────────────────────────────────────────
-
-info "── Group B: Single Defender ──"
-
-# B1: P2 SF#2 → P6 target, defended by a P6 Battleship (space — blocks AND counters)
-AR_TGT=$(ar_p6_target)
-AR_DEF=$(ar_p6_blocker)
-if ar_defense_set "${AR_DEF}" "${AR_TGT}" player_6 "${PLAYER_6_ID}"; then
-    ar_attack "AR B1: P2 SF#2 → P6 target (def: P6 BB/space)" \
-        "${AR_P2_SF2_ID}" "${AR_TGT}" 2
-    ar_defense_clear "${AR_DEF}" player_6 "${PLAYER_6_ID}"
-fi
-
-# B2: P2 SF#3 → P6 target, defended by P6 Mobile Art (land — counter only, no block)
-AR_TGT=$(ar_p6_target)
-AR_DEF=$(ar_p6_counter_land)
-if ar_defense_set "${AR_DEF}" "${AR_TGT}" player_6 "${PLAYER_6_ID}"; then
-    ar_attack "AR B2: P2 SF#3 → P6 target (def: P6 MobArt/land)" \
-        "${AR_P2_SF3_ID}" "${AR_TGT}" 2
-    ar_defense_clear "${AR_DEF}" player_6 "${PLAYER_6_ID}"
-fi
-
-# B3': P3 as HEAD → P6 target, defended by P6 Destroyer (cross-ambit counter).
-# Replaces former P3→P2 with P2 Tank defense under capacity 1.
-ar_park_as_head "${PLAYER_3_FLEET_ID}" "player_3" "${PLAYER_3_ID}" "${PLAYER_6_PLANET_ID}"
-AR_TGT=$(ar_p6_target)
-AR_DEF=$(ar_p6_counter_water)
-if ar_defense_set "${AR_DEF}" "${AR_TGT}" player_6 "${PLAYER_6_ID}"; then
-    ar_attack "AR B3: P3 SF#2 → P6 target as HEAD (def: P6 Destroyer/water, capacity-1 swap)" \
-        "${AR_P3_SF2_ID}" "${AR_TGT}" 3
-    ar_defense_clear "${AR_DEF}" player_6 "${PLAYER_6_ID}"
-fi
-ar_park_as_head "${PLAYER_2_FLEET_ID}" "player_2" "${PLAYER_2_ID}" "${PLAYER_6_PLANET_ID}"
-
-# ─────────────────────────────────────────────────────────────────────────────
-# GROUP C: Single Cross-Ambit Defender (2 attacks)
-# Non-space defender — can counter only (cannot block from different ambit)
-# ─────────────────────────────────────────────────────────────────────────────
-
-info "── Group C: Single Cross-Ambit Defender ──"
-
-# C1: P2 SF#1 → P6 target, defended by P6 Destroyer (water)
-AR_TGT=$(ar_p6_target)
-AR_DEF=$(ar_p6_counter_water)
-if ar_defense_set "${AR_DEF}" "${AR_TGT}" player_6 "${PLAYER_6_ID}"; then
-    ar_attack "AR C1: P2 SF#1 → P6 target (def: P6 Destroyer/water)" \
-        "${AR_P2_SF1_ID}" "${AR_TGT}" 2
-    ar_defense_clear "${AR_DEF}" player_6 "${PLAYER_6_ID}"
-fi
-
-# C2: P6 SF → P2 CS, defended by P2 Tank (land)
-AR_DEF=$(ar_live "${DEFENDER_STRUCT_ID:-}")
-if ar_defense_set "${AR_DEF}" "${PLAYER_2_CMD_SHIP_ID}" player_2 "${PLAYER_2_ID}"; then
-    ar_attack "AR C2: P6 SF → P2 CS (def: P2 Tank/land)" \
-        "${AR_P6_SF_ID}" "${PLAYER_2_CMD_SHIP_ID}" 6
-    ar_defense_clear "${AR_DEF}" player_2 "${PLAYER_2_ID}"
-fi
-
-# ─────────────────────────────────────────────────────────────────────────────
-# GROUP D: Multiple Defenders (4 attacks)
-# Mix of same-ambit blockers and cross-ambit counters
-# ─────────────────────────────────────────────────────────────────────────────
-
-info "── Group D: Multiple Defenders ──"
-
-# D1: P2 SF#2 → P6 target, 2 defenders: P6 BB (space) + P6 Destroyer (water)
-AR_TGT=$(ar_p6_target)
-AR_DEF_A=$(ar_p6_blocker)
-AR_DEF_B=$(ar_p6_counter_water)
-if ar_defense_set "${AR_DEF_A}" "${AR_TGT}" player_6 "${PLAYER_6_ID}"; then
-    ar_defense_set "${AR_DEF_B}" "${AR_TGT}" player_6 "${PLAYER_6_ID}" || true
-    ar_attack "AR D1: P2 SF#2 → P6 target (def: P6 BB/space + P6 Destroyer/water)" \
-        "${AR_P2_SF2_ID}" "${AR_TGT}" 2
-    ar_defense_clear "${AR_DEF_A}" player_6 "${PLAYER_6_ID}"
-    ar_defense_clear "${AR_DEF_B}" player_6 "${PLAYER_6_ID}"
-fi
-
-# D2: P2 SF#3 → P6 target, 2 defenders: P6 Mobile Art (land) + P6 Destroyer (water)
-AR_TGT=$(ar_p6_target)
-AR_DEF_A=$(ar_p6_counter_land)
-AR_DEF_B=$(ar_p6_counter_water)
-if ar_defense_set "${AR_DEF_A}" "${AR_TGT}" player_6 "${PLAYER_6_ID}"; then
-    ar_defense_set "${AR_DEF_B}" "${AR_TGT}" player_6 "${PLAYER_6_ID}" || true
-    ar_attack "AR D2: P2 SF#3 → P6 target (def: P6 MobArt/land + P6 Destroyer/water)" \
-        "${AR_P2_SF3_ID}" "${AR_TGT}" 2
-    ar_defense_clear "${AR_DEF_A}" player_6 "${PLAYER_6_ID}"
-    ar_defense_clear "${AR_DEF_B}" player_6 "${PLAYER_6_ID}"
-fi
-
-# D3': P3 as HEAD → P6 target with two defenders (replaces former P3→P2 dual-defender)
-ar_park_as_head "${PLAYER_3_FLEET_ID}" "player_3" "${PLAYER_3_ID}" "${PLAYER_6_PLANET_ID}"
-AR_TGT=$(ar_p6_target)
-AR_DEF_A=$(ar_p6_blocker)
-AR_DEF_B=$(ar_p6_counter_land)
-if ar_defense_set "${AR_DEF_A}" "${AR_TGT}" player_6 "${PLAYER_6_ID}"; then
-    ar_defense_set "${AR_DEF_B}" "${AR_TGT}" player_6 "${PLAYER_6_ID}" || true
-    ar_attack "AR D3: P3 SF#1 → P6 target as HEAD (def: P6 BB/space + MobArt/land, capacity-1 swap)" \
-        "${AR_P3_SF1_ID}" "${AR_TGT}" 3
-    ar_defense_clear "${AR_DEF_A}" player_6 "${PLAYER_6_ID}"
-    ar_defense_clear "${AR_DEF_B}" player_6 "${PLAYER_6_ID}"
-fi
-ar_park_as_head "${PLAYER_2_FLEET_ID}" "player_2" "${PLAYER_2_ID}" "${PLAYER_6_PLANET_ID}"
-
-# D4: P2 SF#1 → P6 target, 3 defenders: BB (space) + Mobile Art (land) + Destroyer (water)
-AR_TGT=$(ar_p6_target)
-AR_DEF_A=$(ar_p6_blocker)
-AR_DEF_B=$(ar_p6_counter_land)
-AR_DEF_C=$(ar_p6_counter_water)
-if ar_defense_set "${AR_DEF_A}" "${AR_TGT}" player_6 "${PLAYER_6_ID}"; then
-    ar_defense_set "${AR_DEF_B}" "${AR_TGT}" player_6 "${PLAYER_6_ID}" || true
-    ar_defense_set "${AR_DEF_C}" "${AR_TGT}" player_6 "${PLAYER_6_ID}" || true
-    ar_attack "AR D4: P2 SF#1 → P6 target (def: P6 BB/space + MobArt/land + Destroyer/water)" \
-        "${AR_P2_SF1_ID}" "${AR_TGT}" 2
-    ar_defense_clear "${AR_DEF_A}" player_6 "${PLAYER_6_ID}"
-    ar_defense_clear "${AR_DEF_B}" player_6 "${PLAYER_6_ID}"
-    ar_defense_clear "${AR_DEF_C}" player_6 "${PLAYER_6_ID}"
-fi
-
-# ─────────────────────────────────────────────────────────────────────────────
-# GROUP E: Sustained Fire & Special (3 attacks)
-# ─────────────────────────────────────────────────────────────────────────────
-
-info "── Group E: Sustained Fire & Special ──"
-
-# E1: P2 SF#2 → P6 target again (cumulative damage, no defenders)
-ar_attack "AR E1: P2 SF#2 → P6 target (cumulative, no defenders)" \
-    "${AR_P2_SF2_ID}" "$(ar_p6_target)" 2
-
-# E2: P2 SF#3 → P6 AR SF (Starfighter-vs-Starfighter, low HP target)
-ar_attack "AR E2: P2 SF#3 → P6 SF (SF vs SF, no defenders)" \
-    "${AR_P2_SF3_ID}" "${AR_P6_SF_ID}" 2
-
-# E3: P6 SF → P2 SF#1 (reverse SF-vs-SF, HOME attacks HEAD)
-ar_attack "AR E3: P6 SF → P2 SF#1 (SF vs SF, no defenders)" \
-    "${AR_P6_SF_ID}" "${AR_P2_SF1_ID}" 6
-
-info "Attack Run combat complete: ${AR_ATTACKS} attacks, ${AR_DESTROYED} structs destroyed"
-
-# Coverage, not correctness: the matrix is the point of this phase, and it used to
-# skip thirteen of its fifteen attacks in silence because the structs they aimed at
-# were rubble. Report the ratio so a regression in coverage is loud even when every
-# transaction that did run passed.
-#
-# The denominator is the fixed count of attacks this phase describes (A1-A3, B1-B3,
-# C1-C2, D1-D4, E1-E3), not the number that got as far as calling ar_attack. Those
-# are different numbers and only the first is comparable between runs: a group whose
-# defender guard fails never calls ar_attack at all, so measuring against attempts
-# hides exactly the attacks that went missing. That is how the first run of this
-# reporting read "10 of 15" and the next "8 of 11" — the second had lost a whole
-# group and showed a healthier-looking ratio for it.
-info "Attack Run coverage: ${AR_EXECUTED} of ${AR_PLANNED} designed attacks executed"
-if [ "${AR_ATTACKS}" -lt "${AR_PLANNED}" ]; then
-    echo -e "  ${YELLOW}$((AR_PLANNED - AR_ATTACKS)) attack(s) never attempted — a defender or target could not be resolved${NC}"
-fi
-if [ "${AR_EXECUTED}" -lt "${AR_ATTACKS}" ]; then
-    echo -e "  ${YELLOW}$((AR_ATTACKS - AR_EXECUTED)) attack(s) attempted but skipped: attacker or target already destroyed${NC}"
-fi
-if [ "${AR_ATTACKS}" -gt "${AR_PLANNED}" ]; then
-    echo -e "  ${YELLOW}AR_PLANNED (${AR_PLANNED}) is behind the ${AR_ATTACKS} attacks this phase now makes — update it${NC}"
-fi
-
+# Each case restores every role, verifies complete defender registration and
+# checks its live catalog, confirmed receipt and canonical state at pinned heights.
+# B2/B3 are nonparticipating cross-ambit defenders; C/D include real counters.
+for AR_CASE in A1 A2 A3 B1 B2 B3 C1 C2 D1 D2 D3 D4 E1 E2 E3; do
+    ar_attack "${AR_CASE}"
+done
+assert_eq "All fifteen attack-run cases were verified" "${AR_PLANNED}" "${AR_EXECUTED}"
+[ "${AR_EXECUTED}" -eq "${AR_PLANNED}" ]
 fi # phase AR3
 
 if run_phase 3400; then
-
-# ═════════════════════════════════════════════════════════════════════════════
-#  PHASE AR4: Attack Run — Results Summary
-# ═════════════════════════════════════════════════════════════════════════════
-
 section "PHASE AR4: Attack Run — Results"
-
-info "Querying final state of all Attack Run structs"
-
-# ar_status_line <label> <id>
-# Reads health through eb_health rather than querying inline. The inline version
-# defaulted a missing health field to "?", and "?" is not "0", so a struct the
-# rubble sweep had already removed printed as "HP=? [alive]" — the dump asserted
-# the survival of structs that had been destroyed mid-phase, which is the same
-# stale-survivor trap the phase itself was rebuilt to avoid. eb_health answers 0
-# for destroyed and for swept alike.
-ar_status_line() {
-    local label="$1" sid="$2" hp status
-    if [ -z "${sid}" ]; then
-        echo "    ${label} (not built)"
-        return 0
-    fi
-    hp=$(eb_health "${sid}")
-    status="alive"
-    if [ "${hp}" = "0" ]; then status="DESTROYED"; fi
-    echo "    ${label} (${sid}) HP=${hp} [${status}]"
-}
-
-echo ""
-echo "  ─── Attack Run Starfighters ───"
-for SID_LABEL in "P2_SF1:${AR_P2_SF1_ID}" "P2_SF2:${AR_P2_SF2_ID}" "P2_SF3:${AR_P2_SF3_ID}" \
-                  "P3_SF1:${AR_P3_SF1_ID}" "P3_SF2:${AR_P3_SF2_ID}" "P6_SF:${AR_P6_SF_ID}"; do
-    ar_status_line "${SID_LABEL%%:*}" "${SID_LABEL#*:}"
-done
-
-echo ""
-echo "  ─── AR3 defender pool ───"
-for SID_LABEL in "target:${AR_P6_CS_ID:-}" "blocker1:${AR_P6_BB1_ID:-}" "blocker2:${AR_P6_BB2_ID:-}" \
-                  "land:${AR_P6_MA_ID:-}" "water:${AR_P6_DD_ID:-}" \
-                  "spare1:${AR_P6_SPARE1_ID:-}" "spare2:${AR_P6_SPARE2_ID:-}"; do
-    ar_status_line "${SID_LABEL%%:*}" "${SID_LABEL#*:}"
-done
-
-echo ""
-echo "  ─── Attack Run Targets ───"
-for SID_LABEL in "P6_CS:${P6_COMMAND_SHIP_ID}" "P2_CS:${PLAYER_2_CMD_SHIP_ID}" "P6_SF:${AR_P6_SF_ID}" "P2_SF1:${AR_P2_SF1_ID}"; do
-    ar_status_line "${SID_LABEL%%:*}" "${SID_LABEL#*:}"
-done
-
-echo ""
-info "Attack Run Summary: ${AR_ATTACKS} attacks, ${AR_DESTROYED} structs destroyed"
-
-BLOCK_HEIGHT=$(query query structs block-height | jq -r '.blockHeight // empty' 2>/dev/null || echo "?")
+info "Attack Run Summary: ${AR_EXECUTED:-0} verified cases, ${AR_DESTROYED:-0} structs destroyed"
+# Receipts above retain the identities of every replacement and each exact
+# outcome. Latest-height health lookups cannot distinguish a sweep from RPC failure.
+BLOCK_HEIGHT=$(query query structs block-height | jq -er '.blockHeight')
 info "Block height after Attack Run: ${BLOCK_HEIGHT}"
-
 fi # phase AR4
 
 if run_phase 3450; then
 
-# ═════════════════════════════════════════════════════════════════════════════
-#  PHASE RG1: Regression — Defender Counter Destroys Attacker (Bug 1)
-# ═════════════════════════════════════════════════════════════════════════════
-#
-# Validates the resolveBlock / ResolveDefenders / resolveVolleyDamageOn fix
-# in x/structs/keeper/attack_context.go: when a defender's counter destroys
-# the attacker mid-iteration, the same defender's block must NOT fire on
-# the dead volley.
-#
-# Go unit test (deterministic):
-#   x/structs/keeper/msg_server_struct_attack_test.go
-#     TestMsgStructAttackDefenderCounterDestroysAttacker
-# This phase adds end-to-end coverage via the live state machine.
-#
-# Setup (all space-ambit Starfighters — MaxHealth 3, CounterAttack 1,
-# PrimaryWeaponDamage 2, PrimaryWeaponCharge 1):
-#   RG1_ATTACKER_ID: an alive 1-HP P2 or P3 SF from the AR phases
-#   RG1_TARGET_ID:   freshly-built P6 SF (space slot — was an EB SF that has
-#                    been destroyed and swept by now)
-#   RG1_DEFENDER_ID: freshly-built P6 SF (different space slot)
-#
-# Bug-1 trigger: defender counter (1) destroys the HP=1 attacker.
-#   • With the fix → block does NOT fire → defender HP stays at 3.
-#   • Without the fix → block fires → defender takes attacker primary
-#     damage 2 → defender HP drops 3→1.
-# ═════════════════════════════════════════════════════════════════════════════
-
+# A same-ambit defender must stop after its counter kills the attacker:
+# no block may run and no projectile may damage the target or defender.
+# Restore exact roles and prepare one health through verified signed combat
+# when earlier attacks did not leave that condition. Missing roles are failures.
 section "PHASE RG1: Regression — Defender Counter Destroys Attacker (Bug 1)"
-
-# Discover roles at runtime from the post-AR chain state. P6's command ship
-# is typically destroyed in AR Group C, so P6's fleet can't accept new
-# struct builds (`fleet needs a command struct before deploy`). P3 keeps
-# its CS alive throughout AR and is therefore the most reliable host for
-# the target + defender pair.
-#
-# Bug-1 condition: same-ambit defender's counter (CA=1) must destroy the
-# attacker. We pick a Starfighter attacker at HP=1 from any non-P3 player.
-
-SA_RG1=$(query query structs struct-all 2>/dev/null || echo '{}')
-
-RG1_ATTACKER_ID=""
-RG1_ATTACKER_PLAYER=""
-for ATK_PLAYER_NUM in 2 6; do
-    eval "RG1_ATK_PID=\${PLAYER_${ATK_PLAYER_NUM}_ID:-}"
-    if [ -z "${RG1_ATK_PID}" ]; then continue; fi
-    for NTH in 1 2 3 4 5; do
-        CAND=$(find_struct_by_owner_type "${RG1_ATK_PID}" 3 "${NTH}" "${SA_RG1}")
-        if [ -z "${CAND}" ]; then continue; fi
-        CAND_HP=$(eb_health "${CAND}")
-        if [ "${CAND_HP}" = "1" ]; then
-            RG1_ATTACKER_ID="${CAND}"
-            RG1_ATTACKER_PLAYER="${ATK_PLAYER_NUM}"
-            info "RG1: Selected attacker ${RG1_ATTACKER_ID} (player_${RG1_ATTACKER_PLAYER}, Starfighter) at HP=1"
-            break 2
-        fi
-    done
-done
-
-# Build the list of alive P3 space-ambit structs. Order matters: place the
-# higher-HP candidate first so it becomes the TARGET (more HP headroom for
-# the attacker volley if the bug allows it through), leaving the
-# lower-HP one as the DEFENDER (assertion still distinguishes since
-# block damage = 2).
-declare -a P3_SPACE_ALIVE=()
-for CAND_ID in "${BATTLESHIP_2_ID:-}" "${BATTLESHIP_1_ID:-}"; do
-    if [ -z "${CAND_ID}" ]; then continue; fi
-    CAND_HP=$(eb_health "${CAND_ID}")
-    if [ "${CAND_HP}" != "0" ]; then P3_SPACE_ALIVE+=("${CAND_ID}"); fi
-done
-for NTH in 1 2 3 4; do
-    SF_CAND=$(find_struct_by_owner_type "${PLAYER_3_ID}" 3 "${NTH}" "${SA_RG1}")
-    if [ -z "${SF_CAND}" ]; then continue; fi
-    SF_HP=$(eb_health "${SF_CAND}")
-    if [ "${SF_HP}" != "0" ]; then P3_SPACE_ALIVE+=("${SF_CAND}"); fi
-done
-
-RG1_TARGET_ID=""
-RG1_DEFENDER_ID=""
-if [ "${#P3_SPACE_ALIVE[@]}" -ge 2 ]; then
-    RG1_TARGET_ID="${P3_SPACE_ALIVE[0]}"
-    RG1_DEFENDER_ID="${P3_SPACE_ALIVE[1]}"
-fi
-
-if [ -z "${RG1_ATTACKER_ID}" ] || [ -z "${RG1_TARGET_ID}" ] || [ -z "${RG1_DEFENDER_ID}" ]; then
-    info "SKIP RG1: missing roles (attacker=${RG1_ATTACKER_ID} target=${RG1_TARGET_ID} defender=${RG1_DEFENDER_ID})"
-else
-    info "RG1: target=${RG1_TARGET_ID} defender=${RG1_DEFENDER_ID} (both P3, space-ambit)"
-
-    # v0.19.0: the attack itself no longer requires an online (or present)
-    # Command Ship. However, the co-location fleet-move below still does
-    # (movement remains gated on an online command struct), so we rebuild the
-    # attacker's CS if AR3 destroyed it — purely to allow that fleet-move, not
-    # to "deploy" the attack. CS BuildLimit=1, but the count decrements on
-    # destruction so a fresh build is allowed.
-    eval "RG1_ATTACKER_PID=\${PLAYER_${RG1_ATTACKER_PLAYER}_ID}"
-    RG1_ATTACKER_KEY="player_${RG1_ATTACKER_PLAYER}"
-    RG1_ATK_CS_COUNT=$(echo "${SA_RG1}" | jq -r --arg pid "${RG1_ATTACKER_PID}" \
-        '[.Struct[] | select(.owner==$pid and (.type|tonumber)==1)] | length')
-    if [ "${RG1_ATK_CS_COUNT}" = "0" ]; then
-        info "RG1: ${RG1_ATTACKER_KEY} has no Command Ship — rebuilding (needed for the co-location fleet-move; destroyed in AR phase)"
-        wait_for_charge "${RG1_ATTACKER_PID}" "${CHARGE_BUILD}"
-        run_tx "RG1: Initiating fresh ${RG1_ATTACKER_KEY} Command Ship (type=1, space, slot=1)" \
-            tx structs struct-build-initiate "${RG1_ATTACKER_PID}" 1 space 1 --from "${RG1_ATTACKER_KEY}"
-
-        STRUCT_ALL_JSON=$(query query structs struct-all)
-        RG1_NEW_CS_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-        RG1_NEW_CS_OWNER=$(echo "${STRUCT_ALL_JSON}" | jq -r --arg sid "${RG1_NEW_CS_ID}" \
-            '[.Struct[] | select(.id == $sid)] | .[0].owner // empty' 2>/dev/null || echo "")
-
-        if [ "${RG1_NEW_CS_OWNER}" = "${RG1_ATTACKER_PID}" ]; then
-            run_compute "RG1: Building fresh ${RG1_ATTACKER_KEY} CS ${RG1_NEW_CS_ID}" \
-                tx structs struct-build-compute "${RG1_NEW_CS_ID}" --from "${RG1_ATTACKER_KEY}"
-            RG1_NEW_CS_BUILT=$(query query structs struct "${RG1_NEW_CS_ID}" 2>/dev/null \
-                | jq -r '.structAttributes.isBuilt // "false"')
-            assert_eq "RG1 fresh ${RG1_ATTACKER_KEY} CS built" "true" "${RG1_NEW_CS_BUILT}"
-        else
-            info "RG1: fresh CS build did not materialise (got owner='${RG1_NEW_CS_OWNER}'); attack will likely be skipped"
-        fi
-    fi
-
-    # The attacker fleet must be co-located with the target's fleet to be
-    # reachable. After AR3, P3's fleet typically stays at P6's planet (2-9)
-    # while the attacker's fleet sits at home, so a fleet-move is needed.
-    RG1_TARGET_FLEET_ID=$(query query structs struct "${RG1_TARGET_ID}" 2>/dev/null \
-        | jq -r '.Struct.locationId // empty')
-    RG1_TARGET_FLEET_LOC=""
-    if [ -n "${RG1_TARGET_FLEET_ID}" ]; then
-        RG1_TARGET_FLEET_LOC=$(query query structs fleet "${RG1_TARGET_FLEET_ID}" 2>/dev/null \
-            | jq -r '.Fleet.locationId // empty')
-    fi
-    RG1_ATTACKER_FLEET_ID=$(query query structs struct "${RG1_ATTACKER_ID}" 2>/dev/null \
-        | jq -r '.Struct.locationId // empty')
-    RG1_ATTACKER_FLEET_LOC=""
-    if [ -n "${RG1_ATTACKER_FLEET_ID}" ]; then
-        RG1_ATTACKER_FLEET_LOC=$(query query structs fleet "${RG1_ATTACKER_FLEET_ID}" 2>/dev/null \
-            | jq -r '.Fleet.locationId // empty')
-    fi
-    if [ -n "${RG1_TARGET_FLEET_LOC}" ] && [ -n "${RG1_ATTACKER_FLEET_LOC}" ] \
-       && [ "${RG1_ATTACKER_FLEET_LOC}" != "${RG1_TARGET_FLEET_LOC}" ]; then
-        info "RG1: co-locating attacker fleet ${RG1_ATTACKER_FLEET_ID} → ${RG1_TARGET_FLEET_LOC} (was ${RG1_ATTACKER_FLEET_LOC})"
-        run_tx "RG1: fleet-move ${RG1_ATTACKER_FLEET_ID} to ${RG1_TARGET_FLEET_LOC}" \
-            tx structs fleet-move "${RG1_ATTACKER_FLEET_ID}" "${RG1_TARGET_FLEET_LOC}" --from "${RG1_ATTACKER_KEY}"
-    fi
-
-    # Both target and defender belong to P3, so the defense registration
-    # transaction is authorised by player_3.
-    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_DEFEND}"
-    run_tx "RG1: Register ${RG1_DEFENDER_ID} as defender of ${RG1_TARGET_ID}" \
-        tx structs struct-defense-set "${RG1_DEFENDER_ID}" "${RG1_TARGET_ID}" --from player_3
-
-    RG1_ATTACKER_HP_BEFORE=$(eb_health "${RG1_ATTACKER_ID}")
-    RG1_TARGET_HP_BEFORE=$(eb_health "${RG1_TARGET_ID}")
-    RG1_DEFENDER_HP_BEFORE=$(eb_health "${RG1_DEFENDER_ID}")
-    info "RG1 pre-attack HPs: attacker(P${RG1_ATTACKER_PLAYER},${RG1_ATTACKER_ID})=${RG1_ATTACKER_HP_BEFORE} target(${RG1_TARGET_ID})=${RG1_TARGET_HP_BEFORE} defender(${RG1_DEFENDER_ID})=${RG1_DEFENDER_HP_BEFORE}"
-    info "  Expected: defender counter (CA=1) destroys HP=1 attacker; block must NOT fire."
-
-    if [ "${RG1_ATTACKER_HP_BEFORE}" != "1" ]; then
-        info "SKIP RG1 attack: attacker HP changed to ${RG1_ATTACKER_HP_BEFORE} between selection and attack"
-    else
-        eb_attack "RG1: P${RG1_ATTACKER_PLAYER} SF(HP=1) → P3 target (def: P3 same-ambit struct — counter-kills attacker)" \
-            "${RG1_ATTACKER_ID}" "${RG1_TARGET_ID}" primaryWeapon "${RG1_ATTACKER_PLAYER}"
-
-        RG1_ATTACKER_HP_AFTER=$(eb_health "${RG1_ATTACKER_ID}")
-        RG1_TARGET_HP_AFTER=$(eb_health "${RG1_TARGET_ID}")
-        RG1_DEFENDER_HP_AFTER=$(eb_health "${RG1_DEFENDER_ID}")
-        info "RG1 post-attack HPs: attacker=${RG1_ATTACKER_HP_AFTER} target=${RG1_TARGET_HP_AFTER} defender=${RG1_DEFENDER_HP_AFTER}"
-
-        # If the attacker, target, and defender all show identical HP before and
-        # after, the attack TX did not actually run on chain (e.g. ante reject,
-        # missing CS, etc.) and the bug-1 condition was never reached. Skip
-        # the assertions in that case rather than erroring out the whole
-        # phase on a no-op.
-        if [ "${RG1_ATTACKER_HP_AFTER}" = "${RG1_ATTACKER_HP_BEFORE}" ] \
-           && [ "${RG1_TARGET_HP_AFTER}" = "${RG1_TARGET_HP_BEFORE}" ] \
-           && [ "${RG1_DEFENDER_HP_AFTER}" = "${RG1_DEFENDER_HP_BEFORE}" ]; then
-            info "SKIP RG1 assertions: attack TX appears not to have executed (no HP changes)"
-        else
-            assert_eq "RG1: Attacker destroyed by defender counter" \
-                "0" "${RG1_ATTACKER_HP_AFTER}"
-            assert_eq "RG1: Defender HP unchanged — no block on dead volley [Bug 1 regression]" \
-                "${RG1_DEFENDER_HP_BEFORE}" "${RG1_DEFENDER_HP_AFTER}"
-            assert_eq "RG1: Target HP unchanged — dead attacker delivers no damage" \
-                "${RG1_TARGET_HP_BEFORE}" "${RG1_TARGET_HP_AFTER}"
-        fi
-    fi
-
-    wait_for_charge "${PLAYER_3_ID}" "${CHARGE_DEFEND}"
-    run_tx "RG1 cleanup: clear defender registration" \
-        tx structs struct-defense-clear "${RG1_DEFENDER_ID}" --from player_3
-fi
+rg1_run
 
 fi # phase RG1
 
@@ -8653,14 +8402,17 @@ if run_phase 3500; then
 #     TestMsgStructAttackDefenderFleetMovedNoSupport
 #
 # Setup:
-#   Defender: EB_MOBILE_ART_ID (P6 fleet, land slot 0). Mobile Artillery has
+#   Defender: RG2_DEFENDER_ID (P6 fleet). Mobile Artillery has
 #             CounterAttack=0, so the only defensive action it could take is
 #             block — and only when co-located with the protected target.
-#   Target:   EB_ORE_EXTRACTOR_ID (P6 planet, land slot 3). Same ambit as
+#   Target:   RG2_TARGET_ID (P6 planet). Same ambit as
 #             the MA defender, so block would fire when in range.
-#   Attacker: EB_P3_MOBILE_ART_ID (P3 fleet, currently at P6 planet from
-#             AR2). AttackCounterable=false, so PDC defensive cannons do
+#   Attacker: RG2_ATTACKER_ID (P3 fleet, moved to P6 planet).
+#             AttackCounterable=false, so PDC defensive cannons do
 #             not return damage and we can observe block independently.
+#   Required roles are recovered or rebuilt; missing fixtures fail the phase.
+#   The stale defender index, receipt and resulting state are checked at
+#   explicit heights so destruction sweeps cannot race the assertions.
 #
 # Bug-2 trigger: register defender → target while co-located, move P6 fleet
 # to P2 planet (defender relocates with the fleet; target stays on the
@@ -8673,110 +8425,65 @@ if run_phase 3500; then
 
 section "PHASE RG2: Regression — Relocated Defender Provides No Support (Bug 2)"
 
-RG2_MA_HP=$(eb_health "${EB_MOBILE_ART_ID}")
-RG2_EXTRACTOR_HP=$(eb_health "${EB_ORE_EXTRACTOR_ID}")
-RG2_P3_MA_HP=$(eb_health "${EB_P3_MOBILE_ART_ID}")
+# This regression is required. Earlier attacks may destroy any of its roles,
+# so recover or rebuild them instead of interpreting attrition as coverage.
+combat_require_struct P6_COMMAND_SHIP_ID 6 1 fleet "${PLAYER_6_FLEET_ID}" space "P6 Command Ship"
+combat_require_struct COMMAND_SHIP_ID 3 1 fleet "${PLAYER_3_FLEET_ID}" space "P3 Command Ship"
+PLAYER_3_CMD_SHIP_ID="${COMMAND_SHIP_ID}"
+combat_move_fleet 6 "${PLAYER_6_PLANET_ID}"
+combat_move_fleet 3 "${PLAYER_6_PLANET_ID}"
+combat_require_struct RG2_DEFENDER_ID 6 8 fleet "${PLAYER_6_FLEET_ID}" land "P6 Mobile Artillery defender"
+combat_require_struct RG2_TARGET_ID 6 14 planet "${PLAYER_6_PLANET_ID}" land "P6 Ore Extractor target"
+combat_require_struct RG2_ATTACKER_ID 3 8 fleet "${PLAYER_3_FLEET_ID}" land "P3 Mobile Artillery attacker"
 
-# Bug 2 requires a defender on a fleet that can be relocated AND a same-owner,
-# same-ambit target that stays behind (typically on a planet). EB5 attacks
-# usually leave the P6 Ore Extractor destroyed, in which case this scenario
-# is no longer reproducible from the natural EB/AR state. The Go unit test
-# (TestMsgStructAttackDefenderFleetMovedNoSupport) still provides
-# deterministic coverage.
-if [ "${RG2_MA_HP}" = "0" ] || [ "${RG2_EXTRACTOR_HP}" = "0" ] || [ "${RG2_P3_MA_HP}" = "0" ]; then
-    info "SKIP RG2: P6 MA(HP=${RG2_MA_HP}), Ore Extractor(HP=${RG2_EXTRACTOR_HP}), or P3 MA(HP=${RG2_P3_MA_HP}) destroyed — Go unit test still covers Bug 2."
-else
-    # Register P6 Mobile Art as defender of P6 Ore Extractor. Both are on
-    # P6's planet (MA on the fleet, Ore Extractor as planet struct), so
-    # IsProtecting accepts the relationship at registration time.
-    wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
-    run_tx "RG2: Register P6 Mobile Art (${EB_MOBILE_ART_ID}) as defender of P6 Ore Extractor (${EB_ORE_EXTRACTOR_ID})" \
-        tx structs struct-defense-set "${EB_MOBILE_ART_ID}" "${EB_ORE_EXTRACTOR_ID}" --from player_6
+wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
+run_tx "RG2: Register defender before relocation" \
+    tx structs struct-defense-set "${RG2_DEFENDER_ID}" "${RG2_TARGET_ID}" --from player_6
+combat_move_fleet 6 "${PLAYER_2_PLANET_ID}"
+wait_for_charge "${PLAYER_3_ID}" "$(eb_get_charge "${RG2_ATTACKER_ID}" primaryWeapon)"
 
-    RG2_REGISTERED=$(query query structs struct "${EB_ORE_EXTRACTOR_ID}" 2>/dev/null \
-        | jq -r --arg sid "${EB_MOBILE_ART_ID}" \
-            '[.structDefenders // [] | .[] | select(. == $sid)] | first // ""' \
-            2>/dev/null || echo "")
-    assert_eq "RG2: MA registered as Ore Extractor defender" \
-        "${EB_MOBILE_ART_ID}" "${RG2_REGISTERED}"
+# Inspect all three roles and both fleet locations at the same committed height.
+# The defender index must still exist: otherwise no stale relationship is tested.
+RG2_BEFORE_HEIGHT=$(query query structs block-height | jq -er '.blockHeight | select(type == "string" and test("^[1-9][0-9]*$"))')
+RG2_ATTACKER_BEFORE=$(combat_state_at_height "${RG2_ATTACKER_ID}" "${RG2_BEFORE_HEIGHT}")
+RG2_TARGET_BEFORE=$(combat_state_at_height "${RG2_TARGET_ID}" "${RG2_BEFORE_HEIGHT}")
+RG2_DEFENDER_BEFORE=$(combat_state_at_height "${RG2_DEFENDER_ID}" "${RG2_BEFORE_HEIGHT}")
+for RG2_ROLE in ATTACKER TARGET DEFENDER; do
+    case "${RG2_ROLE}" in
+        ATTACKER) RG2_ROLE_ID="${RG2_ATTACKER_ID}"; RG2_ROLE_STATE="${RG2_ATTACKER_BEFORE}"; RG2_OWNER="${PLAYER_3_ID}"; RG2_KIND=8; RG2_LOCATION="${PLAYER_3_FLEET_ID}" ;;
+        TARGET) RG2_ROLE_ID="${RG2_TARGET_ID}"; RG2_ROLE_STATE="${RG2_TARGET_BEFORE}"; RG2_OWNER="${PLAYER_6_ID}"; RG2_KIND=14; RG2_LOCATION="${PLAYER_6_PLANET_ID}" ;;
+        DEFENDER) RG2_ROLE_ID="${RG2_DEFENDER_ID}"; RG2_ROLE_STATE="${RG2_DEFENDER_BEFORE}"; RG2_OWNER="${PLAYER_6_ID}"; RG2_KIND=8; RG2_LOCATION="${PLAYER_6_FLEET_ID}" ;;
+    esac
+    RG2_READY=$(printf '%s' "${RG2_ROLE_STATE}" | python3 "${GENERATOR_TEST_DIR}/relocated_defender.py" fixture "${RG2_ROLE_ID}" "${RG2_OWNER}" "${RG2_KIND}" "${RG2_LOCATION}" land)
+    [ "${RG2_READY}" = ready ] || { echo "FAIL: RG2 role ${RG2_ROLE} became unavailable" >&2; exit 1; }
+done
+printf '%s' "${RG2_TARGET_BEFORE}" | jq -e --arg defender "${RG2_DEFENDER_ID}" '.structDefenders == [$defender]' >/dev/null
+[ "$(combat_fleet_location 6 "${RG2_BEFORE_HEIGHT}")" = "${PLAYER_2_PLANET_ID}" ]
+[ "$(combat_fleet_location 3 "${RG2_BEFORE_HEIGHT}")" = "${PLAYER_6_PLANET_ID}" ]
+[ "${PLAYER_2_PLANET_ID}" != "${PLAYER_6_PLANET_ID}" ]
+RG2_ATTACKER_HP=$(printf '%s' "${RG2_ATTACKER_BEFORE}" | jq -er '.structAttributes.health')
+RG2_TARGET_HP=$(printf '%s' "${RG2_TARGET_BEFORE}" | jq -er '.structAttributes.health')
+RG2_DEFENDER_HP=$(printf '%s' "${RG2_DEFENDER_BEFORE}" | jq -er '.structAttributes.health')
 
-    RG2_MA_HP_BEFORE=$(eb_health "${EB_MOBILE_ART_ID}")
-    RG2_EXTRACTOR_HP_BEFORE=$(eb_health "${EB_ORE_EXTRACTOR_ID}")
-    RG2_P3_MA_HP_BEFORE=$(eb_health "${EB_P3_MOBILE_ART_ID}")
+run_tx "RG2: Attack target after its defender relocated" \
+    tx structs struct-attack "${RG2_ATTACKER_ID}" "${RG2_TARGET_ID}" primaryWeapon --from player_3
+RG2_TX_HASH=$(_tx_json "${LAST_TX_OUTPUT}" | jq -er '.txhash | select(type == "string" and test("^[0-9A-Fa-f]{64}$"))')
+RG2_OUTCOME=$(query query tx "${RG2_TX_HASH}" | python3 "${GENERATOR_TEST_DIR}/relocated_defender.py" attack "${RG2_TX_HASH}" "${RG2_ATTACKER_ID}" "${RG2_TARGET_ID}" "${RG2_DEFENDER_ID}" "${RG2_ATTACKER_HP}" "${RG2_TARGET_HP}" "${RG2_DEFENDER_HP}")
+RG2_TX_HEIGHT=$(printf '%s' "${RG2_OUTCOME}" | jq -er '.height')
+[ "${RG2_TX_HEIGHT}" -gt "${RG2_BEFORE_HEIGHT}" ]
+RG2_TARGET_AFTER_HP=$(printf '%s' "${RG2_OUTCOME}" | jq -er '.health')
+RG2_TARGET_DESTROYED=$(printf '%s' "${RG2_OUTCOME}" | jq -r '.destroyed')
+combat_state_at_height "${RG2_ATTACKER_ID}" "${RG2_TX_HEIGHT}" | python3 "${GENERATOR_TEST_DIR}/relocated_defender.py" state "${RG2_ATTACKER_ID}" "${PLAYER_3_ID}" 8 "${PLAYER_3_FLEET_ID}" land "${RG2_ATTACKER_HP}" false
+combat_state_at_height "${RG2_TARGET_ID}" "${RG2_TX_HEIGHT}" | python3 "${GENERATOR_TEST_DIR}/relocated_defender.py" state "${RG2_TARGET_ID}" "${PLAYER_6_ID}" 14 "${PLAYER_6_PLANET_ID}" land "${RG2_TARGET_AFTER_HP}" "${RG2_TARGET_DESTROYED}"
+combat_state_at_height "${RG2_DEFENDER_ID}" "${RG2_TX_HEIGHT}" | python3 "${GENERATOR_TEST_DIR}/relocated_defender.py" state "${RG2_DEFENDER_ID}" "${PLAYER_6_ID}" 8 "${PLAYER_6_FLEET_ID}" land "${RG2_DEFENDER_HP}" false
+[ "$(combat_fleet_location 6 "${RG2_TX_HEIGHT}")" = "${PLAYER_2_PLANET_ID}" ]
+[ "$(combat_fleet_location 3 "${RG2_TX_HEIGHT}")" = "${PLAYER_6_PLANET_ID}" ]
+assert_eq "RG2: Confirmed hit bypassed relocated defender; canonical state agrees" true "$(printf '%s' "${RG2_OUTCOME}" | jq -r '.verified')"
 
-    # v0.19.0: the attack no longer needs a Command Ship, but the relocation
-    # fleet-move below still does (movement remains gated on an online command
-    # struct). P6's CS (5-22 in a typical run) is destroyed during the AR
-    # phase, so rebuild it here purely to enable the move. CS BuildLimit=1, but
-    # the count decrements on destruction so a fresh build is allowed.
-    RG2_SA=$(query query structs struct-all 2>/dev/null || echo '{}')
-    RG2_P6_CS_COUNT=$(echo "${RG2_SA}" | jq -r --arg pid "${PLAYER_6_ID}" \
-        '[.Struct[] | select(.owner==$pid and (.type|tonumber)==1)] | length')
-    if [ "${RG2_P6_CS_COUNT}" = "0" ]; then
-        info "RG2: player_6 has no Command Ship — rebuilding (needed for the relocation fleet-move; destroyed in AR phase)"
-        wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-        run_tx "RG2: Initiating fresh player_6 Command Ship (type=1, space, slot=1)" \
-            tx structs struct-build-initiate "${PLAYER_6_ID}" 1 space 1 --from player_6
-
-        STRUCT_ALL_JSON=$(query query structs struct-all)
-        RG2_NEW_CS_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
-        RG2_NEW_CS_OWNER=$(echo "${STRUCT_ALL_JSON}" | jq -r --arg sid "${RG2_NEW_CS_ID}" \
-            '[.Struct[] | select(.id == $sid)] | .[0].owner // empty' 2>/dev/null || echo "")
-        if [ "${RG2_NEW_CS_OWNER}" = "${PLAYER_6_ID}" ]; then
-            run_compute "RG2: Building fresh player_6 CS ${RG2_NEW_CS_ID}" \
-                tx structs struct-build-compute "${RG2_NEW_CS_ID}" --from player_6
-            RG2_NEW_CS_BUILT=$(query query structs struct "${RG2_NEW_CS_ID}" 2>/dev/null \
-                | jq -r '.structAttributes.isBuilt // "false"')
-            assert_eq "RG2 fresh player_6 CS built" "true" "${RG2_NEW_CS_BUILT}"
-        else
-            info "RG2: fresh CS build did not materialise (got owner='${RG2_NEW_CS_OWNER}'); scenario will be skipped"
-        fi
-    fi
-
-    # Move P6 fleet to P2 planet. The MA goes with the fleet; the Ore
-    # Extractor stays on P6's planet. The stale StructDefender entry remains
-    # in state, but IsProtecting should now return false at attack time.
-    wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-    run_tx "RG2: Move P6 fleet to P2 planet (defender relocates away from target)" \
-        tx structs fleet-move "${PLAYER_6_FLEET_ID}" "${PLAYER_2_PLANET_ID}" --from player_6
-
-    # The relocation precondition must actually hold: P6's fleet (and thus the
-    # MA defender) must now sit at P2's planet, away from the Ore Extractor on
-    # P6's planet. If the move did not take (e.g. CS could not be rebuilt), the
-    # defender stays co-located and correctly blocks — which is not the Bug 2
-    # scenario. Skip the assertions in that case; the Go unit test
-    # (TestMsgStructAttackDefenderFleetMovedNoSupport) still covers Bug 2.
-    RG2_P6_FLEET_LOC=$(query query structs fleet "${PLAYER_6_FLEET_ID}" 2>/dev/null \
-        | jq -r '.Fleet.locationId // empty')
-    if [ "${RG2_P6_FLEET_LOC}" != "${PLAYER_2_PLANET_ID}" ]; then
-        info "SKIP RG2: P6 fleet did not relocate (loc='${RG2_P6_FLEET_LOC}', want='${PLAYER_2_PLANET_ID}') — defender still co-located; Go unit test covers Bug 2."
-    else
-        info "RG2 pre-attack HPs: P6 MA=${RG2_MA_HP_BEFORE} Ore Extractor=${RG2_EXTRACTOR_HP_BEFORE} P3 MA=${RG2_P3_MA_HP_BEFORE}"
-        info "  Expected: P6 MA out of range (IsProtecting=false). MA HP unchanged; Ore Extractor takes damage."
-
-        eb_attack "RG2: P3 Mobile Art → P6 Ore Extractor (MA defender out of range after fleet move)" \
-            "${EB_P3_MOBILE_ART_ID}" "${EB_ORE_EXTRACTOR_ID}" primaryWeapon 3
-
-        RG2_MA_HP_AFTER=$(eb_health "${EB_MOBILE_ART_ID}")
-        RG2_EXTRACTOR_HP_AFTER=$(eb_health "${EB_ORE_EXTRACTOR_ID}")
-        RG2_P3_MA_HP_AFTER=$(eb_health "${EB_P3_MOBILE_ART_ID}")
-        info "RG2 post-attack HPs: P6 MA=${RG2_MA_HP_AFTER} Ore Extractor=${RG2_EXTRACTOR_HP_AFTER} P3 MA=${RG2_P3_MA_HP_AFTER}"
-
-        assert_eq "RG2: P6 MA HP unchanged after fleet move — defender did not block [Bug 2 regression]" \
-            "${RG2_MA_HP_BEFORE}" "${RG2_MA_HP_AFTER}"
-        RG2_EXTRACTOR_DMG=$((RG2_EXTRACTOR_HP_BEFORE - RG2_EXTRACTOR_HP_AFTER))
-        assert_gt "RG2: Ore Extractor took damage — not deflected by stale defender" \
-            0 "${RG2_EXTRACTOR_DMG}"
-    fi
-
-    wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
-    run_tx "RG2 cleanup: clear stale P6 MA defender registration" \
-        tx structs struct-defense-clear "${EB_MOBILE_ART_ID}" --from player_6
-
-    wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
-    run_tx "RG2 cleanup: move P6 fleet back to P6 planet" \
-        tx structs fleet-move "${PLAYER_6_FLEET_ID}" "${PLAYER_6_PLANET_ID}" --from player_6
-fi
+wait_for_charge "${PLAYER_6_ID}" "${CHARGE_DEFEND}"
+run_tx "RG2 cleanup: clear stale defender registration" \
+    tx structs struct-defense-clear "${RG2_DEFENDER_ID}" --from player_6
+combat_move_fleet 6 "${PLAYER_6_PLANET_ID}"
 
 fi # phase RG2
 
@@ -8795,25 +8502,37 @@ if run_phase 3800; then
 #    1. Reject when target reactor does not exist.
 #    2. Reject when caller lacks PermAdmin on the guild.
 #    3. Accept when an admin targets a known, non-jailed validator's reactor
-#       (idempotent no-op on the value, but exercises every validation branch
-#       plus the EventGuild emission via cache commit → SetGuild).
+#       (idempotent no-op on the value, with confirmed successful delivery).
 #    4. Confirm the guild's primaryReactorId is unchanged after the no-op
 #       update (and matches the configured reactor).
 # ═════════════════════════════════════════════════════════════════════════════
 section "PHASE GP1: Guild Update Primary Reactor"
 
-# Sanity: capture the pre-update value so we can detect any unintended drift.
-GP1_BEFORE=$(query query structs guild "${GUILD_ID}" 2>/dev/null | jq -r '.Guild.primaryReactorId // empty')
-assert_not_empty "GP1: pre-update guild.primaryReactorId" "${GP1_BEFORE}"
+# Bind snapshots to the requested guild and compare immediately after each
+# attempt, before a later successful update could conceal a rejected mutation.
+gp1_guild_snapshot() {
+    local json
+    json=$(query query structs guild "${GUILD_ID}") || return 1
+    echo "${json}" | jq -ceS --arg id "${GUILD_ID}" '
+        .Guild | if type != "object" or .id != $id then error("wrong guild")
+        elif (.primaryReactorId | type) != "string" or .primaryReactorId == "" then error("missing primary reactor")
+        else . end'
+}
+GP1_BEFORE=$(gp1_guild_snapshot)
+assert_eq "GP1: pre-update guild.primaryReactorId" \
+    "${REACTOR_ID}" "$(echo "${GP1_BEFORE}" | jq -r '.primaryReactorId')"
 
 # 1. Reject: unknown reactor. Format mirrors a real reactor id ("<n>-<addr>")
 #    so it parses but resolves to no object.
 GP1_FAKE_REACTOR="999999-${ALICE_ADDRESS}"
-run_tx_expect_fail "GP1: reject update to unknown reactor (${GP1_FAKE_REACTOR})" \
+run_tx_expect_reject_matching "GP1: reject update to unknown reactor (${GP1_FAKE_REACTOR})" \
+    "reactor \\(${GP1_FAKE_REACTOR}\\) not found" \
     tx structs guild-update-primary-reactor "${GUILD_ID}" "${GP1_FAKE_REACTOR}" --from alice
+GP1_AFTER=$(gp1_guild_snapshot)
+assert_eq "GP1: unknown-reactor refusal preserves the guild" "${GP1_BEFORE}" "${GP1_AFTER}"
 
 # 2. Reject: non-admin caller (player_2).
-#    Earlier phases (4d ownership-transfer suite) granted player_2 PermAdmin
+#    Other phases may grant player_2 explicit administrative permissions
 #    and briefly made them the guild owner (which adds PermGuildAll). Neither
 #    grant is revoked there, so by the time we get here player_2 legitimately
 #    has admin rights on the guild. Strip every bit they may have accumulated
@@ -8821,51 +8540,34 @@ run_tx_expect_fail "GP1: reject update to unknown reactor (${GP1_FAKE_REACTOR})"
 #    non-admin caller — otherwise this phase silently passes on whatever
 #    cruft Phase 4 left behind.
 GP1_P2_GUILD_PERMS=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_2_ID}")
-GP1_P2_GUILD_PERMS=${GP1_P2_GUILD_PERMS:-0}
-if [ "${GP1_P2_GUILD_PERMS}" != "0" ] && [ -n "${GP1_P2_GUILD_PERMS}" ]; then
+if [ "${GP1_P2_GUILD_PERMS}" != "0" ]; then
     info "GP1: stripping player_2's residual perms on guild (bits=${GP1_P2_GUILD_PERMS})"
     run_tx "GP1: revoke residual player_2 perms on guild" \
         tx structs permission-revoke-on-object "${GUILD_ID}" "${PLAYER_2_ID}" "${GP1_P2_GUILD_PERMS}" --from alice
 fi
 GP1_P2_GUILD_PERMS_AFTER=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_2_ID}")
-GP1_P2_GUILD_PERMS_AFTER=${GP1_P2_GUILD_PERMS_AFTER:-0}
 assert_eq "GP1: player_2 has no per-object perms on guild before reject test" \
     "0" "${GP1_P2_GUILD_PERMS_AFTER}"
 
-run_tx_expect_fail "GP1: reject update from non-admin caller (player_2)" \
+run_tx_expect_permission_denied "GP1: reject update from non-admin caller (player_2)" \
     tx structs guild-update-primary-reactor "${GUILD_ID}" "${REACTOR_ID}" --from player_2
+GP1_AFTER=$(gp1_guild_snapshot)
+assert_eq "GP1: non-admin refusal preserves the guild" "${GP1_BEFORE}" "${GP1_AFTER}"
 
 # 3. Happy path: admin (alice) targets the current reactor. Exercises the
 #    full handler chain (player lookup, guild lookup, PermAdmin check, reactor
-#    lookup, validator lookup, jailed check, cache commit → EventGuild). We
-#    capture the tx output explicitly because the assertions in (4) below
-#    would trivially pass against unchanged state if this tx were silently
-#    rejected by ante (incident 2026-05: every new Structs message MUST be
-#    registered in app/ante/maps.go or it gets bounced as "unknown structs
-#    message type"). PARAMS_TX now carries --output json itself; the explicit flag
-#    here is redundant but harmless, and documents what this parse depends on.
-GP1_HAPPY_OUT=$(structsd ${PARAMS_TX} --output json tx structs guild-update-primary-reactor \
-    "${GUILD_ID}" "${REACTOR_ID}" --from alice 2>&1) || true
-echo -e "  ${BOLD}structsd ${PARAMS_TX} --output json tx structs guild-update-primary-reactor ${GUILD_ID} ${REACTOR_ID} --from alice${NC}"
-# `--gas auto` prints "gas estimate: NNN" on stderr before the JSON tx response,
-# so pull the JSON line out explicitly before handing it to jq. Use `.code | tostring`
-# so that the legitimate value 0 round-trips as the string "0".
-GP1_HAPPY_JSON=$(echo "${GP1_HAPPY_OUT}" | grep -E '^\{' | tail -n 1)
-GP1_HAPPY_CODE=$(echo "${GP1_HAPPY_JSON}" | jq -r '.code | tostring' 2>/dev/null || echo "")
-if [ -z "${GP1_HAPPY_CODE}" ]; then
-    echo -e "  ${YELLOW}WARN${NC}: could not parse tx code from output, raw output follows:"
-    echo "${GP1_HAPPY_OUT}" | head -20
-fi
-assert_eq "GP1: admin update returned tx code 0 (message registered in ante maps)" \
-    "0" "${GP1_HAPPY_CODE}"
-sleep "${SLEEP}"
+#    lookup, validator lookup, jailed check). Unchanged state alone proves
+#    nothing for a no-op: follow the broadcast hash into a committed block.
+run_tx "GP1: admin updates the current primary reactor" \
+    tx structs guild-update-primary-reactor "${GUILD_ID}" "${REACTOR_ID}" --from alice
+assert_eq "GP1: admin update delivered successfully" "0" "${LAST_TX_DELIVERED%%|*}"
 
 # 4. Confirm the guild's primaryReactorId is intact (no drift from no-op).
-GP1_AFTER=$(query query structs guild "${GUILD_ID}" 2>/dev/null | jq -r '.Guild.primaryReactorId // empty')
-assert_eq "GP1: guild.primaryReactorId unchanged after no-op update" \
+GP1_AFTER=$(gp1_guild_snapshot)
+assert_eq "GP1: guild unchanged after no-op update" \
     "${GP1_BEFORE}" "${GP1_AFTER}"
 assert_eq "GP1: guild.primaryReactorId matches configured reactor" \
-    "${REACTOR_ID}" "${GP1_AFTER}"
+    "${REACTOR_ID}" "$(echo "${GP1_AFTER}" | jq -r '.primaryReactorId')"
 
 fi # phase GP1
 
@@ -8875,198 +8577,15 @@ if run_phase 3850; then
 #  PHASE JS1: Jamming Satellite — Guided-Only Planetary Defense (v0.20.0)
 # ═════════════════════════════════════════════════════════════════════════════
 #
-# The Jamming Satellite (struct type 17) grants the planetary defense
-# lowOrbitBallisticInterceptorNetwork. As of v0.20.0 it shields a planetary
-# (non-fleet) struct on its own planet from GUIDED ordnance, regardless of the
-# source or target ambit; unguided ordnance must pass through untouched.
-# Before v0.20.0 the planetary evasion required a fleet attacker striking from
-# air/space against a land/water target and — the bug this fixes — ignored
-# weapon control, so it could also evade unguided attacks.
-#
-# Guided evasion is probabilistic (a single interceptor gives a 1/3 evade
-# chance) and ambit-independence / the planetary-target requirement are
-# deterministic-only concerns, so those guarantees live in the Go unit test:
-#   x/structs/keeper/msg_server_struct_attack_test.go
-#     TestMsgStructAttackPlanetaryDefenseGuidedOnly
-#
-# This phase is the integration guard for the unguided-bypass direction: an
-# unguided fleet attack against a target on the defended planet must always land
-# damage. It reuses P6's planet (defender) and a P3 Battleship (space ambit,
-# unguided armour-piercing primary that targets land/water, shot success 1/1).
-# Preconditions are checked and the phase skips gracefully when the
-# extended-battle state is not available.
-
+# The satellite shields planet-category targets from guided ordnance. JS1
+# requires three unguided Battleship primary hits against an Ore Extractor on
+# the satellite owner's planet. Each hit pins the active interception network,
+# exact receipt and committed health; attrition requires fixture restoration.
+# Deterministic guided/jamming and fleet-exclusion coverage remains in
+# TestMsgStructAttackPlanetaryDefenseGuidedOnly.
 section "PHASE JS1: Jamming Satellite — Guided-Only Planetary Defense (v0.20.0)"
-
-# find_free_space_slot: echo the first unoccupied space slot index on a planet,
-# or empty when the planet's space slots are all full.
-find_free_space_slot() {
-    local planet_json="$1"
-    local slot_count idx occ
-    slot_count=$(jqr "${planet_json}" '.Planet.spaceSlots' '0')
-    for idx in $(seq 0 $((slot_count - 1))); do
-        occ=$(echo "${planet_json}" | jq -r ".Planet.space[${idx}] // \"\"" 2>/dev/null || echo "")
-        if [ -z "${occ}" ] || [ "${occ}" = "null" ]; then
-            echo "${idx}"
-            return
-        fi
-    done
-    echo ""
-}
-
-# Every build P6 makes, planetary ones included, goes through a readiness check
-# that demands a live and online command struct on their fleet
-# (planet_cache.go:564). AR3 destroys P6's Command Ship, so by this phase the
-# Jamming Satellite build is refused with "needs a command struct before deploy" —
-# a failure about the previous phase's combat, reported here.
-#
-# A Command Ship rebuild is the one build exempt from that gate
-# (BuildInitiateReadiness skips it for types.CommandStruct), so try to restore the
-# ship rather than skip: the phase's coverage is worth more than the two
-# transactions. BuildLimit 1 is satisfied because destruction decremented the
-# count. Falling back to a skip is the guard.
-JS_P6_HAS_COMMAND=false
-if [ -n "${PLAYER_6_ID:-}" ]; then
-    JS_P6_CS=$(ar_live "${AR_P6_CS_ID:-}" "${P6_COMMAND_SHIP_ID:-}")
-    if [ -n "${JS_P6_CS}" ]; then
-        JS_P6_HAS_COMMAND=true
-    else
-        info "P6 has no live Command Ship after AR3; rebuilding so planetary builds are possible"
-        JS_CS_SLOT=$(wait_for_free_slot fleet "${PLAYER_6_FLEET_ID}" space)
-        if [ -z "${JS_CS_SLOT}" ]; then
-            info "SKIP JS1 command restore: no free space slot on P6's fleet"
-        else
-            JS_PREV_ID=$(get_newest_struct_id)
-            wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-            run_tx "Rebuilding P6 Command Ship (type=1, space, slot=${JS_CS_SLOT})" \
-                tx structs struct-build-initiate "${PLAYER_6_ID}" 1 space "${JS_CS_SLOT}" --from player_6
-            JS_NEW_CS=$(get_newest_struct_id)
-            if [ -n "${JS_NEW_CS}" ] && [ "${JS_NEW_CS}" != "${JS_PREV_ID}" ]; then
-                run_compute "Building P6 Command Ship ${JS_NEW_CS}" \
-                    tx structs struct-build-compute "${JS_NEW_CS}" --from player_6
-                if [ "$(eb_health "${JS_NEW_CS}")" != "0" ]; then
-                    AR_P6_CS_ID="${JS_NEW_CS}"
-                    JS_P6_HAS_COMMAND=true
-                    echo "  P6 Command Ship restored: ${JS_NEW_CS}"
-                fi
-            fi
-        fi
-    fi
-fi
-
-if [ -z "${PLAYER_6_PLANET_ID:-}" ] || [ -z "${PLAYER_3_ID:-}" ] || [ -z "${PLAYER_3_FLEET_ID:-}" ]; then
-    info "SKIP JS1: extended-battle state (P6 planet / P3 fleet) not available"
-elif [ "${JS_P6_HAS_COMMAND}" != true ]; then
-    info "SKIP JS1: P6 has no live command struct, so no planetary build can be initiated"
-else
-    P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
-    JS_SLOT=$(find_free_space_slot "${P6_PLANET_JSON}")
-
-    if [ -z "${JS_SLOT}" ]; then
-        info "SKIP JS1: no free space slot on P6's planet for a Jamming Satellite"
-    else
-        # ─── Build the Jamming Satellite (type 17, space) on P6's planet ───
-        PREV_NEWEST_STRUCT_ID=$(get_newest_struct_id)
-        wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
-        run_tx "Initiating P6 Jamming Satellite (type=17, space, slot=${JS_SLOT})" \
-            tx structs struct-build-initiate "${PLAYER_6_ID}" 17 space "${JS_SLOT}" --from player_6
-
-        JS_SAT_ID=$(get_newest_struct_id)
-        if [ "${JS_SAT_ID}" = "${PREV_NEWEST_STRUCT_ID}" ] || [ -z "${JS_SAT_ID}" ]; then
-            info "SKIP JS1: Jamming Satellite build did not materialize (slot/charge)"
-        else
-            echo "  P6 Jamming Satellite ID: ${JS_SAT_ID}"
-            run_compute "Building Jamming Satellite ${JS_SAT_ID}" \
-                tx structs struct-build-compute "${JS_SAT_ID}" --from player_6
-
-            # ─── Deterministic: the interceptor network is now active ───
-            P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
-            JS_QTY=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.lowOrbitBallisticsInterceptorNetworkQuantity' '0')
-            JS_RATE_NUM=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator' '0')
-            assert_gt "JS1 — interceptor network quantity increased" 0 "${JS_QTY}"
-            assert_gt "JS1 — interceptor network success rate is active" 0 "${JS_RATE_NUM}"
-
-            # ─── Locate an unguided air/space attacker and a land/water target ───
-            STRUCT_ALL_JSON=$(query query structs struct-all)
-            JS_ATTACKER_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 2 1 "${STRUCT_ALL_JSON}")   # P3 Battleship (space, unguided primary)
-
-            # Prefer the Ore Extractor (no counter/defense) for clean accounting,
-            # then fall back to other P6 land/water structs. The AR3 pool's
-            # Mobile Artillery and Destroyer come last but matter most in a full
-            # run: the three EB-era candidates are all rubble by this phase,
-            # which is what made JS1 fire nothing, while the pool's cross-ambit
-            # pair survives AR3 by design — countering rather than blocking, so
-            # nothing shoots back at them. They are fleet-category structs like
-            # the Tank and Cruiser above, not a new kind of target. Their own
-            # counter-fire is safe for the accounting here: it damages the
-            # attacker, and the loop below re-reads attacker HP each round and
-            # only counts shots it actually took.
-            JS_TARGET_ID=""
-            for CAND in "${EB_ORE_EXTRACTOR_ID:-}" "${EB_P6_TANK_ID:-}" "${EB_P6_CRUISER_ID:-}" \
-                        "${AR_P6_MA_ID:-}" "${AR_P6_DD_ID:-}"; do
-                if [ -n "${CAND}" ] && [ "$(eb_health "${CAND}")" != "0" ]; then
-                    JS_TARGET_ID="${CAND}"
-                    break
-                fi
-            done
-
-            if [ -z "${JS_ATTACKER_ID}" ] || [ "$(eb_health "${JS_ATTACKER_ID}")" = "0" ]; then
-                info "SKIP JS1 attack: no live P3 Battleship (unguided air/space attacker) available"
-            elif [ -z "${JS_TARGET_ID}" ]; then
-                info "SKIP JS1 attack: no live P6 land/water target available"
-            else
-                info "JS1 attack: P3 Battleship ${JS_ATTACKER_ID} (unguided, space) → P6 target ${JS_TARGET_ID} (land/water)"
-
-                # If another fleet is visiting P6's planet, send it home first.
-                # AR3 leaves P2 parked there and Group E's skips never clear it.
-                JS_VISITOR=$(query query structs planet "${PLAYER_6_PLANET_ID}" | jq -r '.Planet.locationListStart // empty')
-                if [ -n "${JS_VISITOR}" ] && [ "${JS_VISITOR}" != "${PLAYER_3_FLEET_ID}" ]; then
-                    if [ "${JS_VISITOR}" = "${PLAYER_2_FLEET_ID}" ]; then
-                        wait_for_charge "${PLAYER_2_ID}" "${CHARGE_MOVE}"
-                        run_tx "JS1: sending P2 fleet home to free queue slot" \
-                            tx structs fleet-move "${PLAYER_2_FLEET_ID}" "${PLAYER_2_PLANET_ID}" --from player_2
-                    else
-                        info "JS1: unknown visitor ${JS_VISITOR} at P6 planet — cannot evict, skipping attack"
-                    fi
-                fi
-
-                # Bring the P3 fleet to P6's planet so the Battleship is in range.
-                run_tx "Moving P3 fleet to P6 planet for JS1" \
-                    tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_6_PLANET_ID}" --from player_3
-
-                # Fire several unguided shots. Every shot must land damage: the
-                # Jamming Satellite only jams guided ordnance, so unguided shots
-                # bypass it regardless of ambit. Pre-v0.20.0 each shot had a
-                # ~1/3 chance of being (incorrectly) jammed.
-                JS_LANDED=0
-                JS_SHOTS=0
-                for JS_ROUND in 1 2 3; do
-                    ATK_HP=$(eb_health "${JS_ATTACKER_ID}")
-                    TGT_HP=$(eb_health "${JS_TARGET_ID}")
-                    if [ "${ATK_HP}" = "0" ] || [ "${TGT_HP}" = "0" ]; then
-                        break
-                    fi
-                    JS_SHOTS=$((JS_SHOTS + 1))
-                    JS_TGT_BEFORE="${TGT_HP}"
-                    eb_attack "JS1 round ${JS_ROUND}: unguided Battleship primary vs planetary defense" \
-                        "${JS_ATTACKER_ID}" "${JS_TARGET_ID}" primaryWeapon 3
-                    JS_TGT_AFTER=$(eb_health "${JS_TARGET_ID}")
-                    if [ "${JS_TGT_AFTER}" -lt "${JS_TGT_BEFORE}" ]; then
-                        JS_LANDED=$((JS_LANDED + 1))
-                    else
-                        info "  round ${JS_ROUND}: target HP unchanged (${JS_TGT_BEFORE} -> ${JS_TGT_AFTER}) — possible planetary evasion"
-                    fi
-                done
-
-                if [ "${JS_SHOTS}" -gt 0 ]; then
-                    assert_eq "JS1 — every unguided shot bypassed the Jamming Satellite" "${JS_SHOTS}" "${JS_LANDED}"
-                else
-                    info "SKIP JS1 attack assertion: no shots could be fired (structs destroyed early)"
-                fi
-            fi
-        fi
-    fi
-fi
+js_run
+# Required satellite bypass complete
 
 fi # phase JS1
 
@@ -9078,7 +8597,7 @@ fi # phase JS1
 section "Final State Dump"
 
 info "All Structs:"
-query query structs struct-all | jq -r '.Struct[] | "  \(.id) type=\(.type) owner=\(.owner) ambit=\(.operatingAmbit) loc=\(.locationType)/\(.locationId)"' 2>/dev/null || true
+get_all_structs | jq -r '.Struct[] | "  \(.id) type=\(.type) owner=\(.owner) ambit=\(.operatingAmbit) loc=\(.locationType)/\(.locationId)"'
 
 echo ""
 info "All Players:"

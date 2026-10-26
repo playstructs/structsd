@@ -3,7 +3,6 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	storetypes "cosmossdk.io/store/types"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -12,6 +11,7 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	structstypes "structs/x/structs/types"
 )
 
 // ExportAppStateAndValidators exports the state of the application for a genesis
@@ -19,18 +19,36 @@ import (
 func (app *App) ExportAppStateAndValidators(forZeroHeight bool, jailAllowedAddrs, modulesToExport []string) (servertypes.ExportedApp, error) {
 	// as if they could withdraw from the start of the next block
 	ctx := app.NewContextLegacy(true, cmtproto.Header{Height: app.LastBlockHeight()})
+	// Export preparation must not mutate the source application's check state.
+	ctx, _ = ctx.CacheContext()
 
 	// We export at last height + 1, because that's the height at which
 	// CometBFT will start InitChain.
 	height := app.LastBlockHeight() + 1
 	if forZeroHeight {
 		height = 0
-		app.prepForZeroHeightGenesis(ctx, jailAllowedAddrs)
+		if err := app.prepForZeroHeightGenesis(ctx, jailAllowedAddrs); err != nil {
+			return servertypes.ExportedApp{}, err
+		}
 	}
 
 	genState, err := app.ModuleManager.ExportGenesisForModules(ctx, app.appCodec, modulesToExport)
 	if err != nil {
 		return servertypes.ExportedApp{}, err
+	}
+	if raw, included := genState[structstypes.ModuleName]; included {
+		var genesis structstypes.GenesisState
+		if err := app.appCodec.UnmarshalJSON(raw, &genesis); err != nil {
+			return servertypes.ExportedApp{}, err
+		}
+		genesis.StakingUnbondingId, err = app.stakingUnbondingID(ctx)
+		if err != nil {
+			return servertypes.ExportedApp{}, err
+		}
+		genState[structstypes.ModuleName], err = app.appCodec.MarshalJSON(&genesis)
+		if err != nil {
+			return servertypes.ExportedApp{}, err
+		}
 	}
 
 	appState, err := json.MarshalIndent(genState, "", "  ")
@@ -51,7 +69,16 @@ func (app *App) ExportAppStateAndValidators(forZeroHeight bool, jailAllowedAddrs
 // NOTE zero height genesis is a temporary feature which will be deprecated
 //
 //	in favor of export at a block height
-func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) {
+/* prepForZeroHeightGenesis rewrites height-dependent state for a restart at
+ * block zero, and reports why it could not rather than killing the process.
+ *
+ * The failures here are an operator's, mid-migration: a malformed allowlist
+ * address, a validator that cannot be re-indexed. log.Fatal exits immediately
+ * with no unwinding and no exported genesis, which turns a fixable input error
+ * into chain-wide downtime while somebody works out what happened. Returning
+ * lets ExportAppStateAndValidators, which already returns an error, say so.
+ */
+func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) error {
 	applyAllowedAddrs := false
 
 	// check if there is a allowed address list
@@ -59,23 +86,38 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 		applyAllowedAddrs = true
 	}
 
-	allowedAddrsMap := make(map[string]bool)
-
-	for _, addr := range jailAllowedAddrs {
-		_, err := sdk.ValAddressFromBech32(addr)
-		if err != nil {
-			log.Fatal(err)
-		}
-		allowedAddrsMap[addr] = true
+	allowedAddrsMap, err := buildJailAllowlist(jailAllowedAddrs)
+	if err != nil {
+		return err
 	}
 
 	/* Just to be safe, assert the invariants on current state. */
 	app.CrisisKeeper.AssertInvariants(ctx)
 
+	/* Handle Structs agreement state.
+	 *
+	 * An agreement's window is a pair of absolute heights stored on the record,
+	 * so it survives the export unchanged - correct for a height-preserving
+	 * restart and wrong for this one. An agreement exported at height H with
+	 * E-H blocks left would be re-indexed to expire at E on a chain restarting
+	 * near 1, supplying capacity for roughly the whole age of the old chain that
+	 * nobody posted collateral for.
+	 *
+	 * Runs before the staking work below because it settles providers against
+	 * the old clock, and that has to happen while the old clock still means
+	 * something. Planet/struct clocks are rebuilt on import, grid lastAction is
+	 * filtered, and reactor charter stamps are recomputed on import.
+	 */
+	structsCC := app.StructsKeeper.NewCurrentContext(ctx)
+	if err := structsCC.RebaseAgreementsForZeroHeightGenesis(); err != nil {
+		return fmt.Errorf("rebasing agreements for a zero-height export: %w", err)
+	}
+	structsCC.CommitAll()
+
 	/* Handle fee distribution state. */
 
 	// withdraw all validator commission
-	err := app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
+	err = app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
 		valBz, err := app.StakingKeeper.ValidatorAddressCodec().StringToBytes(val.GetOperator())
 		if err != nil {
 			panic(err)
@@ -203,21 +245,36 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 
 		validator.UnbondingHeight = 0
 		if applyAllowedAddrs && !allowedAddrsMap[addr.String()] {
+			/* Take the validator out of the power index before flagging it.
+			 *
+			 * SetValidator writes only the validator record; the power index is
+			 * a separate structure maintained by SetValidatorByPowerIndex and
+			 * DeleteValidatorByPowerIndex. Setting Jailed without touching it
+			 * left a jailed validator sitting in the power store, and
+			 * ApplyAndReturnValidatorSetUpdates below walks that store and
+			 * refuses outright - "should never retrieve a jailed validator from
+			 * the power store". Excluding any active validator inside
+			 * MaxValidators therefore killed the export rather than producing
+			 * one.
+			 */
+			if err := app.StakingKeeper.DeleteValidatorByPowerIndex(ctx, validator); err != nil {
+				return fmt.Errorf("removing jailed validator %s from the power index: %w", addr, err)
+			}
 			validator.Jailed = true
 		}
 
-		app.StakingKeeper.SetValidator(ctx, validator)
+		if err := app.StakingKeeper.SetValidator(ctx, validator); err != nil {
+			return fmt.Errorf("storing validator %s: %w", addr, err)
+		}
 		counter++
 	}
 
 	if err := iter.Close(); err != nil {
-		app.Logger().Error("error while closing the key-value store reverse prefix iterator: ", err)
-		return
+		return fmt.Errorf("closing the validator reverse prefix iterator: %w", err)
 	}
 
-	_, err = app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
-	if err != nil {
-		log.Fatal(err)
+	if _, err = app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx); err != nil {
+		return fmt.Errorf("applying validator set updates: %w", err)
 	}
 
 	/* Handle slashing state. */
@@ -232,4 +289,33 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 		},
 	)
 
+	return nil
+}
+
+/* buildJailAllowlist turns the operator's --jail-allowed-addrs into a set the
+ * validator loop can look addresses up in.
+ *
+ * Keyed by the decoded address rather than by the text that arrived. Bech32 is
+ * case-insensitive: an all-uppercase address decodes fine and re-encodes
+ * lowercase, and the lookup is against addr.String() on an address rebuilt from
+ * validator-key bytes, which is always the canonical lowercase form. Keying by
+ * the raw text meant an uppercase entry validated, stored itself under a key
+ * nothing would ever match, and jailed the very validator it was written to
+ * protect - silently, because the entry was valid.
+ *
+ * One identity, more than one spelling; decide on the decoded value, never on
+ * the text.
+ */
+func buildJailAllowlist(jailAllowedAddrs []string) (map[string]bool, error) {
+	allowed := make(map[string]bool, len(jailAllowedAddrs))
+
+	for _, addr := range jailAllowedAddrs {
+		parsed, err := sdk.ValAddressFromBech32(addr)
+		if err != nil {
+			return nil, fmt.Errorf("jail allowlist address %q: %w", addr, err)
+		}
+		allowed[parsed.String()] = true
+	}
+
+	return allowed, nil
 }

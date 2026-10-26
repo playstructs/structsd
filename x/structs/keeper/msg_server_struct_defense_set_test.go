@@ -226,3 +226,69 @@ func TestMsgStructDefenseSetCommandShipNotRequired(t *testing.T) {
 	require.NoError(t, err, "defense set should succeed with the command ship offline")
 	require.NotNil(t, resp)
 }
+
+/* TestMsgStructDefenseSetRejectsSelfDefense is the registration half of the
+ * preemptive-counter regression.
+ *
+ * Nothing refused a struct naming itself: IsProtecting compares locations and a
+ * struct is trivially co-located with itself. The damage is in the resolution
+ * order. StructAttack runs defender counters, then the volley, then the target's
+ * own counter - a target counters only after surviving the shots. A
+ * self-registered target is picked up in the first pass instead, so its counter
+ * lands *before* the volley, and a counter that destroys the attacker voids the
+ * volley entirely, leaving the target untouched. CounterSpent is per-transaction,
+ * so it worked on every attack.
+ */
+func TestMsgStructDefenseSetRejectsSelfDefense(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
+
+	player := testAppendPlayer(k, sdkCtx, types.Player{
+		Creator:        "cosmos1creator",
+		PrimaryAddress: "cosmos1creator",
+	})
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id), uint64(100000))
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, player.Id), uint64(0))
+
+	planet := testAppendPlanet(k, sdkCtx, types.Planet{
+		Creator:   player.Creator,
+		Owner:     player.Id,
+		LandSlots: 4,
+		Land:      []string{"", "", "", ""},
+	})
+	player.PlanetId = planet.Id
+	k.SetPlayer(sdkCtx, player)
+
+	k.SetStructType(sdkCtx, types.StructType{
+		Id:                 1,
+		Type:               "Defender",
+		Category:           types.ObjectType_fleet,
+		DefendChangeCharge: 10,
+		PossibleAmbit:      1 << uint64(types.Ambit_land),
+		CanDefend:          true,
+	})
+
+	structure := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator:      player.Creator,
+		Owner:        player.Id,
+		Type:         1,
+		LocationId:   planet.Id,
+		LocationType: types.ObjectType_planet,
+	})
+	statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, statusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, statusAttrId, uint64(types.StructStateOnline))
+
+	_, err := ms.StructDefenseSet(wctx, &types.MsgStructDefenseSet{
+		Creator:           player.Creator,
+		DefenderStructId:  structure.Id,
+		ProtectedStructId: structure.Id,
+	})
+	require.Error(t, err, "a struct must not be assignable as its own defender")
+	require.ErrorContains(t, err, "its own defender")
+
+	require.Empty(t, k.GetAllStructDefender(sdkCtx, structure.Id),
+		"a refused registration must not have been written")
+}

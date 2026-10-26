@@ -24,7 +24,11 @@ func (k Keeper) StructTypeAll(goCtx context.Context, req *types.QueryAllStructTy
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	structTypeStore := prefix.NewStore(store, types.KeyPrefix(types.StructTypeKey))
 
-	pageRes, err := query.Paginate(structTypeStore, req.Pagination, func(key []byte, value []byte) error {
+	pagination, err := boundedPagination(req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+	pageRes, err := query.Paginate(structTypeStore, pagination, func(key []byte, value []byte) error {
 		var structType types.StructType
 		if err := k.cdc.Unmarshal(value, &structType); err != nil {
 			return err

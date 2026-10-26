@@ -21,12 +21,23 @@ func (provider *Provider) SetSubstationId(substationId string) error {
 }
 
 func (provider *Provider) SetRate(rate sdk.Coin) error {
-    if rate.Denom == "" {
-        return NewParameterValidationError("denom", 0, "blank_denom")
+    if err := ValidateProviderRate(rate); err != nil {
+        return err
     }
     provider.Rate = rate
 
 	return nil
+}
+
+// ValidateProviderRate also protects imported and previously stored offerings.
+// CLI coin parsing is not transaction validation: signed protobuf messages can
+// contain negative amounts or malformed denominations. Zero remains a valid
+// rate for a free offering.
+func ValidateProviderRate(rate sdk.Coin) error {
+    if err := rate.Validate(); err != nil {
+        return NewParameterValidationError("rate", 0, "invalid_coin: " + err.Error())
+    }
+    return nil
 }
 
 func (provider *Provider) SetCapacityRange(minimum uint64, maximum uint64) error {

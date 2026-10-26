@@ -46,13 +46,22 @@ func (cc *CurrentContext) GenesisImportPermission(permissionId []byte, value typ
 	}
 }
 
+/* SetPermissions writes a permission record, or removes it when nothing is left.
+ *
+ * A missing key already reads as Permissionless, so a stored zero says exactly
+ * what an absent row says while costing eight bytes of consensus state forever.
+ * Writing one is therefore never right, and it was the shape that made a
+ * no-op revoke a way to grow the store: the value did not change, the cache was
+ * marked Changed anyway, and Commit put zeroes on disk under a key nobody had
+ * written.
+ */
 func (cc *CurrentContext) SetPermissions(permissionId []byte, value types.Permission) {
 	cc.permissions[string(permissionId)] = &PermissionsCache{
 		CC:           cc,
 		PermissionId: permissionId,
 		Value:        value,
 		Loaded:       true,
-		Deleted:      false,
+		Deleted:      value == types.Permissionless,
 		Changed:      true,
 	}
 }
@@ -68,14 +77,37 @@ func (cc *CurrentContext) ClearPermissions(permissionId []byte) {
 	}
 }
 
-func (cc *CurrentContext) ClearPermissionsForObject(objectId string) {
-	deletedKeys := cc.k.ClearPermissionByObject(cc.ctx, objectId)
+// Block hooks share the existing cleanup worker's budget instead of multiplying
+// a per-object first pass by every expiry/cascade deletion in the block. Carry
+// this through the SDK context so nested CurrentContexts inherit the policy.
+type deferPermissionCleanupKey struct{}
 
-	for _, deleted := range deletedKeys {
-		delete(cc.permissions, deleted)
+/* ClearPermissionsForObject removes what a destroyed object had granted, up to
+ * one pass' worth, and queues the object if anything is left. In block hooks all
+ * rows go through the shared cleanup worker, with no per-object first pass.
+ *
+ * The row count is chosen by whoever owned the object, and agreement expiry
+ * reaches this from the EndBlocker where nothing bounds it. What the pass does
+ * not reach stays on disk and inert - a permission is only consulted once its
+ * object has been loaded, and a destroyed object cannot be - so the remainder is
+ * garbage rather than authority, and the queue collects it over later blocks.
+ *
+ * The cache is evicted by prefix rather than from the list of rows actually
+ * deleted. That is not an optimisation: a cache entry still marked Changed would
+ * be written back at CommitAll, so eviction has to cover everything for this
+ * object whether this pass deleted its row or not.
+ */
+func (cc *CurrentContext) ClearPermissionsForObject(objectId string) {
+	if objectId == "" {
+		return
 	}
 
-	cc.k.ClearPermissionGuildRankByObject(cc.ctx, objectId)
+	permissionPrefix := objectId + "@"
+	for id := range cc.permissions {
+		if strings.HasPrefix(id, permissionPrefix) {
+			delete(cc.permissions, id)
+		}
+	}
 
 	pfx := objectId + "/"
 	for id := range cc.guildRankRegisters {
@@ -83,6 +115,21 @@ func (cc *CurrentContext) ClearPermissionsForObject(objectId string) {
 			delete(cc.guildRankRegisters, id)
 		}
 	}
+
+	if deferred, _ := cc.ctx.Value(deferPermissionCleanupKey{}).(bool); deferred {
+		cc.k.EnqueuePermissionCleanup(cc.ctx, objectId)
+		return
+	}
+
+	_, morePermissions := cc.k.ClearPermissionByObject(cc.ctx, objectId, types.PermissionCleanupBudget)
+	moreGuildRanks := cc.k.ClearPermissionGuildRankByObject(cc.ctx, objectId, types.PermissionCleanupBudget)
+
+	if morePermissions || moreGuildRanks {
+		cc.k.EnqueuePermissionCleanup(cc.ctx, objectId)
+		return
+	}
+
+	cc.k.ClearPermissionCleanup(cc.ctx, objectId)
 }
 
 func (cc *CurrentContext) PermissionAdd(permissionId []byte, flag types.Permission) types.Permission {
@@ -92,9 +139,22 @@ func (cc *CurrentContext) PermissionAdd(permissionId []byte, flag types.Permissi
 	return newFlags
 }
 
+/* PermissionRemove clears bits from a permission record.
+ *
+ * A revoke that removes nothing writes nothing. The bits being cleared are
+ * chosen by the transaction and so is the record they are cleared from, so
+ * without this a caller could name a record that does not exist, revoke a bit it
+ * never had, and have the result persisted - a permanent row per message, at no
+ * fee, saying nothing.
+ */
 func (cc *CurrentContext) PermissionRemove(permissionId []byte, flag types.Permission) types.Permission {
 	currentFlags := cc.GetPermissions(permissionId)
 	newFlags := currentFlags &^ flag
+
+	if newFlags == currentFlags {
+		return newFlags
+	}
+
 	cc.SetPermissions(permissionId, newFlags)
 	return newFlags
 }
@@ -213,7 +273,80 @@ func (cc *CurrentContext) GetPermissionedObject(objectId string) PermissionedObj
 	}
 }
 
+/* requirePrimaryAddressKeepsFullAccess refuses a permission write that would
+ * leave a player's current primary address holding less than PermAll.
+ *
+ * The primary address is the recovery address, and every route out of a
+ * downgrade runs back through it: PlayerUpdatePrimaryAddress needs PermAll to
+ * rotate to another key, and a grant can only hand over bits the granting
+ * address itself holds, so a primary below PermAll cannot restore itself and
+ * cannot authorize anything else to. The state is unrecoverable rather than
+ * merely reduced, and reaching it takes nothing more than the player's own
+ * PermAll key acting on itself - the authorization check passes precisely
+ * because they still have the rights they are about to destroy.
+ *
+ * This blocks nothing anyone wants. A player who wants a narrower everyday key
+ * rotates the primary to the address they intend to keep whole first, then
+ * downgrades the old one, which this leaves alone.
+ */
+func requirePrimaryAddressKeepsFullAccess(targetPlayer *PlayerCache, address string, resulting types.Permission) error {
+	if address != targetPlayer.GetPrimaryAddress() {
+		return nil
+	}
+
+	if resulting&types.PermAll == types.PermAll {
+		return nil
+	}
+
+	return types.NewAddressValidationError(address, "primary_full_access_required")
+}
+
+/* SignerPermissionCheck is PermissionCheck's Layer 1 standing alone: the key
+ * that signed must itself hold the permission, with no question of what standing
+ * its player has on any object.
+ *
+ * It exists for the policy tiers that deliberately waive the object-level grant.
+ * A guild at bypass level `member` says any member may act without holding a
+ * grant on the guild - but waiving the grant must not also waive the ceiling.
+ * The two are orthogonal: one is about a player's standing in the guild, the
+ * other about how far a particular key of that player may reach. Coupling them
+ * meant relaxing a guild's join policy silently un-scoped every delegated key
+ * its members hold, and the `permissioned` tier next door - which goes through
+ * PermissionCheck - kept the ceiling, so the same guild got two different
+ * answers about the same key depending on an unrelated setting.
+ */
+func (cc *CurrentContext) SignerPermissionCheck(permission types.Permission) error {
+	wanted := types.PermissionName(permission)
+
+	if permission == types.Permissionless {
+		return types.NewPermissionError("address", cc.signerAddress, "", "", uint64(permission), wanted)
+	}
+
+	// An empty signer means no address was ever authenticated for this
+	// operation, so there is nothing to check against and the only safe answer
+	// is no. Same reasoning as PermissionCheck.
+	if cc.signerAddress == "" {
+		return types.NewPermissionError("address", "", "", "", uint64(permission), wanted)
+	}
+
+	if !cc.PermissionHasAll(GetAddressPermissionIDBytes(cc.signerAddress), permission) {
+		return types.NewPermissionError("address", cc.signerAddress, "", "", uint64(permission), wanted)
+	}
+
+	return nil
+}
+
 func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlayer *PlayerCache, permission types.Permission) error {
+	return cc.permissionCheck(object, activePlayer, permission, permission&types.PermAdmin == 0)
+}
+
+// PermissionAdministrationCheck deliberately excludes rank-derived standing.
+// Operational access cannot be converted into permanent grants or guild control.
+func (cc *CurrentContext) PermissionAdministrationCheck(object PermissionedObject, activePlayer *PlayerCache) error {
+	return cc.permissionCheck(object, activePlayer, types.PermAdmin, false)
+}
+
+func (cc *CurrentContext) permissionCheck(object PermissionedObject, activePlayer *PlayerCache, permission types.Permission, allowRank bool) error {
 
 	// The Action carries the bit that was actually wanted rather than a fixed
 	// "administrate". Every denial below used to name administrate whatever it was
@@ -253,12 +386,23 @@ func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlaye
 		return nil
 	}
 
+	// Guild assets follow the guild's current owner, including an owner who
+	// is not a member. Resolve through this context so an ownership change
+	// takes effect immediately; never copy the owner's grants onto each asset.
+	// This shortcut remains below the signing key's hard permission ceiling.
+	if kind, _, err := types.ParseAssetOwnerID(object.GetOwnerId()); err == nil && kind == types.ObjectType_guild {
+		guild := cc.GetGuild(object.GetOwnerId())
+		if err := guild.CheckGuild(); err == nil && guild.GetOwnerId() == activePlayer.ID() {
+			return nil
+		}
+	}
+
 	if cc.PermissionHasAll(GetObjectPermissionIDBytes(object.ID(), activePlayer.GetPlayerId()), permission) {
 		return nil
 	}
 
 	// rank(object / activePlayer.GetGuild() / permission) => activePlayer.GetGuildRank(); only grant if a record exists
-	if activePlayer.GetGuildId() != "" {
+	if allowRank && activePlayer.GetGuildId() != "" {
 		worstAllowedRank, exists := cc.GetPermissionsGuildRank(object, activePlayer.GetGuild(), permission)
 		if exists && worstAllowedRank > 0 && worstAllowedRank >= activePlayer.GetGuildRank() {
 			return nil
@@ -271,6 +415,18 @@ func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlaye
 func (cc *CurrentContext) UGCPermissionCheck(object PermissionedObject, activePlayer *PlayerCache) error {
 	if err := cc.PermissionCheck(object, activePlayer, types.PermUpdate); err == nil {
 		return nil
+	}
+
+	// Guild assets use their owning guild's cosmetic policy, independent of
+	// which guild the current human owner happens to belong to.
+	if object != nil {
+		if kind, _, err := types.ParseAssetOwnerID(object.GetOwnerId()); err == nil && kind == types.ObjectType_guild {
+			guild := cc.GetGuild(object.GetOwnerId())
+			if err := guild.CheckGuild(); err != nil {
+				return err
+			}
+			return cc.PermissionCheck(guild, activePlayer, types.PermGuildUGCUpdate)
+		}
 	}
 
 	owner := object.GetOwner()

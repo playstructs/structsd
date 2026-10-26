@@ -49,7 +49,9 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 		return emptyResponse, types.NewStructStateError(msg.StructId, "offline", "online", "generator_infuse")
 	}
 
-	if structure.GetStructType().PowerGeneration == types.TechPowerGeneration_noPowerGeneration {
+	switch structure.GetStructType().PowerGeneration {
+	case types.TechPowerGeneration_smallGenerator, types.TechPowerGeneration_mediumGenerator, types.TechPowerGeneration_largeGenerator:
+	default:
 		return emptyResponse, types.NewStructCapabilityError(msg.StructId, "generation")
 	}
 
@@ -62,36 +64,85 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 		return emptyResponse, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "invalid_amount")
 	}
 
-	if len(infusionAmount) < 1 {
+	/* Exactly one coin, and only then look at what it is.
+	 *
+	 * msg.InfuseAmount is a free-form string and ParseCoinsNormalized happily
+	 * accepts a comma-separated list, which it then sorts by denom. Checking
+	 * infusionAmount[0] and moving the whole slice therefore validated one coin
+	 * and burned all of them: "1ualpha,1000000uguild.1-2" sorts ualpha first,
+	 * passes, and destroys the guild tokens. Only the first coin was ever
+	 * credited as fuel, so the rest were burned for nothing.
+	 *
+	 * That crossed an authorization boundary as well as an accounting one. The
+	 * only permission this handler asks for is PermTokenInfuse, and it spends the
+	 * player's vault account - so a delegate scoped to infusion alone could
+	 * destroy asset classes that PermGuildTokenBurn exists to protect.
+	 */
+	if len(infusionAmount) != 1 {
 		return emptyResponse, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "invalid_amount")
 	}
 
-	if infusionAmount[0].Denom == "ualpha" {
-		// All good
-	} else if infusionAmount[0].Denom == "alpha" {
-		alphaUnitConversionInt := math.NewIntFromUint64(uint64(1000000))
-		infusionAmount[0].Amount = infusionAmount[0].Amount.Mul(alphaUnitConversionInt)
-		infusionAmount[0].Denom = "ualpha"
-	} else {
+	var fuelAmount math.Int
+	switch infusionAmount[0].Denom {
+	case "ualpha":
+		fuelAmount = infusionAmount[0].Amount
+	case "alpha":
+		fuelAmount = infusionAmount[0].Amount.Mul(math.NewIntFromUint64(uint64(1000000)))
+	default:
 		return emptyResponse, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "invalid_denom").WithDenom(infusionAmount[0].Denom)
 	}
 
-	// Transfer the refined Alpha from the player
-	playerAcc, _ := sdk.AccAddressFromBech32(callingPlayer.GetPrimaryAddress())
-	sendError := k.bankKeeper.SendCoinsFromAccountToModule(ctx, playerAcc, types.ModuleName, infusionAmount)
+	// Rebuilt rather than reused: what moves has to be what was checked, not the
+	// parsed value the message asked for.
+	fuelCoins := sdk.NewCoins(sdk.NewCoin("ualpha", fuelAmount))
+
+	// Provision through the shared context before bank movement or infusion
+	// ownership resolution. The SDK transaction cache rolls this back on failure.
+	vaults, vaultErr := cc.EnsureVaults(callingPlayer.ID())
+	if vaultErr != nil {
+		return emptyResponse, vaultErr
+	}
+	playerAcc := vaults[0]
+	// Reject an unrepresentable total before moving or burning coins. A
+	// poisoned row would otherwise prevent the bounded worker from completing.
+	previous := cc.GetInfusion(msg.StructId, playerAcc.String())
+	previousFuel := uint64(0)
+	if previous.CheckInfusion() == nil {
+		if err := previous.GetInfusion().ValidateGeneratorPower(); err != nil {
+			return emptyResponse, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "invalid_existing_power").WithDetails(err.Error())
+		}
+		previousFuel = previous.GetFuel()
+	}
+	if !fuelAmount.IsUint64() || fuelAmount.Uint64() > ^uint64(0)-previousFuel {
+		return emptyResponse, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "fuel_overflow")
+	}
+	newFuel := previousFuel + fuelAmount.Uint64()
+	rate := structure.GetStructType().GeneratingRate
+	if rate != 0 && newFuel > ^uint64(0)/rate {
+		return emptyResponse, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "power_overflow")
+	}
+	sendError := k.bankKeeper.SendCoinsFromAccountToModule(ctx, playerAcc, types.ModuleName, fuelCoins)
 
 	if sendError != nil {
 		return emptyResponse, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "transfer_failed").WithDetails(sendError.Error())
 	}
-	k.bankKeeper.BurnCoins(ctx, types.ModuleName, infusionAmount)
 
-	infusion := cc.UpsertInfusion(types.ObjectType_struct, structure.GetStructId(), callingPlayer.GetPrimaryAddress(), callingPlayer.GetPlayerId())
+	// Propagated: the coins are in the module account by now, so a silent burn
+	// failure would leave them there with nothing crediting them back.
+	if burnError := k.bankKeeper.BurnCoins(ctx, types.ModuleName, fuelCoins); burnError != nil {
+		return emptyResponse, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "burn_failed").WithDetails(burnError.Error())
+	}
+
+	infusion := cc.UpsertInfusion(types.ObjectType_struct, structure.GetStructId(), playerAcc.String(), callingPlayer.GetPlayerId())
 
 	infusion.SetRatio(structure.GetStructType().GeneratingRate)
 	infusion.SetCommission(math.LegacyZeroDec())
-	infusion.AddFuel(infusionAmount[0].Amount.Uint64())
+	infusion.AddFuel(fuelAmount.Uint64())
+	if err := infusion.SetGeneratorPowerEnabled(true); err != nil {
+		return emptyResponse, err
+	}
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaInfuse{&types.EventAlphaInfuseDetail{PlayerId: callingPlayer.GetPlayerId(), PrimaryAddress: callingPlayer.GetPrimaryAddress(), Amount: infusionAmount[0].Amount.Uint64()}})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaInfuse{&types.EventAlphaInfuseDetail{PlayerId: callingPlayer.GetPlayerId(), PrimaryAddress: callingPlayer.GetPrimaryAddress(), Amount: fuelAmount.Uint64(), VaultAddress: playerAcc.String()}})
 
 	cc.CommitAll()
 	return &types.MsgStructGeneratorStatusResponse{}, nil

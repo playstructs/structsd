@@ -170,7 +170,7 @@ func bankRedeemFixture(t *testing.T) (keeperlib.Keeper, sdk.Context, testGuildSe
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	gs := testCreateGuild(k, ctx)
-	playerAcc, err := sdk.AccAddressFromBech32(gs.GuildOwner.Creator)
+	playerAcc, err := types.VaultAddress(gs.GuildOwner.Id)
 	require.NoError(t, err)
 
 	return k, ctx, gs, playerAcc

@@ -7,123 +7,73 @@ import (
 	"structs/x/structs/types"
 )
 
-/* GuildCreate founds a guild, either by solving the chain-global charter
- * proof-of-work or by spending a reactor's one-time entitlement.
- *
- * The signer is the solver; the founder owns the guild and is the subject of
- * membership, substation, reactor, and ownership checks.
- */
+// GuildCreate is the single paid founding path. The signing player becomes the
+// owner; legacy charter proof and third-party consent fields cannot authorize it.
 func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate) (*types.MsgGuildCreateResponse, error) {
-	emptyResponse := &types.MsgGuildCreateResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-
-	// Add an Active Address record to the
-	// indexer for UI requirements
-	k.AddressEmitActivity(ctx, msg.Creator)
-
-	solver, playerErr := cc.GetSigningPlayer(msg.Creator)
-	if playerErr != nil {
-		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_create")
+	founder, err := cc.GetSigningPlayer(msg.Creator)
+	if err != nil {
+		return nil, err
 	}
-
-	// The founder is message-supplied and must resolve to existing state.
-	founder := solver
-	if msg.FounderPlayerId != "" && msg.FounderPlayerId != solver.GetPlayerId() {
-		var founderErr error
-		founder, founderErr = cc.GetExistingPlayer(msg.FounderPlayerId)
-		if founderErr != nil {
-			return emptyResponse, founderErr
-		}
+	if err := cc.PermissionCheck(founder, founder, types.PermPlay|types.PermTokenTransfer); err != nil {
+		return nil, err
 	}
-
+	if msg.Proof != "" || msg.Nonce != "" || msg.Address != "" || msg.ProofPubKey != "" || msg.ProofSignature != "" || (msg.FounderPlayerId != "" && msg.FounderPlayerId != founder.ID()) {
+		return nil, types.NewParameterValidationError("guild_create", 0, "legacy_charter_fields_not_supported")
+	}
 	reactor := cc.GetReactor(msg.ReactorId)
-	if reactor.CheckReactor() != nil {
-		return emptyResponse, types.NewReactorError("guild_create", "required").WithAddress(msg.Creator, "validator")
+	if err := reactor.CheckReactor(); err != nil {
+		return nil, types.NewObjectNotFoundError("reactor", msg.ReactorId)
 	}
-
-	// Founding leaves the current guild; an owner must transfer it first.
-	oldGuild, membershipErr := guildCharterLeavable(cc, founder)
-	if membershipErr != nil {
-		return emptyResponse, membershipErr
+	validatorAddress, err := sdk.ValAddressFromBech32(reactor.GetReactor().Validator)
+	if err != nil {
+		return nil, types.NewObjectNotFoundError("validator", reactor.GetReactor().Validator)
 	}
-
-	// Substation rights belong to the founder, not a third-party solver.
+	validator, err := k.stakingKeeper.GetValidator(ctx, validatorAddress)
+	if err != nil {
+		return nil, types.NewObjectNotFoundError("validator", validatorAddress.String())
+	}
+	if validator.IsJailed() {
+		return nil, types.NewReactorError("guild_create", "validator_jailed")
+	}
+	oldGuild, err := guildCharterLeavable(cc, founder)
+	if err != nil {
+		return nil, err
+	}
+	if founder.GetSubstationId() != "" {
+		if _, err := cc.GetExistingSubstation(founder.GetSubstationId()); err != nil {
+			return nil, err
+		}
+	}
 	if msg.EntrySubstationId != "" {
-		substation := cc.GetSubstation(msg.EntrySubstationId)
-		if substation.CheckSubstation() != nil {
-			return emptyResponse, types.NewObjectNotFoundError("substation", msg.EntrySubstationId)
+		substation, err := cc.GetExistingSubstation(msg.EntrySubstationId)
+		if err != nil {
+			return nil, err
 		}
-
-		substationPermissionErr := substation.CanManageConnectionsBy(founder)
-		if substationPermissionErr != nil {
-			return emptyResponse, substationPermissionErr
+		if err := substation.CanManageConnectionsBy(founder); err != nil {
+			return nil, err
 		}
 	}
-
-	anchor := k.CharterAnchor(ctx)
-
-	// Only proof-based founding moves the anchor; entitlements do not invalidate
-	// work already in progress.
-	provenByWork := msg.Proof != "" || msg.Nonce != ""
-
-	if founder.GetPlayerId() != solver.GetPlayerId() {
-		// Third-party consent is single-use only when the proof path moves the
-		// anchor, so it cannot authorize the entitlement path.
-		if !provenByWork {
-			return emptyResponse, types.NewReactorError("guild_charter", "consent_needs_proof").
-				WithReactor(reactor.GetReactorId())
-		}
-
-		if consentErr := k.verifyGuildCharterConsent(cc, msg, solver, founder, anchor); consentErr != nil {
-			return emptyResponse, consentErr
-		}
+	// Reject before AppendGuild allocates a guild id: FundCreation repeats
+	// these checks, but by then the counter has advanced.
+	vault, err := cc.GetVault(founder.ID())
+	if err != nil {
+		return nil, err
 	}
-
-	charterSolverId := ""
-	achievedDifficulty := uint64(0)
-
-	if provenByWork {
-		// The proof binds no reactor, so the reactor is gated on its own account.
-		// The entitlement path below is strictly stronger and checks for itself.
-		if liveErr := k.guildCharterReactorLive(ctx, reactor); liveErr != nil {
-			return emptyResponse, liveErr
-		}
-
-		hashInput := types.GuildCharterWorkInput(ctx.ChainID(), solver.GetPlayerId(), founder.GetPlayerId(), anchor, msg.Nonce)
-
-		var valid bool
-		valid, achievedDifficulty = types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, k.CharterAge(ctx), k.GetParams(ctx).CharterDifficultyRange())
-		if !valid {
-			return emptyResponse, types.NewWorkFailureError(types.GuildCharterErrorOperation, solver.GetPlayerId(), hashInput)
-		}
-
-		charterSolverId = solver.GetPlayerId()
-	} else if eligibilityErr := k.guildCharterReactorEligible(ctx, reactor, founder); eligibilityErr != nil {
-		return emptyResponse, eligibilityErr
+	if k.bankKeeper.SpendableCoin(ctx, vault.Address(), "ualpha").Amount.LT(sdk.NewInt64Coin("ualpha", GuildCreationCostAlpha).Amount) {
+		return nil, types.NewPlayerAffordabilityError(founder.ID(), "guild_create", "2000000ualpha")
 	}
-
-	guild := k.AppendGuild(ctx, msg.Endpoint, msg.EntrySubstationId, reactor.GetReactor(), founder.GetPlayer(), charterSolverId)
-
+	if err := k.requireSendableAmount(ctx, sdk.NewCoins(sdk.NewInt64Coin("ualpha", GuildCreationCostAlpha))); err != nil {
+		return nil, err
+	}
+	guild := k.AppendGuild(ctx, msg.Endpoint, msg.EntrySubstationId, reactor.GetReactor(), founder.GetPlayer(), "")
+	if err := cc.GetGuild(guild.Id).FundCreation(founder); err != nil {
+		return nil, err
+	}
 	guildCharterLeaveAndJoin(cc, founder, oldGuild, guild.Id, msg.EntrySubstationId)
-
-	if provenByWork {
-		k.SetGuildCharterAnchor(ctx, uint64(ctx.BlockHeight()))
-
-		_ = ctx.EventManager().EmitTypedEvent(&types.EventHashSuccess{EventHashSuccessDetail: &types.EventHashSuccessDetail{
-			CallerAddress: msg.Creator,
-			Category:      types.GuildCharterErrorOperation,
-			Difficulty:    achievedDifficulty,
-			ObjectId:      guild.Id,
-		}})
-	}
-
-	// GuildId also marks the reactor entitlement spent, so binding it requires
-	// the founder's reactor permission.
-	if reactor.GetReactor().GuildId == "" && reactor.CanCreateGuildBy(founder) == nil {
-		reactor.SetGuild(guild.Id)
-	}
-
+	// A guild's preference does not claim, control or consume its primary reactor.
+	k.AddressEmitActivity(ctx, msg.Creator)
 	cc.CommitAll()
 	return &types.MsgGuildCreateResponse{GuildId: guild.Id}, nil
 }

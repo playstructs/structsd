@@ -20,6 +20,9 @@ func (cc *CurrentContext) GetGuild(guildId string) *GuildCache {
 }
 
 func (cc *CurrentContext) GenesisImportGuild(guild types.Guild) {
+	if err := types.ValidateRankPurchaseSettings(guild.EntryRank, guild.RankPurchaseMinimumRank, guild.JoinByRankPurchaseEnabled); err != nil {
+		panic(err)
+	}
 	// State exported by a pre-v0.21.0 binary carries no bank fee fields, so the
 	// non-nullable LegacyDec members decode as nil and would panic when the
 	// cache commits (marshal). Normalize to zero on import; the upgrade

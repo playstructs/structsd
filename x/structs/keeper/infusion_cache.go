@@ -17,6 +17,9 @@ type InfusionCache struct {
     Deleted        bool
     InfusionLoaded bool
     Infusion       types.Infusion
+    originalOwnerId string
+    originalOwnerKnown bool
+    cachedOwnerId string
 
     DestinationFuelAttributeId     string
     DestinationCapacityAttributeId string
@@ -29,10 +32,21 @@ type InfusionCache struct {
 func (cache *InfusionCache) Commit() {
     if cache.Changed {
         if cache.Deleted {
-            cache.CC.k.RemoveInfusion(cache.CC.ctx, cache.DestinationId, cache.Address)
+            if cache.originalOwnerKnown {
+                cache.CC.k.removeInfusionWithOwner(cache.CC.ctx, cache.DestinationId, cache.Address, cache.originalOwnerId)
+            } else {
+                cache.CC.k.RemoveInfusion(cache.CC.ctx, cache.DestinationId, cache.Address)
+            }
         } else {
-            cache.CC.k.SetInfusion(cache.CC.ctx, cache.Infusion)
+            if cache.originalOwnerKnown {
+                cache.CC.k.setInfusionWithPreviousOwner(cache.CC.ctx, cache.Infusion, cache.originalOwnerId)
+            } else {
+                cache.CC.k.SetInfusion(cache.CC.ctx, cache.Infusion)
+            }
         }
+        cache.originalOwnerId = cache.Infusion.AssetOwnerID()
+        if cache.Deleted { cache.originalOwnerId = "" }
+        cache.originalOwnerKnown = true
         cache.Changed = false
     }
 
@@ -62,6 +76,9 @@ func (cache *InfusionCache) LoadInfusion() bool {
     cache.Infusion, cache.InfusionLoaded = cache.CC.k.GetInfusion(
         cache.CC.ctx, cache.DestinationId, cache.Address,
     )
+    cache.originalOwnerId = cache.Infusion.AssetOwnerID()
+    cache.originalOwnerKnown = true
+    cache.indexCachedOwner()
 
     return cache.InfusionLoaded
 }
@@ -71,10 +88,8 @@ func (cache *InfusionCache) LoadInfusion() bool {
 // =========================================================================
 
 func (cache *InfusionCache) GetOwnerId() string {
-    if !cache.InfusionLoaded {
-        return GetObjectID(types.ObjectType_player, cache.CC.GetPlayerIndexFromAddress(cache.Address))
-    }
-    return cache.Infusion.PlayerId
+    if !cache.InfusionLoaded { cache.LoadInfusion() }
+    return cache.Infusion.AssetOwnerID()
 }
 
 func (cache *InfusionCache) CheckInfusion() error  {
@@ -92,8 +107,8 @@ func (cache *InfusionCache) GetPower() uint64             { if !cache.InfusionLo
 func (cache *InfusionCache) GetFuel() uint64              { if !cache.InfusionLoaded { cache.LoadInfusion() }; return cache.Infusion.Fuel }
 func (cache *InfusionCache) GetDefusing() uint64          { if !cache.InfusionLoaded { cache.LoadInfusion() }; return cache.Infusion.Defusing }
 
-func (cache *InfusionCache) GetOwner() *PlayerCache {
-    return cache.CC.GetPlayer(cache.GetOwnerId())
+func (cache *InfusionCache) GetOwner() (AssetOwner, error) {
+    return cache.CC.GetExistingAssetOwner(cache.GetOwnerId())
 }
 
 // IsEmpty reports whether nothing of value remains in the infusion, making it
@@ -159,6 +174,13 @@ func (cache *InfusionCache) applyGridDeltas(oldFuel, oldDestCap, oldPlayerCap ui
 // the auto-resize hook and the cascade the losing player is owed.
 func (cache *InfusionCache) applyPlayerCapacityDelta(playerId string, oldPlayerCap uint64, newPlayerCap uint64) {
     if oldPlayerCap == newPlayerCap {
+        return
+    }
+
+    if cache.CC.k.ReactorDiversityReady(cache.CC.ctx) {
+        reactor := ""
+        if cache.Infusion.DestinationType == types.ObjectType_reactor { reactor = cache.DestinationId }
+        cache.CC.ApplyOwnerInfusionCapacityDelta(playerId, reactor, oldPlayerCap, newPlayerCap)
         return
     }
 
@@ -265,10 +287,29 @@ func (cache *InfusionCache) SetFuelAndCommission(fuel uint64, commission math.Le
 // commission capacity are keyed by destination, not by player, so they are
 // deliberately untouched here.
 func (cache *InfusionCache) SetPlayerId(playerId string) {
+    cache.setInfusionOwner(playerId, "")
+}
+
+// SetOwnerId resolves an existing player or guild before moving its capacity.
+func (cache *InfusionCache) SetOwnerId(ownerId string) error {
+    if err := cache.CheckInfusion(); err != nil { return err }
+    if _, err := cache.CC.GetExistingAssetOwner(ownerId); err != nil { return err }
+    kind, _, _ := types.ParseAssetOwnerID(ownerId)
+    if kind == types.ObjectType_player {
+        cache.setInfusionOwner(ownerId, "")
+    } else {
+        cache.setInfusionOwner("", ownerId)
+    }
+    return nil
+}
+
+func (cache *InfusionCache) setInfusionOwner(playerId, ownerId string) {
     if !cache.InfusionLoaded { cache.LoadInfusion() }
 
-    previousPlayerId := cache.Infusion.PlayerId
-    if previousPlayerId == playerId {
+    previousPlayerId := cache.Infusion.AssetOwnerID()
+    nextOwnerId := ownerId
+    if nextOwnerId == "" { nextOwnerId = playerId }
+    if previousPlayerId == nextOwnerId {
         return
     }
 
@@ -281,9 +322,11 @@ func (cache *InfusionCache) SetPlayerId(playerId string) {
     }
 
     cache.Infusion.PlayerId = playerId
+    cache.Infusion.OwnerId = ownerId
+    cache.indexCachedOwner()
 
-    if playerId != "" {
-        cache.applyPlayerCapacityDelta(playerId, 0, playerPower)
+    if nextOwnerId != "" {
+        cache.applyPlayerCapacityDelta(nextOwnerId, 0, playerPower)
     }
 
     cache.Changed = true
@@ -313,6 +356,7 @@ func (cache *InfusionCache) Destroy() {
 
     // Remove the infusion record
     cache.Deleted = true
+    cache.indexCachedOwner()
     cache.Changed = true
 }
 

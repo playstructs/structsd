@@ -20,6 +20,7 @@ import "structs/structs/permission.proto";
 import "structs/structs/player.proto";
 import "structs/structs/planet.proto";
 import "structs/structs/reactor.proto";
+import "structs/structs/reactor_diversity.proto";
 import "structs/structs/provider.proto";
 import "structs/structs/struct.proto";
 import "structs/structs/substation.proto";
@@ -28,6 +29,19 @@ option go_package = "structs/x/structs/types";
 
 // Query defines the gRPC querier service.
 service Query {
+  rpc OwnerReactorDiversity(QueryOwnerReactorDiversityRequest) returns (QueryOwnerReactorDiversityResponse) {
+    option (google.api.http).get = "/structs/owner/{ownerId}/reactor-diversity";
+  }
+  rpc ReactorStakeShare(QueryReactorStakeShareRequest) returns (QueryReactorStakeShareResponse) {
+    option (google.api.http).get = "/structs/reactor/{reactorId}/stake-share";
+  }
+
+
+
+  rpc Vault (QueryVaultRequest) returns (QueryVaultResponse) {
+    option (google.api.http).get = "/structs/vault/{ownerId}";
+  }
+
   rpc GetBlockHeight (QueryBlockHeight) returns (QueryBlockHeightResponse) {
     option (google.api.http).get = "/blockheight";
   }
@@ -59,6 +73,8 @@ service Query {
   rpc Agreement    (QueryGetAgreementRequest) returns (QueryGetAgreementResponse) {
     option (google.api.http).get = "/structs/agreement/{id}";
   }
+
+  // Financial state remains queryable after the live agreement is removed.
 
   rpc AgreementAll (QueryAllAgreementRequest) returns (QueryAllAgreementResponse) {
     option (google.api.http).get = "/structs/agreement";
@@ -349,6 +365,7 @@ message QueryAddressResponse {
   string address          = 1;
   string playerId         = 2;
   uint64 permissions      = 3;
+  uint64 proofNonce       = 4;
 }
 
 message QueryAllAddressResponse {
@@ -359,6 +376,8 @@ message QueryAllAddressResponse {
 message QueryGetAgreementRequest {
   string id = 1;
 }
+
+
 
 message QueryGetAgreementResponse {
   Agreement Agreement = 1 [(gogoproto.nullable) = false];
@@ -793,6 +812,22 @@ message QueryAllSubstationResponse {
 }
 
 
+// Vault balances use the bank module's paginated balance queries at address.
+// A read never creates an account or changes the owner's state.
+message QueryVaultRequest {
+  string ownerId = 1;
+}
+
+message QueryVaultResponse {
+  string ownerId = 1;
+  string address = 2;
+  bool provisioned = 3;
+}
+
+
+
+
+
 message QueryValidateSignatureRequest {
   string address        = 1;
   string message        = 2;
@@ -806,4 +841,39 @@ message QueryValidateSignatureResponse {
   bool addressPubkeyMismatch  = 3;
   bool signatureInvalid       = 4;
   bool valid                  = 5;
+}
+
+message QueryOwnerReactorDiversityRequest { string ownerId = 1; }
+message QueryOwnerReactorDiversityResponse {
+  OwnerReactorDiversity stored = 1;
+  // Exact formula result from current native stake; empty if incomplete.
+  string liveBonus = 2;
+  // Current applied bonus bounded by current live entitlement; reads mint none.
+  uint64 usableBonus = 3;
+  bool livePortfolioComplete = 4;
+  uint64 maxBonusBps = 5;
+  uint64 targetExtraReactors = 6;
+  bool initialized = 7;
+  uint64 storedCapacity = 8;
+  uint64 usablePrimaryCapacity = 9;
+  bool infusionInventoryComplete = 10;
+}
+
+message QueryReactorStakeShareRequest { string reactorId = 1; }
+message QueryReactorStakeShareResponse {
+  string reactorId = 1;
+  string validatorAddress = 2;
+  string validatorTokens = 3;
+  string stakeDenominator = 4;
+  uint64 capBps = 5;
+  bool capActive = 6;
+  // Empty when the cap is inactive or 100%; otherwise a token integer.
+  // External deposits and transfers from unbonded stake enlarge the denominator.
+  string externalDepositHeadroom = 7;
+  // Transfers from bonded stake preserve the denominator.
+  string bondedRedelegationHeadroom = 8;
+  // Commission eligibility remains separate from stake admission.
+  uint64 slashRevision = 9;
+  uint64 reconciledSlashRevision = 10;
+  bool commissionRepairPending = 11;
 }

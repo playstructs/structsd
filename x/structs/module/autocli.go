@@ -13,6 +13,25 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 			Service: modulev1.Query_ServiceDesc.ServiceName,
 			EnhanceCustomCommand: true, // only required if you want to use the custom command
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
+                {
+                    RpcMethod: "OwnerReactorDiversity",
+                    Use: "owner-reactor-diversity [owner-id]",
+                    Short: "Show stored diversity, current live bonus and usable owner capacity",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "ownerId"}},
+                },
+                {
+                    RpcMethod: "ReactorStakeShare",
+                    Use: "reactor-stake-share [reactor-id]",
+                    Short: "Show validator stake share, cap headroom by funding source, and commission repair state",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "reactorId"}},
+                },
+
+				{
+					RpcMethod: "Vault",
+					Use: "vault [owner-id]",
+					Short: "Show a player or guild vault address; query balances through the bank module",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "ownerId"}},
+				},
 				{
                     RpcMethod:      "GetBlockHeight",
                     Use:            "block-height",
@@ -353,8 +372,8 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                 },
                 {
                     RpcMethod:      "AllocationTransfer",
-                    Use:            "allocation-transfer [allocation id] [new controller playerId]",
-                    Short:          "Transfer an Allocation to a different account",
+                    Use:            "allocation-transfer [allocation id] [new controller ownerId]",
+                    Short:          "Transfer Allocation control to a player or guild",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "allocationId"}, {ProtoField: "controller"}},
                 },
                 {
@@ -366,7 +385,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                 {
                      RpcMethod:      "AgreementOpen",
                      Use:            "agreement-open [provider id] [duration] [capacity]",
-                     Short:          "Open an Agreement with an Energy Provider",
+                     Short:          "Open a player- or guild-owned Agreement (optional --owner-id)",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"}, {ProtoField: "duration"}, {ProtoField: "capacity"}},
                 },
                 {
@@ -400,9 +419,35 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "fleetId"}, {ProtoField: "destinationLocationId"}},
                 },
                 {
+                    RpcMethod: "VaultSend",
+                    Use: "vault-send [owner-id] [recipient-owner-id] [amount]",
+                    Short: "Transfer coins between player or guild vaults",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+                        {ProtoField: "ownerId"}, {ProtoField: "recipientOwnerId"}, {ProtoField: "amount"},
+                    },
+                },
+                {
+                    RpcMethod:      "GuildRankPurchase",
+                    Use: "guild-rank-purchase [guild-id] [target-rank] [max-price] [expected-rank]",
+                    Short: "Purchase a better rank using your player vault's guild tokens (amounts in base units)",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"}, {ProtoField: "targetRank"}, {ProtoField: "maxPrice"}, {ProtoField: "expectedRank"}},
+                },
+                {
+                    RpcMethod: "GuildMembershipJoinByRankPurchase",
+                    Use: "guild-membership-join-by-rank-purchase [guild-id] [target-rank] [max-price]",
+                    Short: "Join by purchase when enabled; set --expected-guild-id when leaving another guild",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"}, {ProtoField: "targetRank"}, {ProtoField: "maxPrice"}},
+                },
+                {
+                    RpcMethod: "GuildUpdateRankPurchase",
+                    Use: "guild-update-rank-purchase [guild-id] [base-price] [step-increase] [minimum-rank] [join-by-rank-purchase-enabled]",
+                    Short: "Configure guild rank sales; minimum rank zero disables sales, prices use base token units",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"}, {ProtoField: "basePrice"}, {ProtoField: "stepIncrease"}, {ProtoField: "minimumRank"}, {ProtoField: "joinByRankPurchaseEnabled"}},
+                },
+                {
                     RpcMethod:      "GuildBankMint",
                     Use:            "guild-bank-mint [alpha amount] [token amount]",
-                    Short:          "Mint new Alpha-backed token for a guild (--guild-id to name a guild you own but are not in)",
+                    Short:          "Mint guild tokens into its vault using treasury Alpha as collateral (--guild-id selects the guild)",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountAlpha"},{ProtoField: "amountToken"}},
                 },
                 {
@@ -432,8 +477,8 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                 {
                     RpcMethod:      "GuildCreate",
                     Use:            "guild-create [reactor id] [endpoint] [substation id]",
-                    Short:          "Found a guild on a reactor's charter entitlement",
-                    Long:           "Found a guild without a proof, on the one-time entitlement of a reactor whose validator is bonded and past its eligibility height. To found a guild by proof of work instead, use guild-create-compute.",
+                    Short:          "Found a guild for two Alpha from your player vault",
+                    Long:           "Pay two Alpha: one is burned, one collateralizes the initial guild token issued to its vault. The selected reactor must exist; owning it is not required.",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "reactorId"},{ProtoField: "endpoint"},{ProtoField: "entrySubstationId"}},
                 },
                 {
@@ -673,13 +718,13 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                  {
                     RpcMethod:      "PlayerSend",
                     Use:            "player-send [from address] [to address] [1coin, 2coin, ...coin]",
-                    Short:          "Send tokens from any player-owned address",
+                    Short:          "Send tokens from a registered address or authorized player/guild vault, including funding a signing key for fees",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "from_address"},{ProtoField: "to_address"},{ProtoField: "amount"}},
                  },
                  {
                     RpcMethod:      "ProviderCreate",
                     Use:            "provider-create [substation id] [rate] [access policy] [provider cancellation penalty] [consumer cancellation penalty] [capacity min] [capacity max] [duration min] [duration max]",
-                    Short:          "Create a new Energy Provider offering",
+                    Short:          "Create a player- or guild-owned Energy Provider offering (optional --owner-id)",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "substationId"},{ProtoField: "rate"},{ProtoField: "accessPolicy"},{ProtoField: "providerCancellationPenalty"},{ProtoField: "consumerCancellationPenalty"},{ProtoField: "capacityMinimum"},{ProtoField: "capacityMaximum"},{ProtoField: "durationMinimum"},{ProtoField: "durationMaximum"}},
                  },
                  {
@@ -721,37 +766,41 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                  {
                     RpcMethod:      "ProviderWithdrawBalance",
                     Use:            "provider-withdraw-balance [provider id] [destination address]",
-                    Short:          "Withdraw the pending earnings from a Provider",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "destinationAddress"}},
+                    Short:          "Withdraw provider earnings to its owner vault or an explicit recipient",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "destinationAddress", Optional: true}},
                  },
                  {
                     RpcMethod:      "ReactorInfuse",
-                    Use:            "reactor-infuse [player address] [reactor address] [amount]",
-                    Short:          "Infuse Alpha from a player address into a reactor",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "delegator_address"},{ProtoField: "validator_address"},{ProtoField: "amount"}},
+                    Use:            "reactor-infuse [reactor address] [amount]",
+                    Short:          "Infuse Alpha from a vault or registered address into a reactor",
+                    Long:           "Defaults to your player vault. Use --owner-id for a player or guild vault, or --delegator-address for an authorized vault or registered address.",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "validator_address"},{ProtoField: "amount"}},
                  },
                  {
                     RpcMethod:      "ReactorDefuse",
-                    Use:            "reactor-defuse [player address] [reactor address] [amount]",
+                    Use:            "reactor-defuse [reactor address] [amount]",
                     Short:          "Defuse Alpha from a Reactor, returning it to the player after a cooldown",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "delegator_address"},{ProtoField: "validator_address"},{ProtoField: "amount"}},
+                    Long:           "Defaults to your player vault. Use --owner-id for a player or guild vault, or --delegator-address for an authorized vault or registered address.",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "validator_address"},{ProtoField: "amount"}},
                  },
                  {
                     RpcMethod:      "ReactorBeginMigration",
-                    Use:            "reactor-begin-migration [player address] [source reactor address] [destination reactor address] [amount]",
+                    Use:            "reactor-begin-migration [source reactor address] [destination reactor address] [amount]",
                     Short:          "Migrate Alpha from one Reactor to another",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "delegator_address"},{ProtoField: "validator_src_address"},{ProtoField: "validator_dst_address"},{ProtoField: "amount"}},
+                    Long:           "Defaults to your player vault. Use --owner-id for a player or guild vault, or --delegator-address for an authorized vault or registered address.",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "validator_src_address"},{ProtoField: "validator_dst_address"},{ProtoField: "amount"}},
                  },
                  {
                     RpcMethod:      "ReactorCancelDefusion",
-                    Use:            "reactor-cancel-defusion [player address] [reactor address] [amount] [creation height]",
+                    Use:            "reactor-cancel-defusion [reactor address] [amount] [creation height]",
                     Short:          "Place cooling Alpha back into the Reactor to resume generating energy",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "delegator_address"},{ProtoField: "validator_address"},{ProtoField: "amount"},{ProtoField: "creation_height"}},
+                    Long:           "Defaults to your player vault. Use --owner-id for a player or guild vault, or --delegator-address for an authorized vault or registered address.",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "validator_address"},{ProtoField: "amount"},{ProtoField: "creation_height"}},
                  },
                  {
                     RpcMethod:      "ReactorRestart",
                     Use:            "reactor-restart [reactor address]",
-                    Short:          "Resync a Reactor's energy output with its validator, restoring it after an unjail",
+                    Short:          "Queue a Reactor's energy resync with live validator state",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "validator_address"}},
                  },
                  {
@@ -877,7 +926,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                  {
                      RpcMethod:      "SubstationCreate",
                      Use:            "substation-create [owner id] [allocation id]",
-                     Short:          "Create a new Substation with an initial allocation",
+                     Short:          "Create a player- or guild-owned Substation with an initial allocation",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "owner"},{ProtoField: "allocationId"}},
                  },
                  {

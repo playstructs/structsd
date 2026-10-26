@@ -11,9 +11,37 @@ import (
 
 // RegisterInvariants registers the module's invariants with the crisis module.
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
+	ir.RegisterRoute(types.ModuleName, "reactor-diversity-consistency", ReactorDiversityConsistencyInvariant(k))
 	ir.RegisterRoute(types.ModuleName, "provider-collateral-solvency", ProviderCollateralSolvencyInvariant(k))
 	ir.RegisterRoute(types.ModuleName, "agreement-expiry-liveness", AgreementExpiryLivenessInvariant(k))
+	ir.RegisterRoute(types.ModuleName, "vault-ownership-consistency", VaultOwnershipConsistencyInvariant(k))
 }
+
+func ReactorDiversityConsistencyInvariant(k Keeper) sdk.Invariant {
+	return func(ctx sdk.Context) (string, bool) {
+		if !k.ReactorDiversityReady(ctx) { return sdk.FormatInvariant(types.ModuleName, "reactor-diversity-consistency", "not initialized"), false }
+		err := k.CheckReactorDiversityAccounting(ctx)
+		message := ""
+		if err != nil { message = err.Error() }
+		return sdk.FormatInvariant(types.ModuleName, "reactor-diversity-consistency", message), err != nil
+	}
+}
+
+// VaultOwnershipConsistencyInvariant checks the complete persisted association
+// projection using the same validation as export. Unprovisioned owners are valid;
+// this does not claim that every owner has been migrated or its assets swept.
+func VaultOwnershipConsistencyInvariant(k Keeper) sdk.Invariant {
+	return func(ctx sdk.Context) (string, bool) {
+		_, err := k.GetVaultOwnersForExport(ctx)
+		message := ""
+		if err != nil {
+			message = err.Error()
+		}
+		return sdk.FormatInvariant(types.ModuleName, "vault-ownership-consistency", message), err != nil
+	}
+}
+
+
 
 // ProviderCollateralSolvencyInvariant asserts that every provider's collateral
 // pool still holds at least what its open agreements are owed.

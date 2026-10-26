@@ -1,0 +1,834 @@
+diff --git a/sync-state/internal/bank/multicoin_test.go b/sync-state/internal/bank/multicoin_test.go
+new file mode 100644
+index 0000000..6a08a62
+--- /dev/null
++++ b/sync-state/internal/bank/multicoin_test.go
+@@ -0,0 +1,152 @@
++package bank
++
++import (
++	"context"
++	"fmt"
++	"strings"
++	"testing"
++	"time"
++
++	"github.com/jackc/pgx/v5"
++
++	"sync-state/internal/buffers"
++	"sync-state/internal/rpc"
++)
++
++func TestProcessBlock_AllDenoms(t *testing.T) {
++	coins := []struct{ amount, denom string }{
++		{"9007199254740993", "ualpha"},
++		{"25", "ibc/" + strings.Repeat("AB", 32)},
++		{"31", "factory/structs1issuer/token_name:series-1"},
++	}
++	for i := 0; i < 20; i++ {
++		coins = append(coins, struct{ amount, denom string }{fmt.Sprint(i + 1), fmt.Sprintf("utoken%d", i)})
++	}
++	amounts := make([]string, len(coins))
++	for i, coin := range coins {
++		amounts[i] = coin.amount + coin.denom
++	}
++	for _, kind := range []string{"transfer", "coinbase", "burn"} {
++		t.Run(kind, func(t *testing.T) {
++			event := rpc.Event{Type: kind, Attributes: []rpc.Attribute{{Key: "sender", Value: "sender"}, {Key: "recipient", Value: "vault"}, {Key: "minter", Value: "vault"}, {Key: "burner", Value: "vault"}, {Key: "amount", Value: strings.Join(amounts, ",")}}}
++			next := transferEvent("other", "vault", "7ualpha")
++			buf := buffers.New()
++			if err := ProcessBlock(context.Background(), nil, buf, 23, time.Unix(42, 0), "test", []rpc.Event{event, next}, nil); err != nil {
++				t.Fatal(err)
++			}
++			legs := 1
++			if kind == "transfer" {
++				legs = 2
++			}
++			if len(buf.Ledger) != legs*len(amounts)+2 {
++				t.Fatalf("got %d rows, want %d", len(buf.Ledger), legs*len(amounts)+2)
++			}
++			seen := map[string]bool{}
++			for _, row := range buf.Ledger {
++				// The schema's replay identity includes denomination. Existing single-coin
++				// event indexes stay unchanged; an arbitrary coin count cannot spill into
++				// the next chain event's eight leg slots.
++				key := fmt.Sprintf("%d/%d/%d/%s", row.TxIndex, row.MsgIndex, row.EventIndex, row.Denom)
++				if seen[key] {
++					t.Fatalf("duplicate identity %s", key)
++				}
++				seen[key] = true
++			}
++			for i, coin := range coins {
++				for leg := 0; leg < legs; leg++ {
++					row := buf.Ledger[i*legs+leg]
++					if row.AmountP != coin.amount || row.Denom != coin.denom || row.EventIndex != leg {
++						t.Fatalf("lost coin/identity: %+v", row)
++					}
++				}
++			}
++		})
++	}
++}
++
++func TestProcessBlock_RejectsMalformedCoinLists(t *testing.T) {
++	for _, amount := range []string{"100ualpha,", "100ualpha,3ualpha", "100ualpha,-2uguild", "100ualpha,2ibc/HASH!", "100ualpha,2u", "100ualpha,garbage"} {
++		for _, kind := range []string{"transfer", "coinbase", "burn"} {
++			t.Run(kind+"/"+amount, func(t *testing.T) {
++				ev := transferEvent("sender", "vault", amount)
++				ev.Type = kind
++				buf := buffers.New()
++				if err := ProcessBlock(context.Background(), nil, buf, 1, time.Unix(1, 0), "test", []rpc.Event{ev}, nil); err == nil {
++					t.Fatal("malformed list accepted")
++				}
++				if len(buf.Ledger) != 0 {
++					t.Fatalf("partial list created %d ledger rows", len(buf.Ledger))
++				}
++			})
++		}
++	}
++}
++
++func TestProcessBlock_MultiDenomReplay(t *testing.T) {
++	conn := connect(t)
++	inTx(t, conn, func(tx pgx.Tx) {
++		ctx := context.Background()
++		stamp := fixedTime()
++		const height = 7331
++		first := transferEvent("v022sender", "v022vault", "100ualpha")
++		both := transferEvent("v022sender", "v022vault", "100ualpha,25uguild")
++		for i, ev := range []rpc.Event{first, both, both} {
++			buf := buffers.New()
++			if err := ProcessBlock(ctx, tx, buf, height, stamp, "v022-coins", []rpc.Event{ev}, nil); err != nil {
++				t.Fatal(err)
++			}
++			deltas, err := buf.Flush(ctx, tx)
++			if err != nil {
++				t.Fatal(err)
++			}
++			want := 2
++			if i == 2 {
++				want = 0
++			}
++			if len(deltas) != want {
++				t.Fatalf("pass %d: %d newly inserted rows, want %d", i, len(deltas), want)
++			}
++			for _, delta := range deltas {
++				denom, amount := "ualpha", "100"
++				if i == 1 {
++					denom, amount = "uguild", "25"
++				}
++				if delta.Address == "v022sender" {
++					amount = "-" + amount
++				} else if delta.Address != "v022vault" {
++					t.Fatal(delta)
++				}
++				if delta.Denom != denom || delta.Delta != amount {
++					t.Fatalf("wrong persisted delta: %+v", delta)
++				}
++			}
++		}
++		if n := queryLedgerCount(t, tx, "chain_id = $1 AND block_height = $2", "v022-coins", height); n != 4 {
++			t.Fatalf("got %d persisted rows", n)
++		}
++	})
++}
++
++func TestProcessBlock_GameplayKeepsOtherDenoms(t *testing.T) {
++	for _, action := range []string{"/structs.structs.MsgStructGeneratorInfuse", "/structs.structs.MsgStructOreRefineryComplete"} {
++		t.Run(action, func(t *testing.T) {
++			buf := buffers.New()
++			group := []rpc.Event{transferEvent("source", "destination", "100ualpha,25uguild"), {Type: "message", Attributes: []rpc.Attribute{{Key: "action", Value: action}}}}
++			if err := ProcessBlock(context.Background(), nil, buf, 1, time.Unix(1, 0), "test", group, nil); err != nil {
++				t.Fatal(err)
++			}
++			if len(buf.Ledger) != 3 {
++				t.Fatalf("got %d rows", len(buf.Ledger))
++			}
++			for i, row := range buf.Ledger[1:] {
++				wantDirection, wantAddress := "debit", "source"
++				if i == 1 {
++					wantDirection, wantAddress = "credit", "destination"
++				}
++				if row.Denom != "uguild" || row.AmountP != "25" || row.Direction != wantDirection || row.Address != wantAddress {
++					t.Fatalf("lost unrelated coin: %+v", row)
++				}
++			}
++		})
++	}
++}
+diff --git a/sync-state/internal/bank/process.go b/sync-state/internal/bank/process.go
+index 2365e16..2833837 100644
+--- a/sync-state/internal/bank/process.go
++++ b/sync-state/internal/bank/process.go
+@@ -180,18 +180,13 @@ func parseChainTime(s string) (time.Time, error) {
+ 
+ // --- attribute helpers -------------------------------------------------
+ 
+-// amountDenomRegex parses "123ualpha" / "0.5uvert" into the amount and
+-// denom parts. Matches the SQL `(^[0-9\.]+)([a-zA-Z0-9\.-]+)` regex.
+-var amountDenomRegex = regexp.MustCompile(`^([0-9]+(?:\.[0-9]+)?)([a-zA-Z0-9.\-]+)`)
+-
+-// parseAmountDenom returns ("123","ualpha",true) for "123ualpha", or
+-// ("","",false) when the input is empty or doesn't match. Multi-coin
+-// values like "100ualpha,500uvert" only return the first coin (mirrors
+-// regexp_matches which returns the first match).
++// The bank can move arbitrary SDK denominations, including IBC and factory
++// paths. Anchor the complete coin: a partial match would silently rename assets.
++var amountDenomRegex = regexp.MustCompile(`^([0-9]+(?:\.[0-9]+)?)([a-zA-Z][a-zA-Z0-9/:._-]{2,127})$`)
++
++// parseAmountDenom parses one coin, not a comma-separated list. Decimal amounts
++// remain supported for legacy indexer fixtures; chain bank events use integers.
+ func parseAmountDenom(s string) (amount, denom string, ok bool) {
+-	if s == "" {
+-		return "", "", false
+-	}
+ 	m := amountDenomRegex.FindStringSubmatch(s)
+ 	if m == nil {
+ 		return "", "", false
+@@ -199,6 +194,32 @@ func parseAmountDenom(s string) (amount, denom string, ok bool) {
+ 	return m[1], m[2], true
+ }
+ 
++type eventCoin struct{ amount, denom string }
++
++// Validate the entire list before writing any rows. Unknown/malformed tails
++// must not silently turn a multi-asset transfer into a partial transfer.
++func findAmounts(ev rpc.Event) ([]eventCoin, error) {
++	value := findAttr(ev, "amount")
++	if value == "" {
++		return nil, nil
++	}
++	parts := strings.Split(value, ",")
++	coins := make([]eventCoin, 0, len(parts))
++	seen := make(map[string]bool, len(parts))
++	for _, part := range parts {
++		amount, denom, ok := parseAmountDenom(part)
++		if !ok {
++			return nil, fmt.Errorf("invalid coin %q", part)
++		}
++		if seen[denom] {
++			return nil, fmt.Errorf("duplicate denomination %q", denom)
++		}
++		seen[denom] = true
++		coins = append(coins, eventCoin{amount, denom})
++	}
++	return coins, nil
++}
++
+ // findAttr returns the first attribute with key `k`, or "" if absent.
+ // Bank events tend to have unique keys per event so first-match is
+ // sufficient.
+@@ -288,44 +309,48 @@ func isAlphaRefineTx(group []rpc.Event) bool {
+ // the player via 'refined', so skip the recipient 'received' row but keep
+ // 'sent' on the pool so minted+sent still net correctly there.
+ func handleTransfer(buf *buffers.Buffer, h int64, t time.Time, id eventIdent, ev rpc.Event, group []rpc.Event) error {
+-	amt, denom, ok := findAmount(ev)
+-	if !ok {
+-		return nil
+-	}
+-	recipient := findAttr(ev, "recipient")
+-	sender := findAttr(ev, "sender")
+-	if isStructInfusionTx(group) {
+-		pushLedger(buf, id, 0, recipient, sender, amt, h, t, "received", "credit", denom)
+-		return nil
++	coins, err := findAmounts(ev)
++	if err != nil {
++		return err
+ 	}
+-	if isAlphaRefineTx(group) {
+-		pushLedger(buf, id, 0, sender, recipient, amt, h, t, "sent", "debit", denom)
+-		return nil
++	recipient, sender := findAttr(ev, "recipient"), findAttr(ev, "sender")
++	infusion, refining := isStructInfusionTx(group), isAlphaRefineTx(group)
++	for _, coin := range coins {
++		// The gameplay ledger describes Alpha only. Other denominations in the
++		// same transfer still need both ordinary bank legs.
++		if coin.denom == "ualpha" && infusion {
++			pushLedger(buf, id, 0, recipient, sender, coin.amount, h, t, "received", "credit", coin.denom)
++		} else if coin.denom == "ualpha" && refining {
++			pushLedger(buf, id, 0, sender, recipient, coin.amount, h, t, "sent", "debit", coin.denom)
++		} else {
++			pushLedger(buf, id, 0, sender, recipient, coin.amount, h, t, "sent", "debit", coin.denom)
++			pushLedger(buf, id, 1, recipient, sender, coin.amount, h, t, "received", "credit", coin.denom)
++		}
+ 	}
+-	pushLedger(buf, id, 0, sender, recipient, amt, h, t, "sent", "debit", denom)
+-	pushLedger(buf, id, 1, recipient, sender, amt, h, t, "received", "credit", denom)
+ 	return nil
+ }
+ 
+-// handleCoinbase ports the WHEN 'coinbase' branch (cache-system.sql:1454-1469).
+-// 1 ledger row: minter 'minted' credit, no counterparty.
++// handleCoinbase records every minted denomination with its own replay identity.
+ func handleCoinbase(buf *buffers.Buffer, h int64, t time.Time, id eventIdent, ev rpc.Event) error {
+-	amt, denom, ok := findAmount(ev)
+-	if !ok {
+-		return nil
++	coins, err := findAmounts(ev)
++	if err != nil {
++		return err
++	}
++	for _, coin := range coins {
++		pushLedgerNoCp(buf, id, 0, findAttr(ev, "minter"), coin.amount, h, t, "minted", "credit", coin.denom)
+ 	}
+-	pushLedgerNoCp(buf, id, 0, findAttr(ev, "minter"), amt, h, t, "minted", "credit", denom)
+ 	return nil
+ }
+ 
+-// handleBurn ports the WHEN 'burn' branch (cache-system.sql:1471-1486).
+-// 1 ledger row: burner 'burned' debit, no counterparty.
++// handleBurn records every burned denomination with its own replay identity.
+ func handleBurn(buf *buffers.Buffer, h int64, t time.Time, id eventIdent, ev rpc.Event) error {
+-	amt, denom, ok := findAmount(ev)
+-	if !ok {
+-		return nil
++	coins, err := findAmounts(ev)
++	if err != nil {
++		return err
++	}
++	for _, coin := range coins {
++		pushLedgerNoCp(buf, id, 0, findAttr(ev, "burner"), coin.amount, h, t, "burned", "debit", coin.denom)
+ 	}
+-	pushLedgerNoCp(buf, id, 0, findAttr(ev, "burner"), amt, h, t, "burned", "debit", denom)
+ 	return nil
+ }
+ 
+diff --git a/sync-state/internal/bank/process_test.go b/sync-state/internal/bank/process_test.go
+index 6f79d39..e3a748c 100644
+--- a/sync-state/internal/bank/process_test.go
++++ b/sync-state/internal/bank/process_test.go
+@@ -20,8 +20,8 @@ func TestParseAmountDenom(t *testing.T) {
+ 		{"1234567890ualpha", "1234567890", "ualpha", true},
+ 		{"42ualpha.infused", "42", "ualpha.infused", true},
+ 		{"7u-test", "7", "u-test", true},
+-		// multi-coin: returns only first match (mirrors SQL regexp_matches behavior)
+-		{"100ualpha,500uvert", "100", "ualpha", true},
++		// A single-coin parser must not discard a multi-coin tail.
++		{"100ualpha,500uvert", "", "", false},
+ 		// empty / unparseable
+ 		{"", "", "", false},
+ 		{"ualpha", "", "", false},
+diff --git a/sync-state/internal/buffers/buffer.go b/sync-state/internal/buffers/buffer.go
+index 98c1fec..4890e8d 100644
+--- a/sync-state/internal/buffers/buffer.go
++++ b/sync-state/internal/buffers/buffer.go
+@@ -27,7 +27,8 @@ import (
+ // ledger rows from one chain event. Stored event_index is
+ // chainEventIndex*LedgerLegStride + leg. Max legs today is 4 (unbond /
+ // redelegate / complete_redelegation); stride 8 leaves headroom without
+-// colliding with the next chain event's encoded indexes.
++// colliding with the next chain event's encoded indexes. Denomination is also
++// part of the database replay key, so each coin reuses these stable leg indexes.
+ const LedgerLegStride = 8
+ 
+ // EncodeLedgerEventIndex maps (chain event_index, leg) onto the unique
+@@ -383,7 +384,7 @@ INSERT INTO structs.ledger
+     (time, address, counterparty, amount_p, block_height, action, direction, denom,
+      chain_id, tx_index, msg_index, event_index)
+ VALUES ` + strings.Join(placeholders, ",") + `
+-ON CONFLICT (time, chain_id, tx_index, msg_index, event_index) DO NOTHING
++ON CONFLICT (time, chain_id, tx_index, msg_index, event_index, denom) DO NOTHING
+ RETURNING address, denom,
+           CASE direction WHEN 'credit' THEN amount_p ELSE -amount_p END::text AS delta`
+ 	qrows, err := tx.Query(ctx, sql, args...)
+diff --git a/sync-state/internal/events/registry.go b/sync-state/internal/events/registry.go
+index 623d424..d35d852 100644
+--- a/sync-state/internal/events/registry.go
++++ b/sync-state/internal/events/registry.go
+@@ -3,9 +3,9 @@ package events
+ // THE COMPLETE LIST OF EVENTS sync-state KNOWS HOW TO PROCESS.
+ //
+ // Add a new event:
+-//   1. Add the payload struct to internal/payload/<event_name>.go.
+-//   2. Create internal/events/<event_name>.go implementing Handler.
+-//   3. Add one line to AllHandlers() below (alphabetical by composite_key).
++//  1. Add the payload struct to internal/payload/<event_name>.go.
++//  2. Create internal/events/<event_name>.go implementing Handler.
++//  3. Add one line to AllHandlers() below (alphabetical by composite_key).
+ //
+ // Run `sync-state list-handlers` for the runtime view; this slice and the
+ // runtime view should always agree.
+@@ -36,6 +36,7 @@ func AllHandlers() []Handler {
+ 		addressHandler{},
+ 		addressActivityHandler{},
+ 		addressAssociationHandler{},
++		vaultAddressHandler{},
+ 		permissionHandler{},
+ 		guildRankPermissionHandler{},
+ 		structDefenderHandler{},
+diff --git a/sync-state/internal/events/vault_address.go b/sync-state/internal/events/vault_address.go
+new file mode 100644
+index 0000000..9337376
+--- /dev/null
++++ b/sync-state/internal/events/vault_address.go
+@@ -0,0 +1,77 @@
++package events
++
++import (
++	"context"
++	"encoding/json"
++	"fmt"
++	"strconv"
++	"strings"
++
++	"github.com/jackc/pgx/v5"
++	"sync-state/internal/payload"
++)
++
++// Vaults own assets; they are never signing keys in player_address.
++type vaultAddressHandler struct{}
++
++func (vaultAddressHandler) CompositeKey() string {
++	return "structs.structs.EventVaultAddress.eventVaultAddressDetail"
++}
++
++type vaultAddressPayload struct {
++	OwnerID        string          `json:"ownerId"`
++	Address        string          `json:"vaultAddress"`
++	AccountNumber  json.RawMessage `json:"accountNumber"`
++	AccountCreated *bool           `json:"accountCreated"`
++}
++
++func (vaultAddressHandler) Handle(ctx context.Context, tx pgx.Tx, bctx BlockContext, raw json.RawMessage) error {
++	p, err := payload.Decode[vaultAddressPayload](raw)
++	if err != nil {
++		return err
++	}
++	parts := strings.Split(p.OwnerID, "-")
++	if len(parts) != 2 || (parts[0] != "0" && parts[0] != "1") {
++		return fmt.Errorf("vault: invalid owner %q", p.OwnerID)
++	}
++	index, err := strconv.ParseUint(parts[1], 10, 64)
++	if err != nil || index == 0 || strconv.FormatUint(index, 10) != parts[1] {
++		return fmt.Errorf("vault: noncanonical owner %q", p.OwnerID)
++	}
++	if p.Address == "" || p.AccountCreated == nil {
++		return fmt.Errorf("vault: missing address or accountCreated")
++	}
++	number := string(p.AccountNumber)
++	if len(number) > 0 && number[0] == '"' {
++		if err = json.Unmarshal(p.AccountNumber, &number); err != nil {
++			return err
++		}
++	}
++	account, err := strconv.ParseUint(number, 10, 64)
++	if err != nil {
++		return fmt.Errorf("vault: invalid account number: %w", err)
++	}
++	kind := "player"
++	if parts[0] == "0" {
++		kind = "guild"
++	}
++	var owner string
++	err = tx.QueryRow(ctx, `
++INSERT INTO structs.vault(owner_id,owner_type,address,account_number,account_created,created_at,updated_at)
++VALUES ($1,$2::structs.object_type,$3,$4::numeric,$5,$6,$6)
++ON CONFLICT (owner_id) DO UPDATE
++ SET account_created=EXCLUDED.account_created, updated_at=EXCLUDED.updated_at
++ WHERE structs.vault.address=EXCLUDED.address
++   AND structs.vault.account_number=EXCLUDED.account_number
++RETURNING owner_id`, p.OwnerID, kind, p.Address, strconv.FormatUint(account, 10), *p.AccountCreated, bctx.BlockTime).Scan(&owner)
++	if err != nil {
++		return fmt.Errorf("vault association %s: %w", p.OwnerID, err)
++	}
++	bctx.Dirty.Address(p.Address)
++	if kind == "player" {
++		bctx.Dirty.Player(p.OwnerID)
++	} else {
++		bctx.Dirty.Guild(p.OwnerID)
++	}
++	return nil
++}
+diff --git a/sync-state/internal/events/vault_address_test.go b/sync-state/internal/events/vault_address_test.go
+new file mode 100644
+index 0000000..a17e984
+--- /dev/null
++++ b/sync-state/internal/events/vault_address_test.go
+@@ -0,0 +1,80 @@
++package events
++
++import (
++	"context"
++	"encoding/json"
++	"github.com/jackc/pgx/v5"
++	"testing"
++)
++
++func TestVaultRejectsMalformedBeforeWriting(t *testing.T) {
++	for _, bad := range []map[string]any{{"ownerId": "2-1"}, {"ownerId": "1-0"}, {"ownerId": "1-01"}, {"ownerId": "1-18446744073709551616"}, {"vaultAddress": ""}, {"accountNumber": "-1"}, {"accountNumber": "18446744073709551616"}, {"accountNumber": "1.5"}, {"accountCreated": "false"}, {"accountCreated": nil}} {
++		p := map[string]any{"ownerId": "1-999001", "vaultAddress": "vault-player", "accountNumber": "18446744073709551615", "accountCreated": false}
++		for k, v := range bad {
++			p[k] = v
++		}
++		raw, _ := json.Marshal(p)
++		if err := (vaultAddressHandler{}).Handle(context.Background(), nil, fixedBctx(1), raw); err == nil {
++			t.Fatalf("accepted %s", raw)
++		}
++	}
++}
++func TestVaultAssociationReplayAndIsolation(t *testing.T) {
++	conn := connect(t)
++	inTx(t, conn, func(tx pgx.Tx) {
++		ctx := context.Background()
++		bc := fixedBctx(9)
++		r := NewRouter(false)
++		rows := []map[string]any{
++			{"ownerId": "1-999001", "vaultAddress": "vault-player", "accountNumber": "18446744073709551615", "accountCreated": true},
++			{"ownerId": "0-999001", "vaultAddress": "vault-guild", "accountNumber": "0", "accountCreated": false},
++		}
++		for _, p := range rows {
++			raw, _ := json.Marshal(p)
++			// Exercise the production role, including the router's savepoint.
++			if _, err := tx.Exec(ctx, "SET LOCAL ROLE structs_indexer"); err != nil {
++				t.Fatal(err)
++			}
++			for i := 0; i < 2; i++ {
++				he, fatal := r.Dispatch(ctx, tx, bc, "structs.structs.EventVaultAddress.eventVaultAddressDetail", raw)
++				if he != nil || fatal != nil {
++					t.Fatalf("handler: %v / %v", he, fatal)
++				}
++			}
++			if _, err := tx.Exec(ctx, "RESET ROLE"); err != nil {
++				t.Fatal(err)
++			}
++			var address, number string
++			if err := tx.QueryRow(ctx, "SELECT address,account_number::text FROM structs.vault WHERE owner_id=$1", p["ownerId"]).Scan(&address, &number); err != nil {
++				t.Fatal(err)
++			}
++			if address != p["vaultAddress"] || number != p["accountNumber"] {
++				t.Fatal(address, number)
++			}
++		}
++		var n int
++		if err := tx.QueryRow(ctx, "SELECT count(*) FROM structs.player_address WHERE address IN ('vault-player','vault-guild')").Scan(&n); err != nil || n != 0 {
++			t.Fatalf("vault became signer: %d %v", n, err)
++		}
++		for _, bad := range []map[string]any{
++			{"ownerId": "1-999001", "vaultAddress": "replacement", "accountNumber": "18446744073709551615", "accountCreated": false},
++			{"ownerId": "1-999002", "vaultAddress": "vault-player", "accountNumber": "3", "accountCreated": false},
++			{"ownerId": "1-999001", "vaultAddress": "vault-player", "accountNumber": "3", "accountCreated": false},
++		} {
++			raw, _ := json.Marshal(bad)
++			he, fatal := r.Dispatch(ctx, tx, bc, "structs.structs.EventVaultAddress.eventVaultAddressDetail", raw)
++			if he == nil || fatal != nil {
++				t.Fatalf("conflicting association accepted: %v %v", he, fatal)
++			}
++		}
++		if err := tx.QueryRow(ctx, "SELECT count(*) FROM structs.vault WHERE owner_id IN ('1-999001','0-999001')").Scan(&n); err != nil || n != 2 {
++			t.Fatalf("associations changed: %d %v", n, err)
++		}
++		if _, ok := bc.Dirty.Players["1-999001"]; !ok {
++			t.Fatal("player was not dirtied")
++		}
++		if _, ok := bc.Dirty.Guilds["0-999001"]; !ok {
++			t.Fatal("guild was not dirtied")
++		}
++	})
++}
+diff --git a/sync-state/internal/readmodel/backfill.go b/sync-state/internal/readmodel/backfill.go
+index d3c40f4..660d490 100644
+--- a/sync-state/internal/readmodel/backfill.go
++++ b/sync-state/internal/readmodel/backfill.go
+@@ -97,11 +97,11 @@ SELECT 'address'::structs.object_type, address, denom,
+ 	}
+ 	if _, err := tx.Exec(ctx, `
+ INSERT INTO structs.api_inventory (owner_type, owner_id, denom, balance)
+-SELECT 'player'::structs.object_type, pa.player_id, i.denom, SUM(i.balance)
++SELECT pa.owner_type, pa.owner_id, i.denom, SUM(i.balance)
+   FROM structs.api_inventory i
+-  JOIN structs.player_address pa ON pa.address = i.owner_id
++  JOIN structs.asset_owner_address pa ON pa.address = i.owner_id
+  WHERE i.owner_type = 'address'
+- GROUP BY pa.player_id, i.denom`); err != nil {
++ GROUP BY pa.owner_type, pa.owner_id, i.denom`); err != nil {
+ 		return fmt.Errorf("backfill player inventory: %w", err)
+ 	}
+ 	return nil
+diff --git a/sync-state/internal/readmodel/drift.go b/sync-state/internal/readmodel/drift.go
+index e1ebd2b..705bf81 100644
+--- a/sync-state/internal/readmodel/drift.go
++++ b/sync-state/internal/readmodel/drift.go
+@@ -61,19 +61,24 @@ SELECT owner_type::text, owner_id, denom
+ 			}
+ 		}
+ 	}
+-	seenPlayer := map[string]struct{}{}
++	d := NewDirty()
+ 	for _, k := range keys {
+-		if k.ownerType != "player" {
+-			continue
+-		}
+-		if _, ok := seenPlayer[k.ownerID]; ok {
+-			continue
+-		}
+-		seenPlayer[k.ownerID] = struct{}{}
+-		if err := rebuildPlayerInventory(ctx, tx, []string{k.ownerID}); err != nil {
+-			return 0, err
++		switch k.ownerType {
++		case "player":
++			d.Player(k.ownerID)
++		case "guild":
++			d.Guild(k.ownerID)
++		case "address":
++			d.Address(k.ownerID)
+ 		}
+ 	}
++	if err := expandAddresses(ctx, tx, d); err != nil {
++		return 0, err
++	}
++	if err := rebuildOwnerInventory(ctx, tx, d.PlayerIDs(), d.GuildIDs()); err != nil {
++		return 0, err
++	}
++
+ 	tag, err := tx.Exec(ctx, `DELETE FROM structs.api_inventory_drift WHERE checked_at = $1`, *checkedAt)
+ 	if err != nil {
+ 		return 0, fmt.Errorf("delete drift batch: %w", err)
+@@ -85,10 +90,10 @@ SELECT owner_type::text, owner_id, denom
+ func repairAddressInventory(ctx context.Context, tx pgx.Tx, address, denom string) error {
+ 	if _, err := tx.Exec(ctx, `
+ INSERT INTO structs.api_inventory (owner_type, owner_id, denom, balance)
+-SELECT 'address'::structs.object_type, $1, $2,
++SELECT 'address'::structs.object_type, $1::varchar, $2::text,
+        COALESCE(SUM(CASE direction WHEN 'credit' THEN amount_p ELSE -amount_p END), 0)
+   FROM structs.ledger
+- WHERE address = $1 AND denom = $2
++ WHERE address = $1::varchar AND denom = $2::text
+ ON CONFLICT (owner_type, owner_id, denom)
+ DO UPDATE SET balance = EXCLUDED.balance`, address, denom); err != nil {
+ 		return fmt.Errorf("repair address inventory %s %s: %w", address, denom, err)
+diff --git a/sync-state/internal/readmodel/project.go b/sync-state/internal/readmodel/project.go
+index d6f9da5..861fc39 100644
+--- a/sync-state/internal/readmodel/project.go
++++ b/sync-state/internal/readmodel/project.go
+@@ -67,7 +67,7 @@ func ValidateSchema(ctx context.Context, q interface {
+ 	if err := q.QueryRow(ctx, `
+ SELECT COALESCE(array_agg(name ORDER BY name), ARRAY[]::text[])
+ FROM unnest(ARRAY[
+-  'api_refresh_state','api_inventory','api_guild_bank',
++  'api_refresh_state','api_inventory','api_guild_bank','vault','asset_owner_address',
+   'api_leaderboard_player','api_leaderboard_guild',
+   'api_leaderboard_reactor','api_leaderboard_provider',
+   'api_leaderboard_substation','api_work'
+@@ -89,6 +89,20 @@ SELECT COUNT(*) FROM information_schema.columns
+ 	if identCols != 4 {
+ 		return fmt.Errorf("structs-pg ledger source-event identity is incomplete; apply table-ledger-20260914-source-event-identity")
+ 	}
++	var coinIdentity bool
++	if err := q.QueryRow(ctx, `SELECT EXISTS (
++ SELECT 1 FROM pg_index i WHERE i.indrelid='structs.ledger'::regclass
++ AND i.indisunique AND i.indisvalid
++ AND (SELECT array_agg(a.attname::text ORDER BY k.ordinality)
++      FROM unnest(i.indkey) WITH ORDINALITY k(attnum,ordinality)
++      JOIN pg_attribute a ON a.attrelid=i.indrelid AND a.attnum=k.attnum)
++     = ARRAY['time','chain_id','tx_index','msg_index','event_index','denom']
++ )`).Scan(&coinIdentity); err != nil {
++		return fmt.Errorf("validate ledger denomination identity: %w", err)
++	}
++	if !coinIdentity {
++		return fmt.Errorf("apply table-ledger-20260921-denomination-identity before starting this writer")
++	}
+ 	var activityPlayer bool
+ 	if err := q.QueryRow(ctx, `SELECT to_regclass('structs.planet_activity_player') IS NOT NULL`).Scan(&activityPlayer); err != nil {
+ 		return fmt.Errorf("validate planet_activity_player: %w", err)
+@@ -147,9 +161,11 @@ func expandAddresses(ctx context.Context, tx pgx.Tx, d *Dirty) error {
+ 		return nil
+ 	}
+ 	rows, err := tx.Query(ctx, `
+-SELECT pa.player_id, gt.entry
++SELECT COALESCE(pa.player_id, CASE WHEN v.owner_type='player' THEN v.owner_id END),
++       COALESCE(CASE WHEN v.owner_type='guild' THEN v.owner_id END, gt.entry)
+ FROM unnest($1::varchar[]) a(address)
+-LEFT JOIN structs.player_address pa ON pa.address = a.address
++LEFT JOIN structs.vault v ON v.address = a.address
++LEFT JOIN structs.player_address pa ON pa.address = a.address AND v.address IS NULL
+ LEFT JOIN structs.address_tag typ
+   ON typ.address = a.address AND typ.label = 'Type'
+  AND typ.entry = 'Bank Collateral Pool'
+@@ -304,6 +320,26 @@ SELECT inserted, updated, deleted
+ 
+ func recomputeInventory(ctx context.Context, tx pgx.Tx, d *Dirty) error {
+ 	addresses, players := d.AddressIDs(), d.PlayerIDs()
++	rows, err := tx.Query(ctx, `SELECT address FROM structs.asset_owner_address
++ WHERE (owner_type='player' AND owner_id=ANY($1::varchar[]))
++ OR (owner_type='guild' AND owner_id=ANY($2::varchar[]))`, players, d.GuildIDs())
++	if err != nil {
++		return err
++	}
++	for rows.Next() {
++		var address string
++		if err := rows.Scan(&address); err != nil {
++			rows.Close()
++			return err
++		}
++		addresses = append(addresses, address)
++	}
++	err = rows.Err()
++	rows.Close()
++	if err != nil {
++		return err
++	}
++
+ 	if _, err := tx.Exec(ctx, `
+ DELETE FROM structs.api_inventory
+ WHERE (owner_type = 'address' AND owner_id = ANY($1::varchar[]))
+@@ -320,15 +356,7 @@ WHERE l.address = ANY($1::varchar[])
+ GROUP BY l.address, l.denom`, addresses); err != nil {
+ 		return err
+ 	}
+-	_, err := tx.Exec(ctx, `
+-INSERT INTO structs.api_inventory(owner_type, owner_id, denom, balance)
+-SELECT 'player'::structs.object_type, pa.player_id, l.denom,
+-       SUM(CASE l.direction WHEN 'credit' THEN l.amount_p ELSE -l.amount_p END)
+-FROM structs.player_address pa
+-JOIN structs.ledger l ON l.address = pa.address
+-WHERE pa.player_id = ANY($1::varchar[])
+-GROUP BY pa.player_id, l.denom`, players)
+-	return err
++	return rebuildOwnerInventory(ctx, tx, d.PlayerIDs(), d.GuildIDs())
+ }
+ 
+ func applyInventoryDeltas(ctx context.Context, tx pgx.Tx, d *Dirty, deltas []buffers.LedgerDelta) error {
+@@ -353,26 +381,27 @@ DO UPDATE SET balance = structs.api_inventory.balance + EXCLUDED.balance`,
+ 			return err
+ 		}
+ 	}
+-	return rebuildPlayerInventory(ctx, tx, d.PlayerIDs())
++	return rebuildOwnerInventory(ctx, tx, d.PlayerIDs(), d.GuildIDs())
+ }
+ 
+-func rebuildPlayerInventory(ctx context.Context, tx pgx.Tx, players []string) error {
+-	if len(players) == 0 {
++func rebuildOwnerInventory(ctx context.Context, tx pgx.Tx, players, guilds []string) error {
++	if len(players) == 0 && len(guilds) == 0 {
+ 		return nil
+ 	}
+ 	if _, err := tx.Exec(ctx, `
+ DELETE FROM structs.api_inventory
+-WHERE owner_type = 'player' AND owner_id = ANY($1::varchar[])`, players); err != nil {
++WHERE (owner_type='player' AND owner_id=ANY($1::varchar[]))
++   OR (owner_type='guild' AND owner_id=ANY($2::varchar[]))`, players, guilds); err != nil {
+ 		return err
+ 	}
+ 	_, err := tx.Exec(ctx, `
+-INSERT INTO structs.api_inventory (owner_type, owner_id, denom, balance)
+-SELECT 'player'::structs.object_type, pa.player_id, i.denom, SUM(i.balance)
+-FROM structs.player_address pa
+-JOIN structs.api_inventory i
+-  ON i.owner_type = 'address' AND i.owner_id = pa.address
+-WHERE pa.player_id = ANY($1::varchar[])
+-GROUP BY pa.player_id, i.denom`, players)
++INSERT INTO structs.api_inventory(owner_type,owner_id,denom,balance)
++SELECT a.owner_type,a.owner_id,i.denom,SUM(i.balance)
++FROM structs.asset_owner_address a
++JOIN structs.api_inventory i ON i.owner_type='address' AND i.owner_id=a.address
++WHERE (a.owner_type='player' AND a.owner_id=ANY($1::varchar[]))
++   OR (a.owner_type='guild' AND a.owner_id=ANY($2::varchar[]))
++GROUP BY a.owner_type,a.owner_id,i.denom`, players, guilds)
+ 	return err
+ }
+ 
+diff --git a/sync-state/internal/readmodel/vault_inventory_test.go b/sync-state/internal/readmodel/vault_inventory_test.go
+new file mode 100644
+index 0000000..b3973e3
+--- /dev/null
++++ b/sync-state/internal/readmodel/vault_inventory_test.go
+@@ -0,0 +1,99 @@
++package readmodel
++
++import (
++	"context"
++	"github.com/jackc/pgx/v5"
++	"sync-state/internal/buffers"
++	"testing"
++)
++
++func TestVaultInventoryAllRefreshPaths(t *testing.T) {
++	integrationTx(t, func(ctx context.Context, tx pgx.Tx) {
++		exec := func(sql string, args ...any) {
++			t.Helper()
++			if _, err := tx.Exec(ctx, sql, args...); err != nil {
++				t.Fatal(err)
++			}
++		}
++		exec("INSERT INTO structs.player(id,guild_id) VALUES ('1-999100','0-999100')")
++		exec("INSERT INTO structs.player_address(address,player_id,guild_id) VALUES ('old-signer','1-999100','0-999100'),('retained-signer','1-999100','0-999100')")
++		exec("INSERT INTO structs.vault(owner_id,owner_type,address,account_number,account_created,created_at,updated_at) VALUES ('1-999100','player','player-vault',101,true,NOW(),NOW()),('0-999100','guild','guild-vault',102,true,NOW(),NOW())")
++		exec("INSERT INTO structs.ledger(address,amount_p,denom,direction) VALUES ('old-signer',100,'ualpha','credit'),('old-signer',100,'ualpha','debit'),('retained-signer',7,'ualpha','credit'),('player-vault',100,'ualpha','credit'),('guild-vault',25,'ualpha','credit'),('collateral-pool',99,'ualpha','credit')")
++		check := func(player string) {
++			t.Helper()
++			for _, want := range []struct{ kind, id, amount string }{{"player", "1-999100", player}, {"guild", "0-999100", "25"}} {
++				var amount string
++				if err := tx.QueryRow(ctx, "SELECT balance::text FROM structs.api_inventory WHERE owner_type=$1::structs.object_type AND owner_id=$2 AND denom='ualpha'", want.kind, want.id).Scan(&amount); err != nil || amount != want.amount {
++					t.Fatalf("%s: got %s want %s (%v)", want.kind, amount, want.amount, err)
++				}
++			}
++			var drift int
++			if err := tx.QueryRow(ctx, "SELECT count(*) FROM structs.api_inventory_reconcile(false)").Scan(&drift); err != nil || drift != 0 {
++				t.Fatalf("drift=%d (%v)", drift, err)
++			}
++		}
++		if err := backfillInventory(ctx, tx); err != nil {
++			t.Fatal(err)
++		}
++		check("107")
++		// A later bank credit only dirties the vault address; ownership must expand.
++		exec("INSERT INTO structs.ledger(address,amount_p,denom,direction) VALUES ('player-vault',5,'ualpha','credit')")
++		d := NewDirty()
++		d.Address("player-vault")
++		if err := expandAddresses(ctx, tx, d); err != nil {
++			t.Fatal(err)
++		}
++		if _, ok := d.Players["1-999100"]; !ok {
++			t.Fatal("vault did not resolve to player")
++		}
++		if err := applyInventoryDeltas(ctx, tx, d, []buffers.LedgerDelta{{Address: "player-vault", Denom: "ualpha", Delta: "5"}}); err != nil {
++			t.Fatal(err)
++		}
++		check("112")
++		// Nightly repair must use the same ownership rules, including guilds.
++		exec("UPDATE structs.api_inventory SET balance=999 WHERE owner_type IN ('player','guild') OR (owner_type='address' AND owner_id IN ('player-vault','guild-vault'))")
++		var drift int
++		if err := tx.QueryRow(ctx, "SELECT count(*) FROM structs.api_inventory_reconcile(true)").Scan(&drift); err != nil || drift != 4 {
++			t.Fatalf("expected four corrupt rows, got %d (%v)", drift, err)
++		}
++		if repaired, err := ConsumeDrift(ctx, tx); err != nil || repaired != 4 {
++			t.Fatalf("repair=%d (%v)", repaired, err)
++		}
++		check("112")
++		var treasury string
++		if err := tx.QueryRow(ctx, "SELECT balance::text FROM view.guild_vault_inventory WHERE guild_id='0-999100' AND denom='ualpha'").Scan(&treasury); err != nil || treasury != "25" {
++			t.Fatalf("treasury=%s (%v)", treasury, err)
++		}
++		dg := NewDirty()
++		dg.Address("guild-vault")
++		if err := expandAddresses(ctx, tx, dg); err != nil {
++			t.Fatal(err)
++		}
++		if _, ok := dg.Guilds["0-999100"]; !ok {
++			t.Fatal("guild vault did not dirty guild")
++		}
++		// A repair with only an owner marked must reach all owned addresses.
++		exec("UPDATE structs.api_inventory SET balance=999 WHERE owner_type IN ('player','guild')")
++		d = NewDirty()
++		d.Player("1-999100")
++		d.Guild("0-999100")
++		if err := recomputeInventory(ctx, tx, d); err != nil {
++			t.Fatal(err)
++		}
++		check("112")
++		if err := backfillInventory(ctx, tx); err != nil {
++			t.Fatal(err)
++		}
++		check("112")
++		// Reassigning a signing address moves only its remaining funds, not the vault.
++		exec("INSERT INTO structs.player(id) VALUES ('1-999101')")
++		exec("UPDATE structs.player_address SET player_id='1-999101' WHERE address='retained-signer'")
++		d = NewDirty()
++		d.Player("1-999100")
++		d.Player("1-999101")
++		if err := applyInventoryDeltas(ctx, tx, d, nil); err != nil {
++			t.Fatal(err)
++		}
++		check("105")
++	})
++}

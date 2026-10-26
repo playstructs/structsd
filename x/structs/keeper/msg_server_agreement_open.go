@@ -32,11 +32,26 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
         return emptyResponse, err
     }
 
-    provider := cc.GetProvider(msg.ProviderId)
+    provider, providerErr := cc.GetExistingProvider(msg.ProviderId)
+    if providerErr != nil {
+        return emptyResponse, providerErr
+    }
 
     permissionError := provider.CanOpenAgreement(activePlayer)
     if (permissionError != nil) {
         return emptyResponse, permissionError
+    }
+
+    ownerId := msg.OwnerId
+    if ownerId == "" {
+        ownerId = activePlayer.ID()
+    }
+    owner, ownerErr := cc.GetExistingAssetOwner(ownerId)
+    if ownerErr != nil {
+        return emptyResponse, ownerErr
+    }
+    if err := cc.PermissionCheck(owner, activePlayer, types.PermTokenTransfer); err != nil {
+        return emptyResponse, err
     }
 
     // Are agreement details valid?
@@ -46,6 +61,31 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
         return emptyResponse, paramError
     }
 
+    // Every agreement expiring at one height is torn down in that block's
+    // EndBlocker, which has no gas meter, so a height holds only so many. The
+    // consumer picks the duration and therefore the height; a full one means
+    // choosing another. See AgreementExpirationBucketCap.
+    //
+    // Checked here with the rest of the parameter validation, ahead of the
+    // collateral transfer below, so a refusal never has to unwind a payment.
+    //
+    // The end block is computed first, and checked. A provider publishes its own
+    // duration maximum and nothing bounds that, so a duration large enough to
+    // roll the addition over gets this far - and a rolled-over end block is not
+    // a far-future agreement, it is one indexed at a height the chain has
+    // already passed. AgreementExpirations reads the index at exactly the
+    // current height, so that agreement never expires, keeps its capacity in the
+    // provider's load, and goes on being billed. Ahead of the transfer for the
+    // same reason as the bucket check.
+    endBlock, endBlockErr := endBlockFor(uint64(ctx.BlockHeight()), msg.Duration)
+    if endBlockErr != nil {
+        return emptyResponse, endBlockErr
+    }
+
+    if !k.AgreementExpirationHeightHasRoomFor(ctx, endBlock, "") {
+        return emptyResponse, types.NewParameterValidationError("duration", msg.Duration, "expiration_height_full").WithRange(0, types.AgreementExpirationBucketCap)
+    }
+
     // Does the activePlayer have enough for the collateral
     duration := math.NewIntFromUint64(msg.Duration)
     capacity := math.NewIntFromUint64(msg.Capacity)
@@ -53,17 +93,17 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     //balanceError := activePlayer.CanAffordAgreement(collateralAmount, provider.GetRate().Denom)
     collateralAmountCoin := sdk.NewCoin(provider.GetRate().Denom, collateralAmount)
     collateralAmountCoins := sdk.NewCoins(collateralAmountCoin)
-    sourceAcc, errParam := sdk.AccAddressFromBech32(activePlayer.GetPrimaryAddress())
+    sources, errParam := cc.EnsureVaults(owner.ID())
     if errParam != nil {
         return emptyResponse, errParam
     }
 
-    if !k.bankKeeper.HasBalance(ctx, sourceAcc, collateralAmountCoin) {
+    if !k.bankKeeper.HasBalance(ctx, sources[0], collateralAmountCoin) {
         return emptyResponse, types.NewPlayerAffordabilityError(activePlayer.GetPlayerId(), "agreement_open", collateralAmountCoin.String())
     }
 
     // move the funds from user to provider collateral pool
-    errSend := k.bankKeeper.SendCoins(ctx, sourceAcc, provider.GetCollateralPoolLocation(), collateralAmountCoins)
+    errSend := k.bankKeeper.SendCoins(ctx, sources[0], provider.GetCollateralPoolLocation(), collateralAmountCoins)
     if errSend != nil {
         return emptyResponse, errSend
     }
@@ -79,15 +119,17 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
         provider.GetSubstationId(),
         "",
         msg.Creator,
-        activePlayer.GetPlayerId(),
+        owner.ID(),
         msg.Capacity,
     )
     if allocationErr != nil {
         return emptyResponse, allocationErr
     }
 
-    allocationPermissionId := GetObjectPermissionIDBytes(allocation.ID(), activePlayer.ID())
-    cc.SetPermissions(allocationPermissionId, types.PermAllocationConnection)
+    if _, playerOwned := owner.(*PlayerCache); playerOwned {
+        allocationPermissionId := GetObjectPermissionIDBytes(allocation.ID(), owner.ID())
+        cc.SetPermissions(allocationPermissionId, types.PermAllocationConnection)
+    }
 
     // Build the Agreement through context.
     //
@@ -98,11 +140,10 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     // consumer never received, leaving the collateral pool short by that much and
     // tripping the provider-collateral-solvency invariant.
     startBlock := uint64(ctx.BlockHeight())
-    endBlock := startBlock + msg.Duration
 
     agreementRecord := types.CreateBaseAgreement(
         msg.Creator,
-        activePlayer.GetPlayerId(),
+        owner.ID(),
         msg.ProviderId,
         msg.Capacity,
         startBlock,
@@ -112,10 +153,16 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     agreementRecord.Id = GetObjectID(types.ObjectType_agreement, allocation.GetAllocation().Index)
     agreement := cc.NewAgreement(agreementRecord)
 
-    agreementPermissionId := GetObjectPermissionIDBytes(agreement.ID(), activePlayer.ID())
-    cc.SetPermissions(agreementPermissionId, types.PermAgreementAll)
+    if _, playerOwned := owner.(*PlayerCache); playerOwned {
+        agreementPermissionId := GetObjectPermissionIDBytes(agreement.ID(), owner.ID())
+        cc.SetPermissions(agreementPermissionId, types.PermAgreementAll)
+    }
 
     provider.AgreementLoadIncrease(msg.Capacity)
+
+    // Once historical capture is initialized, every new agreement reserves its
+    // principal and joins the bounded settlement queue in this same context.
+    // The upgrade must enroll older balances with their own earned baseline.
 
 	cc.CommitAll()
 	return &types.MsgAgreementResponse{}, nil

@@ -88,6 +88,7 @@ func TestDowntimeJailZeroesReactorEnergy(t *testing.T) {
 	// registers the slashing signing info that the downtime tracker needs.
 	_, err = bApp.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
+	bApp.StructsKeeper.ProcessReactorSlashReconcileQueue(ctx)
 
 	validator, err := bApp.StakingKeeper.GetValidator(ctx, valAddr)
 	require.NoError(t, err)
@@ -134,6 +135,7 @@ func TestDowntimeJailZeroesReactorEnergy(t *testing.T) {
 	// and therefore our gate, in the same block as the jail.
 	_, err = bApp.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
+	bApp.StructsKeeper.ProcessReactorSlashReconcileQueue(ctx)
 
 	validator, err = bApp.StakingKeeper.GetValidator(ctx, valAddr)
 	require.NoError(t, err)
@@ -172,12 +174,25 @@ func TestStructsEndBlockerRunsAfterStaking(t *testing.T) {
 }
 
 func setupJailGateApp(t *testing.T) (*app.App, sdk.Context) {
+	return setupJailGateAppWithValidators(t, 1)
+}
+
+func setupJailGateAppWithValidators(t *testing.T, validatorCount int) (*app.App, sdk.Context) {
+	return setupReactorAppGenesis(t, validatorCount, false)
+}
+
+func setupReactorAppGenesis(t *testing.T, validatorCount int, freshEconomy bool) (*app.App, sdk.Context) {
+	t.Helper()
+	return setupReactorAppGenesisWithDB(t, validatorCount, freshEconomy, dbm.NewMemDB())
+}
+
+func setupReactorAppGenesisWithDB(t *testing.T, validatorCount int, freshEconomy bool, db dbm.DB) (*app.App, sdk.Context) {
 	t.Helper()
 
 	appOptions := make(simtestutil.AppOptionsMap, 0)
 	appOptions[flags.FlagHome] = app.DefaultNodeHome
 
-	bApp, err := app.New(log.NewNopLogger(), dbm.NewMemDB(), nil, true, appOptions,
+	bApp, err := app.New(log.NewNopLogger(), db, nil, true, appOptions,
 		baseapp.SetChainID(jailGateChainID))
 	require.NoError(t, err)
 
@@ -186,9 +201,13 @@ func setupJailGateApp(t *testing.T) (*app.App, sdk.Context) {
 	// through MsgCreateValidator so it travels the real creation path.
 	seedConsPubKey, err := cryptocodec.ToCmtPubKeyInterface(ed25519.GenPrivKey().PubKey())
 	require.NoError(t, err)
-	valSet := cmttypes.NewValidatorSet([]*cmttypes.Validator{
-		cmttypes.NewValidator(seedConsPubKey, 1),
-	})
+	seedValidators := []*cmttypes.Validator{cmttypes.NewValidator(seedConsPubKey, 1)}
+	for i := 1; i < validatorCount; i++ {
+		key, err := cryptocodec.ToCmtPubKeyInterface(ed25519.GenPrivKey().PubKey())
+		require.NoError(t, err)
+		seedValidators = append(seedValidators, cmttypes.NewValidator(key, 1))
+	}
+	valSet := cmttypes.NewValidatorSet(seedValidators)
 
 	seedPrivKey := secp256k1.GenPrivKey()
 	seedAcc := authtypes.NewBaseAccount(seedPrivKey.PubKey().Address().Bytes(), seedPrivKey.PubKey(), 0, 0)
@@ -201,6 +220,29 @@ func setupJailGateApp(t *testing.T) (*app.App, sdk.Context) {
 		bApp.AppCodec(), bApp.DefaultGenesis(), valSet,
 		[]authtypes.GenesisAccount{seedAcc}, seedBalance)
 	require.NoError(t, err)
+
+	// Most callers exercise pre-upgrade staking behavior. Keep that fixture
+	// explicitly legacy instead of inheriting the new chain's active default.
+	if !freshEconomy {
+		var structsGenesis structstypes.GenesisState
+		bApp.AppCodec().MustUnmarshalJSON(genesisState[structstypes.ModuleName], &structsGenesis)
+
+		genesisState[structstypes.ModuleName] = bApp.AppCodec().MustMarshalJSON(&structsGenesis)
+	}
+
+	if validatorCount > 1 {
+		// SDK's simulation helper declares every validator's bonded stake in
+		// supply but funds the bonded pool for only one. Fund the full set so
+		// both bank supply and staking pool validation hold at genesis.
+		var bankGenesis banktypes.GenesisState
+		bApp.AppCodec().MustUnmarshalJSON(genesisState[banktypes.ModuleName], &bankGenesis)
+		for i := range bankGenesis.Balances {
+			if bankGenesis.Balances[i].Address == authtypes.NewModuleAddress(stakingtypes.BondedPoolName).String() {
+				bankGenesis.Balances[i].Coins = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.DefaultPowerReduction.MulRaw(int64(validatorCount))))
+			}
+		}
+		genesisState[banktypes.ModuleName] = bApp.AppCodec().MustMarshalJSON(&bankGenesis)
+	}
 
 	genesisBytes, err := json.Marshal(genesisState)
 	require.NoError(t, err)

@@ -67,7 +67,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
  ActivateCharge: 2,                
- BuildCharge: 8,                      
+ BuildCharge: 1,                      
  DefendChangeCharge: 1,        
  MoveCharge: 3,                        
  StealthActivateCharge: 0,  
@@ -156,7 +156,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
  ActivateCharge: 2,                
- BuildCharge: 8,                      
+ BuildCharge: 1,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
  StealthActivateCharge: 0,  
@@ -244,7 +244,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
  ActivateCharge: 2,                
- BuildCharge: 8,                      
+ BuildCharge: 1,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
  StealthActivateCharge: 0,  
@@ -331,7 +331,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
  ActivateCharge: 2,                
- BuildCharge: 8,                      
+ BuildCharge: 1,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
  StealthActivateCharge: 0,  
@@ -418,7 +418,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
  ActivateCharge: 2,                
- BuildCharge: 8,                      
+ BuildCharge: 1,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
  StealthActivateCharge: 0,  
@@ -505,7 +505,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
  ActivateCharge: 2,                
- BuildCharge: 8,                      
+ BuildCharge: 1,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
  StealthActivateCharge: 2,  
@@ -592,7 +592,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
  ActivateCharge: 2,                
- BuildCharge: 8,                      
+ BuildCharge: 1,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
  StealthActivateCharge: 0,  
@@ -679,7 +679,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
  ActivateCharge: 2,                
- BuildCharge: 8,                      
+ BuildCharge: 1,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
  StealthActivateCharge: 0,  
@@ -766,7 +766,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
  ActivateCharge: 2,                
- BuildCharge: 8,                      
+ BuildCharge: 1,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
  StealthActivateCharge: 0,  
@@ -853,7 +853,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
  ActivateCharge: 2,                
- BuildCharge: 8,                      
+ BuildCharge: 1,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
  StealthActivateCharge: 0,  
@@ -940,7 +940,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
  ActivateCharge: 2,                
- BuildCharge: 8,                      
+ BuildCharge: 1,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
  StealthActivateCharge: 0,  
@@ -1027,7 +1027,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
  ActivateCharge: 2,                
- BuildCharge: 8,                      
+ BuildCharge: 1,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
  StealthActivateCharge: 0,  
@@ -1114,7 +1114,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
      ActivateCharge: 2,
-     BuildCharge: 8,
+     BuildCharge: 1,
      DefendChangeCharge: 1,
      MoveCharge: 0,
      StealthActivateCharge: 2,
@@ -1155,7 +1155,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      CanDefend: false,
 
      BuildLimit: 1,
-     BuildDifficulty: 700,
+     BuildDifficulty: 10, // Minimum proof difficulty after 10 blocks (~1 minute at 6s/block).
      BuildDraw: 500000,
      PassiveDraw: 500000,
      MaxHealth: 6,
@@ -1201,7 +1201,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
      ActivateCharge: 2,
-     BuildCharge: 8,
+     BuildCharge: 1,
      DefendChangeCharge: 1,
      MoveCharge: 0,
      StealthActivateCharge: 0,
@@ -1288,7 +1288,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
      ActivateCharge: 2,
-     BuildCharge: 8,
+     BuildCharge: 1,
      DefendChangeCharge: 1,
      MoveCharge: 0,
      StealthActivateCharge: 0,
@@ -1375,7 +1375,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
      ActivateCharge: 2,
-     BuildCharge: 8,
+     BuildCharge: 1,
      DefendChangeCharge: 1,
      MoveCharge: 0,
      StealthActivateCharge: 0,
@@ -1462,7 +1462,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
      ActivateCharge: 2,
-     BuildCharge: 8,
+     BuildCharge: 1,
      DefendChangeCharge: 1,
      MoveCharge: 0,
      StealthActivateCharge: 0,
@@ -1549,7 +1549,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
      ActivateCharge: 2,
-     BuildCharge: 8,
+     BuildCharge: 1,
      DefendChangeCharge: 1,
      MoveCharge: 0,
      StealthActivateCharge: 0,
@@ -1636,7 +1636,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
      ActivateCharge: 2,
-     BuildCharge: 8,
+     BuildCharge: 1,
      DefendChangeCharge: 1,
      MoveCharge: 0,
      StealthActivateCharge: 0,
@@ -1723,7 +1723,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PowerGeneration: TechPowerGeneration_smallGenerator,
 
      ActivateCharge: 2,
-     BuildCharge: 8,
+     BuildCharge: 1,
      DefendChangeCharge: 1,
      MoveCharge: 0,
      StealthActivateCharge: 0,
@@ -1810,7 +1810,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PowerGeneration: TechPowerGeneration_mediumGenerator,
 
      ActivateCharge: 2,
-     BuildCharge: 8,
+     BuildCharge: 1,
      DefendChangeCharge: 1,
      MoveCharge: 0,
      StealthActivateCharge: 0,
@@ -1897,7 +1897,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PowerGeneration: TechPowerGeneration_largeGenerator,
 
      ActivateCharge: 2,
-     BuildCharge: 8,
+     BuildCharge: 1,
      DefendChangeCharge: 1,
      MoveCharge: 0,
      StealthActivateCharge: 0,

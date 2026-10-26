@@ -56,6 +56,20 @@ func (cache *ProviderCache) LoadProvider() (bool) {
 }
 
 
+// CheckProvider reports whether a provider actually exists at this cache's id.
+//
+// The other caches spell this the same way. It exists because the context getter
+// that produced the cache reads nothing: see CurrentContext.GetExistingProvider.
+func (cache *ProviderCache) CheckProvider() error {
+	if !cache.ProviderLoaded {
+		if !cache.LoadProvider() {
+			return types.NewObjectNotFoundError("provider", cache.ProviderId)
+		}
+	}
+	return nil
+}
+
+
 /* Getters
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
  */
@@ -65,7 +79,12 @@ func (cache *ProviderCache) GetProvider() types.Provider { if !cache.ProviderLoa
 func (cache *ProviderCache) GetProviderId() string { return cache.ProviderId }
 
 func (cache *ProviderCache) GetOwner() *PlayerCache {
-    return cache.CC.GetPlayer(cache.GetOwnerId())
+    owner, err := cache.CC.GetExistingAssetOwner(cache.GetOwnerId())
+    if err != nil {
+        return nil
+    }
+    player, _ := owner.(*PlayerCache)
+    return player
 }
 
 func (cache *ProviderCache) GetSubstation() *SubstationCache {
@@ -122,7 +141,6 @@ func (cache *ProviderCache) SweepRevenue(destination sdk.AccAddress, amount math
 
     denom := cache.GetRate().Denom
     available := cache.CC.k.bankKeeper.SpendableCoin(cache.CC.ctx, cache.GetCollateralPoolLocation(), denom).Amount
-
     paid := amount
     if available.LT(amount) {
         paid = available
@@ -170,6 +188,12 @@ func (cache *ProviderCache) SweepRevenue(destination sdk.AccAddress, amount math
 }
 
 func (cache *ProviderCache) AgreementVerify(capacity uint64, duration uint64) (error) {
+    // Rows created before rate validation must be refused before collateral
+    // arithmetic constructs an invalid SDK coin. Keep deletion available so
+    // the owner can retire the offering and recover any prefunded pools.
+    if err := types.ValidateProviderRate(cache.GetRate()); err != nil {
+        return err
+    }
     if err := cache.AgreementCapacityVerify(capacity); err != nil {
         return err
     }
@@ -250,8 +274,9 @@ func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) 
 
     // The access policy decides who may contract with this provider. It does not
     // authorize moving the player's money, and PermProviderOpen is an access grant
-    // rather than a spend one: AgreementOpen debits the primary address for the
-    // collateral, so the signing key needs the same bit PlayerSend requires.
+    // rather than a spend one: AgreementOpen debits the selected owner's vault
+    // for collateral, so the signing key needs the bit PlayerSend requires.
+    // The handler separately checks authority over that selected asset owner.
     //
     // Checked against the player rather than the provider, which is what keeps
     // open-market open. The owner shortcut in PermissionCheck satisfies the object
@@ -263,9 +288,21 @@ func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) 
 
 func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) (error) {
 
-    destinationAcc, errParam := sdk.AccAddressFromBech32(destinationAddress)
-    if errParam != nil {
-        return errParam
+    // Ordinary earnings go to the owner vault. An explicitly named recipient
+    // retains the existing external-recipient validation before checkpointing.
+    var destinationAcc sdk.AccAddress
+    if destinationAddress == "" {
+        destinations, err := cache.CC.EnsureVaults(cache.GetOwnerId())
+        if err != nil {
+            return err
+        }
+        destinationAcc = destinations[0]
+    } else {
+        var err error
+        destinationAcc, err = cache.CC.k.resolveExternalRecipient(destinationAddress)
+        if err != nil {
+            return err
+        }
     }
 
     // Sweep everything earned up to now out of the collateral pool and into the
@@ -278,6 +315,12 @@ func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) 
     // Now handle the value available in the Earnings pool
     // Get Balance
     earningsBalances := cache.CC.k.bankKeeper.SpendableCoins(cache.CC.ctx, cache.GetEarningsPoolLocation())
+    // SendCoins does not enforce governance's per-denom send-enabled policy.
+    // Check the complete payout, including non-rate assets donated to the pool.
+    // An empty withdrawal remains a valid settlement-only operation.
+    if err := cache.CC.k.bankKeeper.IsSendEnabledCoins(cache.CC.ctx, earningsBalances...); err != nil {
+        return err
+    }
     // Transfer
     errSend := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetEarningsPoolLocation(), destinationAcc, earningsBalances)
     if errSend != nil {
@@ -321,7 +364,7 @@ func (cache *ProviderCache) Delete() (error) {
 }
 
 // drainPoolsToOwner empties the provider's collateral and earnings pools into
-// the owner's primary address.
+// the owner's vault, for either a player or a guild.
 //
 // It runs only from Delete, after the loop above has settled every agreement, so
 // every consumer has already been made whole and what is left belongs to the
@@ -342,12 +385,19 @@ func (cache *ProviderCache) drainPoolsToOwner() error {
 
     collateral := cache.CC.k.bankKeeper.SpendableCoins(cache.CC.ctx, collateralPool)
     earnings := cache.CC.k.bankKeeper.SpendableCoins(cache.CC.ctx, earningsPool)
-
     if collateral.IsZero() && earnings.IsZero() {
         return nil
     }
 
-    destination, errParam := sdk.AccAddressFromBech32(cache.GetOwner().GetPrimaryAddress())
+    // Deleting an offering must not bypass the withdrawal freeze by draining
+    // its pools. This is the owner's voluntary payout, after consumer reserves
+    // have been excluded; mandatory settlement uses its separate payment path.
+    payout := collateral.Add(earnings...)
+    if err := cache.CC.k.bankKeeper.IsSendEnabledCoins(cache.CC.ctx, payout...); err != nil {
+        return err
+    }
+
+    destinations, errParam := cache.CC.EnsureVaults(cache.GetOwnerId())
     if errParam != nil {
         return errParam
     }
@@ -359,7 +409,7 @@ func (cache *ProviderCache) drainPoolsToOwner() error {
         }
     }
 
-    return cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, earningsPool, destination, collateral.Add(earnings...))
+    return cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, earningsPool, destinations[0], payout)
 }
 
 

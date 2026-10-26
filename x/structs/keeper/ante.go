@@ -19,6 +19,29 @@ func (k Keeper) HasTransientStore() bool {
 	return k.transientStoreService != nil
 }
 
+/* IsPlayerPrimaryAddress reports whether an address is the player's primary one.
+ *
+ * The ante uses this for one thing: deciding whether a recovery message spends
+ * the shared per-player message quota. The primary address is the recovery
+ * identity, and it is not the address a griefing delegate holds, so exempting it
+ * is what keeps a bad key from blocking its own eviction. See
+ * ante.RecoveryMessages.
+ *
+ * Read-only, and only reached for a message in that set.
+ */
+func (k Keeper) IsPlayerPrimaryAddress(ctx context.Context, playerId string, address string) bool {
+	if playerId == "" || address == "" {
+		return false
+	}
+
+	player, found := k.GetPlayer(ctx, playerId)
+	if !found {
+		return false
+	}
+
+	return player.PrimaryAddress == address
+}
+
 // IncrementPlayerMsgCount atomically reads, adds delta, and writes the
 // per-player message count in the transient store. Returns the new total.
 func (k Keeper) IncrementPlayerMsgCount(ctx context.Context, playerId string, delta uint64) uint64 {

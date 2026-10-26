@@ -14,8 +14,8 @@ LEDGER_ENABLED ?= true
 TM_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::')
 BUILDDIR ?= $(CURDIR)/build
 
-GO_SYSTEM_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1-2)
-REQUIRE_GO_VERSION = 1.23
+GO_SYSTEM_VERSION = $(shell go env GOVERSION | sed 's/^go//')
+REQUIRE_GO_VERSION = 1.27.3
 
 export GO111MODULE = on
 
@@ -110,10 +110,10 @@ help:
 	@echo ""
 	@echo "Test:"
 	@echo "  test                 Run all tests"
-	@echo "  test-unit            Run unit tests with timeout"
+	@echo "  test-unit            Run Go package tests with timeout and norace tag"
 	@echo "  test-race            Run tests with race detector"
 	@echo "  test-cover           Run tests with coverage report"
-	@echo "  test-integration     Run integration test script"
+	@echo "  test-integration     Run live-chain tests (optional TEST_CHAIN_FLAGS)"
 	@echo "  test-ante-regression Replay incident 2026-05 ante shape (needs PLAYER_KEY + struct IDs)"
 	@echo ""
 	@echo "Lint:"
@@ -138,10 +138,11 @@ help:
 ###############################################################################
 
 check_version:
-ifneq ($(shell [ "$(GO_SYSTEM_VERSION)" \< "$(REQUIRE_GO_VERSION)" ] && echo true),)
-	@echo "ERROR: Go version $(REQUIRE_GO_VERSION)+ is required (found $(GO_SYSTEM_VERSION))"
-	@exit 1
-endif
+	@awk -v actual='$(GO_SYSTEM_VERSION)' -v required='$(REQUIRE_GO_VERSION)' 'BEGIN { \
+		if (actual !~ /^[0-9]+\.[0-9]+\.[0-9]+$$/) exit 1; \
+		split(actual, a, "."); split(required, r, "."); \
+		for (i = 1; i <= 3; i++) { if (a[i]+0 > r[i]+0) exit 0; if (a[i]+0 < r[i]+0) exit 1 } \
+	}' || { echo "ERROR: Go version $(REQUIRE_GO_VERSION)+ is required (found $(GO_SYSTEM_VERSION))"; exit 1; }
 
 all: build lint test
 
@@ -247,7 +248,7 @@ proto-gen-ts:
 
 proto-swagger:
 	@echo "--> Generating OpenAPI/Swagger spec..."
-	buf generate --template proto/buf.gen.swagger.yaml
+	python3 -B proto/update_openapi.py
 
 proto-format:
 	@echo "--> Formatting proto files..."
@@ -264,13 +265,14 @@ proto-lint:
 ###############################################################################
 
 TEST_PACKAGES := ./...
+TEST_CHAIN_FLAGS ?=
 
 test:
 	@echo "--> Running all tests"
 	go test -mod=readonly $(TEST_PACKAGES)
 
 test-unit:
-	@echo "--> Running unit tests"
+	@echo "--> Running Go package tests with timeout and norace tag"
 	go test -mod=readonly -timeout=5m -tags='norace' $(TEST_PACKAGES)
 
 test-race:
@@ -285,7 +287,7 @@ test-cover:
 
 test-integration:
 	@echo "--> Running integration tests"
-	bash tests/test_chain.sh
+	bash tests/test_chain.sh $(TEST_CHAIN_FLAGS)
 
 # test-ante-regression: replays the 2026-05 ante incident shape (two
 # struct-defense-set msgs in a single tx) against a running chain. Verifies the

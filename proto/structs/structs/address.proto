@@ -16,6 +16,17 @@ message AddressRecord {
   uint64 playerIndex = 2;
 }
 
+// AddressNonceRecord carries the registration-proof nonce for one address.
+//
+// It is a separate list from AddressRecord because the nonce deliberately
+// outlives the association: it is what stops a revoked address's old
+// registration proof from being replayed, so it must survive a revocation that
+// removes the AddressRecord entirely.
+message AddressNonceRecord {
+  string address = 1;
+  uint64 nonce = 2;
+}
+
 message AddressAssociation {
   string address = 1;
   uint64 playerIndex = 2;

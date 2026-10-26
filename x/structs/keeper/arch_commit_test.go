@@ -165,7 +165,9 @@ func TestArch_CommitAllCommitsEveryCacheMap(t *testing.T) {
 	// structTypes is read-only and deliberately never committed; its Commit is
 	// an empty method. Everything else must be committed.
 	exempt := map[string]string{
+		"addressesByPlayer": "secondary view of address pointers; canonical addresses map commits each cache once",
 		"structTypes": "read-only cache, StructTypeCache.Commit is intentionally empty",
+		"infusionsByOwner": "secondary view of infusion pointers; canonical infusions map commits each cache once",
 	}
 
 	var missing []string
@@ -187,16 +189,18 @@ func TestArch_CommitAllCommitsEveryCacheMap(t *testing.T) {
 //
 // NewAccountWithAddress is the only call in the module that consumes a global
 // monotonic sequence, which makes it the only thing whose result depends on
-// when it runs. The three allowlisted sites are safe for different reasons:
+// when it runs. The allowlisted sites are safe for different reasons:
 // address.go is reached from a commit and is the reason commitCaches sorts,
 // while guild.go and provider_context.go are called directly from handlers, one
-// per message. A fourth site would need the same analysis, so it has to be a
+// per message. Vault provisioning also commits in sorted cache-key order. Each
+// additional site needs the same analysis, so it has to be a
 // deliberate edit here rather than something that slips in.
 func TestArch_AccountCreationStaysOutOfCommitPaths(t *testing.T) {
 	allowed := map[string]string{
 		"address.go":          "SetPlayerIndexForAddress; reached from AddressCache.Commit, which is why commitCaches sorts",
 		"guild.go":            "AppendGuild; called once per MsgGuildCreate",
 		"provider_context.go": "NewProvider; called once per MsgProviderCreate",
+		"vault_cache.go":      "VaultCache.Commit; CommitAll and EnsureVaults both use sorted commitCaches",
 	}
 
 	var offenders []string

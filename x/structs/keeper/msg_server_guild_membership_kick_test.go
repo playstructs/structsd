@@ -168,3 +168,97 @@ func TestMsgGuildMembershipKick(t *testing.T) {
 		require.Error(t, err)
 	})
 }
+
+// Independent administration survives a kick. Removing membership is not
+// permission revocation; the administrator must be explicitly revoked.
+func TestGuildMembershipKickPreservesIndependentAdministration(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	wctx := sdk.UnwrapSDKContext(ctx)
+
+	gs := testCreateGuild(k, ctx)
+
+	adminAcc := sdk.AccAddress("kick_admin_addr_pad1")
+	admin := testAppendPlayer(k, ctx, types.Player{
+		Creator:        adminAcc.String(),
+		PrimaryAddress: adminAcc.String(),
+		GuildId:        gs.Guild.Id,
+		GuildRank:      2,
+	})
+
+	// The guild delegates administration, exactly as PermissionGrantOnObject would.
+	adminPermId := keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id, admin.Id)
+	k.SetPermissionsByBytes(ctx, adminPermId, types.PermAdmin|types.PermUpdate|types.PermGuildMembership)
+
+	_, err := ms.GuildMembershipKick(wctx, &types.MsgGuildMembershipKick{
+		Creator:  gs.GuildOwner.Creator,
+		GuildId:  gs.Guild.Id,
+		PlayerId: admin.Id,
+	})
+	require.NoError(t, err)
+
+	kicked, found := k.GetPlayer(ctx, admin.Id)
+	require.True(t, found)
+	require.Equal(t, "", kicked.GuildId, "the kick itself should have landed")
+
+	require.Equal(t, types.PermAdmin|types.PermUpdate|types.PermGuildMembership, k.GetPermissionsByBytes(ctx, adminPermId),
+        "membership changes must not erase independent administration")
+    // The owner can explicitly revoke independent authority before dismissing
+    // an administrator. A membership operator alone has no right to do so.
+    _, err = ms.PermissionRevokeOnObject(wctx, &types.MsgPermissionRevokeOnObject{
+        Creator: gs.GuildOwner.Creator, ObjectId: gs.Guild.Id, PlayerId: admin.Id,
+        Permissions: uint64(types.PermAdmin|types.PermUpdate|types.PermGuildMembership),
+    })
+    require.NoError(t, err)
+
+	// The escalation the grant enabled: PermAdmin is the whole of what
+	// GuildUpdateOwnerId asks for, and it never checks membership.
+	_, err = ms.GuildUpdateOwnerId(wctx, &types.MsgGuildUpdateOwnerId{
+		Creator: admin.Creator,
+		GuildId: gs.Guild.Id,
+		Owner:   admin.Id,
+	})
+	require.Error(t, err, "an explicitly revoked administrator must not be able to seize the guild")
+
+	guild, guildFound := k.GetGuild(ctx, gs.Guild.Id)
+	require.True(t, guildFound)
+	require.Equal(t, gs.GuildOwner.Id, guild.Owner, "ownership must be untouched")
+}
+
+// The owner's row is how ownership is stored, and guilds are property: an owner
+// need not be a member. GetGuildMembershipKickCache refuses to kick them, so the
+// clearing above can never reach that row - this pins the refusal that makes it
+// safe.
+func TestGuildMembershipKickCannotReachTheOwnersGrants(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	wctx := sdk.UnwrapSDKContext(ctx)
+
+	gs := testCreateGuild(k, ctx)
+	ownerPermId := keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id, gs.GuildOwner.Id)
+	require.NotEqual(t, types.Permissionless, k.GetPermissionsByBytes(ctx, ownerPermId))
+
+	_, err := ms.GuildMembershipKick(wctx, &types.MsgGuildMembershipKick{
+		Creator:  gs.GuildOwner.Creator,
+		GuildId:  gs.Guild.Id,
+		PlayerId: gs.GuildOwner.Id,
+	})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "cannot_kick_owner")
+
+	require.NotEqual(t, types.Permissionless, k.GetPermissionsByBytes(ctx, ownerPermId),
+		"the owner's grants are their ownership and must survive")
+}
+
+func TestGuildMembershipRankKickCannotEraseDirectAdministrator(t *testing.T) {
+ k,ms,ctx:=setupMsgServer(t)
+ gs:=testCreateGuild(k,ctx)
+ actorAddress:=sdk.AccAddress("rank_kick_actor_addr_")
+ actor:=testAppendPlayer(k,ctx,types.Player{Creator:actorAddress.String(),PrimaryAddress:actorAddress.String(),GuildId:gs.Guild.Id,GuildRank:2})
+ targetAddress:=sdk.AccAddress("rank_kick_admin_addr_")
+ target:=testAppendPlayer(k,ctx,types.Player{Creator:targetAddress.String(),PrimaryAddress:targetAddress.String(),GuildId:gs.Guild.Id,GuildRank:3})
+ k.SetGuildRankPermissionStoreOnly(ctx,gs.Guild.Id,gs.Guild.Id,types.PermGuildMembership,2)
+ direct:=keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id,target.Id)
+ k.SetPermissionsByBytes(ctx,direct,types.PermAdmin|types.PermUpdate)
+ _,err:=ms.GuildMembershipKick(ctx,&types.MsgGuildMembershipKick{Creator:actor.Creator,GuildId:gs.Guild.Id,PlayerId:target.Id});require.NoError(t,err)
+ updated,found:=k.GetPlayer(ctx,target.Id);require.True(t,found);require.Empty(t,updated.GuildId)
+ require.Equal(t,types.PermAdmin|types.PermUpdate,k.GetPermissionsByBytes(ctx,direct))
+}

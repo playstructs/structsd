@@ -21,6 +21,11 @@ type StructsAnteKeeper interface {
 	// PermissionMap check cannot answer.
 	ThrottleTargetAuthorized(ctx context.Context, creator string, kind types.ObjectType, targetId string, perm types.Permission) bool
 
+	// IsPlayerPrimaryAddress reports whether an address is the player's primary
+	// one. Only the recovery-message exemption asks, so this costs a read on
+	// that path alone.
+	IsPlayerPrimaryAddress(ctx context.Context, playerId string, address string) bool
+
 	// Transient store availability check
 	HasTransientStore() bool
 

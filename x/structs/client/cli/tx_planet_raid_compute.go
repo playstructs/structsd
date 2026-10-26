@@ -83,7 +83,7 @@ func CmdPlanetRaidCompute() *cobra.Command {
 			currentBlock := currentBlockResponse.BlockHeight
 			fmt.Printf("Raid process against planet %s activated on %d, current block is %d \n", planet.Id, planetAttributes.BlockStartRaid, currentBlock)
 			currentAge := currentBlock - planetAttributes.BlockStartRaid
-			currentDifficulty := types.CalculateDifficulty(float64(currentAge), planetAttributes.PlanetaryShield) //structType.BuildDifficulty)
+			currentDifficulty := types.CalculateDifficulty(currentAge, planetAttributes.PlanetaryShield) //structType.BuildDifficulty)
 			fmt.Printf("Raid difficulty is %d \n", currentDifficulty)
 
 			activeRaidBlockString := strconv.FormatUint(planetAttributes.BlockStartRaid, 10)
@@ -107,7 +107,7 @@ func CmdPlanetRaidCompute() *cobra.Command {
 					}
 					currentBlock = currentBlockResponse.BlockHeight
 					currentAge = currentBlock - planetAttributes.BlockStartRaid
-					newDifficulty = types.CalculateDifficulty(float64(currentAge), planetAttributes.PlanetaryShield)
+					newDifficulty = types.CalculateDifficulty(currentAge, planetAttributes.PlanetaryShield)
 
 					if currentDifficulty != newDifficulty {
 						currentDifficulty = newDifficulty

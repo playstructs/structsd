@@ -20,18 +20,25 @@ func (k msgServer) AgreementDurationIncrease(goCtx context.Context, msg *types.M
         return emptyResponse, lookupErr
     }
 
-    agreement := cc.GetAgreement(msg.AgreementId)
+    agreement, agreementErr := cc.GetExistingAgreement(msg.AgreementId)
+    if agreementErr != nil {
+        return emptyResponse, agreementErr
+    }
 
     permissionError := agreement.CanUpdate(activePlayer)
     if (permissionError != nil) {
         return emptyResponse, permissionError
     }
 
-    // Extending the duration is paid for out of the player's primary address
+    // Extending the duration is paid for out of the agreement owner's vault
     // below, so it is a token spend and needs the bit that authorizes one.
     // CanUpdate decides who may modify this agreement, nothing about whose money
     // may move.
-    permissionError = activePlayer.CanTransferTokensBy(activePlayer)
+    owner, ownerErr := cc.GetExistingAssetOwner(agreement.GetOwnerId())
+    if ownerErr != nil {
+        return emptyResponse, ownerErr
+    }
+    permissionError = cc.PermissionCheck(owner, activePlayer, types.PermTokenTransfer)
     if (permissionError != nil) {
         return emptyResponse, permissionError
     }
@@ -42,7 +49,7 @@ func (k msgServer) AgreementDurationIncrease(goCtx context.Context, msg *types.M
         return emptyResponse, paramError
     }
 
-    sourceAcc, errParam := sdk.AccAddressFromBech32(activePlayer.GetPrimaryAddress())
+    sources, errParam := cc.EnsureVaults(owner.ID())
     if errParam != nil {
         return emptyResponse, errParam
     }
@@ -52,12 +59,12 @@ func (k msgServer) AgreementDurationIncrease(goCtx context.Context, msg *types.M
     collateralAmountCoins := sdk.NewCoins(collateralAmountCoin)
 
 
-    if !k.bankKeeper.HasBalance(ctx, sourceAcc, collateralAmountCoin) {
+    if !k.bankKeeper.HasBalance(ctx, sources[0], collateralAmountCoin) {
         return emptyResponse, types.NewPlayerAffordabilityError(activePlayer.GetPlayerId(), "agreement_duration_increase", collateralAmountCoin.String())
     }
 
     // move the funds from user to provider collateral pool
-    errSend := k.bankKeeper.SendCoins(ctx, sourceAcc, agreement.GetProvider().GetCollateralPoolLocation(), collateralAmountCoins)
+    errSend := k.bankKeeper.SendCoins(ctx, sources[0], agreement.GetProvider().GetCollateralPoolLocation(), collateralAmountCoins)
     if errSend != nil {
         return emptyResponse, errSend
     }

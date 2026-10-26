@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"testing"
+	"github.com/stretchr/testify/require"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -263,4 +265,19 @@ func testSetStructAttributeIncrement(k keeperlib.Keeper, ctx context.Context, st
 	newValue := current + incrementAmount
 	k.SetStructAttribute(ctx, structAttributeId, newValue)
 	return newValue
+}
+
+// testSupplySubstation replaces a raw capacity seed with a backed incoming
+// allocation. The root player's capacity is fixture state, as in cascade tests;
+// this helper does not simulate staking or validator hooks.
+func testSupplySubstation(t *testing.T, k keeperlib.Keeper, ctx context.Context, id string, capacity uint64) {
+    t.Helper()
+    address := sdk.AccAddress(fmt.Sprintf("supply-root-%020d", k.GetPlayerCount(ctx))).String()
+    root := testAppendPlayer(k, ctx, types.Player{Creator: address, PrimaryAddress: address})
+    k.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, root.Id), capacity)
+    k.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, id), 0)
+    cc := k.NewCurrentContext(ctx)
+    _, err := cc.NewAllocation(types.AllocationType_automated, root.Id, id, root.Creator, root.Id, 0)
+    require.NoError(t, err)
+    cc.CommitAll()
 }

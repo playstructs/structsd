@@ -78,7 +78,8 @@ const (
 
     PermGuildAll = PermAdmin | PermUpdate | PermDelete | PermGuildMembership |
                     PermGuildEndpointUpdate | PermGuildJoinConstraintsUpdate | PermGuildSubstationUpdate |
-                    PermGuildTokenBurn | PermGuildTokenMint | PermProviderOpen | PermGuildUGCUpdate
+                    PermGuildTokenBurn | PermGuildTokenMint | PermProviderOpen | PermGuildUGCUpdate |
+                    PermAssetsAll | PermSourceAllocation | PermAllocationConnection
 
     PermSubstationAll = PermAdmin | PermUpdate | PermDelete | PermSubstationConnection | PermSourceAllocation
 

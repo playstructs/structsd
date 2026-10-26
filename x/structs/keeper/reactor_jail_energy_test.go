@@ -165,23 +165,25 @@ func TestAfterValidatorBeginUnbondingGatesWhenJailed(t *testing.T) {
 
 	f.mock.JailValidator(f.valAddr)
 	require.NoError(t, f.k.Hooks().AfterValidatorBeginUnbonding(f.ctx, sdk.ConsAddress(f.valAddr), f.valAddr))
+	require.NotEmpty(t, f.k.GetReactorSlashReconcileQueue(f.ctx))
+	f.k.ProcessReactorSlashReconcileQueue(f.ctx)
 
 	require.Equal(t, uint64(0), f.infusion(t).Power)
 	require.Equal(t, uint64(0), f.playerCapacity())
 	require.Equal(t, uint64(1000), f.infusion(t).Fuel)
 }
 
-// TestAfterValidatorBeginUnbondingIgnoresUnjailed is the counterpart: leaving
-// the active set voluntarily is not misconduct, so a validator that is merely
-// unbonding keeps producing energy. Gating here would punish ordinary
-// undelegation.
-func TestAfterValidatorBeginUnbondingIgnoresUnjailed(t *testing.T) {
-	f := setupJailEnergy(t, "hookunjailed", 1000, "0")
-
-	require.NoError(t, f.k.Hooks().AfterValidatorBeginUnbonding(f.ctx, sdk.ConsAddress(f.valAddr), f.valAddr))
-
-	require.Equal(t, uint64(1000), f.infusion(t).Power, "unjailed unbonding must not be gated")
-	require.Equal(t, uint64(1000), f.playerCapacity())
+// Every departure from the bonded set stops power, including an unjailed one.
+func TestAfterValidatorBeginUnbondingGatesUnjailed(t *testing.T) {
+    f := setupJailEnergy(t, "hookunjailed", 1000, "0")
+    f.mock.JailValidator(f.valAddr)
+    f.mock.UnjailValidator(f.valAddr)
+    require.NoError(t, f.k.Hooks().AfterValidatorBeginUnbonding(f.ctx, sdk.ConsAddress(f.valAddr), f.valAddr))
+    require.Equal(t, uint64(1000), f.infusion(t).Power, "stored cleanup is deferred")
+    require.Zero(t, f.k.NewCurrentContext(f.ctx).GetPlayer(f.player.Id).GetAvailableCapacity())
+    f.k.ProcessReactorSlashReconcileQueue(f.ctx)
+    require.Zero(t, f.infusion(t).Power)
+    require.Zero(t, f.playerCapacity())
 }
 
 // TestAfterValidatorBeginUnbondingMissingValidatorFailsClosed asserts the
@@ -192,9 +194,11 @@ func TestAfterValidatorBeginUnbondingMissingValidatorFailsClosed(t *testing.T) {
 
 	f.mock.RemoveValidator(f.valAddr)
 	require.NoError(t, f.k.Hooks().AfterValidatorBeginUnbonding(f.ctx, sdk.ConsAddress(f.valAddr), f.valAddr))
+	require.NotEmpty(t, f.k.GetReactorSlashReconcileQueue(f.ctx))
+	f.k.ProcessReactorSlashReconcileQueue(f.ctx)
 
 	require.Equal(t, uint64(0), f.infusion(t).Power, "missing validator must be gated")
-	require.Equal(t, uint64(1000), f.infusion(t).Fuel)
+	require.Zero(t, f.infusion(t).Fuel, "a missing validator cannot back delegated fuel")
 }
 
 // TestAfterValidatorBondedRestores covers the routine unjail: MsgUnjail clears
@@ -210,6 +214,8 @@ func TestAfterValidatorBondedRestores(t *testing.T) {
 	f.mock.UnjailValidator(f.valAddr)
 	f.mock.BondValidator(f.valAddr)
 	require.NoError(t, f.k.Hooks().AfterValidatorBonded(f.ctx, sdk.ConsAddress(f.valAddr), f.valAddr))
+	require.Zero(t, f.infusion(t).Power, "bond hook only queues restoration")
+	f.k.ProcessReactorSlashReconcileQueue(f.ctx)
 
 	require.Equal(t, uint64(1000), f.infusion(t).Power, "energy returns on rebond")
 	require.Equal(t, uint64(1000), f.playerCapacity())
@@ -228,6 +234,7 @@ func TestReactorRestoreEnergyReflectsSlashDuringJail(t *testing.T) {
 	// share is worth half as much.
 	f.mock.SlashValidatorTokens(f.valAddr, math.NewInt(500))
 	f.mock.UnjailValidator(f.valAddr)
+	f.mock.BondValidator(f.valAddr)
 
 	f.k.ReactorRestoreEnergy(f.ctx, f.valAddr)
 
@@ -403,11 +410,8 @@ func TestGateEnergyCascadesOverCapacityAllocations(t *testing.T) {
 	require.False(t, stillThere, "an allocation the player can no longer power is destroyed, not suspended")
 }
 
-// TestMsgReactorRestartRestoresWithoutRebond covers the case the hooks cannot
-// reach: an operator who unjails but stays below the active-set cutoff is never
-// rebonded, so AfterValidatorBonded never fires and this message is their only
-// route back.
-func TestMsgReactorRestartRestoresWithoutRebond(t *testing.T) {
+// Restart cannot give an unbonded validator production.
+func TestMsgReactorRestartCannotRestoreUnbondedPower(t *testing.T) {
 	f := setupJailEnergy(t, "restartrestore", 1000, "0")
 	ms := keeperlib.NewMsgServerImpl(f.k)
 
@@ -424,9 +428,10 @@ func TestMsgReactorRestartRestoresWithoutRebond(t *testing.T) {
 		ValidatorAddress: f.valAddr.String(),
 	})
 	require.NoError(t, err)
+	f.k.ProcessReactorSlashReconcileQueue(f.ctx)
 
-	require.Equal(t, uint64(1000), f.infusion(t).Power)
-	require.Equal(t, uint64(1000), f.playerCapacity())
+	require.Zero(t, f.infusion(t).Power)
+	require.Zero(t, f.playerCapacity())
 }
 
 // TestMsgReactorRestartForceGatesJailedReactor asserts the message cannot be
@@ -444,6 +449,7 @@ func TestMsgReactorRestartForceGatesJailedReactor(t *testing.T) {
 		ValidatorAddress: f.valAddr.String(),
 	})
 	require.NoError(t, err)
+	f.k.ProcessReactorSlashReconcileQueue(f.ctx)
 
 	require.Equal(t, uint64(0), f.playerCapacity(), "restart gates a jailed reactor")
 	require.Equal(t, uint64(1000), f.infusion(t).Fuel)
@@ -467,6 +473,7 @@ func TestMsgReactorRestartIsPermissionless(t *testing.T) {
 		ValidatorAddress: f.valAddr.String(),
 	})
 	require.NoError(t, err)
+	f.k.ProcessReactorSlashReconcileQueue(f.ctx)
 
 	require.Equal(t, uint64(0), f.playerCapacity(), "any player may reconcile any reactor")
 }
@@ -500,7 +507,7 @@ func TestGenesisImportReactorInfusionsGatesJailedValidator(t *testing.T) {
 	f.mock.JailValidator(f.valAddr)
 
 	cc := f.k.NewCurrentContext(f.ctx)
-	cc.GenesisImportReactorInfusions(f.reactor)
+	require.NoError(t, cc.GenesisImportReactorInfusions(f.reactor, nil))
 	cc.CommitAll()
 
 	require.Equal(t, uint64(0), f.infusion(t).Ratio, "a jailed validator imports gated")

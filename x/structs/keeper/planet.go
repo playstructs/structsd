@@ -41,6 +41,19 @@ func (k Keeper) SetPlanetCount(ctx context.Context, count uint64) {
 
 // SetPlanet set a specific planet in the store
 func (k Keeper) SetPlanet(ctx context.Context, planet types.Planet) {
+	previousOwner := ""
+	if previous, found := k.GetPlanet(ctx, planet.Id); found {
+		previousOwner = previous.Owner
+	}
+	k.setPlanet(ctx, planet, previousOwner)
+}
+
+// Cache commits already know the stored owner and need not read the row again.
+func (k Keeper) setPlanet(ctx context.Context, planet types.Planet, previousOwner string) {
+	if previousOwner != "" && previousOwner != planet.Owner {
+		k.removePlanetOwnerIndex(ctx, types.Planet{Id: planet.Id, Owner: previousOwner})
+	}
+	k.setPlanetOwnerIndex(ctx, planet)
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlanetKey))
 	b := k.cdc.MustMarshal(&planet)
 	store.Set([]byte(planet.Id), b)
@@ -63,6 +76,9 @@ func (k Keeper) GetPlanet(ctx context.Context, planetId string) (val types.Plane
 
 // RemovePlanet removes a planet from the store
 func (k Keeper) RemovePlanet(ctx context.Context, planetId string) {
+	if previous, found := k.GetPlanet(ctx, planetId); found {
+		k.removePlanetOwnerIndex(ctx, previous)
+	}
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlanetKey))
 	store.Delete([]byte(planetId))
 

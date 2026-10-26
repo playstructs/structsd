@@ -43,8 +43,8 @@ func TestAddressRevokeMovesInfusionWithoutLosingCapacity(t *testing.T) {
 
 	reactorId := jailGateReactorId(t, bApp, ctx, valAddr)
 
-	// One player, two addresses. The primary never delegates, so anything the
-	// primary ends up holding arrived through the sweep.
+	// One player, two addresses. The primary never delegates to this reactor;
+	// a second reactor gives the same owner a nonzero diversity bonus.
 	primaryAcc := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
 	secondaryAcc := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
 
@@ -73,11 +73,31 @@ func TestAddressRevokeMovesInfusionWithoutLosingCapacity(t *testing.T) {
 	_, _, playerPower := before.GetPowerDistribution()
 	require.NotZero(t, playerPower)
 
+	validators, err := bApp.StakingKeeper.GetLastValidators(ctx)
+	require.NoError(t, err)
+	var otherValidator sdk.ValAddress
+	for _, validator := range validators {
+		if validator.OperatorAddress != valAddr.String() {
+			otherValidator, err = sdk.ValAddressFromBech32(validator.OperatorAddress)
+			require.NoError(t, err)
+			break
+		}
+	}
+	require.NotEmpty(t, otherValidator)
+	delegate(t, bApp, ctx, stakingMsgServer, bondDenom, primaryAcc, otherValidator, math.NewInt(1000000))
+	otherInfusion, found := bApp.StructsKeeper.GetInfusion(ctx, jailGateReactorId(t, bApp, ctx, otherValidator), primaryAcc.String())
+	require.True(t, found)
+	_, _, otherPower := otherInfusion.GetPowerDistribution()
+	portfolioBefore, err := bApp.StructsKeeper.OwnerReactorDiversity(ctx, &structstypes.QueryOwnerReactorDiversityRequest{OwnerId: playerId})
+	require.NoError(t, err)
+	require.Positive(t, portfolioBefore.Stored.AppliedBonus)
+	require.NoError(t, bApp.StructsKeeper.CheckReactorDiversityAccounting(ctx))
+
 	capacityBefore := redelegationCapacity(t, bApp, ctx, playerId)
 	// The reactor's capacity also carries the operator's own self-delegation, so
-	// only the player's is this infusion's alone.
+	// compare its commission independently from the owner's portfolio bonus.
 	reactorCapacityBefore := redelegationCapacity(t, bApp, ctx, reactorId)
-	require.Equal(t, playerPower, capacityBefore)
+	require.Equal(t, playerPower+otherPower+portfolioBefore.Stored.AppliedBonus, capacityBefore)
 
 	structsMsgServer := structskeeper.NewMsgServerImpl(bApp.StructsKeeper)
 	_, err = structsMsgServer.AddressRevoke(ctx, &structstypes.MsgAddressRevoke{
@@ -85,17 +105,19 @@ func TestAddressRevokeMovesInfusionWithoutLosingCapacity(t *testing.T) {
 		Address: secondaryAcc.String(),
 	})
 	require.NoError(t, err)
+	vault, err := structstypes.VaultAddress(playerId)
+	require.NoError(t, err)
 
 	require.Zero(t, bApp.StructsKeeper.GetPlayerIndexFromAddress(ctx, secondaryAcc.String()),
 		"the address should have been revoked")
 
 	// The stake itself moved address, not validator.
-	_, err = bApp.StakingKeeper.GetDelegation(ctx, primaryAcc, valAddr)
-	require.NoError(t, err, "the delegation should now be held by the primary address")
+	_, err = bApp.StakingKeeper.GetDelegation(ctx, vault, valAddr)
+	require.NoError(t, err, "the delegation should now be held by the vault")
 	_, err = bApp.StakingKeeper.GetDelegation(ctx, secondaryAcc, valAddr)
 	require.Error(t, err, "and no longer by the revoked one")
 
-	after, found := bApp.StructsKeeper.GetInfusion(ctx, reactorId, primaryAcc.String())
+	after, found := bApp.StructsKeeper.GetInfusion(ctx, reactorId, vault.String())
 	require.True(t, found, "the primary address must hold the infusion the sweep gave it")
 	require.Equal(t, stake.Uint64(), after.Fuel, "the stake should have arrived intact")
 	require.Equal(t, playerId, after.PlayerId)
@@ -111,6 +133,12 @@ func TestAddressRevokeMovesInfusionWithoutLosingCapacity(t *testing.T) {
 		"revoking an address must not cost the player capacity")
 	require.Equal(t, reactorCapacityBefore, redelegationCapacity(t, bApp, ctx, reactorId),
 		"nor cost the reactor the commission it still earns on the same stake")
+
+	portfolioAfter, err := bApp.StructsKeeper.OwnerReactorDiversity(ctx, &structstypes.QueryOwnerReactorDiversityRequest{OwnerId: playerId})
+	require.NoError(t, err)
+	require.Equal(t, portfolioBefore, portfolioAfter, "moving stake between owned addresses must preserve diversity")
+	require.NoError(t, bApp.StructsKeeper.CheckReactorDiversityAccounting(ctx))
+	requireStakingAndDistributionHealthy(t, bApp, ctx)
 
 	// Net-zero is not the same as never dipping: the source leg subtracts before
 	// the destination leg adds it back, and the grid cascade queued in between is

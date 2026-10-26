@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
     "encoding/hex"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -60,8 +59,14 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     pubKey := crypto.PubKey{}
     pubKey.Key = decodedProofPubKey
 
-    // We rebuild the message manually here rather than trust the client to provide it
-    hashInput := fmt.Sprintf("PLAYER%sADDRESS%s", msg.PlayerId, msg.Address)
+    // We rebuild the message manually here rather than trust the client to provide it.
+    //
+    // The nonce is read from state rather than taken from the message so the
+    // proof can only ever be spent once: it is burned below, and a proof signed
+    // against a burned nonce no longer rebuilds. The chain id binds the proof to
+    // this chain. See types.AddressRegisterProofInput for why both are needed.
+    proofNonce := cc.GetAddressProofNonce(msg.Address)
+    hashInput := types.AddressRegisterProofInput(ctx.ChainID(), msg.PlayerId, msg.Address, proofNonce)
     k.logger.Info("Address Register", "hashInput", hashInput)
 
     // Decode the Signature from Hex Encoding
@@ -80,6 +85,12 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
          return emptyResponse, types.NewAddressValidationError(msg.Address, "signature_invalid")
     }
 
+    // Burn the nonce this proof was signed against before anything is moved.
+    // AddressRevoke deletes the association but leaves this row, so it is the
+    // only thing that stops the same proof re-registering the address later and
+    // sweeping it again.
+    cc.IncrementAddressProofNonce(msg.Address)
+
 	// Add the address and player index to the keeper
     cc.SetPlayerIndexForAddress(msg.Address, player.GetIndex())
 
@@ -89,12 +100,16 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
 
 
     // Move Funds
-    primaryAcc, _   := sdk.AccAddressFromBech32(player.GetPrimaryAddress())
+    // Provision the owner index before staking hooks resolve the destination.
+    // The enclosing SDK transaction cache rolls this back on failure.
+    vaults, err := cc.EnsureVaults(player.ID())
+    if err != nil { return emptyResponse, err }
+    vaultAcc := vaults[0]
     newAcc, _   := sdk.AccAddressFromBech32(msg.Address)
 
     // Move Reactor Infusions over.
     //
-    // Reassigns the player's delegations onto the newly registered address; the
+    // Moves transferable delegations into the player's vault; the
     // source infusion is wound down under its previous owner and reclaimed, and
     // the destination infusion is rebuilt for this player from live staking.
     // Ahead of the coin sweep so that the staking rewards the transfer settles
@@ -103,7 +118,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     // Strict: the incoming address belongs to the player either way, so a
     // refusal costs them nothing but a wait, and nobody else can create the
     // condition that triggers it.
-    err = k.MoveDelegationsToAddress(ctx, cc, newAcc, player.GetPrimaryAddress(), DelegationTransferStrict)
+    err = k.MoveDelegationsToAddress(ctx, cc, newAcc, vaultAcc.String(), DelegationTransferStrictRetainSelf)
     if err != nil {
         return emptyResponse, err
     }
@@ -112,7 +127,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     balances := k.bankKeeper.SpendableCoins(ctx, newAcc)
 
     // Transfer
-    err = k.bankKeeper.SendCoins(ctx, newAcc, primaryAcc, balances)
+    err = k.bankKeeper.SendCoins(ctx, newAcc, vaultAcc, balances)
     if err != nil {
         return emptyResponse, err
     }

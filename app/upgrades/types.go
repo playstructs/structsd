@@ -10,6 +10,7 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	icahostkeeper "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/host/keeper"
 
 	structsmodulekeeper "structs/x/structs/keeper"
 )
@@ -22,6 +23,7 @@ type Keepers struct {
 	BankKeeper     bankkeeper.Keeper
 	StakingKeeper  *stakingkeeper.Keeper
 	DistrKeeper    distrkeeper.Keeper
+	ICAHostKeeper  icahostkeeper.Keeper
 }
 
 // Upgrade defines an on-chain upgrade with its name, handler factory,

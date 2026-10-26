@@ -16,16 +16,35 @@ import (
 //  1. A structured log line lands in the validator's log with the codespace,
 //     code, phase, message type, and signer (when known). This is what lets
 //     a human operator follow up a "tx failed" support ticket.
+//
+//     Only a deliverTx rejection is logged at ERROR. A rejection during
+//     checkTx or reCheckTx is admission control doing its job, and its volume
+//     is set by whoever is sending: a rejected transaction advances no
+//     sequence and consumes no throttle count, so the same correctly signed
+//     over-cap transaction can be replayed for as long as somebody cares to,
+//     one ERROR line each, at no fee - and CometBFT's check_tx RPC bypasses
+//     the mempool cache that would otherwise deduplicate it. A deliverTx
+//     rejection cannot be produced faster than blocks are produced, which is
+//     what makes it safe to log unconditionally and worth reading: that
+//     transaction got past admission and failed anyway.
+//
+//     The aggregate signal does not move. The counter below carries a phase
+//     label, so "reject rate by code" and any alert built on it see checkTx
+//     rejections exactly as before; what stops is one disk line per attempt.
+//
 //  2. A telemetry counter increments with the same labels, so a Grafana /
 //     Prometheus dashboard can show "ante reject rate by code" and alert
 //     when a particular code spikes (e.g. ErrDuplicateChargeInTx > 0 means
-//     a buggy client just hit production).
+//     a buggy client just hit production). This fires in every phase and is
+//     the durable signal; the log line is the per-transaction detail.
 //
 // The function returns the underlying error unchanged so callers can `return
 // ctx, observeReject(ctx, err, ...)` in one line.
 //
 // Recurrence of incident 2026-05 should be visible within seconds via the
-// `structs_ante_reject{code="2020"}` counter going non-zero.
+// `structs_ante_reject{code="2020"}` counter going non-zero. That detection
+// path is the counter, not the log line, so the phase-based level above does
+// not weaken it.
 func observeReject(ctx sdk.Context, decorator string, err error, labels ...metrics.Label) error {
 	if err == nil {
 		return nil
@@ -44,7 +63,13 @@ func observeReject(ctx sdk.Context, decorator string, err error, labels ...metri
 	}
 
 	logger := ctx.Logger().With("module", "ante")
-	logger.Error("ante reject",
+	logReject := logger.Error
+	if phase != "deliverTx" {
+		// Attacker-paced and free to repeat; see the note above. The counter
+		// below still fires, so nothing an operator alerts on is lost.
+		logReject = logger.Debug
+	}
+	logReject("ante reject",
 		"decorator", decorator,
 		"phase", phase,
 		"codespace", codespace,

@@ -28,7 +28,11 @@ func (k Keeper) ReactorAll(goCtx context.Context, req *types.QueryAllReactorRequ
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	reactorStore := prefix.NewStore(store, types.KeyPrefix(types.ReactorKey))
 
-	pageRes, err := query.Paginate(reactorStore, req.Pagination, func(key []byte, value []byte) error {
+	pagination, err := boundedPagination(req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+	pageRes, err := query.Paginate(reactorStore, pagination, func(key []byte, value []byte) error {
 		var reactor types.Reactor
 		if err := k.cdc.Unmarshal(value, &reactor); err != nil {
 			return err

@@ -5,6 +5,9 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"context"
+	"errors"
+	"fmt"
+	"time"
 
 	"structs/x/structs/types"
 
@@ -26,6 +29,28 @@ func delegationShareValue(shares math.LegacyDec, validator stakingtypes.Validato
  * against an explicit token pool. The slashing path needs this because it
  * projects the post-slash pool rather than reading the stored one.
  *
+ * The arithmetic is Validator.TokensFromShares spelled out: multiply the shares
+ * by the pool first, divide by the share total last, then truncate. Both halves
+ * of that matter and neither is style.
+ *
+ * Truncate, never round. Fuel is written per delegation, and rounding each one
+ * independently lets a sum exceed the stake behind it: after a 1% slash a
+ * 50-share delegation is worth exactly 49.5, and LegacyDec.RoundInt is banker's
+ * rounding, so every such shard rounds back to 50. Split a million across twenty
+ * thousand addresses and the slash is undone in full - a million Fuel, and
+ * therefore a million of grid capacity, standing on 990,000 tokens. Nothing sums
+ * Fuel against validator.Tokens to notice. Truncation cannot do that: each shard
+ * is at most its true value, so the total is at most the stake, and the residue
+ * is dust nobody is credited for rather than capacity nobody staked for.
+ *
+ * Multiply first for the same reason in miniature. Dividing first rounds the
+ * ratio to LegacyDec's 18 places before it ever meets the pool, so the error
+ * scales with the pool; the SDK orders it the other way and this has to agree
+ * with the SDK, because that is what the stake is actually worth.
+ * Use its truncated division variant too: Quo rounds at 18 decimal places
+ * and can turn a value just below one into one before TruncateInt runs.
+ * Validator tokens are integral, so the multiplication is exact.
+ *
  * Returns zero rather than dividing when the validator holds no shares, both
  * because LegacyDec.Quo panics on a zero divisor and because a share-less
  * validator backs no value. The nil checks cover the zero-value Validator that
@@ -36,7 +61,17 @@ func delegationShareValueAgainst(shares math.LegacyDec, delegatorShares math.Leg
 		return math.ZeroInt()
 	}
 
-	return shares.Quo(delegatorShares).Mul(tokens).RoundInt()
+	value := shares.Mul(tokens).QuoTruncate(delegatorShares).TruncateInt()
+
+	// Every caller writes this into a uint64 Fuel field, and math.Int.Uint64
+	// panics rather than wrapping. A pool that large cannot exist behind a
+	// uint64-denominated supply, but these run inside staking hooks that have no
+	// way to refuse, so answer with the value that mints nothing.
+	if value.IsNegative() || !value.IsUint64() {
+		return math.ZeroInt()
+	}
+
+	return value
 }
 
 /* commissionMatches reports whether an infusion already carries the commission
@@ -113,11 +148,18 @@ func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValA
  *   AfterDelegationModified
  *
  */
-func (k Keeper) ReactorUpdatePlayerInfusion(ctx context.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
+func (k Keeper) ReactorUpdatePlayerInfusion(ctx context.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) error {
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
-
-	k.reconcileInfusionForDelegation(ctx, cc, playerAddress, validatorAddress)
+	infusion, reduced, err := k.reconcileInfusionForDelegation(ctx, cc, playerAddress, validatorAddress)
+	if err != nil { return err }
+	if reduced || infusion != nil && infusion.GetDefusing() != 0 {
+		// Unbond updates shares before its UBD entry. A same-block merge then
+		// skips AfterUnbondingInitiated, so re-read only this pair after staking
+		// finishes. Queue keys deduplicate repeated reductions in one block.
+		k.EnqueueInfusionMaturitySweep(ctx, sdk.UnwrapSDKContext(ctx).HeaderInfo().Time, infusion.ID())
+	}
+	cc.CommitAll()
+	return nil
 }
 
 /* ReactorInfusionDelegationRemoved zeroes an infusion's fuel when the Cosmos
@@ -146,9 +188,13 @@ func (k Keeper) ReactorInfusionDelegationRemoved(ctx context.Context, playerAddr
 	if infusion.CheckInfusion() != nil {
 		return
 	}
+	// Full unbonding skips AfterDelegationModified. Schedule the same final
+	// read without reconciling here, while the removed delegation still exists.
+	k.EnqueueInfusionMaturitySweep(ctx, sdk.UnwrapSDKContext(ctx).HeaderInfo().Time, infusion.ID())
 
 	// Fuel first: once it is zero the power distribution is zero whatever the
 	// ratio, so the ratio alignment below writes no further grid deltas.
+
 	if infusion.GetFuel() != 0 {
 		infusion.SetFuel(0)
 	}
@@ -161,62 +207,75 @@ func (k Keeper) ReactorInfusionDelegationRemoved(ctx context.Context, playerAddr
 }
 
 // ReconcileInfusionForDelegation refreshes one infusion from live staking state.
-// It is a no-op when the validator's reactor is not initialized.
-func (k Keeper) ReconcileInfusionForDelegation(ctx context.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
+// It commits only a successful reconciliation and is a no-op when the
+// validator's reactor is not initialized.
+func (k Keeper) ReconcileInfusionForDelegation(ctx context.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) error {
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
-
-	k.reconcileInfusionForDelegation(ctx, cc, playerAddress, validatorAddress)
+	if _, _, err := k.reconcileInfusionForDelegation(ctx, cc, playerAddress, validatorAddress); err != nil {
+		k.logger.Error("ReconcileInfusionForDelegation: reconcile failed", "delegator", playerAddress.String(), "validator", validatorAddress.String(), "error", err)
+		return err
+	}
+	cc.CommitAll()
+	return nil
 }
 
 // ReconcileExistingInfusionForDelegation refreshes one infusion from live
 // staking state without creating a player, so it is safe for an unregistered
 // delegator address whose infusion still carries phantom fuel (e.g. a pre-fix
 // AddressRevoke sweep). A source that never had an infusion is a no-op.
-func (k Keeper) ReconcileExistingInfusionForDelegation(ctx context.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
+func (k Keeper) ReconcileExistingInfusionForDelegation(ctx context.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) error {
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
-
-	k.reconcileExistingInfusionForDelegation(ctx, cc, playerAddress, validatorAddress)
+	if err := k.reconcileExistingInfusionForDelegation(ctx, cc, playerAddress, validatorAddress); err != nil { return err }
+	cc.CommitAll()
+	return nil
 }
 
-func (k Keeper) reconcileInfusionForDelegation(ctx context.Context, cc *CurrentContext, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
+func (k Keeper) reconcileInfusionForDelegation(ctx context.Context, cc *CurrentContext, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) (*InfusionCache, bool, error) {
 	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
 	if !reactorBytesFound {
-		return
+		return nil, false, nil
 	}
 	reactor, reactorFound := k.GetReactorByBytes(ctx, reactorBytes)
 	if !reactorFound {
-		return
+		return nil, false, nil
 	}
 	validator, validatorErr := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 	ratio := reactorEnergyRatio(validator, validatorErr)
 
-	player := cc.UpsertPlayer(playerAddress.String())
-	infusion := cc.UpsertInfusion(types.ObjectType_reactor, reactor.Id, playerAddress.String(), player.GetPlayerId())
-	k.reconcileInfusionState(ctx, infusion, playerAddress, validatorAddress, validator, ratio, reactor.DefaultCommission)
+	owner, err := cc.reactorInfusionOwner(playerAddress)
+	if err != nil {
+		k.logger.Error("cannot resolve reactor infusion player", "address", playerAddress.String(), "error", err)
+		return nil, false, err
+	}
+	infusion, err := cc.UpsertOwnedInfusion(types.ObjectType_reactor, reactor.Id, playerAddress.String(), owner.ID())
+	if err != nil { k.logger.Error("cannot load owned reactor infusion", "error", err); return nil, false, err }
+	oldFuel := infusion.GetFuel()
+	if err := k.reconcileInfusionState(ctx, infusion, playerAddress, validatorAddress, validator, ratio, reactor.DefaultCommission); err != nil {
+        return nil, false, err
+    }
+	return infusion, infusion.GetFuel() < oldFuel, nil
 }
 
 // reconcileExistingInfusionForDelegation is the removal-side form used after a
 // delegation move. A source that never had an infusion has nothing to create.
-func (k Keeper) reconcileExistingInfusionForDelegation(ctx context.Context, cc *CurrentContext, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
+func (k Keeper) reconcileExistingInfusionForDelegation(ctx context.Context, cc *CurrentContext, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) error {
 	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
 	if !reactorBytesFound {
-		return
+		return nil
 	}
 	reactor, reactorFound := k.GetReactorByBytes(ctx, reactorBytes)
 	if !reactorFound {
-		return
+		return nil
 	}
 
 	infusion := cc.GetInfusion(reactor.Id, playerAddress.String())
 	if infusion.CheckInfusion() != nil {
-		return
+		return nil
 	}
 
 	validator, validatorErr := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 	ratio := reactorEnergyRatio(validator, validatorErr)
-	k.reconcileInfusionState(ctx, infusion, playerAddress, validatorAddress, validator, ratio, reactor.DefaultCommission)
+	return k.reconcileInfusionState(ctx, infusion, playerAddress, validatorAddress, validator, ratio, reactor.DefaultCommission)
 }
 
 func (k Keeper) reconcileInfusionState(
@@ -227,44 +286,50 @@ func (k Keeper) reconcileInfusionState(
 	validator stakingtypes.Validator,
 	ratio uint64,
 	commission math.LegacyDec,
-) {
+) error {
+	row := infusion.GetInfusion()
+	if row.DestinationType != types.ObjectType_reactor || row.DestinationId != infusion.DestinationId || row.Address != playerAddress.String() {
+		return fmt.Errorf("invalid reactor infusion %s", infusion.ID())
+	}
 	delegation, err := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
-
-	// Each write is guarded on the value actually changing. SetInfusion emits an
-	// EventInfusion on every write, and this function is run across every row on
-	// chain by the v0.21.0 reconcile migration, so an unguarded write would emit
-	// an event per healthy infusion.
-	if err == nil {
-		delegationShare := delegationShareValue(delegation.Shares, validator)
-
-		if infusion.GetInfusion().Ratio != ratio {
-			infusion.SetRatio(ratio)
-		}
-		if infusion.GetFuel() != delegationShare.Uint64() || !commissionMatches(infusion, commission) {
-			infusion.SetFuelAndCommission(delegationShare.Uint64(), commission)
-		}
-	} else if infusion.GetFuel() != 0 {
-		// No active delegation but stale fuel remains (e.g. recovery sweep
-		// after a full undelegate followed by a missed AfterDelegationModified
-		// path, or a full redelegation predating the BeforeDelegationRemoved
-		// hook). Clear it so the destruction queue can reclaim the record once
-		// Defusing also drops to zero.
-		if infusion.GetInfusion().Ratio != ratio {
-			infusion.SetRatio(ratio)
-		}
-		infusion.SetFuel(0)
+	if err != nil && !errors.Is(err, stakingtypes.ErrNoDelegation) {
+		return err
+	}
+	unbondingDelegation, unbondingErr := k.stakingKeeper.GetUnbondingDelegation(ctx, playerAddress, validatorAddress)
+	if unbondingErr != nil && !errors.Is(unbondingErr, stakingtypes.ErrNoUnbondingDelegation) {
+		return unbondingErr
+	}
+	amount := math.ZeroInt()
+	retryHeld := false
+	// Store exactly the current flat backing. Ineligible reactors retain fuel
+	// and unbonding balances, but contribute no power.
+	fuel := uint64(0)
+	if err == nil { fuel = delegationShareValue(delegation.Shares, validator).Uint64() }
+	if infusion.GetInfusion().Ratio != ratio { infusion.SetRatio(ratio) }
+	if infusion.GetFuel() != fuel || !commissionMatches(infusion, commission) {
+		infusion.SetFuelAndCommission(fuel, commission)
 	}
 
-	unbondingDelegation, err := k.stakingKeeper.GetUnbondingDelegation(ctx, playerAddress, validatorAddress)
-	amount := math.ZeroInt()
-	if err == nil {
+	blockTime := sdk.UnwrapSDKContext(ctx).HeaderInfo().Time
+	if unbondingErr == nil {
 		for _, entry := range unbondingDelegation.Entries {
 			amount = amount.Add(entry.Balance)
+			if entry.OnHold() && entry.IsMature(blockTime) {
+				retryHeld = true
+			}
 		}
+	}
+	if retryHeld {
+		// SDK UnbondingCanComplete can pay a matured held entry after our
+		// scheduled sweep without firing a staking hook. Keep one future retry
+		// per infusion, within the bounded maturity queue, until release is seen.
+		// Moving the retry after this block's time lets older work run first.
+		k.EnqueueInfusionMaturitySweep(ctx, blockTime.Add(time.Nanosecond), infusion.ID())
 	}
 	if infusion.GetDefusing() != amount.Uint64() {
 		infusion.SetDefusing(amount.Uint64())
 	}
+	return nil
 }
 
 /* Update Reactor Details (Primarily In-Game Permissions/Ownership)
@@ -314,17 +379,23 @@ func (k Keeper) ReactorInfusionUnbonding(ctx context.Context, unbondingId uint64
 	// assuming a healthy reactor; the fuel calculation below reuses it.
 	validator, validatorErr := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 
-	player := cc.UpsertPlayer(playerAddress.String())
-	infusion := cc.UpsertInfusion(types.ObjectType_reactor, reactor.Id, playerAddress.String(), player.GetPlayerId())
+	owner, err := cc.reactorInfusionOwner(playerAddress)
+	if err != nil {
+		k.logger.Error("cannot resolve reactor infusion player", "address", playerAddress.String(), "error", err)
+		return
+	}
+	infusion, err := cc.UpsertOwnedInfusion(types.ObjectType_reactor, reactor.Id, playerAddress.String(), owner.ID())
+	if err != nil { k.logger.Error("cannot load owned reactor infusion", "error", err); return }
 
-	infusion.SetRatio(reactorEnergyRatio(validator, validatorErr))
-	infusion.SetCommission(reactor.DefaultCommission)
+	if err := k.reconcileInfusionState(ctx, infusion, playerAddress, validatorAddress, validator, reactorEnergyRatio(validator, validatorErr), reactor.DefaultCommission); err != nil {
+		k.logger.Error("cannot reconcile unbonding reactor infusion", "infusionId", infusion.ID(), "error", err)
+		return
+	}
 
 	amount := math.ZeroInt()
 	for _, entry := range unbondingDelegation.Entries {
 		amount = amount.Add(entry.Balance) // should this be entry.InitialBalance?
 	}
-	infusion.SetDefusing(amount.Uint64())
 
 	// Cosmos SDK v0.53 does not expose an unbonding-completion hook, so we
 	// pre-record each UBD entry's CompletionTime and let the structs
@@ -333,13 +404,6 @@ func (k Keeper) ReactorInfusionUnbonding(ctx context.Context, unbondingId uint64
 	infusionId := reactor.Id + "-" + playerAddress.String()
 	for _, entry := range unbondingDelegation.Entries {
 		k.EnqueueInfusionMaturitySweep(ctx, entry.CompletionTime, infusionId)
-	}
-
-	delegation, err := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
-	if err == nil {
-		infusion.SetFuel(delegationShareValue(delegation.Shares, validator).Uint64())
-	} else {
-		infusion.SetFuel(uint64(0))
 	}
 
 	uctx := sdk.UnwrapSDKContext(ctx)
@@ -355,80 +419,63 @@ func (k Keeper) ReactorInfusionUnbonding(ctx context.Context, unbondingId uint64
  * is slashed. Since slashing reduces the validator's tokens (but not delegation shares),
  * the value of each delegation share decreases proportionally.
  */
-func (k Keeper) ReactorUpdateInfusionsFromSlashing(ctx context.Context, validatorAddress sdk.ValAddress, slashFraction math.LegacyDec) {
-	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
-
-	/* Does this Reactor exist? */
+/* ReactorUpdateInfusionsFromSlashing queues a reactor for reconciliation.
+ *
+ * It used to reconcile every active delegation to the validator right here.
+ * BeforeValidatorSlashed runs in BeginBlock against an infinite gas meter, and
+ * the delegator set is unbounded and chosen by the delegators, so the cost of
+ * one slash block was whatever they had built up - each entry costing a
+ * delegation read, an unbonding-delegation read and a grid rewrite. The SDK's
+ * own unbounded work during Slash covers unbonding delegations and
+ * redelegations, a window-limited set; this walked the full active one.
+ *
+ * A slash leaves delegation shares untouched, so AfterDelegationModified never
+ * fires for it and this hook is the module's only signal that one happened.
+ * Reconciliation therefore cannot be dropped, only deferred: the queue carries
+ * it into the EndBlocker, a bounded number of infusions at a time.
+ *
+ * The revision and insertion cutoff are captured, not a projected token balance.
+ * The hook fires before staking
+ * applies it - which is why the old code derived the post-slash token figure by
+ * hand - and by the time the queue runs, live staking state is already the
+ * answer.
+ *
+ * The window this opens is real and worth naming: an infusion not yet reached
+ * still carries its pre-slash fuel and the grid capacity standing on it. It is
+ * drained at ReactorSlashReconcileBudget per block. In the active economy,
+ * commission admission stays gated until the latest slash revision is repaired;
+ * player readiness separately checks live delegation backing.
+ */
+func (k Keeper) ReactorUpdateInfusionsFromSlashing(ctx context.Context, validatorAddress sdk.ValAddress, slashFraction math.LegacyDec) error {
 	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
 	if !reactorBytesFound {
-		return
-	}
-	reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
-
-	/* Get the current validator state (before slashing) */
-	validator, validatorErr := k.stakingKeeper.GetValidator(ctx, validatorAddress)
-	if validatorErr != nil {
-		k.logger.Error("Failed to get validator in ReactorUpdateInfusionsFromSlashing", "validator", validatorAddress.String(), "error", validatorErr)
-		return
+		return nil
 	}
 
-	/* BeforeValidatorSlashed fires before x/slashing calls Jail, so the ratio
-	 * derived here is legitimately the pre-jail one and will be non-zero even
-	 * for an infraction that is about to jail. Do not "correct" this: the jail
-	 * is caught later in the same block by AfterValidatorBeginUnbonding during
-	 * staking's EndBlock.
-	 *
-	 * This hook is also not jail coverage in its own right. Staking skips it
-	 * entirely when the slash burns nothing (see x/staking/keeper/slash.go,
-	 * the tokensToBurn.IsZero early return), so a downtime jail under a zero
-	 * slash fraction never reaches this code at all.
-	 */
-	ratio := reactorEnergyRatio(validator, validatorErr)
-
-	/* Calculate what the validator's tokens will be after slashing
-	 * fraction is the percentage to slash (e.g., 0.05 = 5%)
-	 * tokensAfterSlash = tokens * (1 - fraction)
-	 */
-	tokensAfterSlash := math.LegacyNewDecFromInt(validator.Tokens).Mul(math.LegacyOneDec().Sub(slashFraction))
-
-	/* Get all delegations for this validator */
-	delegations, err := k.stakingKeeper.GetValidatorDelegations(ctx, validatorAddress)
-	if err != nil {
-		k.logger.Error("Failed to get validator delegations in ReactorUpdateInfusionsFromSlashing", "validator", validatorAddress.String(), "error", err)
-		return
+	reactor, reactorFound := k.GetReactorByBytes(ctx, reactorBytes)
+	if !reactorFound {
+		return nil
 	}
 
-	/* Iterate through all delegations and update their infusions */
-	for _, delegation := range delegations {
-		delegatorAddr, err := sdk.AccAddressFromBech32(delegation.DelegatorAddress)
-		if err != nil {
-			k.logger.Error("Failed to parse delegator address", "address", delegation.DelegatorAddress, "error", err)
-			continue
-		}
-
-		/* Calculate the new delegation share value after slashing
-		 * Formula: (delegation.Shares / validator.DelegatorShares) * tokensAfterSlash
-		 * Note: Delegation shares don't change during slashing, only the token value per share decreases
-		 */
-		delegationShare := delegationShareValueAgainst(delegation.Shares, validator.DelegatorShares, tokensAfterSlash)
-
-		player := cc.UpsertPlayer(delegatorAddr.String())
-		infusion := cc.UpsertInfusion(types.ObjectType_reactor, reactor.Id, delegatorAddr.String(), player.GetPlayerId())
-
-		infusion.SetRatio(ratio)
-		infusion.SetFuelAndCommission(delegationShare.Uint64(), reactor.DefaultCommission)
-
-		/* Also check unbonding delegations (they may also be affected by slashing) */
-		unbondingDelegation, err := k.stakingKeeper.GetUnbondingDelegation(ctx, delegatorAddr, validatorAddress)
-		amount := math.ZeroInt()
-		if err == nil {
-			for _, entry := range unbondingDelegation.Entries {
-				amount = amount.Add(entry.Balance)
-			}
-		}
-		if infusion.GetDefusing() != amount.Uint64() {
-			infusion.SetDefusing(amount.Uint64())
+	if !slashFraction.IsNil() && slashFraction.IsPositive() {
+		if err := k.advanceReactorCommissionRevision(ctx, reactor.Id); err != nil {
+			return err
 		}
 	}
+	k.EnqueueReactorSlashReconcile(ctx, reactor.Id)
+	return nil
+}
+
+// A slash pass promises to repair a specific reactor's indexed positions. Unlike
+// removal-side reconciliation, missing or mis-keyed state cannot count as success.
+func (k Keeper) reconcileSlashedReactorPosition(ctx context.Context, cc *CurrentContext, reactor types.Reactor, address sdk.AccAddress, validatorAddress sdk.ValAddress) error {
+    infusion := cc.GetInfusion(reactor.Id, address.String())
+    if err := infusion.CheckInfusion(); err != nil { return err }
+    row := infusion.GetInfusion()
+    if infusion.Deleted || row.DestinationId != reactor.Id || row.Address != address.String() || row.DestinationType != types.ObjectType_reactor {
+        return fmt.Errorf("invalid indexed reactor infusion %s", infusion.ID())
+    }
+    validator, err := k.stakingKeeper.GetValidator(ctx, validatorAddress)
+    if err != nil { return err }
+    return k.reconcileInfusionState(ctx, infusion, address, validatorAddress, validator, reactorEnergyRatio(validator, nil), reactor.DefaultCommission)
 }

@@ -136,3 +136,37 @@ func TestAllocationTransferPreservesCreatorDeleteFallback(t *testing.T) {
 		f.k.GetPermissionsByBytes(f.ctx, keeperlib.GetObjectPermissionIDBytes(f.alloc.Id, recipient.Id))&types.PermAllocationConnection,
 		"the recipient can connect the allocation they now control")
 }
+
+// A transfer changes connection authority, not independently granted rights on
+// the recipient's row. This also applies when the controller transfers to itself.
+func TestAllocationTransferPreservesRecipientPermissions(t *testing.T) {
+	for _, sameController := range []bool{false, true} {
+		name := "different controller"
+		if sameController {
+			name = "same controller"
+		}
+		t.Run(name, func(t *testing.T) {
+			f := setupTransferFixture(t, "1-1", "alloc_preserve_own01")
+			recipient := f.owner
+			if !sameController {
+				address := sdk.AccAddress("alloc_preserve_rec01")
+				recipient = testAppendPlayer(f.k, f.ctx, types.Player{Creator: address.String(), PrimaryAddress: address.String()})
+			}
+			recipientID := keeperlib.GetObjectPermissionIDBytes(f.alloc.Id, recipient.Id)
+			retained := types.PermUpdate | types.PermDelete
+			testPermissionAdd(f.k, f.ctx, recipientID, retained)
+			// The transfer key holds Admin only; it must not erase Update/Delete
+			// from the recipient as an unrelated side effect of the handoff.
+			f.k.SetPermissionsByBytes(f.ctx, keeperlib.GetAddressPermissionIDBytes(f.owner.Creator), types.PermAdmin)
+			_, err := f.ms.AllocationTransfer(f.ctx, &types.MsgAllocationTransfer{
+				Creator: f.owner.Creator, AllocationId: f.alloc.Id, Controller: recipient.Id,
+			})
+			require.NoError(t, err)
+			stored, found := f.k.GetAllocation(f.ctx, f.alloc.Id)
+			require.True(t, found)
+			require.Equal(t, recipient.Id, stored.Controller)
+			require.Equal(t, retained|types.PermAllocationConnection,
+				f.k.GetPermissionsByBytes(f.ctx, recipientID))
+		})
+	}
+}

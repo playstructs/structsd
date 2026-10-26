@@ -29,6 +29,7 @@ func delegationUpgradeKeepers(bApp *app.App) *upgrades.Keepers {
 		BankKeeper:    bApp.BankKeeper,
 		StakingKeeper: bApp.StakingKeeper,
 		DistrKeeper:   bApp.DistrKeeper,
+		ICAHostKeeper: bApp.ICAHostKeeper,
 	}
 }
 

@@ -16,5 +16,9 @@ message Substation {
 
     string name                         = 4;
     string pfp                          = 5;
+
+    // Closing stations reject new connections while bounded GridCascade drains them.
+    bool deletion_pending               = 6;
+    string deletion_migration_substation_id = 7;
 }
 

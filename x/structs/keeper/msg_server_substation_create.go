@@ -21,6 +21,20 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
        return emptyResponse, err
     }
 
+    ownerId := msg.Owner
+    if ownerId == "" {
+        ownerId = callingPlayer.ID()
+    }
+    owner, err := cc.GetExistingAssetOwner(ownerId)
+    if err != nil {
+        return emptyResponse, err
+    }
+    if _, guildOwned := owner.(*GuildCache); guildOwned {
+        if err := cc.PermissionCheck(owner, callingPlayer, types.PermAllocationConnection); err != nil {
+            return emptyResponse, err
+        }
+    }
+
     // Make sure the allocation exists
     allocation, allocationFound := cc.GetAllocation(msg.AllocationId)
     if (!allocationFound) {
@@ -32,13 +46,10 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
         return emptyResponse, allocationPermissionErr
     }
 
-    substation, err := cc.NewSubstation(msg.Creator, callingPlayer, allocation)
+    substation, err := cc.NewSubstation(msg.Creator, owner, allocation)
     if err != nil {
         return emptyResponse, err
     }
-
-    substationPermissionId := GetObjectPermissionIDBytes(substation.ID(), callingPlayer.ID())
-    cc.SetPermissions(substationPermissionId, types.PermSubstationAll)
 
     /*
         Maybe make this an option...

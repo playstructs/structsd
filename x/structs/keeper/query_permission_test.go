@@ -78,7 +78,7 @@ func TestPermissionByObjectQuery(t *testing.T) {
 	wctx := sdk.WrapSDKContext(ctx)
 
 	// Test data
-	objectId := "test-object"
+	objectId := "6-1"
 	player1 := "player1"
 	player2 := "player2"
 
@@ -87,6 +87,15 @@ func TestPermissionByObjectQuery(t *testing.T) {
 	permission2 := objectId + "@" + player2
 	keeper.SetPermissionsByBytes(ctx, []byte(permission1), types.Permission(0b0001))
 	keeper.SetPermissionsByBytes(ctx, []byte(permission2), types.Permission(0b0010))
+	// These sort before, adjacent to and after the selected object's rows.
+	// The delimiter must exclude 6-10 when querying 6-1.
+	for _, id := range []string{"4-1@player1", "6-10@player1", "6-2@player2", "9-1@player1"} {
+		keeper.SetPermissionsByBytes(ctx, []byte(id), types.PermAll)
+	}
+	expected := []*types.PermissionRecord{
+		{PermissionId: permission1, Value: 1},
+		{PermissionId: permission2, Value: 2},
+	}
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllPermissionByObjectRequest {
 		return &types.QueryAllPermissionByObjectRequest{
@@ -105,7 +114,7 @@ func TestPermissionByObjectQuery(t *testing.T) {
 		for i := 0; i < 2; i += step {
 			resp, err := keeper.PermissionByObject(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.PermissionRecords), step)
+			require.Equal(t, expected[i:i+step], resp.PermissionRecords)
 		}
 	})
 
@@ -115,16 +124,42 @@ func TestPermissionByObjectQuery(t *testing.T) {
 		for i := 0; i < 2; i += step {
 			resp, err := keeper.PermissionByObject(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.PermissionRecords), step)
+			require.Equal(t, expected[i:i+step], resp.PermissionRecords)
 			next = resp.Pagination.NextKey
 		}
+		require.Empty(t, next)
 	})
 
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.PermissionByObject(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, 2, int(resp.Pagination.Total))
-		require.Len(t, resp.PermissionRecords, 2)
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
+		require.Equal(t, expected, resp.PermissionRecords)
+	})
+
+	t.Run("Reverse", func(t *testing.T) {
+		req := request(nil, 0, 1, false)
+		req.Pagination.Reverse = true
+		for i := len(expected) - 1; i >= 0; i-- {
+			resp, err := keeper.PermissionByObject(wctx, req)
+			require.NoError(t, err)
+			require.Equal(t, expected[i:i+1], resp.PermissionRecords)
+			req.Pagination.Key = resp.Pagination.NextKey
+		}
+		require.Empty(t, req.Pagination.Key)
+	})
+
+	t.Run("NoGrants", func(t *testing.T) {
+		req := request(nil, 0, 1, false)
+		req.ObjectId = "6-999"
+		resp, err := keeper.PermissionByObject(wctx, req)
+		require.NoError(t, err)
+		require.Empty(t, resp.PermissionRecords)
+		require.Empty(t, resp.Pagination.NextKey)
 	})
 
 	t.Run("InvalidRequest", func(t *testing.T) {
@@ -147,6 +182,10 @@ func TestPermissionByPlayerQuery(t *testing.T) {
 	permission2 := object2 + "@" + playerId
 	keeper.SetPermissionsByBytes(ctx, []byte(permission1), types.Permission(0b0001))
 	keeper.SetPermissionsByBytes(ctx, []byte(permission2), types.Permission(0b0010))
+	for _, id := range []string{"aaa@another-player", "object1@test-player-extra", "object2@another-player"} {
+		keeper.SetPermissionsByBytes(ctx, []byte(id), types.PermAll)
+	}
+	expected := []*types.PermissionRecord{{PermissionId: permission1, Value: 1}, {PermissionId: permission2, Value: 2}}
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllPermissionByPlayerRequest {
 		return &types.QueryAllPermissionByPlayerRequest{
@@ -165,7 +204,7 @@ func TestPermissionByPlayerQuery(t *testing.T) {
 		for i := 0; i < 2; i += step {
 			resp, err := keeper.PermissionByPlayer(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.PermissionRecords), step)
+			require.Equal(t, expected[i:i+step], resp.PermissionRecords)
 		}
 	})
 
@@ -175,16 +214,42 @@ func TestPermissionByPlayerQuery(t *testing.T) {
 		for i := 0; i < 2; i += step {
 			resp, err := keeper.PermissionByPlayer(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.PermissionRecords), step)
+			require.Equal(t, expected[i:i+step], resp.PermissionRecords)
 			next = resp.Pagination.NextKey
 		}
+		require.Empty(t, next)
 	})
 
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.PermissionByPlayer(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, 2, int(resp.Pagination.Total))
-		require.Len(t, resp.PermissionRecords, 2)
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
+		require.Equal(t, expected, resp.PermissionRecords)
+	})
+
+	t.Run("Reverse", func(t *testing.T) {
+		req := request(nil, 0, 1, false)
+		req.Pagination.Reverse = true
+		for i := len(expected) - 1; i >= 0; i-- {
+			resp, err := keeper.PermissionByPlayer(wctx, req)
+			require.NoError(t, err)
+			require.Equal(t, expected[i:i+1], resp.PermissionRecords)
+			req.Pagination.Key = resp.Pagination.NextKey
+		}
+		require.Empty(t, req.Pagination.Key)
+	})
+
+	t.Run("NoGrants", func(t *testing.T) {
+		req := request(nil, 0, 1, false)
+		req.PlayerId = "absent-player"
+		resp, err := keeper.PermissionByPlayer(wctx, req)
+		require.NoError(t, err)
+		require.Empty(t, resp.PermissionRecords)
+		require.Empty(t, resp.Pagination.NextKey)
 	})
 
 	t.Run("InvalidRequest", func(t *testing.T) {
@@ -254,7 +319,11 @@ func TestPermissionAllQuery(t *testing.T) {
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.PermissionAll(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, len(permissions), int(resp.Pagination.Total))
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
 		require.Len(t, resp.PermissionRecords, len(permissions))
 	})
 

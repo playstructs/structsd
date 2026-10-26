@@ -7,6 +7,8 @@ option go_package = "structs/x/structs/types";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 
+
+
 message Reactor {
   option (gogoproto.equal) = true;
 

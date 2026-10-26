@@ -45,6 +45,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
     var infusionMigrationShares []math.LegacyDec
     var infusionMigrationReactor []sdk.ValAddress
     var infusionMigrationAmount []math.Int
+    var migrationAuthorized bool
 
     destinationReactor, destinationReactorFound := k.GetReactor(ctx, guildMembershipApplication.GetGuild().GetPrimaryReactorId())
     if (!destinationReactorFound) {
@@ -67,7 +68,22 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
          * - The Destination Reactor is part of the Guild
          * - If the destination reactor is not part of the guild, we need to migrate the assets over.
          */
+        /* msg.InfusionId is an unconstrained repeated field, and nothing in this
+         * loop mutates the infusion it reads. The branch below for a reactor
+         * already inside the guild is pure accumulation, so naming one owned
+         * infusion N times counted its fuel N times and cleared a minimum the
+         * player never actually held. Reject the repeat rather than skipping it:
+         * a duplicate in the list is a malformed request, and quietly ignoring
+         * it would hide the client bug that produced it.
+         */
+        seenInfusions := make(map[string]struct{}, len(msg.InfusionId))
+
         for _, infusionId := range msg.InfusionId {
+
+            if _, duplicate := seenInfusions[infusionId]; duplicate {
+                return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "duplicate_infusion").WithInfusion(infusionId)
+            }
+            seenInfusions[infusionId] = struct{}{}
 
             infusion, infusionFound := k.GetInfusionByID(ctx, infusionId)
             if (!infusionFound) {
@@ -86,15 +102,20 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
              * re-homes the record the next time staking touches it, a record
              * holding only a Defusing balance is never touched again.
              *
-             * A subject address, so the pure lookup: an unregistered one has no
-             * owner and is refused.
+             * Resolve the subject through its live asset owner: player vaults
+             * deliberately have no signing-address registration. Unknown
+             * addresses and vaults belonging to another owner are refused.
              */
-            infusionAddressOwner, infusionAddressOwnerErr := cc.GetPlayerByAddress(infusion.Address)
+            infusionAddress, infusionAddressErr := sdk.AccAddressFromBech32(infusion.Address)
+            if infusionAddressErr != nil {
+                return emptyResponse, types.NewAddressValidationError(infusion.Address, "invalid_format")
+            }
+            infusionAddressOwner, infusionAddressOwnerErr := cc.GetAssetOwnerByAddress(infusionAddress)
             if infusionAddressOwnerErr != nil {
                 return emptyResponse, infusionAddressOwnerErr
             }
 
-            if (infusionAddressOwner.GetPlayerId() != msg.PlayerId) {
+            if (infusionAddressOwner.ID() != msg.PlayerId) {
                 return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "infusion_address_ownership").WithInfusion(infusionId)
             }
 
@@ -107,7 +128,12 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
                 return emptyResponse, types.NewObjectNotFoundError("reactor", infusion.DestinationId)
             }
 
-            if (sourceReactor.GuildId != msg.GuildId) {
+            // A guild may select a primary reactor it does not own. An infusion
+            // already on that reactor is already at the intended destination;
+            // asking staking to move it would redelegate to the same validator.
+            // Other reactors associated with the guild retain their existing
+            // eligibility, while outside positions still require migration.
+            if sourceReactor.GuildId != msg.GuildId && sourceReactor.Id != destinationReactor.Id {
                 /*
                     Previously, this would fail at this point but now we'll be migrating the infusion
                     over to the new guilds reactor.
@@ -118,11 +144,44 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
                 */
 
-                redelegateAmount := math.NewIntFromUint64(infusion.Fuel)
+                /* Joining a guild is a membership operation; redelegating the
+                 * stake behind an infusion is a token operation, and the two are
+                 * separate bits on purpose. Reaching here means this join will
+                 * move somebody's delegation to the guild's validator, so it has
+                 * to demand what ReactorBeginMigration demands for the identical
+                 * staking call - PermTokenMigrate - and not settle for the
+                 * PermGuildMembership that got the caller this far.
+                 *
+                 * Without it, an associated address carrying only
+                 * PermGuildMembership could move its own player's stake, and a
+                 * player granted PermGuildMembership over somebody else could
+                 * move theirs: a forced validator change, a redelegation lock,
+                 * and slashing exposure the stake's owner never agreed to.
+                 *
+                 * Checked here rather than in PermissionMap because whether a
+                 * join migrates anything at all depends on runtime state, and
+                 * demanding the bit from every join would break the ordinary
+                 * case that moves nothing. Checked before ValidateUnbondAmount so
+                 * an unauthorized caller computes nothing.
+                 */
+                if !migrationAuthorized {
+                    if migrationPermissionErr := guildMembershipApplication.GetPlayer().CanMigrateTokensBy(callingPlayer); migrationPermissionErr != nil {
+                        return emptyResponse, migrationPermissionErr
+                    }
+                    migrationAuthorized = true
+                }
+
+                fuel, backingErr := cc.guildJoinInfusionFuel(infusion, sourceReactor, infusionAddress)
+                if backingErr != nil {
+                    return emptyResponse, backingErr
+                }
+                if fuel == 0 {
+                    continue
+                }
+                redelegateAmount := math.NewIntFromUint64(fuel)
                 infusionMigrationAmount = append(infusionMigrationAmount, redelegateAmount)
 
-                // The validation should never fail assuming there isn't a bug in the Infusion system
-                // but we can use this function to reliably calculate the shares
+                // Let staking validate the live amount and calculate its shares.
                 infusionAccount, _ := sdk.AccAddressFromBech32(infusion.Address)
                 sourceValidatorAccount, _ := sdk.ValAddressFromBech32(sourceReactor.Validator)
                 shares, validationErr := k.stakingKeeper.ValidateUnbondAmount(
@@ -138,9 +197,21 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
                 infusionMigrationShares = append(infusionMigrationShares, shares)
                 infusionMigrationList = append(infusionMigrationList, infusion)
 
-                currentFuel = currentFuel + redelegateAmount.Uint64()
+                accumulatedFuel, fuelOverflow := addFuel(currentFuel, redelegateAmount.Uint64())
+                if fuelOverflow {
+                    return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "fuel_overflow").WithInfusion(infusionId)
+                }
+                currentFuel = accumulatedFuel
             } else {
-                currentFuel = currentFuel + infusion.Fuel
+                fuel, backingErr := cc.guildJoinInfusionFuel(infusion, sourceReactor, infusionAddress)
+                if backingErr != nil {
+                    return emptyResponse, backingErr
+                }
+                accumulatedFuel, fuelOverflow := addFuel(currentFuel, fuel)
+                if fuelOverflow {
+                    return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "fuel_overflow").WithInfusion(infusionId)
+                }
+                currentFuel = accumulatedFuel
             }
 
         }
@@ -196,4 +267,17 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
 	cc.CommitAll()
 	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil
+}
+
+// addFuel sums infusion fuel, reporting a wrap rather than performing one.
+//
+// The total is compared against the guild's join minimum, so a wrap does not
+// merely produce a wrong number: it produces a small one, which is the direction
+// that lets somebody in.
+func addFuel(current uint64, addition uint64) (uint64, bool) {
+    total := current + addition
+    if total < current {
+        return 0, true
+    }
+    return total, false
 }

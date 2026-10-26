@@ -125,6 +125,15 @@ func (cache *GuildMembershipApplicationCache) GetSubstationId() (substationId st
 	return
 }
 
+// ValidateJoinSubstation rechecks the current destination at acceptance time.
+// An entry station or invitation override may have started closing since setup.
+func (cache *GuildMembershipApplicationCache) ValidateJoinSubstation() error {
+	if id := cache.GetSubstationId(); id != "" {
+		return cache.CC.GetSubstation(id).CheckAcceptingConnections()
+	}
+	return nil
+}
+
 func (cache *GuildMembershipApplicationCache) SetSubstationIdOverride(substationId string) error {
 
 	if cache.GuildMembershipApplication.SubstationId != substationId {
@@ -192,6 +201,8 @@ func (cache *GuildMembershipApplicationCache) ApproveInvite() error {
 		return err
 	}
 
+	if err := cache.ValidateJoinSubstation(); err != nil { return err }
+
 	cache.GetPlayer().MigrateGuild(cache.GetGuild())
 	cache.GetPlayer().MigrateSubstation(cache.GetSubstationId())
 
@@ -243,6 +254,8 @@ func (cache *GuildMembershipApplicationCache) ApproveRequest() error {
 		return err
 	}
 
+	if err := cache.ValidateJoinSubstation(); err != nil { return err }
+
 	cache.GetPlayer().MigrateGuild(cache.GetGuild())
 	cache.GetPlayer().MigrateSubstation(cache.GetSubstationId())
 
@@ -279,6 +292,9 @@ func (cache *GuildMembershipApplicationCache) RevokeRequest() error {
 // authorization: CanKickMembers, plus a rank comparison for callers who
 // are members of this guild, plus refusing the owner.
 func (cache *GuildMembershipApplicationCache) Kick() error {
+	// Membership supplies rank authority only. Independent direct grants must
+	// be revoked by an explicit administrator, not erased by a membership actor.
+
 	cache.GetPlayer().LeaveGuild()
 
 	substationPermissionCheck := cache.GetPlayer().GetSubstation().CanManageConnectionsBy(cache.CallingPlayer)
@@ -292,6 +308,7 @@ func (cache *GuildMembershipApplicationCache) Kick() error {
 }
 
 func (cache *GuildMembershipApplicationCache) VerifyDirectJoin() error {
+    if err := cache.ValidateJoinSubstation(); err != nil { return err }
     return cache.CC.PermissionCheck(cache.GetPlayer(), cache.CallingPlayer, types.PermGuildMembership)
 }
 
@@ -300,6 +317,8 @@ func (cache *GuildMembershipApplicationCache) VerifyDirectJoin() error {
 // a stored row to find, and consent is not in question: VerifyDirectJoin demands
 // PermGuildMembership on the joining player themselves.
 func (cache *GuildMembershipApplicationCache) DirectJoin() error {
+
+	if err := cache.ValidateJoinSubstation(); err != nil { return err }
 
 	cache.GetPlayer().MigrateGuild(cache.GetGuild())
 	cache.GetPlayer().MigrateSubstation(cache.GetSubstationId())

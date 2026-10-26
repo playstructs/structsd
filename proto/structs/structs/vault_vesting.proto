@@ -1,0 +1,37 @@
+syntax = "proto3";
+package structs.structs;
+
+import "gogoproto/gogo.proto";
+import "cosmos/auth/v1beta1/auth.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/vesting/v1beta1/vesting.proto";
+
+option go_package = "structs/x/structs/types";
+
+// VaultVestingAccount preserves independently rounded schedules and their
+// delegation counters while sharing one protocol-controlled bank address.
+message VaultVestingAccount {
+  option (gogoproto.goproto_getters) = false;
+  cosmos.auth.v1beta1.BaseAccount base_account = 1 [(gogoproto.embed) = true];
+  string owner_id = 2;
+  // Independent schedules ordered by raw source address, with no nested Any.
+  repeated VaultVestingSchedule schedules = 3;
+  repeated cosmos.base.v1beta1.Coin liquid_delegated = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+// Source signing identity stays on its auth BaseAccount, outside this schedule.
+message VaultVestingSchedule {
+  // Canonical address bytes avoid repeated Bech32 text/storage overhead.
+  bytes source_address = 1;
+  // 1=continuous, 2=delayed, 3=periodic, 4=permanently locked; other values deny.
+  uint32 kind = 2;
+  int64 start_time = 3;
+  int64 end_time = 4;
+  repeated cosmos.base.v1beta1.Coin original_vesting = 5 [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+  repeated cosmos.base.v1beta1.Coin delegated_free = 6 [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+  repeated cosmos.base.v1beta1.Coin delegated_vesting = 7 [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+  repeated cosmos.vesting.v1beta1.Period periods = 8 [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/x/auth/vesting/types.Periods"];
+}

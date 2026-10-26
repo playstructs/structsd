@@ -7,6 +7,10 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
+	DefaultReactorStakeCapBps           = uint64(3000)
+	DefaultReactorStakeCapMinValidators = uint64(10)
+	DefaultDiversityMaxBonusBps         = uint64(5000)
+	DefaultDiversityTargetExtraReactors = uint64(9)
 	// DefaultGuildCharterDifficultyRange puts a lone miner at roughly three
 	// weeks and a twenty-strong pool at roughly seventeen days, so effort buys
 	// a real but bounded edge over the global race.
@@ -29,8 +33,12 @@ func ParamKeyTable() paramtypes.KeyTable {
 // NewParams creates a new Params instance
 func NewParams() Params {
 	return Params{
-		GuildCharterDifficultyRange: DefaultGuildCharterDifficultyRange,
-		GuildCharterReactorAge:      DefaultGuildCharterReactorAge,
+		ReactorStakeCapBps:           DefaultReactorStakeCapBps,
+		ReactorStakeCapMinValidators: DefaultReactorStakeCapMinValidators,
+		DiversityMaxBonusBps:         DefaultDiversityMaxBonusBps,
+		DiversityTargetExtraReactors: DefaultDiversityTargetExtraReactors,
+		GuildCharterDifficultyRange:  DefaultGuildCharterDifficultyRange,
+		GuildCharterReactorAge:       DefaultGuildCharterReactorAge,
 	}
 }
 
@@ -57,7 +65,7 @@ func (p Params) Validate() error {
 			WithRange(MinGuildCharterDifficultyRange, 0)
 	}
 
-	return nil
+	return p.WithReactorDefaults().ValidateReactorParams()
 }
 
 /* CharterDifficultyRange reads the difficulty range with the default
@@ -82,4 +90,33 @@ func (p Params) CharterReactorAge() uint64 {
 		return DefaultGuildCharterReactorAge
 	}
 	return p.GuildCharterReactorAge
+}
+
+// WithReactorDefaults supports source states written before the new fields
+// existed. Only the completely absent tuple receives defaults. Partial/invalid
+// configuration is rejected, and an explicitly configured zero bonus is valid.
+func (p Params) WithReactorDefaults() Params {
+	if p.ReactorStakeCapBps == 0 && p.ReactorStakeCapMinValidators == 0 && p.DiversityMaxBonusBps == 0 && p.DiversityTargetExtraReactors == 0 {
+		p.ReactorStakeCapBps = DefaultReactorStakeCapBps
+		p.ReactorStakeCapMinValidators = DefaultReactorStakeCapMinValidators
+		p.DiversityMaxBonusBps = DefaultDiversityMaxBonusBps
+		p.DiversityTargetExtraReactors = DefaultDiversityTargetExtraReactors
+	}
+	return p
+}
+
+func (p Params) ValidateReactorParams() error {
+	if p.ReactorStakeCapBps == 0 || p.ReactorStakeCapBps > 10000 {
+		return NewParameterValidationError("reactorStakeCapBps", p.ReactorStakeCapBps, "outside_range").WithRange(1, 10000)
+	}
+	if p.ReactorStakeCapMinValidators == 0 {
+		return NewParameterValidationError("reactorStakeCapMinValidators", 0, "below_minimum").WithRange(1, 0)
+	}
+	if p.DiversityMaxBonusBps > 10000 {
+		return NewParameterValidationError("diversityMaxBonusBps", p.DiversityMaxBonusBps, "above_maximum").WithRange(0, 10000)
+	}
+	if p.DiversityTargetExtraReactors == 0 {
+		return NewParameterValidationError("diversityTargetExtraReactors", 0, "below_minimum").WithRange(1, 0)
+	}
+	return nil
 }

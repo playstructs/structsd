@@ -52,27 +52,9 @@ func (k msgServer) PlayerUpdateGuildRank(goCtx context.Context, msg *types.MsgPl
 		return emptyResponse, types.NewObjectNotFoundError("guild", guildId)
 	}
 
-	// Authorization: either PermAdmin on the guild (bypasses rank check)
-	// or rank-based authority (actor rank must be strictly better than target's current rank,
-	// and new rank must be >= actor's rank).
-	permErr := cc.PermissionCheck(guild, callingPlayer, types.PermAdmin)
-	if permErr != nil {
-		// Rank authority is authority within a guild, so it belongs to members of
-		// the one being edited. Anyone else has only PermAdmin to fall back on,
-		// which they have already failed.
-		if callingPlayer.GetGuildId() != guildId {
-			return emptyResponse, permErr
-		}
-
-		actorRank := callingPlayer.GetGuildRank()
-		targetRank := targetPlayer.GetGuildRank()
-
-		if actorRank >= targetRank {
-			return emptyResponse, types.NewPermissionError("player", callingPlayer.GetPlayerId(), "guild", guild.GetGuildId(), uint64(types.PermAdmin), "player_update_guild_rank")
-		}
-		if msg.GuildRank < actorRank {
-			return emptyResponse, types.NewPermissionError("player", callingPlayer.GetPlayerId(), "guild", guild.GetGuildId(), uint64(types.PermAdmin), "player_update_guild_rank")
-		}
+	// Rank purchases confer configured access, not authority to grant free ranks.
+	if err := cc.PermissionAdministrationCheck(guild, callingPlayer); err != nil {
+		return emptyResponse, err
 	}
 
 	targetPlayer.SetGuildRank(msg.GuildRank)

@@ -63,12 +63,49 @@ func (cc *CurrentContext) GenesisImportStruct(
 	isBuilt := importedStatus&uint64(types.StructStateBuilt) != 0
 
 	if !isBuilt {
-		if isOnline {
-			ctxSDK := sdk.UnwrapSDKContext(cc.ctx)
-			cc.SetStructAttribute(cache.BlockStartBuildAttributeId, uint64(ctxSDK.BlockHeight()))
-		} else {
-			cc.SetStructAttribute(cache.BlockStartBuildAttributeId, 0)
-		}
+		/* An unfinished build restarts its clock at the genesis height.
+		 *
+		 * BlockStartBuild is the age the build proof is priced from:
+		 * StructBuildComplete computes currentHeight - BlockStartBuild and
+		 * CalculateDifficulty falls with that age, clamping at 1. Storing zero
+		 * therefore did not mean "no progress", it meant "as old as the chain" -
+		 * so on a height-preserving restart of a mature chain, every build in
+		 * flight arrived with its puzzle already decayed to the minimum. Unlike
+		 * the raid clock, nothing downstream refuses a zero start.
+		 *
+		 * The genesis height is the only value that is safe in both directions.
+		 * Carrying the exported start would be more faithful on a
+		 * height-preserving restart and unusable after a zero-height one, where
+		 * it sits ahead of the new height and StructBuildComplete refuses the
+		 * proof outright - permanently, since nothing moves it. Resetting costs
+		 * the builder their accumulated age, which is the direction that asks for
+		 * more work rather than less.
+		 *
+		 * This is what the online case already did; only the offline one wrote
+		 * zero, which is why the two arms have collapsed into one.
+		 */
+		ctxSDK := sdk.UnwrapSDKContext(cc.ctx)
+		cc.SetStructAttribute(cache.BlockStartBuildAttributeId, uint64(ctxSDK.BlockHeight()))
+
+		/* Restore the build reservation.
+		 *
+		 * InitiateStruct charges BuildDraw against the owner's load the moment a
+		 * build starts, and only StructBuildComplete or DestroyAndCommit gives it
+		 * back. The import rebuilds a player's load from scratch -
+		 * GenesisImportPlayer resets it to PlayerPassiveDraw and structsLoad is
+		 * deliberately not importable, because it is derived - so an unbuilt
+		 * struct has to put its own reservation back or the load simply is not
+		 * there.
+		 *
+		 * Missing it is not only under-counting. StructBuildComplete decrements
+		 * BuildDraw unconditionally when the build finishes, and the decrement
+		 * clamps at zero, so completing an imported build would eat load
+		 * belonging to the player's passive draw and their other structs.
+		 *
+		 * A destroyed struct never reaches here: the branch above returns first,
+		 * which is right, because destruction already released this.
+		 */
+		cache.GetOwner().StructsLoadIncrement(structType.BuildDraw)
 	}
 
 	if isOnline {

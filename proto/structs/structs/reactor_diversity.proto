@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package structs.structs;
+
+option go_package = "structs/x/structs/types";
+
+// Derived current power, aggregated across one owner's addresses on a reactor.
+// Decimal strings preserve arbitrary-precision intermediate accounting.
+// Zero positions are removed. These rows are rebuilt from infusions at genesis.
+message ReactorDiversityPosition {
+  string ownerId = 1;
+  string reactorId = 2;
+  string power = 3;
+}
+
+// Current portfolio totals and the bonus actually included in owner capacity.
+// Power excludes generators, received allocations and the bonus itself.
+// Theoretical bonus may exceed appliedBonus when uint64 capacity has no room.
+message OwnerReactorDiversity {
+  string ownerId = 1;
+  string power = 2;
+  string squaredPower = 3;
+  uint64 appliedBonus = 4;
+}

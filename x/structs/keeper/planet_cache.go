@@ -26,6 +26,7 @@ type PlanetCache struct {
 
     PlanetLoaded  bool
     Planet  types.Planet
+    storedOwner string
 
 
     BlockStartRaidAttributeId string
@@ -52,7 +53,8 @@ type PlanetCache struct {
 func (cache *PlanetCache) Commit() () {
     if (cache.Changed) {
         cache.CC.k.logger.Info("Updating Planet From Cache","planetId",cache.PlanetId)
-        cache.CC.k.SetPlanet(cache.CC.ctx, cache.Planet)
+        cache.CC.k.setPlanet(cache.CC.ctx, cache.Planet, cache.storedOwner)
+        cache.storedOwner = cache.Planet.Owner
     }
     cache.Changed = false
 }
@@ -71,6 +73,7 @@ func (cache *PlanetCache) ID() string {
 // Load the core Planet data
 func (cache *PlanetCache) LoadPlanet() (bool) {
     cache.Planet, cache.PlanetLoaded = cache.CC.k.GetPlanet(cache.CC.ctx, cache.PlanetId)
+    cache.storedOwner = cache.Planet.Owner
     return cache.PlanetLoaded
 }
 
@@ -296,6 +299,16 @@ func (cache *PlanetCache) SetLocationListStart(fleetId string) {
 
     uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
     _ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleetId, PlanetId: cache.GetPlanetId(), Status: types.RaidStatus_initiated}})
+
+    // A completed planet has no raid to run. Nothing refreshes its clock once
+    // started, because every refresh hook works on the owner's current planet,
+    // so a clock begun here would age untouched instead of resetting each time
+    // the owner came home. PlanetRaidComplete refuses an inactive planet
+    // outright; this is what stops the state existing to begin with.
+    if (!cache.IsActive()) {
+        cache.ClearBlockStartRaid()
+        return
+    }
 
     if (cache.IsDefenderCommandStructVulnerable()) {
         // The raid clock starts at the later of raider arrival and the
@@ -578,29 +591,29 @@ func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, struct
     }
 
     var slots uint64
-    var slot string
+    var occupants []string
     // Check Ambit / Slot
     switch ambit {
         case types.Ambit_land:
             slots = cache.GetPlanet().LandSlots
-            slot  = cache.GetPlanet().Land[ambitSlot]
+            occupants = cache.GetPlanet().Land
         case types.Ambit_water:
             slots = cache.GetPlanet().WaterSlots
-            slot  = cache.GetPlanet().Water[ambitSlot]
+            occupants = cache.GetPlanet().Water
         case types.Ambit_air:
             slots = cache.GetPlanet().AirSlots
-            slot  = cache.GetPlanet().Air[ambitSlot]
+            occupants = cache.GetPlanet().Air
         case types.Ambit_space:
             slots = cache.GetPlanet().SpaceSlots
-            slot  = cache.GetPlanet().Space[ambitSlot]
+            occupants = cache.GetPlanet().Space
         default:
             return types.NewStructBuildError(structType.ID(), "planet", cache.GetPlanetId(), "invalid_ambit").WithAmbit(ambit.String())
     }
 
-    if (ambitSlot >= slots) {
+    if ambitSlot >= slots || ambitSlot >= uint64(len(occupants)) {
         return types.NewStructBuildError(structType.ID(), "planet", cache.GetPlanetId(), "slot_unavailable").WithSlot(ambitSlot)
     }
-    if (slot != "") {
+    if slot := occupants[ambitSlot]; slot != "" {
         return types.NewStructBuildError(structType.ID(), "planet", cache.GetPlanetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
     }
 
@@ -628,29 +641,29 @@ func (cache *PlanetCache) MoveReadiness(structure *StructCache, ambit types.Ambi
     }
 
     var slots uint64
-    var slot string
+    var occupants []string
     // Check Ambit / Slot
     switch ambit {
         case types.Ambit_land:
             slots = cache.GetPlanet().LandSlots
-            slot  = cache.GetPlanet().Land[ambitSlot]
+            occupants = cache.GetPlanet().Land
         case types.Ambit_water:
             slots = cache.GetPlanet().WaterSlots
-            slot  = cache.GetPlanet().Water[ambitSlot]
+            occupants = cache.GetPlanet().Water
         case types.Ambit_air:
             slots = cache.GetPlanet().AirSlots
-            slot  = cache.GetPlanet().Air[ambitSlot]
+            occupants = cache.GetPlanet().Air
         case types.Ambit_space:
             slots = cache.GetPlanet().SpaceSlots
-            slot  = cache.GetPlanet().Space[ambitSlot]
+            occupants = cache.GetPlanet().Space
         default:
             return types.NewStructBuildError(structure.GetTypeId(), "planet", cache.GetPlanetId(), "invalid_ambit").WithAmbit(ambit.String())
     }
 
-    if (ambitSlot >= slots) {
+    if ambitSlot >= slots || ambitSlot >= uint64(len(occupants)) {
         return types.NewStructBuildError(structure.GetTypeId(), "planet", cache.GetPlanetId(), "slot_unavailable").WithSlot(ambitSlot)
     }
-    if (slot != "") {
+    if slot := occupants[ambitSlot]; slot != "" {
         return types.NewStructBuildError(structure.GetTypeId(), "planet", cache.GetPlanetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
     }
 
@@ -731,6 +744,13 @@ func (cache *PlanetCache) AttemptComplete() (error) {
                currentFleet, _ := cache.CC.GetFleetById(cache.GetLocationListStart())
                currentFleet.PeaceDeal()
         }
+
+        // The last departure above clears both clocks through
+        // SetLocationListStart(""), but only if there was a raider to send
+        // away. Say it outright: a planet nobody lives on any more must carry
+        // no raid state at all, whatever the queue happened to hold.
+        cache.ClearBlockStartRaid()
+        cache.ClearBlockRaiderArrived()
 
         return nil
     }

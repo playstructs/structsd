@@ -11,123 +11,83 @@ import (
 )
 
 func TestMsgGuildUpdateEntrySubstationId(t *testing.T) {
-	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
-
-	// Create a player and guild
-	playerAcc := sdk.AccAddress("creator123456789012345678901234567890")
-	player := types.Player{
-		Creator:        playerAcc.String(),
-		PrimaryAddress: playerAcc.String(),
-	}
-	player = testAppendPlayer(k, ctx, player)
-
-	// Create reactor for guild
-	validatorAddress := sdk.ValAddress(playerAcc.Bytes())
-	reactor := types.Reactor{
-		RawAddress: validatorAddress.Bytes(),
-	}
-	// AppendReactor already calls SetReactorValidatorBytes internally
-	reactor = k.AppendReactor(ctx, reactor)
-
-	// Create guild
-	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, player, "")
-	player.GuildId = guild.Id
-	k.SetPlayer(ctx, player)
-
-	// Create a substation
-	sourceObjectId := "source-object"
-	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceObjectId)
-	k.SetGridAttribute(ctx, capacityAttrId, uint64(1000))
-
-	allocation := types.Allocation{
-		SourceObjectId: sourceObjectId,
-		DestinationId:  "",
-		Type:           types.AllocationType_static,
-		Controller: player.Id,
-	}
-	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
-	require.NoError(t, err)
-
-	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, player)
-	require.NoError(t, err)
-
-	// Grant permissions
-	guildPermissionId := keeperlib.GetObjectPermissionIDBytes(guild.Id, player.Id)
-	testPermissionAdd(k, ctx, guildPermissionId, types.PermUpdate)
-
-	substationPermissionId := keeperlib.GetObjectPermissionIDBytes(substation.Id, player.Id)
-	testPermissionAdd(k, ctx, substationPermissionId, types.PermSubstationConnection)
-
-	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgGuildUpdateEntrySubstationId
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid substation update",
-			input: &types.MsgGuildUpdateEntrySubstationId{
-				Creator:           player.Creator,
-				GuildId:           guild.Id,
-				EntrySubstationId: substation.Id,
-			},
-			expErr: false,
-		},
-		{
-			name: "guild not found",
-			input: &types.MsgGuildUpdateEntrySubstationId{
-				Creator:           player.Creator,
-				GuildId:           "invalid-guild",
-				EntrySubstationId: substation.Id,
-			},
-			expErr:    true,
-			expErrMsg: "wasn't found",
-			skip:      true, // Skip - cache system doesn't validate existence before permission check
-		},
-		{
-			name: "no substation permissions",
-			input: &types.MsgGuildUpdateEntrySubstationId{
-				Creator:           player.Creator,
-				GuildId:           guild.Id,
-				EntrySubstationId: substation.Id,
-			},
-			expErr:    true,
-			expErrMsg: "has no Substation Connect Player permissions",
-			skip:      true, // Skip - PermissionClearAll may not work as expected in test setup
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
+	for _, name := range []string{"authorized third-party station", "guild-owned station", "missing guild", "missing station", "unregistered signer", "station permission absent", "key lacks guild bit", "key lacks connection bit", "empty destination"} {
+		t.Run(name, func(t *testing.T) {
+			k, ms, goCtx := setupMsgServer(t)
+			ctx := sdk.UnwrapSDKContext(goCtx)
+			gs := testCreateGuild(k, ctx)
+			other := testCreateGuild(k, ctx)
+			station := other.Substation
+			if name == "guild-owned station" {
+				station.Owner = gs.Guild.Id
+				k.SetSubstation(ctx, station)
 			}
-
-			// Remove permissions if needed for test case
-			if tc.name == "no substation permissions" {
-				k.PermissionClearAll(ctx, substationPermissionId)
+			stationPermission := keeperlib.GetObjectPermissionIDBytes(station.Id, gs.GuildOwner.Id)
+			if name != "station permission absent" && name != "guild-owned station" {
+				k.SetPermissionsByBytes(ctx, stationPermission, types.PermSubstationConnection)
 			}
-
-			resp, err := ms.GuildUpdateEntrySubstationId(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
+			keyPermission := keeperlib.GetAddressPermissionIDBytes(gs.GuildOwner.Creator)
+			k.SetPermissionsByBytes(ctx, keyPermission, types.PermGuildSubstationUpdate|types.PermSubstationConnection)
+			msg := &types.MsgGuildUpdateEntrySubstationId{Creator: gs.GuildOwner.Creator, GuildId: gs.Guild.Id, EntrySubstationId: station.Id}
+			wantError := ""
+			switch name {
+			case "missing guild":
+				msg.GuildId, wantError = "0-999999", "not found"
+			case "missing station":
+				msg.EntrySubstationId, wantError = "4-999999", "not found"
+			case "unregistered signer":
+				msg.Creator, wantError = sdk.AccAddress("entry_station_unknown").String(), "player"
+			case "station permission absent":
+				wantError = "permission"
+			case "key lacks guild bit":
+				k.SetPermissionsByBytes(ctx, keyPermission, types.PermSubstationConnection)
+				wantError = "permission"
+			case "key lacks connection bit":
+				k.SetPermissionsByBytes(ctx, keyPermission, types.PermGuildSubstationUpdate)
+				wantError = "permission"
+			case "empty destination":
+				msg.EntrySubstationId = ""
+			}
+			beforeGrid := k.GetAllGridExport(ctx)
+			beforePermissions := k.GetPermissionsByObject(ctx, station.Id)
+			ctx = ctx.WithEventManager(sdk.NewEventManager())
+			resp, err := ms.GuildUpdateEntrySubstationId(ctx, msg)
+			require.NotNil(t, resp)
+			actual, found := k.GetGuild(ctx, gs.Guild.Id)
+			require.True(t, found)
+			expected := gs.Guild
+			if wantError != "" {
+				require.ErrorContains(t, err, wantError)
 			} else {
 				require.NoError(t, err)
-				require.NotNil(t, resp)
-
-				// Verify substation was updated
-				updatedGuild, found := k.GetGuild(ctx, guild.Id)
-				require.True(t, found)
-				require.Equal(t, tc.input.EntrySubstationId, updatedGuild.EntrySubstationId)
+				if msg.EntrySubstationId != "" {
+					expected.EntrySubstationId = station.Id
+				}
 			}
+			require.Equal(t, expected, actual)
+			guildEvents := 0
+			for _, event := range ctx.EventManager().ABCIEvents() {
+				require.NotContains(t, []string{"structs.structs.EventPermission", "structs.structs.EventSubstation"}, event.Type)
+				if event.Type == "structs.structs.EventGuild" {
+					decoded, decodeErr := sdk.ParseTypedEvent(event)
+					require.NoError(t, decodeErr)
+					require.Equal(t, &actual, decoded.(*types.EventGuild).Guild)
+					guildEvents++
+				}
+			}
+			if wantError != "" || msg.EntrySubstationId == "" {
+				require.Zero(t, guildEvents)
+			} else {
+				require.Equal(t, 1, guildEvents)
+			}
+			storedStation, found := k.GetSubstation(ctx, station.Id)
+			require.True(t, found)
+			require.Equal(t, station, storedStation)
+			require.Equal(t, beforeGrid, k.GetAllGridExport(ctx))
+			require.Equal(t, beforePermissions, k.GetPermissionsByObject(ctx, station.Id))
+			player, found := k.GetPlayer(ctx, gs.GuildOwner.Id)
+			require.True(t, found)
+			require.Equal(t, gs.GuildOwner, player, "updating future admission does not migrate existing members")
 		})
 	}
 }

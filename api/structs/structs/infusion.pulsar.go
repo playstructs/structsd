@@ -16,16 +16,18 @@ import (
 )
 
 var (
-	md_Infusion                 protoreflect.MessageDescriptor
-	fd_Infusion_destinationType protoreflect.FieldDescriptor
-	fd_Infusion_destinationId   protoreflect.FieldDescriptor
-	fd_Infusion_fuel            protoreflect.FieldDescriptor
-	fd_Infusion_power           protoreflect.FieldDescriptor
-	fd_Infusion_commission      protoreflect.FieldDescriptor
-	fd_Infusion_playerId        protoreflect.FieldDescriptor
-	fd_Infusion_address         protoreflect.FieldDescriptor
-	fd_Infusion_ratio           protoreflect.FieldDescriptor
-	fd_Infusion_defusing        protoreflect.FieldDescriptor
+	md_Infusion                   protoreflect.MessageDescriptor
+	fd_Infusion_destinationType   protoreflect.FieldDescriptor
+	fd_Infusion_destinationId     protoreflect.FieldDescriptor
+	fd_Infusion_fuel              protoreflect.FieldDescriptor
+	fd_Infusion_power             protoreflect.FieldDescriptor
+	fd_Infusion_commission        protoreflect.FieldDescriptor
+	fd_Infusion_playerId          protoreflect.FieldDescriptor
+	fd_Infusion_address           protoreflect.FieldDescriptor
+	fd_Infusion_ratio             protoreflect.FieldDescriptor
+	fd_Infusion_defusing          protoreflect.FieldDescriptor
+	fd_Infusion_ownerId           protoreflect.FieldDescriptor
+	fd_Infusion_generatorDisabled protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -40,6 +42,8 @@ func init() {
 	fd_Infusion_address = md_Infusion.Fields().ByName("address")
 	fd_Infusion_ratio = md_Infusion.Fields().ByName("ratio")
 	fd_Infusion_defusing = md_Infusion.Fields().ByName("defusing")
+	fd_Infusion_ownerId = md_Infusion.Fields().ByName("ownerId")
+	fd_Infusion_generatorDisabled = md_Infusion.Fields().ByName("generatorDisabled")
 }
 
 var _ protoreflect.Message = (*fastReflection_Infusion)(nil)
@@ -161,6 +165,18 @@ func (x *fastReflection_Infusion) Range(f func(protoreflect.FieldDescriptor, pro
 			return
 		}
 	}
+	if x.OwnerId != "" {
+		value := protoreflect.ValueOfString(x.OwnerId)
+		if !f(fd_Infusion_ownerId, value) {
+			return
+		}
+	}
+	if x.GeneratorDisabled != false {
+		value := protoreflect.ValueOfBool(x.GeneratorDisabled)
+		if !f(fd_Infusion_generatorDisabled, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -194,6 +210,10 @@ func (x *fastReflection_Infusion) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Ratio != uint64(0)
 	case "structs.structs.Infusion.defusing":
 		return x.Defusing != uint64(0)
+	case "structs.structs.Infusion.ownerId":
+		return x.OwnerId != ""
+	case "structs.structs.Infusion.generatorDisabled":
+		return x.GeneratorDisabled != false
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Infusion"))
@@ -228,6 +248,10 @@ func (x *fastReflection_Infusion) Clear(fd protoreflect.FieldDescriptor) {
 		x.Ratio = uint64(0)
 	case "structs.structs.Infusion.defusing":
 		x.Defusing = uint64(0)
+	case "structs.structs.Infusion.ownerId":
+		x.OwnerId = ""
+	case "structs.structs.Infusion.generatorDisabled":
+		x.GeneratorDisabled = false
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Infusion"))
@@ -271,6 +295,12 @@ func (x *fastReflection_Infusion) Get(descriptor protoreflect.FieldDescriptor) p
 	case "structs.structs.Infusion.defusing":
 		value := x.Defusing
 		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.Infusion.ownerId":
+		value := x.OwnerId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.Infusion.generatorDisabled":
+		value := x.GeneratorDisabled
+		return protoreflect.ValueOfBool(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Infusion"))
@@ -309,6 +339,10 @@ func (x *fastReflection_Infusion) Set(fd protoreflect.FieldDescriptor, value pro
 		x.Ratio = value.Uint()
 	case "structs.structs.Infusion.defusing":
 		x.Defusing = value.Uint()
+	case "structs.structs.Infusion.ownerId":
+		x.OwnerId = value.Interface().(string)
+	case "structs.structs.Infusion.generatorDisabled":
+		x.GeneratorDisabled = value.Bool()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Infusion"))
@@ -347,6 +381,10 @@ func (x *fastReflection_Infusion) Mutable(fd protoreflect.FieldDescriptor) proto
 		panic(fmt.Errorf("field ratio of message structs.structs.Infusion is not mutable"))
 	case "structs.structs.Infusion.defusing":
 		panic(fmt.Errorf("field defusing of message structs.structs.Infusion is not mutable"))
+	case "structs.structs.Infusion.ownerId":
+		panic(fmt.Errorf("field ownerId of message structs.structs.Infusion is not mutable"))
+	case "structs.structs.Infusion.generatorDisabled":
+		panic(fmt.Errorf("field generatorDisabled of message structs.structs.Infusion is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Infusion"))
@@ -378,6 +416,10 @@ func (x *fastReflection_Infusion) NewField(fd protoreflect.FieldDescriptor) prot
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.Infusion.defusing":
 		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.Infusion.ownerId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.Infusion.generatorDisabled":
+		return protoreflect.ValueOfBool(false)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Infusion"))
@@ -478,6 +520,13 @@ func (x *fastReflection_Infusion) ProtoMethods() *protoiface.Methods {
 		if x.Defusing != 0 {
 			n += 1 + runtime.Sov(uint64(x.Defusing))
 		}
+		l = len(x.OwnerId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.GeneratorDisabled {
+			n += 2
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -506,6 +555,23 @@ func (x *fastReflection_Infusion) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.GeneratorDisabled {
+			i--
+			if x.GeneratorDisabled {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x60
+		}
+		if len(x.OwnerId) > 0 {
+			i -= len(x.OwnerId)
+			copy(dAtA[i:], x.OwnerId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.OwnerId)))
+			i--
+			dAtA[i] = 0x5a
 		}
 		if x.Defusing != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.Defusing))
@@ -832,6 +898,58 @@ func (x *fastReflection_Infusion) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
+			case 11:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OwnerId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.OwnerId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 12:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GeneratorDisabled", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.GeneratorDisabled = bool(v != 0)
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -894,6 +1012,12 @@ type Infusion struct {
 	Address         string     `protobuf:"bytes,7,opt,name=address,proto3" json:"address,omitempty"`
 	Ratio           uint64     `protobuf:"varint,8,opt,name=ratio,proto3" json:"ratio,omitempty"`
 	Defusing        uint64     `protobuf:"varint,9,opt,name=defusing,proto3" json:"defusing,omitempty"`
+	// Canonical asset owner. Empty falls back to legacy playerId. Guild-owned
+	// positions set ownerId to the guild and leave playerId empty.
+	OwnerId string `protobuf:"bytes,11,opt,name=ownerId,proto3" json:"ownerId,omitempty"`
+	// Generator shutdown preserves burned fuel and its historical conversion
+	// ratio while recording zero output. False is the legacy enabled state.
+	GeneratorDisabled bool `protobuf:"varint,12,opt,name=generatorDisabled,proto3" json:"generatorDisabled,omitempty"`
 }
 
 func (x *Infusion) Reset() {
@@ -979,6 +1103,20 @@ func (x *Infusion) GetDefusing() uint64 {
 	return 0
 }
 
+func (x *Infusion) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
+func (x *Infusion) GetGeneratorDisabled() bool {
+	if x != nil {
+		return x.GeneratorDisabled
+	}
+	return false
+}
+
 var File_structs_structs_infusion_proto protoreflect.FileDescriptor
 
 var file_structs_structs_infusion_proto_rawDesc = []byte{
@@ -991,7 +1129,7 @@ var file_structs_structs_infusion_proto_rawDesc = []byte{
 	0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2f, 0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x11,
 	0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2f, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x22, 0xe3, 0x02, 0x0a, 0x08, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x4c,
+	0x6f, 0x22, 0xab, 0x03, 0x0a, 0x08, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x4c,
 	0x0a, 0x0f, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70,
 	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
@@ -1013,18 +1151,22 @@ var file_structs_structs_infusion_proto_rawDesc = []byte{
 	0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x18, 0x08,
 	0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x12, 0x1a, 0x0a, 0x08, 0x64,
 	0x65, 0x66, 0x75, 0x73, 0x69, 0x6e, 0x67, 0x18, 0x09, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x64,
-	0x65, 0x66, 0x75, 0x73, 0x69, 0x6e, 0x67, 0x42, 0xa3, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42,
-	0x0d, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
-	0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47,
-	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x66, 0x75, 0x73, 0x69, 0x6e, 0x67, 0x12, 0x18, 0x0a, 0x07, 0x6f, 0x77, 0x6e, 0x65, 0x72,
+	0x49, 0x64, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x49,
+	0x64, 0x12, 0x2c, 0x0a, 0x11, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x44, 0x69,
+	0x73, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x08, 0x52, 0x11, 0x67, 0x65,
+	0x6e, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x44, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x42,
+	0xa3, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0d, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f,
+	0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58,
+	0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
+	0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

@@ -1,275 +1,195 @@
 package app_test
 
 import (
-	"encoding/json"
+	"bytes"
+	"context"
+	"errors"
 	"testing"
-	"time"
 
-	"cosmossdk.io/log"
-	"cosmossdk.io/math"
-	dbm "github.com/cosmos/cosmos-db"
 	abci "github.com/cometbft/cometbft/abci/types"
-	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	cmttypes "github.com/cometbft/cometbft/types"
-	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
-
-	"structs/app"
-	structskeeper "structs/x/structs/keeper"
-	structstypes "structs/x/structs/types"
+	keeperlib "structs/x/structs/keeper"
+	"structs/x/structs/types"
 )
 
-/* TestGuildCharterReactorPathAgainstRealStaking is the release gate for the
- * proof-free route to founding a guild.
- *
- * The whole reason that route is safe to offer is that it costs a bonded
- * validator: ReactorInitialize runs from AfterValidatorCreated, so a reactor
- * exists for every validator ever created, and MsgCreateValidator picks its own
- * min_self_delegation — a validator that never joins the active set is nearly
- * free. Requiring *currently bonded* is what caps the free supply of guilds at
- * the size of the active set instead of at the number of throwaway identities an
- * attacker cares to register.
- *
- * The keeper suite drives that gate through testutil's MockStakingKeeper, which
- * returns whatever validator the test handed it. That proves our comparison and
- * says nothing about whether real staking ever reports these states the way we
- * read them, which is exactly the gap this test exists to close: the same
- * validator is refused before staking bonds it and accepted after, with nothing
- * between the two attempts but staking's own validator-set update.
- */
-func TestGuildCharterReactorPathAgainstRealStaking(t *testing.T) {
+// Paid founding requires a real, unjailed validator but no ownership entitlement.
+// Selecting a reactor is a guild preference and conveys no reactor authority.
+func TestPaidGuildCreationWithUncontrolledReactor(t *testing.T) {
 	bApp, ctx := setupJailGateApp(t)
-
-	// The production eligibility delay is a month of blocks. Shrink it before the
-	// validator exists, because AppendReactor stamps the height off the param at
-	// creation time and never revisits it.
-	params := bApp.StructsKeeper.GetParams(ctx)
-	params.GuildCharterReactorAge = 2
-	require.NoError(t, bApp.StructsKeeper.SetParams(ctx, params))
-
-	bondDenom, err := bApp.StakingKeeper.BondDenom(ctx)
+	ms := keeperlib.NewMsgServerImpl(bApp.StructsKeeper)
+	founder := appendAppPlayer(t, bApp.StructsKeeper, ctx, sdk.AccAddress(bytes.Repeat([]byte{0x71}, 20)))
+	operator := appendAppPlayer(t, bApp.StructsKeeper, ctx, sdk.AccAddress(bytes.Repeat([]byte{0x72}, 20)))
+    validators, err := bApp.StakingKeeper.GetLastValidators(ctx)
+    require.NoError(t, err)
+    validatorAddress, err := sdk.ValAddressFromBech32(validators[0].OperatorAddress)
+    require.NoError(t, err)
+	reactor := bApp.StructsKeeper.AppendReactor(ctx, types.Reactor{Owner: operator.Id, Validator: validatorAddress.String(), RawAddress: validatorAddress.Bytes(), GuildId: "0-999"})
+	storedReactor, existed := bApp.StructsKeeper.GetReactor(ctx, reactor.Id)
+	require.True(t, existed)
+	addresses, err := bApp.StructsKeeper.NewCurrentContext(ctx).EnsureVaults(founder.Id)
 	require.NoError(t, err)
-
-	operatorAcc := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
-	stake := math.NewInt(10_000_000)
-	funding := sdk.NewCoins(sdk.NewCoin(bondDenom, stake.MulRaw(2)))
-	require.NoError(t, bApp.BankKeeper.MintCoins(ctx, structstypes.ModuleName, funding))
-	require.NoError(t, bApp.BankKeeper.SendCoinsFromModuleToAccount(ctx, structstypes.ModuleName, operatorAcc, funding))
-
-	valAddr := sdk.ValAddress(operatorAcc)
-	createMsg, err := stakingtypes.NewMsgCreateValidator(
-		valAddr.String(),
-		ed25519.GenPrivKey().PubKey(),
-		sdk.NewCoin(bondDenom, stake),
-		stakingtypes.NewDescription("charter", "", "", "", ""),
-		stakingtypes.NewCommissionRates(
-			math.LegacyNewDecWithPrec(1, 1),
-			math.LegacyNewDecWithPrec(2, 1),
-			math.LegacyNewDecWithPrec(1, 2),
-		),
-		math.OneInt(),
-	)
+	funds := sdk.NewCoins(sdk.NewInt64Coin("ualpha", 2000000))
+	require.NoError(t, bApp.BankKeeper.MintCoins(ctx, types.ModuleName, funds))
+	require.NoError(t, bApp.BankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, addresses[0], funds))
+	beforeSupply := bApp.BankKeeper.GetSupply(ctx, "ualpha").Amount
+	ctx = ctx.WithEventManager(sdk.NewEventManager())
+	response, err := ms.GuildCreate(ctx, &types.MsgGuildCreate{Creator: founder.Creator, ReactorId: reactor.Id})
 	require.NoError(t, err)
-
-	stakingMsgServer := stakingkeeper.NewMsgServerImpl(bApp.StakingKeeper)
-	_, err = stakingMsgServer.CreateValidator(ctx, createMsg)
-	require.NoError(t, err)
-
-	reactorId := jailGateReactorId(t, bApp, ctx, valAddr)
-
-	reactor, found := bApp.StructsKeeper.GetReactor(ctx, reactorId)
-	require.True(t, found)
-	require.NotZero(t, reactor.GuildCharterEligibleHeight, "AppendReactor must stamp an eligibility height, since zero is read as never eligible")
-
-	// ReactorInitialize upserts a player for the operator's account address and
-	// grants it PermReactorAll, which carries the reactor permission the free
-	// path needs.
-	operatorPlayerId := charterPlayerId(t, bApp, ctx, operatorAcc.String())
-
-	structsMsgServer := structskeeper.NewMsgServerImpl(bApp.StructsKeeper)
-
-	// Before the eligibility height, whatever staking thinks of the validator.
-	_, err = structsMsgServer.GuildCreate(ctx, &structstypes.MsgGuildCreate{
-		Creator:   operatorAcc.String(),
-		ReactorId: reactorId,
-		Endpoint:  "too-soon.energy",
-	})
-	require.ErrorContains(t, err, "not_yet_eligible")
-
-	ctx = ctx.WithBlockHeight(int64(reactor.GuildCharterEligibleHeight))
-
-	/* A validator that has been created but never bonded. This is the cheap
-	 * identity the gate exists to refuse, and staking reports it as Unbonded
-	 * until ApplyAndReturnValidatorSetUpdates runs.
-	 */
-	created, err := bApp.StakingKeeper.GetValidator(ctx, valAddr)
-	require.NoError(t, err)
-	require.False(t, created.IsBonded(), "a freshly created validator should not be bonded yet")
-
-	_, err = structsMsgServer.GuildCreate(ctx, &structstypes.MsgGuildCreate{
-		Creator:   operatorAcc.String(),
-		ReactorId: reactorId,
-		Endpoint:  "unbonded.energy",
-	})
-	require.ErrorContains(t, err, "validator_inactive")
-
-	anchorBefore := bApp.StructsKeeper.CharterAnchor(ctx)
-
-	// This is the call staking makes in its own EndBlock.
-	_, err = bApp.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
-	require.NoError(t, err)
-
-	bonded, err := bApp.StakingKeeper.GetValidator(ctx, valAddr)
-	require.NoError(t, err)
-	require.True(t, bonded.IsBonded(), "the validator should be bonded after the set update")
-
-	response, err := structsMsgServer.GuildCreate(ctx, &structstypes.MsgGuildCreate{
-		Creator:   operatorAcc.String(),
-		ReactorId: reactorId,
-		Endpoint:  "bonded.energy",
-	})
-	require.NoError(t, err, "a bonded validator past its eligibility height may found a guild without a proof")
-
 	guild, found := bApp.StructsKeeper.GetGuild(ctx, response.GuildId)
 	require.True(t, found)
-	require.Equal(t, operatorPlayerId, guild.Owner)
-	require.Empty(t, guild.CharterSolverId, "the free path solves nothing, so it credits nobody")
-
-	/* The two routes must not interfere. Wiping every mining pool's in-flight
-	 * work because a validator collected its perk would make the free path an
-	 * attack on the paid one.
-	 */
-	require.Equal(t, anchorBefore, bApp.StructsKeeper.CharterAnchor(ctx),
-		"the reactor path must leave the charter puzzle alone")
-
-	// GuildId is what spends the entitlement, so it has to be written here.
-	reactor, found = bApp.StructsKeeper.GetReactor(ctx, reactorId)
+	require.Equal(t, founder.Id, guild.Owner)
+	require.Equal(t, reactor.Id, guild.PrimaryReactorId)
+	address, err := types.VaultAddress(guild.Id)
+	require.NoError(t, err)
+	require.Equal(t, int64(1000000), bApp.BankKeeper.GetBalance(ctx, address, "uguild."+guild.Id).Amount.Int64())
+	require.Equal(t, int64(1000000), beforeSupply.Sub(bApp.BankKeeper.GetSupply(ctx, "ualpha").Amount).Int64())
+	require.True(t, bApp.BankKeeper.GetBalance(ctx, addresses[0], "ualpha").IsZero())
+	pool := bApp.StructsKeeper.NewCurrentContext(ctx).GetGuild(guild.Id).GetBankCollateralPool()
+	require.Equal(t, int64(1000000), bApp.BankKeeper.GetBalance(ctx, pool, "ualpha").Amount.Int64())
+	after, found := bApp.StructsKeeper.GetReactor(ctx, reactor.Id)
 	require.True(t, found)
-	require.Equal(t, response.GuildId, reactor.GuildId)
-
-	/* And the entitlement is one per reactor. A second player is needed to show
-	 * it, because the operator is now an owner and would be refused for that
-	 * instead — which is the ordering that makes this worth asserting.
-	 */
-	otherAcc := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
-	cc := bApp.StructsKeeper.NewCurrentContext(ctx)
-	cc.UpsertPlayer(otherAcc.String())
-	cc.CommitAll()
-
-	permissionId := structskeeper.GetObjectPermissionIDBytes(reactorId, charterPlayerId(t, bApp, ctx, otherAcc.String()))
-	bApp.StructsKeeper.SetPermissionsByBytes(ctx, permissionId, structstypes.PermReactorAll)
-
-	_, err = structsMsgServer.GuildCreate(ctx, &structstypes.MsgGuildCreate{
-		Creator:   otherAcc.String(),
-		ReactorId: reactorId,
-		Endpoint:  "seconds.energy",
-	})
-	require.ErrorContains(t, err, "entitlement_spent")
-}
-
-/* TestGuildCharterGenesisReactorHonoursParams covers a genesis ordering trap that
- * made every fresh dev chain unable to found its first guild.
- *
- * Staking and genutil both initialise ahead of this module, so a genesis
- * validator's AfterValidatorCreated hook reaches AppendReactor before InitGenesis
- * has called SetParams. GetParams returns a zero Params there and
- * CharterReactorAge substitutes the production default, so the stamp silently
- * ignored the genesis file: a chain asking for five blocks got a month, and the
- * params query reported five the whole time, which is what made it confusing to
- * diagnose from a failing tests/test_chain.sh rather than obvious.
- *
- * Note that the substitution inside CharterReactorAge is correct everywhere else
- * — a zero age would make every reactor eligible immediately, which is the worse
- * direction to fail in — so the repair is a restamp in InitGenesis rather than a
- * change to the fallback. This test is at app level because the ordering is a
- * property of the module manager and no keeper test can see it.
- */
-func TestGuildCharterGenesisReactorHonoursParams(t *testing.T) {
-	const chainID = "charter-genesis-1"
-	const reactorAge = uint64(5)
-
-	appOptions := make(simtestutil.AppOptionsMap, 0)
-	appOptions[flags.FlagHome] = app.DefaultNodeHome
-
-	bApp, err := app.New(log.NewNopLogger(), dbm.NewMemDB(), nil, true, appOptions,
-		baseapp.SetChainID(chainID))
-	require.NoError(t, err)
-
-	consPubKey, err := cryptocodec.ToCmtPubKeyInterface(ed25519.GenPrivKey().PubKey())
-	require.NoError(t, err)
-	valSet := cmttypes.NewValidatorSet([]*cmttypes.Validator{
-		cmttypes.NewValidator(consPubKey, 1),
-	})
-
-	privKey := secp256k1.GenPrivKey()
-	acc := authtypes.NewBaseAccount(privKey.PubKey().Address().Bytes(), privKey.PubKey(), 0, 0)
-	balance := banktypes.Balance{
-		Address: acc.GetAddress().String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.DefaultPowerReduction.MulRaw(100))),
+	require.Equal(t, storedReactor, after)
+	player, found := bApp.StructsKeeper.GetPlayer(ctx, founder.Id)
+	require.True(t, found)
+	require.Equal(t, guild.Id, player.GuildId)
+	moduleAddress := bApp.AccountKeeper.GetModuleAddress(types.ModuleName).String()
+	burns, mints, vaultEvents, bankAssociations := 0, 0, 0, 0
+	vaultEventIndex, creditEventIndex := -1, -1
+	var transfers [][3]string
+	for index, event := range ctx.EventManager().Events() {
+		switch event.Type {
+		case "structs.structs.EventVaultAddress":
+			decoded, decodeErr := sdk.ParseTypedEvent(abci.Event(event))
+			require.NoError(t, decodeErr)
+			detail := decoded.(*types.EventVaultAddress).EventVaultAddressDetail
+			require.Equal(t, guild.Id, detail.OwnerId)
+			require.Equal(t, address.String(), detail.VaultAddress)
+			require.True(t, detail.AccountCreated)
+			require.Equal(t, bApp.AccountKeeper.GetAccount(ctx, address).GetAccountNumber(), detail.AccountNumber)
+			vaultEvents++
+			vaultEventIndex = index
+		case "structs.structs.EventGuildBankAddress":
+			decoded, decodeErr := sdk.ParseTypedEvent(abci.Event(event))
+			require.NoError(t, decodeErr)
+			detail := decoded.(*types.EventGuildBankAddress).EventGuildBankAddressDetail
+			require.Equal(t, guild.Id, detail.GuildId)
+			require.Equal(t, pool.String(), detail.BankCollateralPool)
+			require.Equal(t, types.ModuleName, detail.BankTokenPool)
+			bankAssociations++
+		case banktypes.EventTypeTransfer:
+			attributes := make(map[string]string)
+			for _, attribute := range event.Attributes {
+				require.NotContains(t, attributes, attribute.Key)
+				attributes[attribute.Key] = attribute.Value
+			}
+			transfers = append(transfers, [3]string{attributes["sender"], attributes["recipient"], attributes["amount"]})
+			if attributes["recipient"] == address.String() {
+				creditEventIndex = index
+			}
+		case banktypes.EventTypeCoinBurn:
+			burns++
+			require.Equal(t, sdk.NewEvent(banktypes.EventTypeCoinBurn,
+				sdk.NewAttribute(banktypes.AttributeKeyBurner, moduleAddress),
+				sdk.NewAttribute(sdk.AttributeKeyAmount, "1000000ualpha")), event)
+		case banktypes.EventTypeCoinMint:
+			mints++
+			require.Equal(t, sdk.NewEvent(banktypes.EventTypeCoinMint,
+				sdk.NewAttribute(banktypes.AttributeKeyMinter, moduleAddress),
+				sdk.NewAttribute(sdk.AttributeKeyAmount, "1000000uguild."+guild.Id)), event)
+		}
 	}
-
-	genesisState, err := simtestutil.GenesisStateWithValSet(
-		bApp.AppCodec(), bApp.DefaultGenesis(), valSet,
-		[]authtypes.GenesisAccount{acc}, balance)
-	require.NoError(t, err)
-
-	// Tune the two charter params down the way config.yml does, so a dev chain is
-	// playable. This is the file the stamp was ignoring.
-	var structsGenesis structstypes.GenesisState
-	bApp.AppCodec().MustUnmarshalJSON(genesisState[structstypes.ModuleName], &structsGenesis)
-	structsGenesis.Params.GuildCharterDifficultyRange = structstypes.MinGuildCharterDifficultyRange
-	structsGenesis.Params.GuildCharterReactorAge = reactorAge
-	require.NoError(t, structsGenesis.Validate())
-	genesisState[structstypes.ModuleName] = bApp.AppCodec().MustMarshalJSON(&structsGenesis)
-
-	genesisBytes, err := json.Marshal(genesisState)
-	require.NoError(t, err)
-
-	_, err = bApp.InitChain(&abci.RequestInitChain{
-		ChainId:         chainID,
-		InitialHeight:   1,
-		ConsensusParams: simtestutil.DefaultConsensusParams,
-		AppStateBytes:   genesisBytes,
-	})
-	require.NoError(t, err)
-
-	ctx := bApp.NewContextLegacy(false, cmtproto.Header{
-		Height:  1,
-		ChainID: chainID,
-		Time:    time.Now().UTC(),
-	})
-
-	require.Equal(t, reactorAge, bApp.StructsKeeper.GetParams(ctx).GuildCharterReactorAge,
-		"the genesis params should be in state; the bug was never about this half")
-
-	reactors := bApp.StructsKeeper.GetAllReactor(ctx)
-	require.Len(t, reactors, 1, "the genesis validator's creation hook should have built one reactor")
-
-	stamp := reactors[0].GuildCharterEligibleHeight
-	require.NotZero(t, stamp, "zero reads as never eligible")
-	require.Less(t, stamp, structstypes.DefaultGuildCharterReactorAge,
-		"the stamp came from the default rather than from genesis, so the free path is shut for a month")
-	require.LessOrEqual(t, stamp, reactorAge+1,
-		"a genesis reactor becomes eligible reactorAge blocks after genesis, whether that is height 0 or 1")
+	require.Equal(t, 1, burns)
+	require.Equal(t, 1, mints)
+	require.Equal(t, 1, vaultEvents)
+	require.Equal(t, 1, bankAssociations)
+	require.ElementsMatch(t, [][3]string{
+		{addresses[0].String(), moduleAddress, "1000000ualpha"},
+		{addresses[0].String(), pool.String(), "1000000ualpha"},
+		{moduleAddress, address.String(), "1000000uguild." + guild.Id},
+	}, transfers)
+	require.Greater(t, creditEventIndex, vaultEventIndex, "associate the vault before indexing its credit")
+	vaultOwner, associated := bApp.StructsKeeper.GetVaultOwner(ctx, address)
+	require.True(t, associated)
+	require.Equal(t, guild.Id, vaultOwner)
+	require.Zero(t, bApp.StructsKeeper.GetPlayerIndexFromAddress(ctx, address.String()), "vaults are not signing keys")
 }
 
-func charterPlayerId(t *testing.T, bApp *app.App, ctx sdk.Context, address string) string {
-	t.Helper()
-
-	playerIndex := bApp.StructsKeeper.GetPlayerIndexFromAddress(ctx, address)
-	require.NotZero(t, playerIndex, "address %s should be indexed to a player", address)
-
-	player, found := bApp.StructsKeeper.GetPlayerFromIndex(ctx, playerIndex)
+// A failed final credit occurs after bank supply and auth accounts have changed
+// in the transaction cache. None of those changes may escape a discarded cache.
+func TestPaidGuildCreationFinalCreditFailureRollsBack(t *testing.T) {
+	bApp, ctx := setupJailGateApp(t)
+	ms := keeperlib.NewMsgServerImpl(bApp.StructsKeeper)
+	founder := appendAppPlayer(t, bApp.StructsKeeper, ctx, sdk.AccAddress(bytes.Repeat([]byte{0x73}, 20)))
+    validators, err := bApp.StakingKeeper.GetLastValidators(ctx)
+    require.NoError(t, err)
+    validatorAddress, err := sdk.ValAddressFromBech32(validators[0].OperatorAddress)
+    require.NoError(t, err)
+	reactor := bApp.StructsKeeper.AppendReactor(ctx, types.Reactor{Owner: founder.Id, Validator: validatorAddress.String(), RawAddress: validatorAddress.Bytes()})
+	vaults, err := bApp.StructsKeeper.NewCurrentContext(ctx).EnsureVaults(founder.Id)
+	require.NoError(t, err)
+	funds := sdk.NewCoins(sdk.NewInt64Coin("ualpha", 2000000))
+	require.NoError(t, bApp.BankKeeper.MintCoins(ctx, types.ModuleName, funds))
+	require.NoError(t, bApp.BankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, vaults[0], funds))
+	countBefore := bApp.StructsKeeper.GetGuildCount(ctx)
+	guildID := keeperlib.GetObjectID(types.ObjectType_guild, countBefore)
+	treasury, err := types.VaultAddress(guildID)
+	require.NoError(t, err)
+	denom := "uguild." + guildID
+	beforeSupply := bApp.BankKeeper.GetSupply(ctx, "ualpha").Amount
+	permissionsBefore := bApp.StructsKeeper.GetAllPermissionExport(ctx)
+	playerBefore, found := bApp.StructsKeeper.GetPlayer(ctx, founder.Id)
 	require.True(t, found)
-	return player.Id
+	rejectCredit, refusals := true, 0
+	bApp.BankKeeper.AppendSendRestriction(func(_ context.Context, from, to sdk.AccAddress, coins sdk.Coins) (sdk.AccAddress, error) {
+		if rejectCredit && to.Equals(treasury) && coins.AmountOf(denom).IsPositive() {
+			refusals++
+			return to, errors.New("injected guild token credit refusal")
+		}
+		return to, nil
+	})
+	ctx = ctx.WithEventManager(sdk.NewEventManager())
+	failedCtx, _ := ctx.CacheContext()
+	msg := &types.MsgGuildCreate{Creator: founder.Creator, ReactorId: reactor.Id}
+	_, err = ms.GuildCreate(failedCtx, msg)
+	require.ErrorContains(t, err, "injected guild token credit refusal")
+	require.Equal(t, 1, refusals)
+	pool := bApp.StructsKeeper.NewCurrentContext(failedCtx).GetGuild(guildID).GetBankCollateralPool()
+	require.Equal(t, int64(1000000), beforeSupply.Sub(bApp.BankKeeper.GetSupply(failedCtx, "ualpha").Amount).Int64())
+	require.Equal(t, int64(1000000), bApp.BankKeeper.GetSupply(failedCtx, denom).Amount.Int64())
+	require.Equal(t, int64(1000000), bApp.BankKeeper.GetBalance(failedCtx, pool, "ualpha").Amount.Int64())
+	failedVaultAccount := bApp.AccountKeeper.GetAccount(failedCtx, treasury)
+	require.NotNil(t, failedVaultAccount)
+	failedPoolAccount := bApp.AccountKeeper.GetAccount(failedCtx, pool)
+	require.NotNil(t, failedPoolAccount)
+	require.NotEmpty(t, failedCtx.EventManager().Events())
+
+	_, found = bApp.StructsKeeper.GetGuild(ctx, guildID)
+	require.False(t, found)
+	require.Equal(t, countBefore, bApp.StructsKeeper.GetGuildCount(ctx))
+	require.Equal(t, beforeSupply, bApp.BankKeeper.GetSupply(ctx, "ualpha").Amount)
+	require.True(t, bApp.BankKeeper.GetSupply(ctx, denom).IsZero())
+	require.Equal(t, funds[0], bApp.BankKeeper.GetBalance(ctx, vaults[0], "ualpha"))
+	require.True(t, bApp.BankKeeper.GetBalance(ctx, pool, "ualpha").IsZero())
+	require.Nil(t, bApp.AccountKeeper.GetAccount(ctx, treasury))
+	require.Nil(t, bApp.AccountKeeper.GetAccount(ctx, pool))
+	_, associated := bApp.StructsKeeper.GetVaultOwner(ctx, treasury)
+	require.False(t, associated)
+	_, metadataExists := bApp.BankKeeper.GetDenomMetaData(ctx, denom)
+	require.False(t, metadataExists)
+	require.Equal(t, permissionsBefore, bApp.StructsKeeper.GetAllPermissionExport(ctx))
+	playerAfter, found := bApp.StructsKeeper.GetPlayer(ctx, founder.Id)
+	require.True(t, found)
+	require.Equal(t, playerBefore, playerAfter)
+	require.Empty(t, ctx.EventManager().Events())
+
+	rejectCredit = false
+	response, err := ms.GuildCreate(ctx, msg)
+	require.NoError(t, err)
+	require.Equal(t, guildID, response.GuildId)
+	require.Equal(t, failedVaultAccount.GetAccountNumber(), bApp.AccountKeeper.GetAccount(ctx, treasury).GetAccountNumber())
+	require.Equal(t, failedPoolAccount.GetAccountNumber(), bApp.AccountKeeper.GetAccount(ctx, pool).GetAccountNumber())
+	require.Equal(t, int64(1000000), bApp.BankKeeper.GetBalance(ctx, treasury, denom).Amount.Int64())
+	require.Equal(t, int64(1000000), beforeSupply.Sub(bApp.BankKeeper.GetSupply(ctx, "ualpha").Amount).Int64())
 }

@@ -70,6 +70,41 @@ func (k Keeper) GetAllAgreementByProviderIndex(ctx context.Context, providerId s
 }
 
 
+/* AgreementExpirationHeightHasRoomFor reports whether agreementId may take (or
+ * keep) a slot in the expiration bucket for block.
+ *
+ * Counting rather than maintaining a counter is deliberate. The iteration stops
+ * at the cap, so this is at most AgreementExpirationBucketCap+1 reads however
+ * large the bucket actually is - which matters, because a chain upgrading into
+ * this rule may already hold buckets far past the cap and there is no counter to
+ * migrate, no genesis row to rebuild, and nothing to drift out of step with the
+ * index it is supposed to describe. An over-full bucket simply accepts nothing
+ * new until it drains.
+ *
+ * An agreement already indexed at this height is always allowed: a capacity
+ * change that happens to land back on the same block is not adding work, and
+ * refusing it would make a re-price fail for no reason.
+ */
+func (k Keeper) AgreementExpirationHeightHasRoomFor(ctx context.Context, block uint64, agreementId string) bool {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AgreementExpirationKeyPrefix(block))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+
+	count := 0
+	for ; iterator.Valid(); iterator.Next() {
+		if string(iterator.Key()) == agreementId {
+			return true
+		}
+
+		count++
+		if count >= types.AgreementExpirationBucketCap {
+			return false
+		}
+	}
+
+	return true
+}
+
 func (k Keeper) SetAgreementExpirationIndex(ctx context.Context, block uint64, agreementId string) (err error) {
     providerIndexStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AgreementExpirationKeyPrefix(block))
 

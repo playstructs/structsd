@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"math/big"
 	"structs/x/structs/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -204,7 +205,7 @@ func (cache *GuildCache) CanUpdateBy(activePlayer *PlayerCache) error {
 
 // Update Permission
 func (cache *GuildCache) CanTransferOwnershipBy(activePlayer *PlayerCache) error {
-	return cache.CC.PermissionCheck(cache, activePlayer, types.PermAdmin)
+	return cache.CC.PermissionAdministrationCheck(cache, activePlayer)
 }
 
 // CanUpdatePrimaryReactorBy gates MsgGuildUpdatePrimaryReactor. The primary
@@ -249,7 +250,8 @@ func (cache *GuildCache) CanMintTokenBy(activePlayer *PlayerCache) error {
 }
 
 func (cache *GuildCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
-	return types.NewAllocationError(cache.ID(), "unacceptable_source")
+	if err := cache.CheckGuild(); err != nil { return err }
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermSourceAllocation)
 }
 
 // Associations Permission
@@ -279,10 +281,19 @@ func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error)
 
 	// Members can invite, and so can the owner: they may staff a guild
 	// they hold without joining it.
+	//
+	// This tier waives the grant on the guild object, not the ceiling on the
+	// signing key. See SignerPermissionCheck: opening a guild's join policy is
+	// about who has standing, and must not silently un-scope every delegated key
+	// its members hold. The permissioned tier above keeps that ceiling through
+	// PermissionCheck, so skipping it here gave one key two different answers
+	// depending on a setting that has nothing to do with it.
 	case types.GuildJoinBypassLevel_member:
 		if cache.GetOwnerId() != activePlayer.ID() && activePlayer.GetGuildId() != cache.GetGuildId() {
 			err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_member")
+			break
 		}
+		err = cache.CC.SignerPermissionCheck(types.PermGuildMembership)
 
 	// Undeclared, or declared but without policy written for it yet
 	default:
@@ -303,10 +314,14 @@ func (cache *GuildCache) CanApproveMembershipRequest(activePlayer *PlayerCache) 
 
 	// Members can approve, and so can the owner: they may staff a guild
 	// they hold without joining it.
+	//
+	// The signing key still has to carry the bit; see CanInviteMembers above.
 	case types.GuildJoinBypassLevel_member:
 		if cache.GetOwnerId() != activePlayer.ID() && activePlayer.GetGuildId() != cache.GetGuildId() {
 			err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_member")
+			break
 		}
+		err = cache.CC.SignerPermissionCheck(types.PermGuildMembership)
 
 	// Undeclared, or declared but without policy written for it yet
 	default:
@@ -340,8 +355,8 @@ func (cache *GuildCache) CanRequestMembership() (err error) {
 /* Temporary Banking Infrastructure */
 
 // validateGuildBankAmount rejects values that cannot be represented by the
-// guild-bank message and event schema. Check this before arithmetic so products
-// of two accepted operands are at most 128 bits and cannot overflow math.Int.
+// guild-bank message and event schema. Transaction amounts and token supply
+// are bounded here; aggregate alpha collateral uses the SDK's full balance range.
 func validateGuildBankAmount(parameter string, amount math.Int, requirePositive bool) error {
 	if amount.IsNil() {
 		return types.NewParameterValidationError(parameter, 0, "nil")
@@ -378,12 +393,22 @@ func (cache *GuildCache) BankMint(amountAlpha math.Int, amountToken math.Int, pl
 	guildTokenCoin := sdk.NewCoin(cache.GetBankDenom(), amountToken)
 	guildTokenCoins := sdk.NewCoins(guildTokenCoin)
 
-	// Try to Move Alpha From the Player to the Pool
-	if !cache.CC.k.bankKeeper.HasBalance(cache.CC.ctx, player.GetPrimaryAccount(), alphaCollateralCoin) {
-		return types.NewPlayerAffordabilityError(player.GetPlayerId(), "mint", amountAlpha.String()+" ualpha")
+	// Minting spends guild treasury, independently of the actor's personal funds.
+	vault, err := cache.CC.GetVault(cache.ID())
+	if err != nil {
+		return err
+	}
+	if err := vault.CanUseBy(player, types.PermTokenTransfer); err != nil {
+		return err
+	}
+	if !cache.CC.k.bankKeeper.HasBalance(cache.CC.ctx, vault.Address(), alphaCollateralCoin) {
+		return types.NewParameterValidationError("guild_vault_balance", amountAlpha.Uint64(), "insufficient_alpha")
 	}
 
-	errSend := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, player.GetPrimaryAccount(), cache.GetBankCollateralPool(), alphaCollateralCoins)
+	if _, err := cache.CC.EnsureVaults(cache.ID()); err != nil {
+		return err
+	}
+	errSend := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, vault.Address(), cache.GetBankCollateralPool(), alphaCollateralCoins)
 	if errSend != nil {
 		return errSend
 	}
@@ -394,8 +419,8 @@ func (cache *GuildCache) BankMint(amountAlpha math.Int, amountToken math.Int, pl
 		return errMint
 	}
 
-	// Move the new Guild Token to Player
-	errTransfer := cache.CC.k.bankKeeper.SendCoinsFromModuleToAccount(cache.CC.ctx, types.ModuleName, player.GetPrimaryAccount(), guildTokenCoins)
+	// Issuance belongs to the guild treasury; collateral remains in its own pool.
+	errTransfer := cache.CC.k.bankKeeper.SendCoinsFromModuleToAccount(cache.CC.ctx, types.ModuleName, vault.Address(), guildTokenCoins)
 	if errTransfer != nil {
 		return errTransfer
 	}
@@ -427,6 +452,11 @@ func (cache *GuildCache) BankMint(amountAlpha math.Int, amountToken math.Int, pl
 // Returns the amount of guild token minted to the player.
 func (cache *GuildCache) BankConvert(amountAlpha math.Int, minAmountToken math.Int, player *PlayerCache) (math.Int, error) {
 
+	vault, vaultErr := cache.CC.GetVault(player.ID())
+	if vaultErr != nil {
+		return math.ZeroInt(), vaultErr
+	}
+
 	if err := validateGuildBankAmount("amountAlpha", amountAlpha, true); err != nil {
 		return math.ZeroInt(), err
 	}
@@ -434,7 +464,7 @@ func (cache *GuildCache) BankConvert(amountAlpha math.Int, minAmountToken math.I
 	alphaCoin := sdk.NewCoin("ualpha", amountAlpha)
 	alphaCoins := sdk.NewCoins(alphaCoin)
 
-	if !cache.CC.k.bankKeeper.HasBalance(cache.CC.ctx, player.GetPrimaryAccount(), alphaCoin) {
+	if !cache.CC.k.bankKeeper.HasBalance(cache.CC.ctx, vault.Address(), alphaCoin) {
 		return math.ZeroInt(), types.NewPlayerAffordabilityError(player.GetPlayerId(), "convert", amountAlpha.String()+" ualpha")
 	}
 
@@ -442,8 +472,8 @@ func (cache *GuildCache) BankConvert(amountAlpha math.Int, minAmountToken math.I
 	collateral := cache.CC.k.bankKeeper.SpendableCoin(cache.CC.ctx, cache.GetBankCollateralPool(), "ualpha").Amount
 	supply := cache.CC.k.bankKeeper.GetSupply(cache.CC.ctx, cache.GetBankDenom()).Amount
 
-	if err := validateGuildBankAmount("bankCollateral", collateral, true); err != nil {
-		return math.ZeroInt(), types.NewParameterValidationError("bank_ratio", 0, "undefined_or_out_of_range")
+	if collateral.IsNil() || !collateral.IsPositive() {
+		return math.ZeroInt(), types.NewParameterValidationError("bank_ratio", 0, "undefined")
 	}
 	if err := validateGuildBankAmount("bankSupply", supply, true); err != nil {
 		return math.ZeroInt(), types.NewParameterValidationError("bank_ratio", 0, "undefined")
@@ -463,11 +493,19 @@ func (cache *GuildCache) BankConvert(amountAlpha math.Int, minAmountToken math.I
 	if tokensOut.LT(minAmountToken) {
 		return math.ZeroInt(), types.NewParameterValidationError("minAmountToken", minAmountToken.Uint64(), "slippage")
 	}
+	// Conversion mints supply just like BankMint. Bounding each operand alone
+	// lets a valid conversion strand holders above the redemption supply limit.
+	if err := validateGuildBankAmount("bankSupply", supply.Add(tokensOut), true); err != nil {
+		return math.ZeroInt(), err
+	}
 
 	guildTokenCoins := sdk.NewCoins(sdk.NewCoin(cache.GetBankDenom(), tokensOut))
 
 	// Full alpha (fee included) into collateral.
-	errSend := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, player.GetPrimaryAccount(), cache.GetBankCollateralPool(), alphaCoins)
+	if _, err := cache.CC.EnsureVaults(player.ID()); err != nil {
+		return math.ZeroInt(), err
+	}
+	errSend := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, vault.Address(), cache.GetBankCollateralPool(), alphaCoins)
 	if errSend != nil {
 		return math.ZeroInt(), errSend
 	}
@@ -477,7 +515,7 @@ func (cache *GuildCache) BankConvert(amountAlpha math.Int, minAmountToken math.I
 		return math.ZeroInt(), errMint
 	}
 
-	errTransfer := cache.CC.k.bankKeeper.SendCoinsFromModuleToAccount(cache.CC.ctx, types.ModuleName, player.GetPrimaryAccount(), guildTokenCoins)
+	errTransfer := cache.CC.k.bankKeeper.SendCoinsFromModuleToAccount(cache.CC.ctx, types.ModuleName, vault.Address(), guildTokenCoins)
 	if errTransfer != nil {
 		return math.ZeroInt(), errTransfer
 	}
@@ -498,11 +536,16 @@ func (cache *GuildCache) BankConvert(amountAlpha math.Int, minAmountToken math.I
 // alpha paid out to the player. Public messages require a nonzero
 // minAmountAlpha; zero is reserved for an internally composed conversion leg.
 //
-// The pro-rata share is computed in pure math.Int (grossAlpha = floor(amountToken
+// The pro-rata share uses exact integer arithmetic (grossAlpha = floor(amountToken
 // * collateral / supply)). This intentionally differs from the pre-v0.21.0
 // divide-first LegacyDec formula, whose banker's rounding could overpay the
 // redeemer at large collateral; the Int form always rounds in the pool's favor.
 func (cache *GuildCache) BankRedeem(amountToken math.Int, minAmountAlpha math.Int, player *PlayerCache) (math.Int, error) {
+
+	vault, vaultErr := cache.CC.GetVault(player.ID())
+	if vaultErr != nil {
+		return math.ZeroInt(), vaultErr
+	}
 
 	if err := validateGuildBankAmount("amountToken", amountToken, true); err != nil {
 		return math.ZeroInt(), err
@@ -511,8 +554,8 @@ func (cache *GuildCache) BankRedeem(amountToken math.Int, minAmountAlpha math.In
 	alphaCollateralBalance := cache.CC.k.bankKeeper.SpendableCoin(cache.CC.ctx, cache.GetBankCollateralPool(), "ualpha")
 	guildTokenSupply := cache.CC.k.bankKeeper.GetSupply(cache.CC.ctx, cache.GetBankDenom())
 
-	if err := validateGuildBankAmount("bankCollateral", alphaCollateralBalance.Amount, true); err != nil {
-		return math.ZeroInt(), types.NewParameterValidationError("bank_ratio", 0, "undefined_or_out_of_range")
+	if alphaCollateralBalance.Amount.IsNil() || !alphaCollateralBalance.Amount.IsPositive() {
+		return math.ZeroInt(), types.NewParameterValidationError("bank_ratio", 0, "undefined")
 	}
 	if err := validateGuildBankAmount("bankSupply", guildTokenSupply.Amount, true); err != nil {
 		return math.ZeroInt(), types.NewParameterValidationError("bank_ratio", 0, "undefined_or_out_of_range")
@@ -521,12 +564,21 @@ func (cache *GuildCache) BankRedeem(amountToken math.Int, minAmountAlpha math.In
 	guildTokenCoin := sdk.NewCoin(cache.GetBankDenom(), amountToken)
 	guildTokenCoins := sdk.NewCoins(guildTokenCoin)
 
-	if !cache.CC.k.bankKeeper.HasBalance(cache.CC.ctx, player.GetPrimaryAccount(), guildTokenCoin) {
+	if !cache.CC.k.bankKeeper.HasBalance(cache.CC.ctx, vault.Address(), guildTokenCoin) {
 		return math.ZeroInt(), types.NewPlayerAffordabilityError(player.GetPlayerId(), "redeem", amountToken.String()+" "+cache.GetBankDenom())
 	}
 
-	// grossAlpha = floor(amountToken * collateral / supply); fee rounds up.
-	grossAlpha := amountToken.Mul(alphaCollateralBalance.Amount).Quo(guildTokenSupply.Amount)
+	// The pool can aggregate more alpha than one transaction can pay. A uint64
+	// token amount times an SDK balance (at most 256 bits) needs up to 320 bits;
+	// divide exactly before returning to math.Int and the uint64 event domain.
+	// Reject an oversized quote before fees, burns or transfers. The amount of
+	// work is bounded by these fixed widths, not by the number of deposits.
+	gross := new(big.Int).Mul(amountToken.BigInt(), alphaCollateralBalance.Amount.BigInt())
+	gross.Quo(gross, guildTokenSupply.Amount.BigInt())
+	if !gross.IsUint64() {
+		return math.ZeroInt(), types.NewParameterValidationError("amountAlpha", 0, "out_of_range")
+	}
+	grossAlpha := math.NewIntFromUint64(gross.Uint64())
 	feeAlpha := cache.GetBankConvertOutFee().MulInt(grossAlpha).Ceil().TruncateInt()
 	netAlpha := grossAlpha.Sub(feeAlpha)
 
@@ -539,7 +591,10 @@ func (cache *GuildCache) BankRedeem(amountToken math.Int, minAmountAlpha math.In
 	}
 
 	// Move the tokens back to the module and burn them.
-	errReturn := cache.CC.k.bankKeeper.SendCoinsFromAccountToModule(cache.CC.ctx, player.GetPrimaryAccount(), types.ModuleName, guildTokenCoins)
+	if _, err := cache.CC.EnsureVaults(player.ID()); err != nil {
+		return math.ZeroInt(), err
+	}
+	errReturn := cache.CC.k.bankKeeper.SendCoinsFromAccountToModule(cache.CC.ctx, vault.Address(), types.ModuleName, guildTokenCoins)
 	if errReturn != nil {
 		return math.ZeroInt(), errReturn
 	}
@@ -551,7 +606,7 @@ func (cache *GuildCache) BankRedeem(amountToken math.Int, minAmountAlpha math.In
 	// Move the net alpha to the player; the fee remains in collateral.
 	if netAlpha.IsPositive() {
 		alphaAmountCoins := sdk.NewCoins(sdk.NewCoin("ualpha", netAlpha))
-		errAlpha := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetBankCollateralPool(), player.GetPrimaryAccount(), alphaAmountCoins)
+		errAlpha := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetBankCollateralPool(), vault.Address(), alphaAmountCoins)
 		if errAlpha != nil {
 			return math.ZeroInt(), errAlpha
 		}
@@ -646,8 +701,8 @@ func (cache *GuildCache) SetEndpoint(endpoint string) {
 	cache.Changed = true
 }
 
-/* SetOwner transfers PermGuildAll with ownership. Only the outgoing owner's
- * permission row is removed; explicit grants to other players remain.
+/* SetOwner removes the outgoing owner's entire direct guild grant. The new
+ * owner may explicitly regrant a continuing role; other players' rows remain.
  */
 func (cache *GuildCache) SetOwner(owner string) {
 	if !cache.GuildLoaded {
@@ -655,7 +710,7 @@ func (cache *GuildCache) SetOwner(owner string) {
 	}
 
 	if previousOwner := cache.Guild.Owner; previousOwner != "" && previousOwner != owner {
-		cache.CC.PermissionRemove(GetObjectPermissionIDBytes(cache.ID(), previousOwner), types.PermGuildAll)
+		cache.CC.ClearPermissions(GetObjectPermissionIDBytes(cache.ID(), previousOwner))
 	}
 
 	cache.CC.PermissionAdd(GetObjectPermissionIDBytes(cache.ID(), owner), types.PermGuildAll)
@@ -760,6 +815,9 @@ func (cache *GuildCache) SetEntryRank(entryRank uint64) error {
 	}
 	if !cache.GuildLoaded {
 		cache.LoadGuild()
+	}
+	if err := types.ValidateRankPurchaseSettings(entryRank, cache.Guild.RankPurchaseMinimumRank, cache.Guild.JoinByRankPurchaseEnabled); err != nil {
+		return err
 	}
 	cache.Guild.EntryRank = entryRank
 	cache.Changed = true

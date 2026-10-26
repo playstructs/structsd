@@ -23,6 +23,7 @@ import (
 	ibcclienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
 	ibcconnectiontypes "github.com/cosmos/ibc-go/v10/modules/core/03-connection/types"
 	porttypes "github.com/cosmos/ibc-go/v10/modules/core/05-port/types"
+	ibcapi "github.com/cosmos/ibc-go/v10/modules/core/api"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 	solomachine "github.com/cosmos/ibc-go/v10/modules/light-clients/06-solomachine"
@@ -121,6 +122,14 @@ func (app *App) registerIBCModules() {
 
 	app.IBCKeeper.SetRouter(ibcRouter)
 
+	// IBC v2 (ibc-go >= v10.1) has its own router on ChannelKeeperV2 and its
+	// message server dereferences it without a nil check. No v2 application is
+	// registered here, so the router stays empty: a v2 packet for any port is
+	// refused by the router's own "no route" path instead of a nil pointer.
+	// Either way the failure is recovered by baseapp and identical on every
+	// node; this just keeps the refusal explicit.
+	app.IBCKeeper.SetRouterV2(ibcapi.NewRouter())
+
 	// Setup light client modules
 	// Note: localhost is auto-registered by IBC v10 core
 	clientKeeper := app.IBCKeeper.ClientKeeper
@@ -136,7 +145,7 @@ func (app *App) registerIBCModules() {
 	if err := app.RegisterModules(
 		ibc.NewAppModule(app.IBCKeeper),
 		ibctransfer.NewAppModule(app.TransferKeeper),
-		icamodule.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
+		icaAppModule{icamodule.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper)},
 		ibctm.NewAppModule(tmLightClientModule),
 		solomachine.NewAppModule(smLightClientModule),
 	); err != nil {
@@ -151,7 +160,7 @@ func RegisterIBC(registry cdctypes.InterfaceRegistry) map[string]appmodule.AppMo
 	modules := map[string]appmodule.AppModule{
 		ibcexported.ModuleName:      ibc.AppModule{},
 		ibctransfertypes.ModuleName: ibctransfer.AppModule{},
-		icatypes.ModuleName:         icamodule.AppModule{},
+		icatypes.ModuleName:         icaAppModule{},
 		ibctm.ModuleName:            ibctm.AppModule{},
 		solomachine.ModuleName:      solomachine.AppModule{},
 	}

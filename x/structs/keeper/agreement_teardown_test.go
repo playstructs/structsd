@@ -65,7 +65,7 @@ func setupTeardownFixture(t *testing.T, rate int64, providerPenalty, consumerPen
 	// A substation with plenty of headroom for the agreements under test.
 	substation, _, err := testAppendSubstation(k, ctx, types.Allocation{}, owner)
 	require.NoError(t, err)
-	k.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, substation.Id), 100000)
+	testSupplySubstation(t, k, ctx, substation.Id, 100000)
 
 	providerPenaltyDec, err := math.LegacyNewDecFromStr(providerPenalty)
 	require.NoError(t, err)
@@ -94,12 +94,14 @@ func setupTeardownFixture(t *testing.T, rate int64, providerPenalty, consumerPen
 	provider, found := k.GetProvider(ctx, providerCache.GetProviderId())
 	require.True(t, found)
 
+	vaults, err := k.NewCurrentContext(ctx).EnsureVaults(consumer.Id)
+	require.NoError(t, err)
 	return &teardownFixture{
 		k:             k,
 		ms:            ms,
 		ctx:           ctx,
 		consumer:      consumer,
-		consumerAcc:   consumerAcc,
+		consumerAcc:   vaults[0],
 		ownerAcc:      ownerAcc,
 		provider:      provider,
 		substationId:  substation.Id,
@@ -239,6 +241,69 @@ func TestTeardown_AllocationDrivenSettlesOnce(t *testing.T) {
 	require.Equal(t, uint64(0), f.agreementLoad(), "provider load must be decremented exactly once")
 
 	f.requireSettledOnce(t, agreement)
+}
+
+func TestTeardown_CascadeSettlesSharedPoolBeforeDeferredPermissionCleanup(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0.5", "0")
+	first, firstDeposit := f.openAgreement(t, 100, 50)
+	firstVault := f.consumerAcc
+
+	secondKey := sdk.AccAddress("cascade-consumer-two1")
+	f.consumer = testAppendPlayer(f.k, f.ctx, types.Player{Creator: secondKey.String(), PrimaryAddress: secondKey.String()})
+	ctx := sdk.UnwrapSDKContext(f.ctx)
+	vaults, err := f.k.NewCurrentContext(ctx).EnsureVaults(f.consumer.Id)
+	require.NoError(t, err)
+	f.consumerAcc = vaults[0]
+	second, secondDeposit := f.openAgreement(t, 200, 50)
+	require.True(t, firstDeposit.Add(secondDeposit).Equal(f.balance(f.collateralAcc)))
+
+	// Both the allocation and agreement cleanup must be reached through the
+	// cascade, and each must leave a real remainder for later block passes.
+	const grants = types.PermissionCleanupBudget*2 + 40
+	grantMany(t, f.k, ctx, first.Id, grants)
+	grantMany(t, f.k, ctx, first.AllocationId, grants)
+	supply := f.k.BankKeeper().GetSupply(ctx, teardownDenom).Amount
+	late := ctx.WithBlockHeight(int64(first.StartBlock + 20))
+	f.ctx = late
+	f.k.SetGridAttribute(late, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, f.substationId), 0)
+	require.NoError(t, f.k.AppendGridCascadeQueue(late, f.substationId))
+	cc := f.k.NewCurrentContext(late)
+	cc.GridCascade()
+	cc.CommitAll()
+
+	// Twenty served blocks at 50% provider penalty leave each consumer 80%
+	// of their deposit, and the provider earns the other 20%. Neither consumer
+	// may fund a duplicate settlement or leave revenue stranded in the pool.
+	checkBalances := func() {
+		t.Helper()
+		require.True(t, math.NewInt(40000).Equal(f.balance(firstVault)))
+		require.True(t, math.NewInt(80000).Equal(f.balance(f.consumerAcc)))
+		require.True(t, math.NewInt(30000).Equal(f.balance(f.earningsAcc)))
+		require.True(t, f.balance(f.collateralAcc).IsZero())
+		require.True(t, supply.Equal(f.k.BankKeeper().GetSupply(f.ctx, teardownDenom).Amount))
+		require.Zero(t, f.agreementLoad())
+	}
+	checkBalances()
+	f.requireSettledOnce(t, first)
+	f.requireSettledOnce(t, second)
+	require.ElementsMatch(t, []string{first.Id, first.AllocationId}, f.k.GetPermissionCleanupQueue(late))
+	for _, id := range []string{first.Id, first.AllocationId} {
+		require.Len(t, f.k.GetPermissionsByObject(late, id), grants-types.PermissionCleanupBudget)
+	}
+	for pass := 0; pass < 8 && len(f.k.GetPermissionCleanupQueue(late)) > 0; pass++ {
+		late = late.WithBlockHeight(late.BlockHeight() + 1)
+		f.ctx = late
+		f.k.ProcessPermissionCleanupQueue(late)
+		cc := f.k.NewCurrentContext(late)
+		cc.GridCascade()
+		cc.CommitAll()
+		checkBalances()
+	}
+	require.Empty(t, f.k.GetPermissionCleanupQueue(late))
+	require.Empty(t, f.k.GetPermissionsByObject(late, first.Id))
+	require.Empty(t, f.k.GetPermissionsByObject(late, first.AllocationId))
+	message, broken := keeperlib.ProviderCollateralSolvencyInvariant(f.k)(late)
+	require.False(t, broken, message)
 }
 
 // TestTeardown_AllocationDrivenSweepsEarnedRevenue is the money-conservation
@@ -463,22 +528,20 @@ func TestTeardown_OneAgreementCannotDrainAnother(t *testing.T) {
 	require.Equal(t, math.ZeroInt(), f.balance(f.collateralAcc))
 }
 
-// TestTeardown_UnusablePayoutAddressFailsLoudly covers the failure that needed no
-// adversary: PlayerCache.GetPrimaryAccount drops the bech32 error and returns an
-// empty address, and every payout discarded the SendCoins error that followed, so
-// the collateral was destroyed along with the agreement.
-func TestTeardown_UnusablePayoutAddressFailsLoudly(t *testing.T) {
+// Invalid ownership must fail before collateral is paid or the agreement removed.
+func TestTeardown_UnusablePayoutOwnerFailsLoudly(t *testing.T) {
 	f := setupTeardownFixture(t, 10, "0", "0")
 
 	const capacity, duration = 100, 50
 	agreement, collateral := f.openAgreement(t, capacity, duration)
 
-	// Break the payout destination out from under the open agreement.
-	broken := f.consumer
-	broken.PrimaryAddress = "not-a-bech32-address"
-	f.k.SetPlayer(f.ctx, broken)
+	// Break the owner reference while preserving the existing actor grant.
+	broken := agreement
+	broken.Owner = "1-999999"
+	_, err := f.k.SetAgreement(f.ctx, broken)
+	require.NoError(t, err)
 
-	_, err := f.ms.AgreementClose(f.ctx, &types.MsgAgreementClose{
+	_, err = f.ms.AgreementClose(f.ctx, &types.MsgAgreementClose{
 		Creator:     f.consumer.Creator,
 		AgreementId: agreement.Id,
 	})
@@ -491,6 +554,23 @@ func TestTeardown_UnusablePayoutAddressFailsLoudly(t *testing.T) {
 	_, stillThere := f.k.GetAgreement(f.ctx, agreement.Id)
 	require.True(t, stillThere, "the agreement must survive a failed settlement rather than being torn down unpaid")
 	require.Equal(t, collateral, f.balance(f.collateralAcc), "the collateral must still be in the pool")
+}
+
+func TestAgreementVaultRefundIgnoresBrokenPrimaryAddress(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0", "0")
+	key, err := sdk.AccAddressFromBech32(f.consumer.PrimaryAddress)
+	require.NoError(t, err)
+	f.fund(t, key, 999)
+	agreement, collateral := f.openAgreement(t, 100, 50)
+	require.Equal(t, math.NewInt(999), f.balance(key), "opening spends vault collateral only")
+	broken := f.consumer
+	broken.PrimaryAddress = "not-a-bech32-address"
+	f.k.SetPlayer(f.ctx, broken)
+	_, err = f.ms.AgreementClose(f.ctx, &types.MsgAgreementClose{Creator: f.consumer.Creator, AgreementId: agreement.Id})
+	require.NoError(t, err)
+	require.Equal(t, collateral, f.balance(f.consumerAcc))
+	require.Equal(t, math.NewInt(999), f.balance(key))
+	f.requireSettledOnce(t, agreement)
 }
 
 // TestTeardown_AllocationCloseDoesNotPayPartialOnShortPool pins the atomicity of
@@ -833,9 +913,12 @@ func TestTeardown_ProviderDeleteDrainsBothPools(t *testing.T) {
 	f.fund(t, f.collateralAcc, collateralDust)
 	f.fund(t, f.earningsAcc, earningsDust)
 
-	ownerBefore := f.balance(f.ownerAcc)
+	ownerVault, err := types.VaultAddress(f.provider.Owner)
+	require.NoError(t, err)
+	ownerBefore := f.balance(ownerVault)
+	keyBefore := f.balance(f.ownerAcc)
 
-	_, err := f.ms.ProviderDelete(f.ctx, &types.MsgProviderDelete{
+	_, err = f.ms.ProviderDelete(f.ctx, &types.MsgProviderDelete{
 		Creator:    f.provider.Creator,
 		ProviderId: f.provider.Id,
 	})
@@ -847,10 +930,11 @@ func TestTeardown_ProviderDeleteDrainsBothPools(t *testing.T) {
 
 	require.Equal(t, math.ZeroInt(), f.balance(f.collateralAcc), "the collateral pool must not outlive the provider")
 	require.Equal(t, math.ZeroInt(), f.balance(f.earningsAcc), "the earnings pool must not outlive the provider")
-	require.Equal(t, ownerBefore.AddRaw(collateralDust+earningsDust), f.balance(f.ownerAcc),
+	require.Equal(t, ownerBefore.AddRaw(collateralDust+earningsDust), f.balance(ownerVault),
 		"what neither the consumers nor the pools are owed belongs to the provider's owner")
 
 	f.requireSettledOnce(t, agreement)
+	require.Equal(t, keyBefore, f.balance(f.ownerAcc), "provider proceeds stay in the vault")
 }
 
 // TestExpiryLivenessInvariant_DetectsAnAgreementPastItsEnd covers the standing
@@ -950,5 +1034,196 @@ func TestAgreementDuration_IdentityHoldsBeforeServiceStarts(t *testing.T) {
 		require.True(t, cache.GetRemainingCollateral().LTE(collateral),
 			"height %d: priced %s remaining against a %s deposit",
 			height, cache.GetRemainingCollateral(), collateral)
+	}
+}
+
+/* TestTeardown_ProviderDeleteDrainsAnIdleProvider covers the ordinary way a
+ * provider leaves: no agreements open, but earnings from ones that already
+ * closed still sitting in the pool.
+ *
+ * TestTeardown_ProviderDeleteDrainsBothPools always has an agreement to settle,
+ * so the drain runs after a loop that has already touched the provider. This is
+ * the path where that loop does nothing at all, and it is the one an operator
+ * actually takes when winding a provider down. Both pool addresses are derived
+ * from the provider id, so anything the delete leaves behind is unreachable the
+ * moment the record is gone - there is no later withdrawal, because
+ * WithdrawBalanceAndCommit cannot load a provider that no longer exists.
+ */
+func TestTeardown_ProviderDeleteDrainsAnIdleProvider(t *testing.T) {
+	f := setupTeardownFixture(t, 10, "0", "0")
+
+	const earnings, collateralRemainder = 4200, 11
+	f.fund(t, f.earningsAcc, earnings)
+	f.fund(t, f.collateralAcc, collateralRemainder)
+
+	require.Zero(t, f.agreementLoad(), "precondition: this provider has nothing open")
+
+	ownerVault, err := types.VaultAddress(f.provider.Owner)
+	require.NoError(t, err)
+	ownerBefore := f.balance(ownerVault)
+	keyBefore := f.balance(f.ownerAcc)
+
+	_, err = f.ms.ProviderDelete(f.ctx, &types.MsgProviderDelete{
+		Creator:    f.provider.Creator,
+		ProviderId: f.provider.Id,
+	})
+	require.NoError(t, err)
+
+	require.Equal(t, math.ZeroInt(), f.balance(f.earningsAcc),
+		"unwithdrawn earnings must leave with the provider, not outlive it")
+	require.Equal(t, math.ZeroInt(), f.balance(f.collateralAcc))
+	require.Equal(t, ownerBefore.AddRaw(earnings+collateralRemainder), f.balance(ownerVault))
+
+	// And the record really is gone, so there would have been no second chance.
+	_, found := f.k.GetProvider(sdk.UnwrapSDKContext(f.ctx), f.provider.Id)
+	require.False(t, found)
+	require.Equal(t, keyBefore, f.balance(f.ownerAcc), "provider proceeds stay in the vault")
+}
+
+/* TestTeardown_SubstationDeleteCannotRepriceAConsumerCancellation is the
+ * regression on a consumer choosing which cancellation penalty applies to them.
+ *
+ * Ending an agreement early has two prices. AgreementClose charges the consumer
+ * cancellation penalty; PrematureCloseByAllocation pays the *provider* one to
+ * the consumer, which is the right policy when the provider walks away and a
+ * gift when the consumer does.
+ *
+ * Deleting a substation destroyed every allocation arriving at it, and an
+ * agreement's allocation can arrive at a substation the consumer owns - so the
+ * consumer could pick the favourable price by deleting a substation instead of
+ * closing the agreement. AllocationDelete already refused to tear down a
+ * providerAgreement allocation directly; this was the same thing one level up.
+ *
+ * Disconnecting rather than refusing the deletion matters:
+ * SubstationAllocationConnect asks for no rights on the destination, so anyone
+ * may point an allocation at anyone's substation, and refusing would let a
+ * stranger's agreement pin a substation in place forever.
+ */
+func TestTeardown_SubstationDeleteCannotRepriceAConsumerCancellation(t *testing.T) {
+	// A full provider cancellation penalty and no consumer penalty is the shape
+	// that makes the misclassification worth the most: closing properly costs
+	// the consumer their served time, the substation route refunds all of it.
+	f := setupTeardownFixture(t, 10, "1", "0")
+
+	const capacity, duration = 100, 50
+	agreement, collateral := f.openAgreement(t, capacity, duration)
+
+	// The consumer points the agreement's allocation at a substation of their
+	// own, then deletes it.
+	consumerSubstation, _, substationErr := testAppendSubstation(f.k, f.ctx, types.Allocation{
+		Id:             agreement.AllocationId,
+		SourceObjectId: f.provider.SubstationId,
+		Controller:     f.consumer.Id,
+		Type:           types.AllocationType_providerAgreement,
+	}, f.consumer)
+	require.NoError(t, substationErr)
+
+	_, err := f.ms.SubstationAllocationConnect(f.ctx, &types.MsgSubstationAllocationConnect{
+		Creator:       f.consumer.Creator,
+		AllocationId:  agreement.AllocationId,
+		DestinationId: consumerSubstation.Id,
+	})
+	require.NoError(t, err)
+
+	consumerBefore := f.balance(f.consumerAcc)
+
+	_, err = f.ms.SubstationDelete(f.ctx, &types.MsgSubstationDelete{
+		Creator:      f.consumer.Creator,
+		SubstationId: consumerSubstation.Id,
+	})
+	require.NoError(t, err, "deleting a substation is a legitimate act and must still work")
+
+	// The agreement is the thing that must survive: it can only be ended at a
+	// price, and this route sets none.
+	stored, stillThere := f.k.GetAgreement(f.ctx, agreement.Id)
+	require.True(t, stillThere, "a substation deletion must not settle the agreement")
+	_ = stored
+
+	require.Equal(t, consumerBefore, f.balance(f.consumerAcc),
+		"and must pay the consumer nothing")
+	require.Equal(t, collateral, f.balance(f.collateralAcc), "the collateral stays escrowed")
+	require.Equal(t, uint64(capacity), f.agreementLoad(), "the provider is still carrying the load")
+}
+
+func TestTeardown_ConsumerCloseReleasesEarnedProviderHoldback(t *testing.T) {
+	for _, guildOwned := range []bool{false, true} {
+		name := "player owner"
+		if guildOwned {
+			name = "guild owner"
+		}
+		t.Run(name, func(t *testing.T) {
+			f := setupTeardownFixture(t, 10, "0.5", "0.25")
+			if guildOwned {
+				gs := testCreateGuild(f.k, f.ctx)
+				f.provider.Owner = gs.Guild.Id
+				f.ownerAcc = sdk.MustAccAddressFromBech32(gs.GuildOwner.PrimaryAddress)
+				f.k.SetProvider(f.ctx, f.provider)
+			}
+			vaults, err := f.k.NewCurrentContext(f.ctx).EnsureVaults(f.provider.Owner)
+			require.NoError(t, err)
+			ownerVault := vaults[0]
+			ownerVaultBefore := f.balance(ownerVault)
+			ownerKeyBefore := f.balance(f.ownerAcc)
+			firstConsumer, firstVault := f.consumer, f.consumerAcc
+			first, _ := f.openAgreement(t, 100, 50)
+			secondKey := sdk.AccAddress("holdback-consumer-two")
+			f.consumer = testAppendPlayer(f.k, f.ctx, types.Player{Creator: secondKey.String(), PrimaryAddress: secondKey.String()})
+			secondVaults, err := f.k.NewCurrentContext(f.ctx).EnsureVaults(f.consumer.Id)
+			require.NoError(t, err)
+			f.consumerAcc = secondVaults[0]
+			second, _ := f.openAgreement(t, 200, 50)
+			require.NotEqual(t, firstVault, f.consumerAcc)
+
+			// Sharing the pool grants B no authority over A's agreement.
+			_, err = f.ms.AgreementClose(f.ctx, &types.MsgAgreementClose{Creator: f.consumer.Creator, AgreementId: first.Id})
+			require.Error(t, err)
+			storedFirst, found := f.k.GetAgreement(f.ctx, first.Id)
+			require.True(t, found)
+			require.Equal(t, first, storedFirst)
+			require.Equal(t, math.ZeroInt(), f.balance(firstVault))
+			require.Equal(t, math.ZeroInt(), f.balance(f.consumerAcc))
+			require.Equal(t, math.NewInt(150000), f.balance(f.collateralAcc))
+			require.Equal(t, math.ZeroInt(), f.balance(f.earningsAcc))
+			supplyBefore := f.k.BankKeeper().GetSupply(f.ctx, teardownDenom).Amount
+			f.ctx = sdk.UnwrapSDKContext(f.ctx).WithBlockHeight(int64(first.StartBlock + 20))
+
+			_, err = f.ms.AgreementClose(f.ctx, &types.MsgAgreementClose{Creator: firstConsumer.Creator, AgreementId: first.Id})
+			require.NoError(t, err)
+			// A earned 20000 and forfeits 7500 of its remaining collateral. B's
+			// checkpoint contributes 20000 earnings while retaining its own holdback.
+			require.Equal(t, math.NewInt(22500), f.balance(firstVault))
+			require.Equal(t, math.ZeroInt(), f.balance(f.consumerAcc), "B receives no refund until its own close")
+			require.Equal(t, math.NewInt(47500), f.balance(f.earningsAcc))
+			require.Equal(t, math.NewInt(80000), f.balance(f.collateralAcc), "B retains its unearned collateral and provider penalty")
+			require.Equal(t, uint64(200), f.agreementLoad())
+			f.requireSettledOnce(t, first)
+
+			_, err = f.ms.AgreementClose(f.ctx, &types.MsgAgreementClose{Creator: f.consumer.Creator, AgreementId: second.Id})
+			require.NoError(t, err)
+			require.Equal(t, math.NewInt(22500), f.balance(firstVault))
+			require.Equal(t, math.NewInt(45000), f.balance(f.consumerAcc))
+			require.Equal(t, math.NewInt(82500), f.balance(f.earningsAcc), "all earned service and consumer penalties must be withdrawable")
+			require.Equal(t, math.ZeroInt(), f.balance(f.collateralAcc), "no provider holdback remains after both consumers close")
+			require.Zero(t, f.agreementLoad())
+			f.requireSettledOnce(t, second)
+
+			// A second transaction cannot claim the refund or released holdback again.
+			_, err = f.ms.AgreementClose(f.ctx, &types.MsgAgreementClose{Creator: firstConsumer.Creator, AgreementId: first.Id})
+			require.Error(t, err)
+			require.Equal(t, math.NewInt(22500), f.balance(firstVault))
+			require.Equal(t, math.NewInt(45000), f.balance(f.consumerAcc))
+			require.Equal(t, math.NewInt(82500), f.balance(f.earningsAcc))
+			require.Equal(t, math.ZeroInt(), f.balance(f.collateralAcc))
+
+			_, err = f.ms.ProviderWithdrawBalance(f.ctx, &types.MsgProviderWithdrawBalance{Creator: f.ownerAcc.String(), ProviderId: f.provider.Id})
+			require.NoError(t, err)
+			require.Equal(t, ownerVaultBefore.AddRaw(82500), f.balance(ownerVault))
+			require.Equal(t, ownerKeyBefore, f.balance(f.ownerAcc), "withdrawal credits the owner vault, not its signing address")
+			require.Equal(t, math.ZeroInt(), f.balance(f.earningsAcc))
+			require.Equal(t, math.ZeroInt(), f.balance(f.collateralAcc))
+			require.Equal(t, math.NewInt(22500), f.balance(firstVault))
+			require.Equal(t, math.NewInt(45000), f.balance(f.consumerAcc))
+			require.Equal(t, supplyBefore, f.k.BankKeeper().GetSupply(f.ctx, teardownDenom).Amount)
+		})
 	}
 }

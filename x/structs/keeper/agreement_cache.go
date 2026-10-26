@@ -66,6 +66,8 @@ func (cache *AgreementCache) Commit() {
     	}
 
         cache.Changed = false
+        cache.EndBlockChanged = false
+        cache.PreviousEndBlock = 0
 
     }
 
@@ -189,7 +191,12 @@ func (cache *AgreementCache) GetOwnerId() string {
 	return cache.Agreement.Owner
 }
 func (cache *AgreementCache) GetOwner() *PlayerCache {
-    return cache.CC.GetPlayer(cache.GetOwnerId())
+    owner, err := cache.CC.GetExistingAssetOwner(cache.GetOwnerId())
+    if err != nil {
+        return nil
+    }
+    player, _ := owner.(*PlayerCache)
+    return player
 }
 
 // Get the Provider data
@@ -296,22 +303,17 @@ func (cache *AgreementCache) GetRemainingCollateralDec() math.LegacyDec {
 
 /* Committing Setters */
 
-// consumerAccount resolves where this agreement's consumer is paid. The
-// PlayerCache accessor drops the bech32 error and hands back an empty address,
-// which SendCoins would reject with the error every payout used to discard, so
-// the collateral would vanish with the agreement. Resolve it explicitly instead.
+// consumerAccount resolves the consumer vault before settlement. Signing-key
+// changes cannot redirect collateral or invalidate the payout destination.
 func (cache *AgreementCache) consumerAccount() (sdk.AccAddress, error) {
-	address := cache.GetOwner().GetPrimaryAddress()
-
-	account, err := sdk.AccAddressFromBech32(address)
+	accounts, err := cache.CC.EnsureVaults(cache.GetOwnerId())
 	if err != nil {
-		return nil, types.NewAgreementSettlementError(cache.GetAgreementId(), "invalid_payout_address").
+		return nil, types.NewAgreementSettlementError(cache.GetAgreementId(), "invalid_payout_owner").
 			WithProvider(cache.GetProviderId()).
-			WithPlayer(cache.GetOwnerId()).
-			WithAddress(address)
+			WithPlayer(cache.GetOwnerId())
 	}
 
-	return account, nil
+	return accounts[0], nil
 }
 
 // payConsumer moves collateral the consumer is owed out of the provider's pool.
@@ -321,7 +323,6 @@ func (cache *AgreementCache) payConsumer(amount math.Int) error {
 	if !amount.IsPositive() {
 		return nil
 	}
-
 	account, err := cache.consumerAccount()
 	if err != nil {
 		return err
@@ -470,10 +471,15 @@ func (cache *AgreementCache) assertConsumerPayable() error {
 	return err
 }
 
-func (cache *AgreementCache) PrematureCloseByProvider() error {
+func (cache *AgreementCache) PrematureCloseByProvider() (err error) {
 	if !cache.beginTeardown() {
 		return nil
 	}
+	// A failed attempt is retryable in this same context. Only a completed
+	// settlement may keep the recursion guard claimed.
+	defer func() {
+		if err != nil { cache.TearingDown = false }
+	}()
 
 	if err := cache.assertConsumerPayable(); err != nil {
 		return err
@@ -506,10 +512,15 @@ func (cache *AgreementCache) PrematureCloseByProvider() error {
 	return nil
 }
 
-func (cache *AgreementCache) PrematureCloseByConsumer() error {
+func (cache *AgreementCache) PrematureCloseByConsumer() (err error) {
 	if !cache.beginTeardown() {
 		return nil
 	}
+	// A failed attempt is retryable in this same context. Only a completed
+	// settlement may keep the recursion guard claimed.
+	defer func() {
+		if err != nil { cache.TearingDown = false }
+	}()
 
 	if err := cache.assertConsumerPayable(); err != nil {
 		return err
@@ -529,6 +540,10 @@ func (cache *AgreementCache) PrematureCloseByConsumer() error {
 		return err
 	}
 
+	// The provider did not cancel. Release the earned holdback only after the
+	// consumer is whole, before deleting the agreement that prices that revenue.
+	cache.PayoutVoidedProviderCancellationPenalty()
+
 	// Decrease the Load on the Provider
 	cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
 
@@ -539,17 +554,22 @@ func (cache *AgreementCache) PrematureCloseByConsumer() error {
 
 }
 
-// PrematureCloseByAllocation settles an agreement whose allocation has already
-// been torn down. It must not destroy the allocation itself: AllocationCache.Destroy
+// PrematureCloseByAllocation settles an agreement before its allocation is
+// torn down. It must not destroy the allocation itself: AllocationCache.Destroy
 // is the only caller.
 //
 // This is the teardown that runs in block hooks — grid brownout, struct
 // destruction, batched allocation teardown — so it is the one that most needs its
 // fallible work done before it mutates anything.
-func (cache *AgreementCache) PrematureCloseByAllocation() error {
+func (cache *AgreementCache) PrematureCloseByAllocation() (err error) {
 	if !cache.beginTeardown() {
 		return nil
 	}
+	// A failed attempt is retryable in this same context. Only a completed
+	// settlement may keep the recursion guard claimed.
+	defer func() {
+		if err != nil { cache.TearingDown = false }
+	}()
 
 	if err := cache.assertConsumerPayable(); err != nil {
 		return err
@@ -585,10 +605,15 @@ func (cache *AgreementCache) PrematureCloseByAllocation() error {
 // allocation is destroyed first: it is the one step that can fail, and doing it
 // before the settlement means a failure cannot leave revenue swept and load
 // released against an agreement that is still in the store.
-func (cache *AgreementCache) Expire() error {
+func (cache *AgreementCache) Expire() (err error) {
 	if !cache.beginTeardown() {
 		return nil
 	}
+	// A failed attempt is retryable in this same context. Only a completed
+	// settlement may keep the recursion guard claimed.
+	defer func() {
+		if err != nil { cache.TearingDown = false }
+	}()
 
 	// Destroy the Allocation
 	if err := cache.destroyAllocation(); err != nil {
@@ -644,7 +669,11 @@ func (cache *AgreementCache) SetEndBlock(endBlock uint64) {
 		cache.LoadAgreement()
 	}
 
-	cache.PreviousEndBlock = cache.Agreement.EndBlock
+	// Retain the height actually indexed in storage, even when this context
+	// changes the end more than once before committing.
+	if !cache.EndBlockChanged {
+		cache.PreviousEndBlock = cache.Agreement.EndBlock
+	}
 	cache.Agreement.EndBlock = endBlock
     cache.EndBlockChanged = true
 
@@ -662,6 +691,66 @@ func (cache *AgreementCache) SetEndBlock(endBlock uint64) {
 // The multiply happens in math.Int because remaining * capacity overflows uint64
 // well inside the range a provider may publish — SetDurationRange puts no
 // ceiling on durationMaximum.
+/* endBlockFor adds a duration to a start height and refuses a wrap.
+ *
+ * An agreement's end block is where its whole lifecycle hangs: the expiration
+ * index is keyed by it, and AgreementExpirations reads that index at exactly the
+ * current height. An addition that rolls over does not produce a far-future
+ * agreement, it produces one whose end block is in the past - indexed at a
+ * height the chain has already passed and will never revisit, so it never
+ * expires, keeps its capacity in the provider's load, and goes on being billed.
+ *
+ * A provider publishes its own duration maximum and nothing bounds that, so the
+ * duration reaching here is only ever as sane as whoever set the range. Checking
+ * the addition states the invariant that actually matters - the window must move
+ * forwards - without inventing a protocol-wide maximum that would be a game rule
+ * rather than an arithmetic one.
+ */
+func endBlockFor(startBlock uint64, duration uint64) (uint64, error) {
+	endBlock := startBlock + duration
+
+	if endBlock < startBlock {
+		return 0, types.NewParameterValidationError("duration", duration, "above_maximum")
+	}
+
+	return endBlock, nil
+}
+
+/* rescaledDuration re-prices the unearned span at the new capacity.
+ *
+ * Wide arithmetic, because the product of a duration and a capacity does not fit
+ * a uint64 and wrapping here would buy a short window at a large capacity.
+ *
+ * A rescaled duration of zero is refused outright rather than left to the
+ * provider's published minimum. The two are not the same check: an agreement
+ * whose EndBlock lands on the current block is fully live for the rest of that
+ * block - AgreementExpirations runs in the EndBlocker, after every message - so
+ * the capacity, the provider load and the connected allocation's power are all
+ * raised and usable, and only reaped once the block's transactions are done. The
+ * collateral was locked against the old capacity, so that window is free.
+ *
+ * AgreementDurationVerify happens to catch this today, because every setter
+ * floors DurationMinimum at 1. That is a provider policy standing in for a
+ * safety property, and it is exactly one whole-record write away from being
+ * absent: GenesisImportProvider assigns a Provider straight into the cache and
+ * skips SetDurationRange. Refusing zero here is independent of what any provider
+ * published, and covers a record already on disk.
+ */
+/* verifyExpirationHeight refuses an end block whose expiration bucket is full.
+ *
+ * Every path that moves an end block goes through here, because the bucket is
+ * what the EndBlocker has to process in one go and a move is indistinguishable
+ * from an open once it is indexed. See AgreementExpirationBucketCap.
+ */
+func (cache *AgreementCache) verifyExpirationHeight(endBlock uint64) error {
+	if cache.CC.k.AgreementExpirationHeightHasRoomFor(cache.CC.ctx, endBlock, cache.GetAgreementId()) {
+		return nil
+	}
+
+	return types.NewParameterValidationError("duration", endBlock, "expiration_height_full").
+		WithRange(0, types.AgreementExpirationBucketCap)
+}
+
 func (cache *AgreementCache) rescaledDuration(newCapacity uint64) (uint64, error) {
 	scaled := math.NewIntFromUint64(cache.GetDurationRemaining()).
 		Mul(cache.GetCapacityInt()).
@@ -671,7 +760,12 @@ func (cache *AgreementCache) rescaledDuration(newCapacity uint64) (uint64, error
 		return 0, types.NewParameterValidationError("capacity", newCapacity, "duration_overflow")
 	}
 
-	return scaled.Uint64(), nil
+	rescaled := scaled.Uint64()
+	if rescaled == 0 {
+		return 0, types.NewParameterValidationError("duration", rescaled, "below_minimum").WithRange(1, cache.GetProvider().GetDurationMaximum())
+	}
+
+	return rescaled, nil
 }
 
 func (cache *AgreementCache) CapacityIncrease(amount uint64) error {
@@ -702,13 +796,25 @@ func (cache *AgreementCache) CapacityIncrease(amount uint64) error {
 		return err
 	}
 
+	// The rescale re-bases the window on this block, so the new end block is
+	// current + newDuration. Checked before the payout below, like everything
+	// else that can refuse the change.
+	newEndBlock, err := endBlockFor(cache.GetCurrentBlock(), newDuration)
+	if err != nil {
+		return err
+	}
+
+	if err := cache.verifyExpirationHeight(newEndBlock); err != nil {
+		return err
+	}
+
 	// Everything that can fail is behind us. The penalty has to be priced before
 	// the mutations below, because SetStartBlock resets the elapsed span it is
 	// measured over and the capacity write changes the rate it is charged at.
 	cache.PayoutVoidedProviderCancellationPenalty()
 
 	cache.SetStartBlock(cache.GetCurrentBlock())
-	cache.SetEndBlock(cache.GetStartBlock() + newDuration)
+	cache.SetEndBlock(newEndBlock)
 
 	// Provider Load Increase
 	cache.GetProvider().AgreementLoadIncrease(amount)
@@ -757,13 +863,25 @@ func (cache *AgreementCache) CapacityDecrease(amount uint64) error {
 		return err
 	}
 
+	// The rescale re-bases the window on this block, so the new end block is
+	// current + newDuration. Checked before the payout below, like everything
+	// else that can refuse the change.
+	newEndBlock, err := endBlockFor(cache.GetCurrentBlock(), newDuration)
+	if err != nil {
+		return err
+	}
+
+	if err := cache.verifyExpirationHeight(newEndBlock); err != nil {
+		return err
+	}
+
 	// Everything that can fail is behind us. The penalty has to be priced before
 	// the mutations below, because SetStartBlock resets the elapsed span it is
 	// measured over and the capacity write changes the rate it is charged at.
 	cache.PayoutVoidedProviderCancellationPenalty()
 
 	cache.SetStartBlock(cache.GetCurrentBlock())
-	cache.SetEndBlock(cache.GetStartBlock() + newDuration)
+	cache.SetEndBlock(newEndBlock)
 
 	// Provider Load Decrease
 	cache.GetProvider().AgreementLoadDecrease(amount)
@@ -802,8 +920,21 @@ func (cache *AgreementCache) DurationIncrease(amount uint64) error {
 		return verifyError
 	}
 
+	if err := cache.verifyExpirationHeight(newEndBlock); err != nil {
+		return err
+	}
+
+
 	cache.SetEndBlock(newEndBlock)
 	cache.Changed = true
 
 	return nil
+}
+
+// EndBlockForTest exposes the shared end-block arithmetic. It is the one piece
+// common to AgreementOpen, CapacityIncrease and CapacityDecrease, and testing it
+// through any of them is unreliable: each refuses a huge duration for its own
+// unrelated reason before the addition is reached.
+func EndBlockForTest(startBlock uint64, duration uint64) (uint64, error) {
+	return endBlockFor(startBlock, duration)
 }

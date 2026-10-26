@@ -21,6 +21,7 @@ type StakingKeeper interface {
 
 	GetValidator(context.Context, sdk.ValAddress) (staking.Validator, error)
 	GetAllValidators(context.Context) ([]staking.Validator, error)
+	GetLastValidators(context.Context) ([]staking.Validator, error)
 	GetValidators(context.Context, uint32) ([]staking.Validator, error)
 
 	GetValidatorDelegations(context.Context, sdk.ValAddress) ([]staking.Delegation, error)
@@ -102,15 +103,24 @@ type AccountKeeper interface {
 
 // BankKeeper defines the expected interface for the Bank module.
 type BankKeeper interface {
+ GetBalance(context.Context, sdk.AccAddress, string) sdk.Coin
 	// Methods imported from bank should be defined here
 	SetDenomMetaData(context.Context, banktypes.Metadata)
 	GetDenomMetaData(context.Context, string) (banktypes.Metadata, bool)
 	GetSupply(context.Context, string) sdk.Coin
 	HasBalance(context.Context, sdk.AccAddress, sdk.Coin) bool
 	GetAllBalances(context.Context, sdk.AccAddress) sdk.Coins
+	IterateAccountBalances(context.Context, sdk.AccAddress, func(sdk.Coin) bool)
 	SpendableCoins(context.Context, sdk.AccAddress) sdk.Coins
 	SpendableCoin(context.Context, sdk.AccAddress, string) sdk.Coin
 	SendCoins(context.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) error
+	// IsSendEnabledCoins and BlockedAddr are the two policies the bank's own
+	// MsgServer applies before SendCoins and that SendCoins itself does not:
+	// a governance send-disable on a denom, and the module accounts the app
+	// declared unreachable. Any handler that moves coins to a destination a
+	// message chose has to ask them itself.
+	IsSendEnabledCoins(context.Context, ...sdk.Coin) error
+	BlockedAddr(sdk.AccAddress) bool
 	SendCoinsFromModuleToModule(context.Context, string, string, sdk.Coins) error
 	SendCoinsFromAccountToModule(context.Context, sdk.AccAddress, string, sdk.Coins) error
 	SendCoinsFromModuleToAccount(context.Context, string, sdk.AccAddress, sdk.Coins) error

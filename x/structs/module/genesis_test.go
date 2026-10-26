@@ -39,6 +39,41 @@ func TestGenesis_RebuildsProviderPoolAddressIndex(t *testing.T) {
 	require.Equal(t, keeperlib.ProviderPoolKindCollateral, kind)
 }
 
+func TestGenesis_PreservesExportedCountersAfterObjectDeletion(t *testing.T) {
+	gs := types.DefaultGenesis()
+	gs.GuildCount, gs.ReactorCount, gs.SubstationCount, gs.PlayerCount = 100, 101, 102, 103
+	gs.PlanetCount, gs.StructCount, gs.ProviderCount, gs.AllocationCount = 104, 105, 106, 107
+	k, ctx := keepertest.StructsKeeper(t)
+	// A hook may have already allocated an ID before Structs InitGenesis.
+	k.SetReactorCount(ctx, 200)
+	structs.InitGenesis(ctx, k, *gs)
+	exported := structs.ExportGenesis(ctx, k)
+	require.Equal(t, []uint64{100, 200, 102, 103, 104, 105, 106, 107}, []uint64{
+		exported.GuildCount, exported.ReactorCount, exported.SubstationCount, exported.PlayerCount,
+		exported.PlanetCount, exported.StructCount, exported.ProviderCount, exported.AllocationCount,
+	})
+	k2, ctx2 := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx2, k2, *exported)
+	require.Equal(t, uint64(107), k2.GetAllocationCount(ctx2), "a deleted allocation ID must not become the next allocation ID")
+	require.Equal(t, uint64(106), k2.GetProviderCount(ctx2))
+	require.Equal(t, uint64(102), k2.GetSubstationCount(ctx2))
+}
+
+func TestGenesis_RebuildsPlanetOwnerIndex(t *testing.T) {
+	gs := types.DefaultGenesis()
+	gs.PlanetList = []types.Planet{{Id: "2-1", Owner: "1-1"}, {Id: "2-2", Owner: "1-10"}}
+	for pass := 0; pass < 2; pass++ {
+		k, ctx := keepertest.StructsKeeper(t)
+		structs.InitGenesis(ctx, k, *gs)
+		for _, planet := range gs.PlanetList {
+			page, err := k.PlanetAllByPlayer(ctx, &types.QueryAllPlanetByPlayerRequest{PlayerId: planet.Owner})
+			require.NoError(t, err)
+			require.Equal(t, []types.Planet{planet}, page.Planet)
+		}
+		gs = structs.ExportGenesis(ctx, k)
+	}
+}
+
 // A planet exported while a fleet was visiting carries a nonzero
 // LocationListCount. On import every fleet is sent home, so the count must
 // reset to 0 or the planet is permanently un-raidable (MsgFleetMove rejects
@@ -205,4 +240,460 @@ func TestGenesis_MalformedAddressGetsNoAuthAccount(t *testing.T) {
 		"only the valid address may be given an auth account")
 	require.Equal(t, uint64(1), k.GetPlayerIndexFromAddress(ctx, good),
 		"the valid address must still import")
+}
+
+// TestGenesis_AddressProofNoncesSurviveExportImport covers the half of the
+// replay fix that only a chain restore can break.
+//
+// The nonce is what makes an address registration proof single-use. It is
+// deliberately kept in its own store rather than on AddressRecord, because a
+// revoked address keeps its nonce and loses its association — so exporting only
+// the associations would silently reset exactly the addresses whose proofs are
+// still floating around, and every one of them would go live again on the
+// restored chain.
+func TestGenesis_AddressProofNoncesSurviveExportImport(t *testing.T) {
+	registered := sdk.AccAddress("registered_address_padding_1234").String()
+	revoked := sdk.AccAddress("revoked_address_padding_123456").String()
+
+	genesisState := types.GenesisState{
+		Params: types.DefaultParams(),
+		PortId: types.PortID,
+		AddressList: []*types.AddressRecord{
+			{Address: registered, PlayerIndex: 1},
+		},
+		AddressNonceList: []*types.AddressNonceRecord{
+			{Address: registered, Nonce: 3},
+			// No AddressRecord: this address was revoked, which is the case the
+			// separate list exists for.
+			{Address: revoked, Nonce: 7},
+		},
+	}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx, k, genesisState)
+
+	require.Equal(t, uint64(3), k.GetAddressProofNonce(ctx, registered))
+	require.Equal(t, uint64(7), k.GetAddressProofNonce(ctx, revoked),
+		"a revoked address keeps its nonce, so the import has to carry it")
+	require.Zero(t, k.GetPlayerIndexFromAddress(ctx, revoked),
+		"and must not resurrect the association that was revoked")
+
+	exported := structs.ExportGenesis(ctx, k)
+	require.Len(t, exported.AddressNonceList, 2)
+
+	roundTripped := make(map[string]uint64, len(exported.AddressNonceList))
+	for _, record := range exported.AddressNonceList {
+		roundTripped[record.Address] = record.Nonce
+	}
+	require.Equal(t, uint64(3), roundTripped[registered])
+	require.Equal(t, uint64(7), roundTripped[revoked])
+}
+
+func TestGenesis_ValidateRejectsDuplicateAddressNonce(t *testing.T) {
+	address := sdk.AccAddress("duplicate_address_padding_1234").String()
+
+	genesisState := types.GenesisState{
+		Params: types.DefaultParams(),
+		PortId: types.PortID,
+		AddressNonceList: []*types.AddressNonceRecord{
+			{Address: address, Nonce: 1},
+			{Address: address, Nonce: 0},
+		},
+	}
+
+	err := genesisState.Validate()
+	require.Error(t, err, "two nonces for one address leaves which one wins to map order")
+	require.Contains(t, err.Error(), address)
+}
+
+/* TestGenesis_RestoresProviderCheckpointBlock is the regression on a restart
+ * sweeping every consumer's collateral into the provider's earnings.
+ *
+ * checkpointBlock is a clock, and it is the one grid attribute the import cannot
+ * derive from the objects it is rebuilding. Load and capacity are excluded from
+ * the grid import precisely because GenesisImportAgreement reconstructs them, so
+ * admitting them would double-count - but excluding the checkpoint left it
+ * unset, and an unset grid attribute reads as zero.
+ *
+ * Checkpoint() then bills (currentBlock - 0) * rate * aggregate load. The
+ * collateral pool is shared across a provider's agreements and SweepRevenue
+ * clamps to what it holds rather than failing, so the first checkpoint after a
+ * restore empties it - and the money it takes is the escrow backing service
+ * those consumers have not received yet.
+ */
+func TestGenesis_RestoresProviderCheckpointBlock(t *testing.T) {
+	const providerId = "10-9"
+	const exportedCheckpoint = uint64(4_000_000)
+
+	genesisState := types.DefaultGenesis()
+	genesisState.ProviderList = []types.Provider{{Id: providerId, Index: 9}}
+	genesisState.GridList = []*types.GridRecord{{
+		AttributeId: keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, providerId),
+		Value:       exportedCheckpoint,
+	}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(int64(exportedCheckpoint) + 1)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	restored := k.GetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, providerId))
+	require.Equal(t, exportedCheckpoint, restored,
+		"the exported checkpoint must survive the import; zero here bills the whole chain height")
+}
+
+/* TestGenesis_StampsMissingProviderCheckpointBlock covers the file that carries
+ * no checkpoint row at all - a hand-written genesis, or one exported before the
+ * attribute was imported. Zero would mean "never paid", so the provider is
+ * stamped as paid up to the genesis height, which is the only reading
+ * consistent with the agreements it starts with.
+ */
+func TestGenesis_StampsMissingProviderCheckpointBlock(t *testing.T) {
+	const providerId = "10-9"
+
+	genesisState := types.DefaultGenesis()
+	genesisState.ProviderList = []types.Provider{{Id: providerId, Index: 9}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(1_234)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	stamped := k.GetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, providerId))
+	require.Equal(t, uint64(1_234), stamped,
+		"a provider with no exported checkpoint must start paid up, not from block zero")
+}
+
+// TestGenesis_ProviderCheckpointSurvivesRoundTrip is the property the two tests
+// above are really about: export then import must not move the clock.
+func TestGenesis_ProviderCheckpointSurvivesRoundTrip(t *testing.T) {
+	const providerId = "10-9"
+
+	genesisState := types.DefaultGenesis()
+	genesisState.ProviderList = []types.Provider{{Id: providerId, Index: 9}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(900_000)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	attributeId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, providerId)
+	first := k.GetGridAttribute(ctx, attributeId)
+	require.Equal(t, uint64(900_000), first)
+
+	exported := structs.ExportGenesis(ctx, k)
+
+	k2, ctx2 := keepertest.StructsKeeper(t)
+	ctx2 = ctx2.WithBlockHeight(900_001)
+	structs.InitGenesis(ctx2, k2, *exported)
+
+	require.Equal(t, first, k2.GetGridAttribute(ctx2, attributeId),
+		"a restart one block later must resume the clock, not restart it")
+}
+
+/* TestGenesis_RejectsUnexpirableAgreement is the import-side backstop on the
+ * zero-height rebase.
+ *
+ * AgreementExpirations reads the expiration index at exactly the current height,
+ * so an agreement whose end block already precedes the genesis height is never
+ * visited - it holds capacity in its provider's load forever while Checkpoint()
+ * bills that capacity against other consumers' escrow. Refusing the file beats
+ * starting a chain that is already breaking agreement-expiry-liveness.
+ *
+ * The case this catches in practice is a zero-height export started with an
+ * initial_height the rebase did not expect.
+ */
+func TestGenesis_RejectsUnexpirableAgreement(t *testing.T) {
+	genesisState := types.DefaultGenesis()
+	genesisState.ProviderList = []types.Provider{{Id: "10-9", Index: 9, DurationMinimum: 1, DurationMaximum: 1000}}
+	genesisState.AgreementList = []types.Agreement{{
+		Id:         "11-1",
+		ProviderId: "10-9",
+		StartBlock: 0,
+		EndBlock:   30,
+		Capacity:   1,
+	}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(100)
+
+	require.Panics(t, func() { structs.InitGenesis(ctx, k, *genesisState) },
+		"an agreement that ended before the genesis height can never expire")
+}
+
+// TestGenesis_AcceptsAgreementEndingOnTheGenesisBlock is the boundary: equal is
+// fine, that agreement expires on the first block.
+func TestGenesis_AcceptsAgreementEndingOnTheGenesisBlock(t *testing.T) {
+	genesisState := types.DefaultGenesis()
+	genesisState.ProviderList = []types.Provider{{Id: "10-9", Index: 9, DurationMinimum: 1, DurationMaximum: 1000}}
+	genesisState.AgreementList = []types.Agreement{{
+		Id:         "11-1",
+		ProviderId: "10-9",
+		StartBlock: 0,
+		EndBlock:   100,
+		Capacity:   1,
+	}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(100)
+
+	require.NotPanics(t, func() { structs.InitGenesis(ctx, k, *genesisState) })
+	require.Contains(t, k.GetAllAgreementIdByExpirationIndex(ctx, 100), "11-1")
+}
+
+/* TestGenesis_MalformedFleetIdIsRefused is the import-side half.
+ *
+ * GetFleetById parses the id into an index; a malformed one yields a cache that
+ * is not in cc.fleets, and CommitAll only commits what is in that map. So the
+ * fleet was dropped in total silence while the player and struct records
+ * pointing at it imported normally, leaving those owners with fleet-bound assets
+ * and no fleet. Nothing downstream noticed: the import returned no error, and
+ * FleetList was not validated.
+ */
+func TestGenesis_MalformedFleetIdIsRefused(t *testing.T) {
+	genesisState := types.DefaultGenesis()
+	genesisState.FleetList = []types.Fleet{{Id: "not-a-fleet", Owner: "1-1"}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+
+	require.Panics(t, func() { structs.InitGenesis(ctx, k, *genesisState) },
+		"a fleet that cannot be imported must stop the chain starting, not vanish")
+}
+
+// TestGenesis_WellFormedFleetIsImported is the positive control: the refusal
+// above must be about the id, not about fleets.
+func TestGenesis_WellFormedFleetIsImported(t *testing.T) {
+	genesisState := types.DefaultGenesis()
+	genesisState.FleetList = []types.Fleet{{Id: "9-7", Owner: "1-1"}}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	require.NotPanics(t, func() { structs.InitGenesis(ctx, k, *genesisState) })
+
+	stored, found := k.GetFleet(ctx, "9-7")
+	require.True(t, found, "a well-formed fleet must actually be committed")
+	require.Equal(t, "1-1", stored.Owner)
+}
+
+/* TestGenesis_PendingStructSweepSurvivesImport is the regression on rubble that
+ * nothing is scheduled to collect.
+ *
+ * Destroying a struct does not remove it: the flag is set, the struct stays in
+ * its planet or fleet slot, and StructSweepDestroyed clears the slot and deletes
+ * the object StructSweepDelay blocks later. The queue holding that appointment
+ * was exported and never imported, so a struct destroyed within those blocks of
+ * an export came back occupying its slot with nothing left to free it - and
+ * StructTrash refuses an already-destroyed struct, so there was no way out.
+ *
+ * The entry is rescheduled rather than restored, because the sweep reads the
+ * queue at exactly the current height: the exported appointment is either behind
+ * the restart height or, after a zero-height export, unreachably ahead of it.
+ */
+func TestGenesis_PendingStructSweepSurvivesImport(t *testing.T) {
+	const structId = "6-1"
+
+	genesisState := types.DefaultGenesis()
+	genesisState.StructDestructionQueue = []*types.StructDestructionQueueRecord{
+		// An appointment from the old chain's clock, already behind the restart.
+		{SweepHeight: 12, StructId: structId},
+	}
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(100)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	pending := k.GetStructDestructionQueueExport(ctx)
+	require.Len(t, pending, 1, "the sweep must be rescheduled, not dropped")
+	require.Equal(t, structId, pending[0].StructId)
+	require.NotEqual(t, int64(12), pending[0].SweepHeight,
+		"the old chain's appointment is behind the restart height and would never be read")
+	require.Greater(t, pending[0].SweepHeight, int64(100),
+		"a rescheduled sweep must land at a height the chain will actually reach")
+
+	// The property that matters: the sweep actually fires. It reads the queue at
+	// exactly the current height, so a wrong reschedule is indistinguishable from
+	// no reschedule at all.
+	k.StructSweepDestroyed(ctx.WithBlockHeight(pending[0].SweepHeight))
+	require.Empty(t, k.GetStructDestructionQueueExport(ctx),
+		"the rescheduled sweep must be reached and consume its entry")
+}
+
+// TestGenesis_PendingStructSweepRoundTrips is the property behind it: export
+// then import must leave an appointment the chain can still keep.
+func TestGenesis_PendingStructSweepRoundTrips(t *testing.T) {
+	const structId = "6-7"
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(500)
+
+	// The way a destruction schedules itself.
+	k.AppendStructDestructionQueue(ctx, structId)
+	exported := k.GetStructDestructionQueueExport(ctx)
+	require.Len(t, exported, 1)
+
+	genesisState := types.DefaultGenesis()
+	genesisState.StructDestructionQueue = exported
+
+	k2, ctx2 := keepertest.StructsKeeper(t)
+	ctx2 = ctx2.WithBlockHeight(1)
+	structs.InitGenesis(ctx2, k2, *genesisState)
+
+	restored := k2.GetStructDestructionQueueExport(ctx2)
+	require.Len(t, restored, 1, "a pending sweep must survive an export and import")
+	require.Equal(t, structId, restored[0].StructId)
+	require.Greater(t, restored[0].SweepHeight, int64(1),
+		"and must be reachable from the restarted chain's own clock, not the old one")
+}
+
+/* TestGenesis_PendingBuildKeepsItsReservation is the regression on a build
+ * reservation lost across an import.
+ *
+ * InitiateStruct charges BuildDraw against the owner's load the moment a build
+ * starts, and only StructBuildComplete or DestroyAndCommit gives it back. The
+ * import rebuilds a player's load from scratch - GenesisImportPlayer resets it to
+ * PlayerPassiveDraw, and structsLoad is deliberately excluded from the grid
+ * import because it is derived - so an unbuilt struct has to put its own
+ * reservation back or it simply is not there.
+ *
+ * Under-counting is only half of it. StructBuildComplete decrements BuildDraw
+ * unconditionally when the build finishes, and SetGridAttributeDecrement clamps
+ * at zero, so completing an imported build would eat the player's passive draw
+ * and the load of their other structs.
+ */
+func genesisWithStruct(t *testing.T, status uint64) (*types.GenesisState, types.StructType, string) {
+	t.Helper()
+
+	var commandShip types.StructType
+	for _, structType := range types.CreateStructTypeGenesis() {
+		if structType.Id == 1 {
+			commandShip = structType
+		}
+	}
+	require.NotZero(t, commandShip.BuildDraw, "fixture sanity: the type under test must reserve load")
+
+	const playerId = "1-1"
+	const structId = "6-1"
+
+	genesisState := types.DefaultGenesis()
+	genesisState.PlayerList = []types.Player{{Id: playerId, Index: 1}}
+	genesisState.StructList = []types.Struct{{
+		Id:    structId,
+		Owner: playerId,
+		Type:  commandShip.Id,
+		Index: 1,
+	}}
+	genesisState.StructAttributeList = []*types.StructAttributeRecord{{
+		AttributeId: keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structId),
+		Value:       status,
+	}}
+
+	return genesisState, commandShip, playerId
+}
+
+func TestGenesis_PendingBuildKeepsItsReservation(t *testing.T) {
+	// Materialized but not built and not online: an ordinary build in flight.
+	genesisState, commandShip, playerId := genesisWithStruct(t, uint64(types.StructStateMaterialized))
+
+	k, ctx := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	load := k.GetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, playerId))
+	require.Equal(t, uint64(types.PlayerPassiveDraw)+commandShip.BuildDraw, load,
+		"a pending build must carry its BuildDraw reservation across the import")
+}
+
+// A built, offline struct has already released its BuildDraw and holds no
+// PassiveDraw, so it must add nothing. This is what stops the fix above from
+// being a blanket increment.
+func TestGenesis_BuiltOfflineStructReservesNothing(t *testing.T) {
+	genesisState, _, playerId := genesisWithStruct(t,
+		uint64(types.StructStateMaterialized)|uint64(types.StructStateBuilt))
+
+	k, ctx := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	load := k.GetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, playerId))
+	require.Equal(t, uint64(types.PlayerPassiveDraw), load,
+		"a built offline struct holds neither a build reservation nor passive draw")
+}
+
+// A built, online struct holds PassiveDraw and no build reservation.
+func TestGenesis_BuiltOnlineStructHoldsPassiveDrawOnly(t *testing.T) {
+	genesisState, commandShip, playerId := genesisWithStruct(t,
+		uint64(types.StructStateMaterialized)|uint64(types.StructStateBuilt)|uint64(types.StructStateOnline))
+
+	k, ctx := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	load := k.GetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, playerId))
+	require.Equal(t, uint64(types.PlayerPassiveDraw)+commandShip.PassiveDraw, load,
+		"a built online struct holds its passive draw and nothing else")
+}
+
+/* TestGenesis_DestroyedPendingBuildReservesNothing covers the branch that
+ * returns before any of this. Destruction already released the reservation, so
+ * restoring it would invent load for rubble.
+ */
+func TestGenesis_DestroyedPendingBuildReservesNothing(t *testing.T) {
+	genesisState, _, playerId := genesisWithStruct(t,
+		uint64(types.StructStateMaterialized)|uint64(types.StructStateDestroyed))
+
+	k, ctx := keepertest.StructsKeeper(t)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	load := k.GetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, playerId))
+	require.Equal(t, uint64(types.PlayerPassiveDraw), load,
+		"a destroyed struct already released its reservation")
+}
+
+/* TestGenesis_PendingBuildClockRestartsAtGenesisHeight is the regression on a
+ * build proof arriving pre-solved.
+ *
+ * BlockStartBuild is the age a build proof is priced from: StructBuildComplete
+ * computes currentHeight - BlockStartBuild and CalculateDifficulty falls with
+ * that age, clamping at 1. Importing zero therefore did not mean "no progress",
+ * it meant "as old as the chain" - so on a height-preserving restart of a mature
+ * chain every build in flight arrived with its puzzle already decayed to the
+ * minimum. Nothing downstream refuses a zero start; the raid path has such a
+ * guard, this one does not.
+ */
+func TestGenesis_PendingBuildClockRestartsAtGenesisHeight(t *testing.T) {
+	genesisState, _, _ := genesisWithStruct(t, uint64(types.StructStateMaterialized))
+
+	const genesisHeight = 5_000_000
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(genesisHeight)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	start := k.GetStructAttribute(ctx,
+		keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, "6-1"))
+	require.Equal(t, uint64(genesisHeight), start,
+		"an unfinished build must restart its clock at the genesis height, not at block zero")
+}
+
+/* TestGenesis_PendingBuildProofIsNotPreSolved states the consequence in the
+ * terms that matter, so the assertion above cannot be satisfied by a value that
+ * happens to differ from zero while still being ancient.
+ */
+func TestGenesis_PendingBuildProofIsNotPreSolved(t *testing.T) {
+	genesisState, commandShip, _ := genesisWithStruct(t, uint64(types.StructStateMaterialized))
+
+	const genesisHeight = 5_000_000
+
+	k, ctx := keepertest.StructsKeeper(t)
+	ctx = ctx.WithBlockHeight(genesisHeight)
+	structs.InitGenesis(ctx, k, *genesisState)
+
+	start := k.GetStructAttribute(ctx,
+		keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, "6-1"))
+
+	// The age StructBuildComplete would compute in the genesis block itself.
+	age := uint64(genesisHeight) - start
+	difficulty := types.CalculateDifficulty(age, commandShip.BuildDifficulty)
+
+	// What the old behaviour produced, for contrast: a start of zero makes the
+	// build as old as the chain, and the puzzle collapses to its floor.
+	preFix := types.CalculateDifficulty(uint64(genesisHeight), commandShip.BuildDifficulty)
+	require.Equal(t, 1, preFix,
+		"fixture sanity: a zero start on a chain this tall really does clamp the puzzle to its minimum")
+
+	require.Greater(t, difficulty, preFix,
+		"an imported build must still owe real work; it arrived with its proof already cheap")
 }

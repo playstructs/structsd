@@ -5,7 +5,7 @@ import (
     sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// GetAgreement returns an AgreementCache by ID, loading from store if not already cached.
+// GetAgreement allocates a cache by ID; its getters load the record on demand.
 func (cc *CurrentContext) GetAgreement(agreementId string) *AgreementCache {
 	if cache, exists := cc.agreements[agreementId]; exists {
 		return cache
@@ -27,6 +27,20 @@ func (cc *CurrentContext) GetAgreement(agreementId string) *AgreementCache {
         }
 
 	return cc.agreements[agreementId]
+}
+
+// GetExistingAgreement resolves a message-supplied ID before checking authority.
+// A real permission row on a player's own ID cannot make that ID an agreement.
+// A loaded cache can still contain its old record after teardown removes the row.
+func (cc *CurrentContext) GetExistingAgreement(agreementId string) (*AgreementCache, error) {
+	if !ObjectIdHasType(agreementId, types.ObjectType_agreement) {
+		return nil, types.NewObjectNotFoundError("agreement", agreementId)
+	}
+	agreement := cc.GetAgreement(agreementId)
+	if agreement.Deleted || agreement.IsTearingDown() || (!agreement.AgreementLoaded && !agreement.LoadAgreement()) {
+		return nil, types.NewObjectNotFoundError("agreement", agreementId)
+	}
+	return agreement, nil
 }
 
 
@@ -69,6 +83,70 @@ func (cc *CurrentContext) NewAgreement(agreement types.Agreement) (*AgreementCac
 }
 
 
+
+/* RebaseAgreementsForZeroHeightGenesis rewrites every agreement so its window
+ * carries only the time it has left, measured from block zero.
+ *
+ * An agreement's StartBlock and EndBlock are absolute heights on the record
+ * itself, so a genesis export carries them through unchanged. That is right for
+ * a height-preserving restart and wrong for a zero-height one: an agreement
+ * exported at height H with E-H blocks left is re-indexed to expire at E on a
+ * chain that restarts near 1, so it supplies capacity for roughly the whole age
+ * of the old chain without anybody having posted collateral for it.
+ *
+ * Providers are checkpointed first, so what the old window earned is settled
+ * against the old clock before that clock is thrown away, and their checkpoints
+ * are then rebased to zero alongside the agreements - the two have to move
+ * together or Checkpoint() bills a span the agreements no longer claim.
+ *
+ * An agreement with nothing left is given one block rather than zero. Zero would
+ * index it at a height the chain never reaches, and an expiry gets exactly one
+ * attempt: it would hold capacity in the provider's load forever, which is what
+ * agreement-expiry-liveness exists to catch.
+ */
+func (cc *CurrentContext) RebaseAgreementsForZeroHeightGenesis() error {
+	uctx := sdk.UnwrapSDKContext(cc.ctx)
+	exportHeight := uint64(uctx.BlockHeight())
+
+	// Settle every provider against the old clock before it is discarded.
+	// Checkpoint bills aggregate load from the checkpoint block, so it has to
+	// happen while that block still means something.
+	for _, provider := range cc.k.GetAllProvider(cc.ctx) {
+		providerCache := cc.GetProvider(provider.Id)
+		if err := providerCache.Checkpoint(); err != nil {
+			return err
+		}
+	}
+
+	for _, agreement := range cc.k.GetAllAgreement(cc.ctx) {
+		remaining := uint64(1)
+		if agreement.EndBlock > exportHeight {
+			remaining = agreement.EndBlock - exportHeight
+		}
+
+		cache := cc.GetAgreement(agreement.Id)
+		if !cache.LoadAgreement() {
+			return types.NewObjectNotFoundError("agreement", agreement.Id)
+		}
+
+		// SetEndBlock records PreviousEndBlock, so Commit clears the row at the
+		// old absolute height and writes the rebased one.
+		// The served span's held-back provider penalty becomes unreachable once
+		// StartBlock is reset. Release it using the old window first, as with a
+		// capacity rebase; the remaining consumer collateral stays protected.
+		cache.PayoutVoidedProviderCancellationPenalty()
+		cache.SetStartBlock(0)
+		cache.SetEndBlock(remaining)
+	}
+
+	// The checkpoint clock restarts with the windows it bills against. Done
+	// after the loop so a provider carrying several agreements is rebased once.
+	for _, provider := range cc.k.GetAllProvider(cc.ctx) {
+		cc.GetProvider(provider.Id).SetCheckpointBlock(0)
+	}
+
+	return nil
+}
 
 func (cc *CurrentContext) AgreementExpirations() {
 	cc.k.logger.Debug("Checking for Expired Agreements")

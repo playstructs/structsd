@@ -13,7 +13,6 @@ import (
 	"structs/x/structs/types"
 
     "encoding/binary"
-    "strings"
     //"strconv"
 )
 
@@ -46,13 +45,16 @@ func (k Keeper) PermissionByObject(goCtx context.Context, req *types.QueryAllPer
 
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	permissionStore := prefix.NewStore(store, types.KeyPrefix(types.PermissionKey))
+	objectPrefix := req.ObjectId + "@"
+	objectStore := prefix.NewStore(permissionStore, []byte(objectPrefix))
 
-	pageRes, err := query.Paginate(permissionStore, req.Pagination, func(key []byte, value []byte) error {
+	pagination, err := boundedPagination(req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+	pageRes, err := query.Paginate(objectStore, pagination, func(key []byte, value []byte) error {
 
-        extractedId := strings.Split(string(key), "@")
-        if (extractedId[0] == req.ObjectId) {
-            permissions = append(permissions, &types.PermissionRecord{PermissionId: string(key), Value: binary.BigEndian.Uint64(value)})
-        }
+        permissions = append(permissions, &types.PermissionRecord{PermissionId: objectPrefix + string(key), Value: binary.BigEndian.Uint64(value)})
 
         return nil
 	})
@@ -74,12 +76,18 @@ func (k Keeper) PermissionByPlayer(goCtx context.Context, req *types.QueryAllPer
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	permissionStore := prefix.NewStore(store, types.KeyPrefix(types.PermissionKey))
 
-	pageRes, err := query.Paginate(permissionStore, req.Pagination, func(key []byte, value []byte) error {
+	pagination, err := boundedPagination(req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+	pageRes, err := query.Paginate(permissionPlayerStore(k, ctx, req.PlayerId), pagination, func(key []byte, value []byte) error {
 
-        extractedId := strings.Split(string(key), "@")
-        if (extractedId[1] == req.PlayerId) {
-            permissions = append(permissions, &types.PermissionRecord{PermissionId: string(key), Value: binary.BigEndian.Uint64(value)})
+        player, validKey := permissionPlayer(key)
+        row := permissionStore.Get(key)
+        if !validKey || player != req.PlayerId || len(row) != 8 {
+            return status.Error(codes.Internal, "permission player index is inconsistent")
         }
+        permissions = append(permissions, &types.PermissionRecord{PermissionId: string(key), Value: binary.BigEndian.Uint64(row)})
 
         return nil
 	})
@@ -99,7 +107,11 @@ func (k Keeper) PermissionAll(goCtx context.Context, req *types.QueryAllPermissi
  	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
  	permissionStore := prefix.NewStore(store, types.KeyPrefix(types.PermissionKey))
 
- 	pageRes, err := query.Paginate(permissionStore, req.Pagination, func(key []byte, value []byte) error {
+	pagination, err := boundedPagination(req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+	pageRes, err := query.Paginate(permissionStore, pagination, func(key []byte, value []byte) error {
 
         permissions = append(permissions, &types.PermissionRecord{PermissionId: string(key), Value: binary.BigEndian.Uint64(value)})
 

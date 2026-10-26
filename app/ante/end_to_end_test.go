@@ -146,3 +146,82 @@ func TestE2E_SequenceStuffingRegression(t *testing.T) {
 	_, err = handler(ctx, followup, false)
 	require.NoError(t, err, "single MsgPlanetExplore must be admitted once the bug-shape tx is rejected upstream")
 }
+
+/* TestE2E_DuplicateStructTrashRejectedInAllPhases is the regression on
+ * MsgStructTrash missing from ChargeMessages.
+ *
+ * Trashing costs the same charge as building, and the handler both checks the
+ * charge and calls Discharge(). But the ante reads the map, not the handler, so
+ * without an entry neither the charge floor nor the per-transaction duplicate
+ * check applied. CheckTx does not run handlers, so a transaction carrying the
+ * same trash twice was admitted, then failed in delivery once the first message
+ * had destroyed the struct - free to submit, since a pure Structs transaction
+ * pays no fee, and rolled back only after the block had paid to execute it.
+ *
+ * Asserted across every phase because CheckTx admission is the half that matters
+ * here: rejecting only at delivery is the bug, not the fix.
+ */
+func TestE2E_DuplicateStructTrashRejectedInAllPhases(t *testing.T) {
+	cases := []struct {
+		name     string
+		ctxMod   func(sdk.Context) sdk.Context
+		simulate bool
+	}{
+		{"CheckTx", func(c sdk.Context) sdk.Context { return c.WithIsCheckTx(true) }, false},
+		{"ReCheckTx", func(c sdk.Context) sdk.Context { return c.WithIsReCheckTx(true) }, false},
+		{"DeliverTx", func(c sdk.Context) sdk.Context { return c }, false},
+		{"Simulate", func(c sdk.Context) sdk.Context { return c }, true},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			mk := newMockAnteKeeper()
+			mk.playerIndexes["structs1alice"] = 5
+			addrPermId := fmt.Sprintf("%d-%s@0", types.ObjectType_address, "structs1alice")
+			mk.permissions[addrPermId] = types.PermPlay
+
+			handler := productionChainStructs(mk)
+			ctx := tc.ctxMod(freeCtx().WithBlockHeight(100))
+
+			tx := mockTx{msgs: []sdk.Msg{
+				&types.MsgStructTrash{Creator: "structs1alice", StructId: "5-1702"},
+				&types.MsgStructTrash{Creator: "structs1alice", StructId: "5-1703"},
+			}}
+
+			_, err := handler(ctx, tx, tc.simulate)
+			require.Error(t, err, "two trashes in one tx must be rejected in phase %s", tc.name)
+			require.True(t, e2eErrIs(err, sante.ErrDuplicateChargeInTx),
+				"phase %s: expected ErrDuplicateChargeInTx, got %v", tc.name, err)
+		})
+	}
+}
+
+// TestE2E_SingleStructTrashPassesAllPhases is the matching happy path: adding
+// the map entry must not start rejecting an ordinary single trash.
+func TestE2E_SingleStructTrashPassesAllPhases(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		ctxMod func(sdk.Context) sdk.Context
+	}{
+		{"CheckTx", func(c sdk.Context) sdk.Context { return c.WithIsCheckTx(true) }},
+		{"ReCheckTx", func(c sdk.Context) sdk.Context { return c.WithIsReCheckTx(true) }},
+		{"DeliverTx", func(c sdk.Context) sdk.Context { return c }},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			mk := newMockAnteKeeper()
+			mk.playerIndexes["structs1alice"] = 5
+			addrPermId := fmt.Sprintf("%d-%s@0", types.ObjectType_address, "structs1alice")
+			mk.permissions[addrPermId] = types.PermPlay
+
+			handler := productionChainStructs(mk)
+			ctx := tc.ctxMod(freeCtx().WithBlockHeight(100))
+
+			tx := mockTx{msgs: []sdk.Msg{
+				&types.MsgStructTrash{Creator: "structs1alice", StructId: "5-1702"},
+			}}
+
+			_, err := handler(ctx, tx, false)
+			require.NoError(t, err, "a single trash must still be admitted in phase %s", tc.name)
+		})
+	}
+}

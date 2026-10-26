@@ -76,12 +76,12 @@ func TestGuildTokenMintSendAndAgreementStillWork(t *testing.T) {
 	require.NoError(t, bApp.BankKeeper.MintCoins(ctx, structstypes.ModuleName, alpha))
 	require.NoError(t, bApp.BankKeeper.SendCoinsFromModuleToAccount(ctx, structstypes.ModuleName, ownerAcc, alpha))
 
-	_, err := ms.GuildBankMint(ctx, &structstypes.MsgGuildBankMint{
+	_, err := bootstrapAppGuildTokens(t, bApp, ms, ctx, &structstypes.MsgGuildBankMint{
 		Creator:     owner.Creator,
 		AmountAlpha: 5_000,
 		AmountToken: 5_000,
 	})
-	require.NoError(t, err, "minting to the guild owner's registered primary must still work")
+	require.NoError(t, err, "treasury issuance and distribution to a registered holder must work")
 
 	denom := "uguild." + guild.Id
 	require.Equal(t, math.NewInt(5_000), bApp.BankKeeper.GetBalance(ctx, ownerAcc, denom).Amount)
@@ -120,15 +120,17 @@ func TestGuildTokenMintSendAndAgreementStillWork(t *testing.T) {
 	})
 	require.ErrorAs(t, err, &destinationErr)
 
-	substation := structstypes.Substation{Id: "5-910", Owner: owner.Id, Creator: owner.Creator}
+	substation := structstypes.Substation{Id: keeperlib.GetObjectID(structstypes.ObjectType_substation, 910), Owner: owner.Id, Creator: owner.Creator}
 	bApp.StructsKeeper.SetSubstation(ctx, substation)
 	bApp.StructsKeeper.SetGridAttribute(
 		ctx,
-		keeperlib.GetGridAttributeIDByObjectId(structstypes.GridAttributeType_capacity, substation.Id),
+		keeperlib.GetGridAttributeIDByObjectId(structstypes.GridAttributeType_capacity, owner.Id),
 		100000,
 	)
 
 	cc := bApp.StructsKeeper.NewCurrentContext(ctx)
+	_, supplyErr := cc.NewAllocation(structstypes.AllocationType_dynamic, owner.Id, substation.Id, owner.Creator, owner.Id, 100000)
+	require.NoError(t, supplyErr)
 	providerCache := cc.NewProvider(structstypes.Provider{
 		Owner:                       owner.Id,
 		Creator:                     owner.Creator,
@@ -143,6 +145,10 @@ func TestGuildTokenMintSendAndAgreementStillWork(t *testing.T) {
 		ConsumerCancellationPenalty: math.LegacyZeroDec(),
 	})
 	cc.CommitAll()
+
+	ownerVaults, err := bApp.StructsKeeper.NewCurrentContext(ctx).EnsureVaults(owner.Id)
+	require.NoError(t, err)
+	require.NoError(t, bApp.BankKeeper.SendCoins(ctx, ownerAcc, ownerVaults[0], sdk.NewCoins(sdk.NewInt64Coin(denom, 2000))))
 
 	_, err = ms.AgreementOpen(ctx, &structstypes.MsgAgreementOpen{
 		Creator:    owner.Creator,
@@ -179,18 +185,21 @@ func setupAppGuildBank(t *testing.T, bApp *app.App, ctx sdk.Context, seed byte, 
 	require.NoError(t, bApp.BankKeeper.SendCoinsFromModuleToAccount(ctx, structstypes.ModuleName, ownerAcc, alpha))
 
 	ms := keeperlib.NewMsgServerImpl(bApp.StructsKeeper)
-	_, err := ms.GuildBankMint(ctx, &structstypes.MsgGuildBankMint{
+	_, err := bootstrapAppGuildTokens(t, bApp, ms, ctx, &structstypes.MsgGuildBankMint{
 		Creator: owner.Creator, AmountAlpha: 1_000, AmountToken: 500,
 	})
 	require.NoError(t, err)
 
-	return owner, guild, ownerAcc
+	vaults, err := bApp.StructsKeeper.NewCurrentContext(ctx).EnsureVaults(owner.Id)
+	require.NoError(t, err)
+	require.NoError(t, bApp.BankKeeper.SendCoins(ctx, ownerAcc, vaults[0], bApp.BankKeeper.GetAllBalances(ctx, ownerAcc)))
+	return owner, guild, vaults[0]
 }
 
 // TestGuildBankConvertAndConvertTokenWithSendRestriction runs alpha->token and
 // token->token through the live bank restriction. Guild collateral pools are not
 // on the uguild allowlist; these paths only send ualpha through them and mint
-// tokens to the player's registered primary.
+// tokens to the player's protocol vault.
 func TestGuildBankConvertAndConvertTokenWithSendRestriction(t *testing.T) {
 	bApp, ctx := setupJailGateApp(t)
 	ms := keeperlib.NewMsgServerImpl(bApp.StructsKeeper)
@@ -207,6 +216,28 @@ func TestGuildBankConvertAndConvertTokenWithSendRestriction(t *testing.T) {
 	require.NoError(t, err, "converting ualpha into guild tokens must still credit the player")
 	require.Equal(t, math.NewInt(550), bApp.BankKeeper.GetBalance(ctx, accA, denomA).Amount)
 
+	// The first swap leg burns source tokens and releases collateral. A failed
+	// second-leg price guard must roll all of that back with the SDK message cache.
+	sourcePool := bApp.StructsKeeper.NewCurrentContext(ctx).GetGuild(guildA.Id).GetBankCollateralPool()
+	targetPool := bApp.StructsKeeper.NewCurrentContext(ctx).GetGuild(guildB.Id).GetBankCollateralPool()
+	beforeVault := bApp.BankKeeper.GetAllBalances(ctx, accA)
+	beforeSourcePool := bApp.BankKeeper.GetAllBalances(ctx, sourcePool)
+	beforeTargetPool := bApp.BankKeeper.GetAllBalances(ctx, targetPool)
+	beforeSourceSupply := bApp.BankKeeper.GetSupply(ctx, denomA)
+	beforeTargetSupply := bApp.BankKeeper.GetSupply(ctx, denomB)
+	failedCtx, _ := ctx.CacheContext()
+	_, err = ms.GuildBankConvertToken(failedCtx, &structstypes.MsgGuildBankConvertToken{
+		Creator: ownerA.Creator, AmountToken: sdk.NewInt64Coin(denomA, 50),
+		GuildId: guildB.Id, MinAmountToken: 1000000,
+	})
+	require.Error(t, err)
+	require.Equal(t, int64(500), bApp.BankKeeper.GetBalance(failedCtx, accA, denomA).Amount.Int64(), "exercise a failure after the first leg burned tokens")
+	require.Equal(t, beforeVault, bApp.BankKeeper.GetAllBalances(ctx, accA))
+	require.Equal(t, beforeSourcePool, bApp.BankKeeper.GetAllBalances(ctx, sourcePool))
+	require.Equal(t, beforeTargetPool, bApp.BankKeeper.GetAllBalances(ctx, targetPool))
+	require.Equal(t, beforeSourceSupply, bApp.BankKeeper.GetSupply(ctx, denomA))
+	require.Equal(t, beforeTargetSupply, bApp.BankKeeper.GetSupply(ctx, denomB))
+
 	_, err = ms.GuildBankConvertToken(ctx, &structstypes.MsgGuildBankConvertToken{
 		Creator:        ownerA.Creator,
 		AmountToken:    sdk.NewCoin(denomA, math.NewInt(50)),
@@ -216,9 +247,29 @@ func TestGuildBankConvertAndConvertTokenWithSendRestriction(t *testing.T) {
 	require.NoError(t, err, "swapping one guild token for another must still land on the player")
 	require.Equal(t, math.NewInt(500), bApp.BankKeeper.GetBalance(ctx, accA, denomA).Amount)
 	require.Equal(t, math.NewInt(50), bApp.BankKeeper.GetBalance(ctx, accA, denomB).Amount)
+	primary, err := sdk.AccAddressFromBech32(ownerA.PrimaryAddress)
+	require.NoError(t, err)
+	require.True(t, bApp.BankKeeper.GetAllBalances(ctx, primary).IsZero(), "bank conversions must not route through a signing account")
 }
 
 func TestGuildDenominatedAgreementLifecycleWithSendRestriction(t *testing.T) {
+	testGuildDenominatedAgreementLifecycle(t, false, false, 0)
+}
+
+func TestGuildOwnedAgreementLifecycleWithSendRestriction(t *testing.T) {
+	testGuildDenominatedAgreementLifecycle(t, true, false, 0)
+}
+
+func TestGuildDenominatedAgreementBrownoutSettlesSharedPool(t *testing.T) {
+	for _, guildOwned := range []bool{false, true} {
+		for _, penaltyPercent := range []int64{0, 25, 100} {
+			testGuildDenominatedAgreementLifecycle(t, guildOwned, true, penaltyPercent)
+		}
+	}
+}
+
+func testGuildDenominatedAgreementLifecycle(t *testing.T, guildOwned, brownout bool, penaltyPercent int64) {
+	t.Helper()
 	bApp, ctx := setupJailGateApp(t)
 
 	consumerAcc := sdk.AccAddress(bytes.Repeat([]byte{0x41}, 20))
@@ -227,14 +278,14 @@ func TestGuildDenominatedAgreementLifecycleWithSendRestriction(t *testing.T) {
 	owner := appendAppPlayer(t, bApp.StructsKeeper, ctx, ownerAcc)
 
 	substation := structstypes.Substation{
-		Id:      "5-900",
+		Id:      keeperlib.GetObjectID(structstypes.ObjectType_substation, 900),
 		Owner:   owner.Id,
 		Creator: owner.Creator,
 	}
 	bApp.StructsKeeper.SetSubstation(ctx, substation)
 	bApp.StructsKeeper.SetGridAttribute(
 		ctx,
-		keeperlib.GetGridAttributeIDByObjectId(structstypes.GridAttributeType_capacity, substation.Id),
+		keeperlib.GetGridAttributeIDByObjectId(structstypes.GridAttributeType_capacity, owner.Id),
 		100000,
 	)
 
@@ -242,9 +293,12 @@ func TestGuildDenominatedAgreementLifecycleWithSendRestriction(t *testing.T) {
 	guild := structstypes.CreateEmptyGuild()
 	guild.Id = "0-900"
 	guild.Index = 900
+	guild.Owner = consumer.Id
 	bApp.StructsKeeper.SetGuild(ctx, guild)
 
 	cc := bApp.StructsKeeper.NewCurrentContext(ctx)
+	feeding, supplyErr := cc.NewAllocation(structstypes.AllocationType_dynamic, owner.Id, substation.Id, owner.Creator, owner.Id, 100000)
+	require.NoError(t, supplyErr)
 	providerCache := cc.NewProvider(structstypes.Provider{
 		Owner:                       owner.Id,
 		Creator:                     owner.Creator,
@@ -255,18 +309,25 @@ func TestGuildDenominatedAgreementLifecycleWithSendRestriction(t *testing.T) {
 		CapacityMaximum:             10000,
 		DurationMinimum:             1,
 		DurationMaximum:             1000000,
-		ProviderCancellationPenalty: math.LegacyZeroDec(),
+		ProviderCancellationPenalty: math.LegacyNewDec(penaltyPercent).QuoInt64(100),
 		ConsumerCancellationPenalty: math.LegacyZeroDec(),
 	})
 	cc.CommitAll()
 
 	funding := sdk.NewCoins(sdk.NewCoin(guildDenom, math.NewInt(100000)))
 	require.NoError(t, bApp.BankKeeper.MintCoins(ctx, structstypes.ModuleName, funding))
-	require.NoError(t, bApp.BankKeeper.SendCoinsFromModuleToAccount(ctx, structstypes.ModuleName, consumerAcc, funding))
+	consumerOwnerID := consumer.Id
+	if guildOwned {
+		consumerOwnerID = guild.Id
+	}
+	consumerVaults, vaultErr := bApp.StructsKeeper.NewCurrentContext(ctx).EnsureVaults(consumerOwnerID)
+	require.NoError(t, vaultErr)
+	require.NoError(t, bApp.BankKeeper.SendCoinsFromModuleToAccount(ctx, structstypes.ModuleName, consumerVaults[0], funding))
 
 	ms := keeperlib.NewMsgServerImpl(bApp.StructsKeeper)
 	_, err := ms.AgreementOpen(ctx, &structstypes.MsgAgreementOpen{
 		Creator:    consumer.Creator,
+		OwnerId:    consumerOwnerID,
 		ProviderId: providerCache.GetProviderId(),
 		Capacity:   100,
 		Duration:   50,
@@ -275,6 +336,71 @@ func TestGuildDenominatedAgreementLifecycleWithSendRestriction(t *testing.T) {
 
 	agreementIds := bApp.StructsKeeper.GetAllAgreementIdByProviderIndex(ctx, providerCache.GetProviderId())
 	require.Len(t, agreementIds, 1)
+	if brownout {
+		// Two agreements share a collateral pool. Capacity loss must settle both
+		// exactly once, checkpointing the served span before reducing load.
+		peerAcc := sdk.AccAddress(bytes.Repeat([]byte{0x43}, 20))
+		peer := appendAppPlayer(t, bApp.StructsKeeper, ctx, peerAcc)
+		peerVaults, err := bApp.StructsKeeper.NewCurrentContext(ctx).EnsureVaults(peer.Id)
+		require.NoError(t, err)
+		require.NoError(t, bApp.BankKeeper.SendCoins(ctx, consumerVaults[0], peerVaults[0],
+			sdk.NewCoins(sdk.NewInt64Coin(guildDenom, 50000))))
+		_, err = ms.AgreementOpen(ctx, &structstypes.MsgAgreementOpen{
+			Creator: peer.Creator, OwnerId: peer.Id,
+			ProviderId: providerCache.GetProviderId(), Capacity: 100, Duration: 50,
+		})
+		require.NoError(t, err)
+		require.True(t, bApp.BankKeeper.GetBalance(ctx, consumerVaults[0], guildDenom).IsZero())
+		ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 5)
+		beforeEvents := len(ctx.EventManager().Events())
+		cc = bApp.StructsKeeper.NewCurrentContext(ctx)
+		supply, found := cc.GetAllocation(feeding.ID())
+		require.True(t, found)
+		require.NoError(t, supply.Destroy())
+		cc.CommitAll()
+		cc = bApp.StructsKeeper.NewCurrentContext(ctx)
+		cc.GridCascade()
+		cc.CommitAll()
+		require.Empty(t, bApp.StructsKeeper.GetAllAgreementIdByProviderIndex(ctx, providerCache.GetProviderId()))
+		// 10,000 served units, with the provider penalty returned to consumers.
+		expectedRefund := int64(90000) + 10000*penaltyPercent/100
+		expectedEarnings := int64(100000) - expectedRefund
+		require.Equal(t, expectedRefund/2, bApp.BankKeeper.GetBalance(ctx, consumerVaults[0], guildDenom).Amount.Int64())
+		require.Equal(t, expectedRefund/2, bApp.BankKeeper.GetBalance(ctx, peerVaults[0], guildDenom).Amount.Int64())
+		collateral := keeperlib.GetProviderCollateralPoolLocation(providerCache.GetProviderId())
+		earnings := keeperlib.GetProviderEarningsPoolLocation(providerCache.GetProviderId())
+		require.True(t, bApp.BankKeeper.GetBalance(ctx, collateral, guildDenom).IsZero())
+		require.Equal(t, expectedEarnings, bApp.BankKeeper.GetBalance(ctx, earnings, guildDenom).Amount.Int64())
+		require.True(t, bApp.BankKeeper.GetBalance(ctx, consumerAcc, guildDenom).IsZero())
+		require.True(t, bApp.BankKeeper.GetBalance(ctx, peerAcc, guildDenom).IsZero())
+		refundEvents := map[string]int{}
+		for _, event := range ctx.EventManager().Events()[beforeEvents:] {
+			if event.Type != "transfer" {
+				continue
+			}
+			attributes := map[string]string{}
+			for _, attribute := range event.Attributes {
+				attributes[attribute.Key] = attribute.Value
+			}
+			if attributes["recipient"] == consumerVaults[0].String() || attributes["recipient"] == peerVaults[0].String() {
+				require.Equal(t, collateral.String(), attributes["sender"])
+				require.Equal(t, math.NewInt(expectedRefund/2).String()+guildDenom, attributes["amount"])
+				refundEvents[attributes["recipient"]]++
+			}
+		}
+		require.Equal(t, map[string]int{consumerVaults[0].String(): 1, peerVaults[0].String(): 1}, refundEvents,
+			"each distinct consumer needs exactly one refund event")
+		message, broken := keeperlib.ProviderCollateralSolvencyInvariant(bApp.StructsKeeper)(ctx)
+		require.False(t, broken, message)
+		bApp.StructsKeeper.AppendGridCascadeQueue(ctx, substation.Id)
+		cc = bApp.StructsKeeper.NewCurrentContext(ctx)
+		cc.GridCascade()
+		cc.CommitAll()
+		require.Equal(t, expectedRefund/2, bApp.BankKeeper.GetBalance(ctx, consumerVaults[0], guildDenom).Amount.Int64())
+		require.Equal(t, expectedRefund/2, bApp.BankKeeper.GetBalance(ctx, peerVaults[0], guildDenom).Amount.Int64())
+		require.Equal(t, expectedEarnings, bApp.BankKeeper.GetBalance(ctx, earnings, guildDenom).Amount.Int64())
+		return
+	}
 
 	_, err = ms.AgreementDurationIncrease(ctx, &structstypes.MsgAgreementDurationIncrease{
 		Creator:          consumer.Creator,
@@ -299,12 +425,17 @@ func TestGuildDenominatedAgreementLifecycleWithSendRestriction(t *testing.T) {
 	require.NoError(t, cc.GetGuild(guild.Id).BankConfiscateAndBurn(math.OneInt(), earningsPool.String()))
 	cc.CommitAll()
 
+	closing := bApp.StructsKeeper.NewCurrentContext(ctx).GetAgreement(agreementIds[0])
+	require.Equal(t, consumerOwnerID, closing.GetOwnerId())
+	expectedVault := bApp.BankKeeper.GetBalance(ctx, consumerVaults[0], guildDenom).Amount.Add(closing.GetRemainingCollateral())
 	_, err = ms.AgreementClose(ctx, &structstypes.MsgAgreementClose{
 		Creator:     consumer.Creator,
 		AgreementId: agreementIds[0],
 	})
 	require.NoError(t, err)
 	require.Empty(t, bApp.StructsKeeper.GetAllAgreementIdByProviderIndex(ctx, providerCache.GetProviderId()))
+	require.Equal(t, expectedVault, bApp.BankKeeper.GetBalance(ctx, consumerVaults[0], guildDenom).Amount)
+	require.True(t, bApp.BankKeeper.GetBalance(ctx, consumerAcc, guildDenom).Amount.IsZero(), "consumer settlement stays in the asset owner's vault")
 
 	invariant := keeperlib.ProviderCollateralSolvencyInvariant(bApp.StructsKeeper)
 	message, broken := invariant(ctx)

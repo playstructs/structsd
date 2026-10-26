@@ -5,10 +5,16 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	vestingexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 	// this line is used by starport scaffolding # 1
 )
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
+	registry.RegisterImplementations((*sdk.AccountI)(nil), &VaultVestingAccount{})
+	registry.RegisterImplementations((*authtypes.GenesisAccount)(nil), &VaultVestingAccount{})
+	registry.RegisterImplementations((*vestingexported.VestingAccount)(nil), &VaultVestingAccount{})
+	registry.RegisterImplementations((*sdk.Msg)(nil), &MsgVaultSend{}, &MsgGuildUpdateRankPurchase{}, &MsgGuildRankPurchase{}, &MsgGuildMembershipJoinByRankPurchase{})
 	// this line is used by starport scaffolding # 3
 
 	registry.RegisterImplementations((*sdk.Msg)(nil),

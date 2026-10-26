@@ -27,6 +27,32 @@ and charge (usually via methods on the loaded objects), mutate, then `cc.CommitA
 neighbouring handler before writing a new one. Don't write to the KV store directly when a cache
 exists — caches deduplicate loads per operation and commit once.
 
+**Efficiency is a correctness concern here, because every read and write is metered.** This is a
+chain: a keeper read is a KV store read and somebody pays for it. On a transaction path that is
+gas, and for the free Structs messages it is a ceiling rather than a bill — `GasRouterDecorator`
+swaps in a 20M meter (`DefaultFreeGasCap`), so a handler that walks too much state does not charge
+the player more, it stops working. In a block hook there is no meter at all: `AgreementExpirations`,
+`GridCascade` and `ProcessInfusionMaturitySweep` run every block against an infinite one, so their
+cost is block time that every validator pays, and work there that a transaction can grow without
+bound is a halt rather than a slow query. Size a loop by asking what an attacker can put in it, not
+what a normal player would.
+
+**Answer a question about one object with an index, never by scanning every object.** The store
+layout already does this: `AllocationSourceKeyPrefix`, `AllocationDestinationKeyPrefix` and
+`SubstationPlayerKeyPrefix` are scoped prefixes, so iterating one costs what is attached to that
+object rather than what is on the chain — deleting a substation reaches its connected players, its
+outbound allocations and its inbound allocations through exactly those three, and never looks at a
+provider at all. Add a new index beside the write that populates it, and clear it under the same key
+it was written under. `GetAllX(ctx)` is a full store scan and belongs only where every row genuinely
+is the question: upgrade migrations, genesis import and export, `EventAllGenesis` (guarded to block
+1), and the registered invariants, which the crisis module runs on demand. The trap is that both
+spellings exist — `Keeper.GetAllPlayerBySubstation` iterates every player and filters, while
+`CurrentContext.GetAllPlayerBySubstation` reads the index, and only the second is on a live path.
+
+The caches are part of this rather than a convenience: `CurrentContext` deduplicates loads within an
+operation and writes once at `CommitAll`, so going around it to the store pays again for reads it
+already has, on top of breaking the commit-ordering rules below.
+
 **Load the signer with `cc.GetSigningPlayer(msg.Creator)`, and nothing else with it.** A player
 owns many addresses, each with its own permission bitfield, but `cc.players` is keyed by player
 id, so every address of a player resolves to one shared `PlayerCache`. The acting identity
@@ -342,6 +368,43 @@ provably cannot reach state. `norm.NFC` is the one allowed external dependency, 
 `golang.org/x/text` changes which names the chain accepts and needs an upgrade handler** — treat a
 Unicode-version review as part of writing one.
 
+**A results mismatch with a matching AppHash is a node-local read, not a handler bug — go to the
+store before the code.** `LastResultsHash` covers events and gas; `AppHash` covers the tree. When
+one node diverges on the first while agreeing on the second, the tree it wrote is right and the
+value it *read* was not, so the question is where a read can come from other than the tree. The
+answer on this chain was IAVL's fast-node index: before `cosmos/iavl` v1.2.7, `SaveVersion` evicted
+a deleted key from the in-memory fast-node LRU and queued the disk delete, then released its lock
+while writing tree nodes; a gRPC or LCD query for that key in the window — those bypass the ABCI
+mutex — read the not-yet-deleted node from disk and put it back. After commit the disk was right
+and the LRU held a deleted key for good. `SetStructDefender` later read a `protectedStructIndex`
+the tree no longer had, took the clear branch nobody else took, and `structs-public-rpc` wedged at
+2586840 with `CONSENSUS FAILURE`. Only a node serving queries at volume is exposed, which is why it
+presented as a recurring public-node stall and never a validator fork, and why a rollback always
+cleared it: the stale value lived in process memory. Read the gas delta before reading code — 1024
+here was a 1000-gas `Delete` plus 3 gas/byte on an 8-byte value that one node saw and the others
+did not, which names the key shape and the branch without touching the handler. `go.mod` requires
+`github.com/cosmos/iavl` v1.2.8 for cosmos/iavl#1142 and `app/arch_deps_test.go` holds the floor
+at v1.2.7; an SDK or store bump that resolves it lower reintroduces the incident. Not a state
+change, so no upgrade handler: it rode in v0.22.0 because that was the next binary.
+`docs/runbooks/consensus-failure-lastresultshash.md` is the operator side.
+
+**A security-driven dependency floor goes in `app/arch_deps_test.go`, and one that changes what the
+chain accepts needs a coordinated upgrade.** `TestArch_DependencyFloors` reads `go.mod` — test
+binaries carry no dependency list in their build info — and holds `iavl` ≥ v1.2.7, `ibc-go/v10`
+≥ v10.1.0 (ASA-2025-004, the acknowledgement round-trip check), `cosmos-sdk` ≥ v0.53.8 (tx-decode
+panics, the secp256k1 SEC1 tag check, distribution block-hook errors) and `cometbft` ≥ v0.38.25
+(mempool heap amplification, the `ErrRecheckFull` race). Each entry carries the reason in its
+failure message; add the next one there rather than in a comment on the require line, because the
+require line is what `go mod tidy` and a transitive bump rewrite. The floors are not all the same
+kind of fix, and the difference decides how a bump ships. The IAVL and CometBFT fixes are
+node-local — a node on either version agrees with the network wherever the old one was reading or
+gossiping correctly — so they can ride any binary. The IBC acknowledgement check and the pubkey tag
+check each **reject an input the old binary accepts**, and a network split across those two
+behaviours diverges on the first such transaction, so they ride a named upgrade or not at all.
+Read the changelog for that distinction before deciding a patch bump is safe to roll. Also note
+what an SDK bump does not do: v0.53.8 still pins `iavl` v1.2.2 indirectly, so the explicit require
+in `go.mod` is what holds the version, and the floor test is what notices if a tidy drops it.
+
 **A proto3 enum is an open int32, so a switch on one that decides authorization must end in a
 default that denies.** The generated decoder shifts bytes into an int32 and never consults the
 enum, so a field typed `guildJoinBypassLevel` holds any number a transaction or a genesis file
@@ -423,64 +486,24 @@ bank state during both the upgrade and genesis import.
 `x/structs/keeper/guild_bank_holder_test.go` and `app/guild_bank_send_restriction_test.go` cover the
 policy and the full guild-denominated agreement lifecycle.
 
-**Founding a guild has two identities, and every check belongs to the founder.** `GuildCreate`'s
-signer is the *solver*: it is half of the work preimage and gets recorded as `charterSolverId`,
-and that is all. The *founder* — `msg.FounderPlayerId`, or the solver when it is empty — owns the
-guild, so the membership move, the entry substation's `CanManageConnectionsBy`, the reactor's
-`CanCreateGuildBy` and the ownership all resolve against them. The two are the same player in the
-ordinary case, which is exactly why getting this backwards would not show up in the common path.
-A third-party founding is authorized by the founder's offline consent signature and nothing else,
-so **that signature has to bind the whole shape of the guild** (`GuildCharterConsentInput`:
-founder, reactor, entry substation, endpoint, anchor). It is a bearer token shared with a whole
-mining pool — unbound, any holder could name their own substation as the guild's entry point,
-which is every future member's power supply. It is collected *before* the grind, because a charter
-is a race and a winning nonce that had to travel to the founder for a signature would lose to the
-pool with the most attentive leader, not the most hashpower.
-
-**The charter anchor is the replay protection, for the proof and the consent alike.** Both
-preimages bind it, and founding a guild on a proof moves it to the current height, so every nonce
-anyone was grinding dies at once — including the winning one. Block heights never repeat, so
-nothing comes back. Do not add a counter: the obvious candidate, `GuildMembershipJoinProxy`'s
-`proxyNonce`, is bumped by unrelated events and would expire a consent that has to survive weeks
-of mining. The reactor entitlement path deliberately does *not* move the anchor, or a validator
-collecting a perk would wipe every pool's work. Two things follow for anyone touching this:
-`CharterAnchor` falls back to the current height rather than reading an unset key as zero (zero
-would make the age the whole chain's history and sell a guild for one leading zero), and
-`CharterAge` clamps rather than subtracting, since an anchor ahead of the height would wrap to a
-maximally easy puzzle. Because moving the anchor is the *whole* of what retires a consent, only a
-path that moves it may spend one: `GuildCreate` refuses a third-party founding on the entitlement
-path outright, since that path leaves the anchor alone and would otherwise leave the signature live
-until an unrelated player proof-founded — long enough to mine a fresh proof and replay it, dragging
-the founder into a second guild at the entry rank. That refusal costs nothing, the entitlement path
-already requiring reactor permission from the founder, who can therefore sign for themselves.
-Anything added later that accepts a consent inherits the same either-or. The proof path also checks
-that the named reactor's validator exists and is not jailed, matching `GuildUpdatePrimaryReactor`,
-because `AppendGuild` writes `PrimaryReactorId` unconditionally and `GuildMembershipJoin`
-redelegates every joiner's infusion to it; that check cannot strand a solution, since the work
-preimage binds no reactor and a refused solver renames it and re-submits the same nonce.
-`guildCharterDifficultyRange` and `guildCharterReactorAge` are params
-because production values make a fresh dev chain unusable — see `config.yml`, and note that
-`AppendReactor` stamps `guildCharterEligibleHeight` from the param at creation and never revisits
-it, so changing the param does not re-age existing reactors. **A genesis validator's reactor is
-created before this module has params**, which is the trap that made every fresh dev chain unable to
-found its first guild: staking and genutil precede `structs` in `genesisModuleOrder`, so
-`AfterValidatorCreated` reaches `AppendReactor` while `GetParams` still returns a zero `Params` and
-`CharterReactorAge` substitutes the production month — the stamp on disk ignored the genesis file
-while the params query went on reporting what the file asked for, which is why it reads as a
-permission bug. `InitGenesis` restamps through `RestampReactorCharterEligibility` straight after
-`SetParams`, before the import loop, so a restored chain keeps the clock it exported. The fallback
-itself stays: a zero age would make every reactor eligible at once, which is the worse direction to
-fail in. Anything else that derives state from a param inside a staking hook inherits this.
-`x/structs/keeper/guild_charter_test.go`
-is the suite; `app/guild_charter_reactor_test.go` is the one that proves real staking's bonded and
-jailed states reach the free path's gate, since the mock returns whatever the test handed it, and
-holds the genesis ordering with `TestGuildCharterGenesisReactorHonoursParams`.
+**Guild creation has one paid path.** The signing player is the founder and pays from
+its vault with `PermPlay | PermTokenTransfer`. The configured founding payment burns one
+Alpha and deposits one Alpha as backing, then mints one guild token into the new guild's
+vault. A primary reactor is required and its validator must exist and be unjailed; the
+founder does not need to own or control it. Proof-of-work founding, solver consent and
+free validator entitlement are retired; compatibility fields cannot reactivate them.
+Predictable collateral addresses may receive donations before founding: initialization
+checks token supply, not an empty collateral balance. All payment, account provisioning,
+membership and event writes must roll back together on failure.
+`app/guild_creation_signed_test.go` and `x/structs/keeper/guild_creation_payment_test.go`
+cover funding, dust pre-funding, jailed reactors and rollback.
 
 **Guilds are property, so ownership and membership are separate and a handler must take a
-`guildId`.** `GuildCache.SetOwner` moves `guild.Owner` and the `PermGuildAll` row and touches
+`guildId`.** `GuildCache.SetOwner` moves `guild.Owner`, clears the previous owner's entire direct
+guild permission row, grants the new owner `PermGuildAll`, and touches
 neither player's `GuildId`, so every sale produces an owner who is not a member — and membership is
 singular while ownership is not, a buyer being free to found or join elsewhere while holding what
-they bought. This is deliberate and `TestCharterOwnedGuildNeedNotBeJoined` pins it, because the
+they bought. This is deliberate and `TestPaidGuildCreate` pins it, because the
 obvious "fix" is worse: forcing a buyer into the guild would evict them from their own or make a
 purchase impossible while they are in one. Authorization was never the gap —
 `PermissionCheck`'s owner shortcut passes an owner on their own guild regardless of membership — but
@@ -491,12 +514,15 @@ optional `guildId` with membership as the fallback, and a supplied id needs `Che
 it or it is the phantom-cache class above, `cc.GetGuild("")` being an allocator. Two rules had to be
 restated rather than merely widened, and both times the new wording is identical for a member
 caller: `PlayerUpdateGuildRank` asks whether the target is in the *named* guild instead of whether
-it shares the caller's, and rank-derived authority — the entry-rank ceiling, and the
-"outrank the target" fallback when `PermAdmin` fails — applies only to a caller who is a member of
-the guild being edited, since a rank in some other guild is an unrelated number and a guildless
-caller's zero would outrank everyone. `GuildBankRedeem` needs nothing, resolving the guild from the
-token denom, which is what makes the token tradeable; the membership handlers already worked this
-way. `x/structs/keeper/guild_non_member_owner_test.go` covers all of it, fallback included.
+it shares the caller's. Promotions and demotions require explicit `PermAdmin` on the
+guild, independently of the caller's rank. Rank-derived grants supply operational rights;
+they cannot satisfy `PermAdmin` or authorize direct/rank permission administration.
+Permission writes still check both added and removed bits against the signing key and
+object authority. Independent direct grants made by administrators survive membership
+changes; only the outgoing owner's own guild row is cleared on ownership transfer.
+`GuildBankRedeem` resolves the guild from the token denom, allowing tradeable tokens.
+`x/structs/keeper/guild_non_member_owner_test.go` and
+`x/structs/keeper/rank_administration_security_test.go` cover these boundaries.
 
 **Use the typed errors.** Keeper codes (1050–1800) live in
 `x/structs/types/errors_structured.go`, ante codes (2000–2050) in `app/ante/errors.go`. The

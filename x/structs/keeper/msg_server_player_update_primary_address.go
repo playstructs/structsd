@@ -37,14 +37,18 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
 
     // Move Funds
     oldAcc, _   := sdk.AccAddressFromBech32(player.GetPrimaryAddress())
-    newAcc, _   := sdk.AccAddressFromBech32(msg.PrimaryAddress)
+    // Provision the owner index before staking hooks resolve the destination.
+    // The enclosing SDK transaction cache rolls this back on failure.
+    vaults, err := cc.EnsureVaults(player.ID())
+    if err != nil { return emptyResponse, err }
+    vaultAcc := vaults[0]
 
     // Move Reactor Infusions over.
     //
     // Ahead of the coin sweep so that the staking rewards the transfer settles
     // are swept along with everything else. Strict: the old primary stays a
     // registered address of this player, so a refusal costs nothing but a wait.
-    err = k.MoveDelegationsToAddress(ctx, cc, oldAcc, msg.PrimaryAddress, DelegationTransferStrict)
+    err = k.MoveDelegationsToAddress(ctx, cc, oldAcc, vaultAcc.String(), DelegationTransferStrictRetainSelf)
     if err != nil {
         return emptyResponse, err
     }
@@ -53,7 +57,7 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
     balances := k.bankKeeper.SpendableCoins(ctx, oldAcc)
 
     // Transfer
-    err = k.bankKeeper.SendCoins(ctx, oldAcc, newAcc, balances)
+    err = k.bankKeeper.SendCoins(ctx, oldAcc, vaultAcc, balances)
     if err != nil {
         return emptyResponse, err
     }

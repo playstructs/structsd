@@ -84,6 +84,8 @@ type AttackContext struct {
 
 	TargetedPlanets     []*PlanetCache
 	targetedPlanetsSeen map[string]bool
+
+	targetHealthBefore uint64
 }
 
 func NewAttackContext(cc *CurrentContext, attacker *StructCache, weaponSystem types.TechWeaponSystem) *AttackContext {
@@ -117,6 +119,9 @@ func NewAttackContext(cc *CurrentContext, attacker *StructCache, weaponSystem ty
 
 func (ac *AttackContext) BeginShot(target *StructCache) {
 	ac.Target = target
+	// Saturating damage cannot be inverted from the remaining health. Keep the
+	// observation for this target, including repeated targets within one attack.
+	ac.targetHealthBefore = target.GetHealth()
 	ac.Evasion = nil
 	ac.Block = nil
 	ac.DefenderCounters = nil
@@ -165,7 +170,9 @@ func (ac *AttackContext) resolveEvasion() bool {
 			weaponControl == types.TechWeaponControl_guided &&
 			target.GetPlanet().GetOwnerId() == target.GetOwnerId() {
 			planetaryRate, planetaryErr := target.GetPlanet().GetLowOrbitBallisticsInterceptorNetworkSuccessRate()
-			if planetaryErr == nil {
+			// The stored network remains until deferred grid repair takes its
+			// structs offline. It cannot intercept without live owner backing.
+			if planetaryErr == nil && target.GetOwner().IsOnline() {
 				result.PlanetaryEvaded = target.IsSuccessful(planetaryRate)
 				if result.PlanetaryEvaded {
 					result.Evaded = true
@@ -383,7 +390,9 @@ func (ac *AttackContext) resolvePlanetaryDefense() {
 			break
 		}
 		cannonDamage := planet.GetDefensiveCannonQuantity()
-		if cannonDamage > 0 {
+		// Keep the counter for deferred teardown, but do not fire on power
+		// that only survives in the stored grid totals after a source outage.
+		if cannonDamage > 0 && planet.GetOwner().IsOnline() {
 			if !ac.Attacker.IsDestroyed() {
 				ac.Attacker.CC.SetStructAttributeDecrement(ac.Attacker.HealthAttributeId, cannonDamage)
 				if ac.Attacker.GetHealth() == 0 {
@@ -459,6 +468,25 @@ func (ac *AttackContext) ResolveDefenders(skipBlock bool) {
 		ac.Attacker.CC.k.logger.Debug("Defender at Location", "defender", defender.GetStructId(), "locationId", defender.GetLocationId())
 
 		defender = ac.Attacker.CC.GetStruct(defender.GetStructId())
+
+		/* Neither combatant defends in this pass.
+		 *
+		 * The target's counter belongs to ResolveTargetCounter, which the caller
+		 * runs after ResolveAttackDamage: a target counters only once it has
+		 * survived the volley. A self-registered target would be picked up here
+		 * instead - GetStruct returns the same cache instance, so it is
+		 * literally ac.Target - and its counter would land before the shots,
+		 * voiding the whole volley if it killed the attacker. The registration
+		 * is refused now, but this is the guard that covers rows already on disk
+		 * and anything that writes one later.
+		 *
+		 * The attacker is skipped for the same structural reason rather than a
+		 * game one: it would be countering itself.
+		 */
+		if defender.GetStructId() == ac.Target.GetStructId() || defender.GetStructId() == ac.Attacker.GetStructId() {
+			ac.Attacker.CC.k.logger.Debug("Skipping combatant registered as a defender", "defender", defender.GetStructId(), "target", ac.Target.GetStructId())
+			continue
+		}
 
 		if defender.ReadinessCheck() != nil {
 			continue
@@ -597,14 +625,11 @@ func (ac *AttackContext) EndShot() {
 	)
 	base.TargetPlayerId = ac.Target.GetOwnerId()
 
-	targetHealth := ac.Target.GetHealth()
-	if ac.Volley == nil || ac.Volley.IsBlocker {
-		base.TargetHealthBefore = targetHealth
-		base.TargetHealthAfter = targetHealth
-	} else {
-		base.TargetHealthBefore = ac.Volley.HealthAfter + ac.Volley.NetDamage
-		base.TargetHealthAfter = ac.Volley.HealthAfter
-	}
+	base.TargetHealthBefore = ac.targetHealthBefore
+	// Target counters can kill an explosive attacker after the volley, damaging
+	// this target again. Report the resolved state, not the earlier volley state.
+	base.TargetHealthAfter = ac.Target.GetHealth()
+	base.TargetDestroyed = ac.Target.IsDestroyed()
 	base.TargetHealthMax = ac.Target.GetStructType().MaxHealth
 
 	// Evasion
@@ -615,9 +640,8 @@ func (ac *AttackContext) EndShot() {
 			} else {
 				base.SetEvade(true, ac.Evasion.Cause)
 			}
-			ac.AttackDetail.AppendShot(base)
-			ac.trackTargetedPlanet()
-			return
+			// Evasion skips the volley, not defender counters. Keep assembling
+			// their outcomes so an evaded attack can still explain its losses.
 		}
 	}
 
@@ -685,16 +709,10 @@ func (ac *AttackContext) EndShot() {
 
 		if vr.IsBlocker {
 			base.BlockerHealthAfter = vr.HealthAfter
-		} else {
-			base.TargetHealthAfter = vr.HealthAfter
 		}
 
-		if vr.TargetOrBlockerDestroyed {
-			if vr.IsBlocker {
-				base.BlockerDestroyed = true
-			} else {
-				base.TargetDestroyed = true
-			}
+		if vr.IsBlocker && vr.TargetOrBlockerDestroyed {
+			base.BlockerDestroyed = true
 		}
 
 		if vr.PostDestruction != nil {
@@ -707,10 +725,9 @@ func (ac *AttackContext) EndShot() {
 		for i := 0; i < n-1; i++ {
 			row := newProjectileRow(base)
 			row.DamageDealt = vr.Shots[i].Damage
+			row.TargetHealthAfter = base.TargetHealthBefore
 			if vr.IsBlocker {
 				row.BlockerHealthAfter = base.BlockerHealthBefore
-			} else {
-				row.TargetHealthAfter = base.TargetHealthBefore
 			}
 			ac.AttackDetail.AppendShot(row)
 		}
@@ -730,17 +747,12 @@ func (ac *AttackContext) EndShot() {
 
 		if vr.IsBlocker {
 			lastRow.BlockerHealthAfter = vr.HealthAfter
-			lastRow.TargetHealthAfter = base.TargetHealthBefore
-		} else {
-			lastRow.TargetHealthAfter = vr.HealthAfter
 		}
+		lastRow.TargetHealthAfter = base.TargetHealthAfter
+		lastRow.TargetDestroyed = base.TargetDestroyed
 
-		if vr.TargetOrBlockerDestroyed {
-			if vr.IsBlocker {
-				lastRow.BlockerDestroyed = true
-			} else {
-				lastRow.TargetDestroyed = true
-			}
+		if vr.IsBlocker && vr.TargetOrBlockerDestroyed {
+			lastRow.BlockerDestroyed = true
 		}
 
 		if vr.PostDestruction != nil {

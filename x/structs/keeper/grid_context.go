@@ -1,13 +1,26 @@
 package keeper
 
 import (
+    "fmt"
+    "math"
     "strings"
+
     "structs/x/structs/types"
 )
 
 
 // GetGridAttribute returns a grid attribute value, caching the result.
 func (cc *CurrentContext) GetGridAttribute(gridAttributeId string) uint64 {
+	if owner, matches := strings.CutPrefix(gridAttributeId, ownerDiversityCapacityPrefix); matches {
+		cc.RefreshOwnerReactorDiversity(owner)
+	}
+	return cc.getGridAttribute(gridAttributeId)
+}
+
+var ownerDiversityCapacityPrefix = fmt.Sprintf("%d-", types.GridAttributeType_capacity)
+
+// Internal reads are used while refreshing the bonus to avoid recursion.
+func (cc *CurrentContext) getGridAttribute(gridAttributeId string) uint64 {
 	if cache, exists := cc.gridAttributes[gridAttributeId]; exists {
 		return cache.Value
 	}
@@ -44,10 +57,41 @@ func (cc *CurrentContext) ClearGridAttribute(gridAttributeId string) {
 	}
 }
 
-// SetGridAttributeIncrement increments a grid attribute
+/* SetGridAttributeIncrement adds to a grid attribute, saturating at MaxUint64.
+ *
+ * The addition was unguarded while both of its siblings guarded their
+ * subtraction, which made it the odd one out rather than a considered choice.
+ * Wrapping is the worst of the three outcomes available here: a capacity or a
+ * stored-ore balance that rolls over to a small number destroys accounted value
+ * and understates committed load, and every caller treats these attributes as
+ * monotonic.
+ *
+ * Saturating rather than returning an error is deliberate. Most callers cannot
+ * refuse - genesis import, staking hooks and the block hooks have nowhere to
+ * put a rejection - and an error they would have to drop is a worse contract
+ * than a bound they cannot exceed. The log is what makes it diagnosable; a
+ * saturated attribute is corrupt state either way, and the point of the clamp is
+ * that it is corrupt in a bounded, deterministic direction instead of a
+ * wrapped one.
+ *
+ * Reaching the bound is not currently possible: the only compounding path is a
+ * cycle of allocations feeding each other, which grows linearly rather than
+ * exponentially. That cycle is its own bug and is tracked separately - this is
+ * the backstop, not the fix for it.
+ */
 func (cc *CurrentContext) SetGridAttributeIncrement(gridAttributeId string, delta uint64) uint64 {
 	current := cc.GetGridAttribute(gridAttributeId)
+
 	newValue := current + delta
+	if newValue < current {
+		cc.k.logger.Error("Grid attribute increment saturated",
+			"gridAttributeId", gridAttributeId,
+			"current", current,
+			"delta", delta,
+		)
+		newValue = math.MaxUint64
+	}
+
 	cc.SetGridAttribute(gridAttributeId, newValue)
 	return newValue
 }
@@ -72,22 +116,49 @@ func (cc *CurrentContext) SetGridAttributeDelta(gridAttributeId string, oldAmoun
 	if oldAmount < currentAmount {
 		resetAmount = currentAmount - oldAmount
 	}
+
+	// The subtraction above was guarded and this addition was not, which is the
+	// same gap SetGridAttributeIncrement carried. Saturate for the same reasons.
 	amount := resetAmount + newAmount
+	if amount < resetAmount {
+		cc.k.logger.Error("Grid attribute delta saturated",
+			"gridAttributeId", gridAttributeId,
+			"current", currentAmount,
+			"oldAmount", oldAmount,
+			"newAmount", newAmount,
+		)
+		amount = math.MaxUint64
+	}
 
     cc.SetGridAttribute(gridAttributeId, amount)
 
 	return amount
 }
 
+// GetEffectiveGridCapacity keeps incoming power raw in storage and applies the
+// fixed operating loss only when a substation's usable power is requested.
+// Other grid sources retain their existing capacity semantics.
+func (cc *CurrentContext) GetEffectiveGridCapacity(objectId string) uint64 {
+    capacity := cc.GetGridAttribute(GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId))
+    if strings.HasPrefix(objectId, "4-") {
+        return types.SubstationUsableCapacity(capacity)
+    }
+    return capacity
+}
+
 func (cc *CurrentContext) UpdateSubstationConnectionCapacity(objectId string) {
     if strings.HasPrefix(objectId, "4-") {
 
-        capacityAttributeId             := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)
+        station := cc.GetSubstation(objectId)
+        if station.CheckSubstation() == nil && station.IsDeletionPending() {
+            cc.SetGridAttribute(GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId), 0)
+            return
+        }
         loadAttributeId                 := GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)
         connectionCapacityAttributeId   := GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId)
         connectionCountAttributeId      := GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, objectId)
 
-        capacity    := cc.GetGridAttribute(capacityAttributeId)
+        capacity    := cc.GetEffectiveGridCapacity(objectId)
         load        := cc.GetGridAttribute(loadAttributeId)
 
         if capacity > load {
@@ -108,36 +179,114 @@ func (cc *CurrentContext) UpdateSubstationConnectionCapacity(objectId string) {
 
 
 
+/* GridCascade sheds load from every object that is over-subscribed, and stops
+ * when it runs out of budget rather than when it runs out of work.
+ *
+ * The queue is drained in sequence order up to GridCascadeBlockBudget
+ * source visits and allocation index rows loaded. Each loaded allocation may
+ * be destroyed once within that reservation. What is left stays queued and is picked up by the next
+ * block, ahead of anything enqueued since - that ordering is what stops an
+ * attacker from parking their own over-subscribed substation at the back of the
+ * line indefinitely. See the GridCascadeQueue comment in types/keys.go.
+ *
+ * Local capacity checks clamp overload to zero, but downstream objects can
+ * still retain old capacity until the cascade reaches them. This queue budget
+ * does not by itself prevent new allocations against that stale downstream
+ * capacity; immediate unavailable-power enforcement remains a separate concern.
+ */
 func (cc *CurrentContext) GridCascade() {
 
-	// This needs to be able to iterate until the queue is empty
-	// If there are no bugs, there should always be an end
-	// If there are bugs, Cisphyx will find it
-	for {
-		// Get Queue (and clear it in the process)
-		gridQueue := cc.k.GetGridCascadeQueue(cc.ctx, true)
+	budget := types.GridCascadeBlockBudget
+	visited := make(map[string]bool)
 
-		if len(gridQueue) == 0 {
+cascade:
+	for budget > 0 {
+		// Read without clearing: an entry is removed when it is finished, so
+		// whatever the budget does not reach is still queued next block.
+		batch := cc.k.GetGridCascadeQueueBatch(cc.ctx, budget)
+
+		if len(batch) == 0 {
 			break
 		}
 
-		// For each Queue Item
-		for _, objectId := range gridQueue {
+		for _, entry := range batch {
+			if budget <= 0 {
+				break
+			}
 
-			allocationList := cc.GetAllAllocationBySource(objectId)
+			objectId := entry.ObjectId
+			// A failed or incomplete drain stays queued for a later block.
+			// Never retry it against partially mutated caches in this pass.
+			if visited[objectId] { break cascade }
+			visited[objectId] = true
+
+			// Visiting an entry costs budget even when it turns out to need no
+			// work. Charging only for destroys would leave the walk itself
+			// unbounded, and a queue of objects that are each already under
+			// capacity is exactly as cheap to build and exactly as expensive to
+			// walk.
+			budget--
+
+			// Clear the entry before doing the work. The cascade below can
+			// re-enqueue this same object through Destroy, and that append has
+			// to be able to take a fresh sequence rather than be swallowed as a
+			// duplicate of the row being processed.
+			cc.k.RemoveGridCascadeQueueEntry(cc.ctx, entry)
+
+			if objectId == "" {
+				continue
+			}
+
+            if strings.HasPrefix(objectId, "4-") {
+                station := cc.GetSubstation(objectId)
+                if station.CheckSubstation() == nil && station.IsDeletionPending() {
+                    used, done := station.ProcessDeletion(budget)
+                    budget -= used
+                    if !done { cc.k.AppendGridCascadeQueue(cc.ctx, objectId) }
+                    continue
+                }
+            }
+
+			loadAttributeId := GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)
+			// Capacity can recover while the object waits in the queue. Check
+			// before loading its outgoing prefix: no allocation is needed to
+			// answer whether this source still has load to shed.
+			if cc.GetGridAttribute(loadAttributeId) <= cc.GetEffectiveGridCapacity(objectId) {
+				continue
+			}
+
+			// Only as many allocations as this block could possibly shed. The
+			// source's fan-out is attacker-sized - capacity can be split into
+			// one-power allocations - and loading the whole set to destroy a
+			// handful of them puts the unbounded work back in the EndBlocker
+			// that the budget was supposed to take out of it.
+			allocationList, moreAllocations, rowsRead := cc.GetAllocationsBySourceUpTo(objectId, budget)
+			// Reserve every loaded row, including missing allocations and rows
+			// left unused if an earlier destruction already resolves overload.
+			budget -= rowsRead
 			allocationPointer := 0
 
-            loadAttributeId := GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)
-            capacityAttributeId := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)
-
-			for cc.GetGridAttribute(loadAttributeId) > cc.GetGridAttribute(capacityAttributeId) {
+			for cc.GetGridAttribute(loadAttributeId) > cc.GetEffectiveGridCapacity(objectId) {
 				if allocationPointer >= len(allocationList) {
-				    // Something is probably wrong here...
-				    cc.k.logger.Warn("Grid Queue problem", "objectId", objectId)
-				    break;
+					if moreAllocations {
+						// Not out of allocations, out of the batch. Requeue so
+						// the rest are shed next block; this is the same
+						// deferral as running out of budget below, reached by
+						// the other road.
+						if err := cc.k.AppendGridCascadeQueue(cc.ctx, objectId); err != nil {
+							cc.k.logger.Error("Grid Queue (requeue failed)", "objectId", objectId, "error", err)
+						}
+						break
+					}
+
+					// Genuinely nothing left to shed and still over capacity.
+					// Something is probably wrong here...
+					cc.k.logger.Warn("Grid Queue problem", "objectId", objectId)
+					break
 				}
 
-				cc.k.logger.Info("Grid Queue (Brownout)", "objectId", objectId, "load", cc.GetGridAttribute(loadAttributeId), "capacity", cc.GetGridAttribute(capacityAttributeId))
+
+				cc.k.logger.Info("Grid Queue (Brownout)", "objectId", objectId, "load", cc.GetGridAttribute(loadAttributeId), "capacity", cc.GetEffectiveGridCapacity(objectId))
 
 				// The brownout has to keep shedding load even if settling an
 				// agreement behind one of these allocations fails, or the loop
@@ -150,5 +299,11 @@ func (cc *CurrentContext) GridCascade() {
 				allocationPointer++
 			}
 		}
+	}
+
+	// Never leave a cap silent: a backlog here means objects are running
+	// over-subscribed until a later block reaches them.
+	if cc.k.HasPendingGridCascade(cc.ctx) {
+		cc.k.logger.Warn("Grid Queue (deferred)", "pending", true, "budget", types.GridCascadeBlockBudget)
 	}
 }

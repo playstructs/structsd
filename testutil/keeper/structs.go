@@ -85,14 +85,46 @@ type MockBankKeeper struct {
 	balances map[string]sdk.Coins
 	metadata map[string]banktypes.Metadata
 	supply   map[string]math.Int // Track supply per denom
+
+	// blockedAddrs and disabledDenoms mirror the two policies the real bank
+	// applies in its MsgServer rather than in SendCoins. Empty by default, so a
+	// test only has to name what it wants refused.
+	blockedAddrs   map[string]bool
+	disabledDenoms map[string]bool
 }
 
 func NewMockBankKeeper() *MockBankKeeper {
 	return &MockBankKeeper{
-		balances: make(map[string]sdk.Coins),
-		metadata: make(map[string]banktypes.Metadata),
-		supply:   make(map[string]math.Int),
+		balances:       make(map[string]sdk.Coins),
+		metadata:       make(map[string]banktypes.Metadata),
+		supply:         make(map[string]math.Int),
+		blockedAddrs:   make(map[string]bool),
+		disabledDenoms: make(map[string]bool),
 	}
+}
+
+// BlockAddress marks an address as one the app declared unreachable, the way
+// BlockedModuleAccountsOverride does for the staking pools and fee collector.
+func (m *MockBankKeeper) BlockAddress(addr sdk.AccAddress) {
+	m.blockedAddrs[addr.String()] = true
+}
+
+// DisableSendDenom marks a denom as send-disabled, the way governance does.
+func (m *MockBankKeeper) DisableSendDenom(denom string) {
+	m.disabledDenoms[denom] = true
+}
+
+func (m *MockBankKeeper) BlockedAddr(addr sdk.AccAddress) bool {
+	return m.blockedAddrs[addr.String()]
+}
+
+func (m *MockBankKeeper) IsSendEnabledCoins(_ context.Context, coins ...sdk.Coin) error {
+	for _, coin := range coins {
+		if m.disabledDenoms[coin.Denom] {
+			return fmt.Errorf("send transactions are disabled for denom %s", coin.Denom)
+		}
+	}
+	return nil
 }
 
 // MockBankState is a deep copy of everything MockBankKeeper tracks.
@@ -175,6 +207,16 @@ func (m *MockBankKeeper) SpendableCoins(ctx context.Context, addr sdk.AccAddress
 	return coins
 }
 
+func (m *MockBankKeeper) IterateAccountBalances(ctx context.Context, addr sdk.AccAddress, callback func(sdk.Coin) bool) {
+	for _, coin := range m.SpendableCoins(ctx, addr).Sort() {
+		if callback(coin) { return }
+	}
+}
+
+func (m *MockBankKeeper) GetBalance(ctx context.Context, addr sdk.AccAddress, denom string) sdk.Coin {
+    return sdk.NewCoin(denom, m.GetAllBalances(ctx, addr).AmountOf(denom))
+}
+
 func (m *MockBankKeeper) GetAllBalances(ctx context.Context, addr sdk.AccAddress) sdk.Coins {
 	return m.SpendableCoins(ctx, addr)
 }
@@ -190,7 +232,7 @@ func (m *MockBankKeeper) SendCoins(ctx context.Context, fromAddr, toAddr sdk.Acc
 	if !exists {
 		fromBal = sdk.Coins{}
 	}
-	if fromBal.IsAllLT(amt) {
+	if !fromBal.IsAllGTE(amt) {
 		// Use fmt.Errorf instead of sdkerrors.New to avoid error code registration issues
 		// when running multiple tests together
 		return fmt.Errorf("insufficient funds")
@@ -212,7 +254,7 @@ func (m *MockBankKeeper) SendCoinsFromModuleToModule(ctx context.Context, sender
 
 func (m *MockBankKeeper) SendCoinsFromAccountToModule(ctx context.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error {
 	fromBal := m.balances[senderAddr.String()]
-	if fromBal.IsAllLT(amt) {
+	if !fromBal.IsAllGTE(amt) {
 		// Use fmt.Errorf instead of sdkerrors.New to avoid error code registration issues
 		// when running multiple tests together
 		return fmt.Errorf("insufficient funds")
@@ -397,6 +439,22 @@ func (m *MockStakingKeeper) GetAllValidators(ctx context.Context) ([]stakingtype
 
 func (m *MockStakingKeeper) GetValidators(ctx context.Context, maxRetrieve uint32) ([]stakingtypes.Validator, error) {
 	return m.GetAllValidators(ctx)
+}
+
+// This fixture has no staking EndBlocker/last-power index. Its bonded rows
+// approximate that index; active-set lifecycle tests must use the real app.
+func (m *MockStakingKeeper) GetLastValidators(ctx context.Context) ([]stakingtypes.Validator, error) {
+	all, err := m.GetAllValidators(ctx)
+	if err != nil {
+		return nil, err
+	}
+	active := []stakingtypes.Validator{}
+	for _, validator := range all {
+		if validator.IsBonded() {
+			active = append(active, validator)
+		}
+	}
+	return active, nil
 }
 
 func (m *MockStakingKeeper) GetValidatorDelegations(ctx context.Context, valAddr sdk.ValAddress) ([]stakingtypes.Delegation, error) {
@@ -737,6 +795,22 @@ func WriteRawGridAttribute(t testing.TB, _ keeper.Keeper, ctx sdk.Context, gridA
 
 	rawStore := ctx.KVStore(storeKey)
 	rawStore.Set(append([]byte(types.GridAttributeKey), []byte(gridAttributeId)...), bz)
+}
+
+// WriteRawGridCascadeQueueLegacyRow plants a pre-v0.22.0 cascade queue row:
+// keyed by object id, value a placeholder. The queue is now keyed by sequence,
+// so nothing in production writes this shape any more and only the re-key
+// migration should ever read one. Production code must never use this.
+func WriteRawGridCascadeQueueLegacyRow(t testing.TB, ctx sdk.Context, objectId string) {
+	t.Helper()
+	storeKey, ok := ctx.Value(testStoreKeyCtx{}).(*storetypes.KVStoreKey)
+	require.True(t, ok, "WriteRawGridCascadeQueueLegacyRow: ctx not produced by keepertest.StructsKeeper")
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, 1)
+
+	rawStore := ctx.KVStore(storeKey)
+	rawStore.Set(append([]byte(types.GridCascadeQueue), []byte(objectId)...), bz)
 }
 
 // WriteRawGuild plants protobuf bytes directly under a guild key. It is used to

@@ -73,6 +73,27 @@ func TestMsgStructOreRefineryComplete(t *testing.T) {
 		})
 		require.NoError(t, err)
 		require.NotNil(t, resp)
+		vault, vaultErr := types.VaultAddress(player.Id)
+		require.NoError(t, vaultErr)
+		require.Equal(t, int64(1000000), k.BankKeeper().SpendableCoin(sdkCtx, vault, "ualpha").Amount.Int64())
+		require.True(t, k.BankKeeper().SpendableCoin(sdkCtx, playerAcc, "ualpha").IsZero())
+		require.Equal(t, uint64(99), k.GetGridAttribute(sdkCtx, oreAttrId))
+		owner, indexed := k.GetVaultOwner(sdkCtx, vault)
+		require.True(t, indexed)
+		require.Equal(t, player.Id, owner)
+		foundRefineEvent := false
+		for _, event := range sdkCtx.EventManager().ABCIEvents() {
+			if event.Type != "structs.structs.EventAlphaRefine" {
+				continue
+			}
+			parsed, parseErr := sdk.ParseTypedEvent(event)
+			require.NoError(t, parseErr)
+			detail := parsed.(*types.EventAlphaRefine).EventAlphaRefineDetail
+			require.Equal(t, vault.String(), detail.VaultAddress)
+			require.Equal(t, player.PrimaryAddress, detail.PrimaryAddress)
+			foundRefineEvent = true
+		}
+		require.True(t, foundRefineEvent)
 
 		// A successful refine re-anchors the shared planet clock to the
 		// current height so the next round starts from zero age, and leaves

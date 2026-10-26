@@ -28,7 +28,11 @@ func (k Keeper) PlayerAll(goCtx context.Context, req *types.QueryAllPlayerReques
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	playerStore := prefix.NewStore(store, types.KeyPrefix(types.PlayerKey))
 
-	pageRes, err := query.Paginate(playerStore, req.Pagination, func(key []byte, value []byte) error {
+	pagination, err := boundedPagination(req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+	pageRes, err := query.Paginate(playerStore, pagination, func(key []byte, value []byte) error {
 		var player types.Player
 		if err := k.cdc.Unmarshal(value, &player); err != nil {
 			return err
@@ -57,7 +61,13 @@ func (k Keeper) Player(goCtx context.Context, req *types.QueryGetPlayerRequest) 
 	}
 
 	gridAttributes := k.GetGridAttributesByObject(ctx, req.Id)
-	playerInventory := k.GetPlayerInventory(ctx, player.PrimaryAddress)
+	// Inventory follows the protocol vault. Derivation is read-only: a query
+	// must not allocate an auth account or publish a vault association.
+	vaultAddress, err := types.VaultAddress(player.Id)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	playerInventory := k.GetPlayerInventory(ctx, vaultAddress.String())
 
 	return &types.QueryGetPlayerResponse{Player: player, GridAttributes: &gridAttributes, PlayerInventory: &playerInventory}, nil
 }

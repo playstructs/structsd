@@ -31,6 +31,10 @@ func (k Keeper) Address(goCtx context.Context, req *types.QueryGetAddressRequest
     permission.Address  = req.Address
     permission.PlayerId = playerIdFromAddressIndex(k.GetPlayerIndexFromAddress(ctx, permission.Address))
     permission.Permissions = permissionValue
+    // The client needs this to build the next registration proof, and needs it
+    // for addresses that are not currently associated, which is exactly the case
+    // a re-registration is.
+    permission.ProofNonce = k.GetAddressProofNonce(ctx, permission.Address)
 
 	return &permission, nil
 }
@@ -60,7 +64,11 @@ func (k Keeper) AddressAll(goCtx context.Context, req *types.QueryAllAddressRequ
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	addressPlayerStore := prefix.NewStore(store, types.KeyPrefix(types.AddressPlayerKey))
 
-	pageRes, err := query.Paginate(addressPlayerStore, req.Pagination, func(key []byte, value []byte) error {
+	pagination, err := boundedPagination(req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+	pageRes, err := query.Paginate(addressPlayerStore, pagination, func(key []byte, value []byte) error {
 		var permission types.QueryAddressResponse
 
         permission.Address = string(key)
@@ -93,7 +101,11 @@ func (k Keeper) AddressAllByPlayer(goCtx context.Context, req *types.QueryAllAdd
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	addressPlayerStore := prefix.NewStore(store, types.KeyPrefix(types.AddressPlayerKey))
 
-	pageRes, err := query.Paginate(addressPlayerStore, req.Pagination, func(key []byte, value []byte) error {
+	pagination, err := boundedPagination(req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+	pageRes, err := query.Paginate(addressPlayerStore, pagination, func(key []byte, value []byte) error {
 		var permission types.QueryAddressResponse
 
 

@@ -20,7 +20,10 @@ func (k msgServer) AgreementClose(goCtx context.Context, msg *types.MsgAgreement
         return emptyResponse, lookupErr
     }
 
-    agreement := cc.GetAgreement(msg.AgreementId)
+    agreement, agreementErr := cc.GetExistingAgreement(msg.AgreementId)
+    if agreementErr != nil {
+        return emptyResponse, agreementErr
+    }
 
     permissionError := agreement.CanUpdate(activePlayer)
     if (permissionError != nil) {

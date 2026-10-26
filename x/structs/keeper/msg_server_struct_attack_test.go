@@ -446,6 +446,18 @@ func TestMsgStructAttackGuaranteedShots(t *testing.T) {
 // Ready flag instead of the live destroyed/online status, so the destroyed
 // attacker still inflicted blocker damage on the defender.
 func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
+	testMsgStructAttackDefenderCounterDestroysAttacker(t, false, 1)
+}
+
+func TestMsgStructAttackEvadedVolleyStillReportsLethalDefenderCounter(t *testing.T) {
+	testMsgStructAttackDefenderCounterDestroysAttacker(t, true, 1)
+}
+
+func TestMsgStructAttackEvadedVolleyStillReportsNonlethalDefenderCounter(t *testing.T) {
+	testMsgStructAttackDefenderCounterDestroysAttacker(t, true, 2)
+}
+
+func testMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T, evade bool, attackerHealth uint64) {
 	k, ms, ctx := setupMsgServer(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sdkCtx = sdkCtx.WithBlockHeight(1000)
@@ -487,7 +499,7 @@ func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
 		Id:                                      301,
 		Type:                                    "TankAttacker",
 		Category:                                types.ObjectType_fleet,
-		MaxHealth:                               1,
+		MaxHealth:                               attackerHealth,
 		PossibleAmbit:                           landAmbitFlag,
 		PrimaryWeapon:                           types.TechActiveWeaponry_unguidedWeaponry,
 		PrimaryWeaponControl:                    types.TechWeaponControl_unguided,
@@ -514,6 +526,11 @@ func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
 		MaxHealth:       3,
 		PossibleAmbit:   landAmbitFlag,
 		AttackReduction: 1,
+	}
+	if evade {
+		tgtType.UnitDefenses = types.TechUnitDefenses_signalJamming
+		tgtType.UnguidedDefensiveSuccessRateNumerator = 1
+		tgtType.UnguidedDefensiveSuccessRateDenominator = 1
 	}
 	k.SetStructType(sdkCtx, tgtType)
 
@@ -576,7 +593,7 @@ func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
 	testSetStructAttributeFlagAdd(k, sdkCtx, atkSAttr, uint64(types.StructStateBuilt))
 	testSetStructAttributeFlagAdd(k, sdkCtx, atkSAttr, uint64(types.StructStateOnline))
 	atkHAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, atkStruct.Id)
-	k.SetStructAttribute(sdkCtx, atkHAttr, uint64(1))
+	k.SetStructAttribute(sdkCtx, atkHAttr, attackerHealth)
 
 	// --- target struct ---
 	tgtStruct := testAppendStruct(k, sdkCtx, types.Struct{
@@ -620,9 +637,9 @@ func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
 
 	// --- assert ---
 	// Attacker destroyed by the defender's counter.
-	require.Equal(t, uint64(0), k.GetStructAttribute(sdkCtx, atkHAttr),
-		"attacker should be at 0 HP after defender counter")
-	require.True(t,
+	require.Equal(t, attackerHealth-1, k.GetStructAttribute(sdkCtx, atkHAttr),
+		"attacker loses exactly the defender counter damage")
+	require.Equal(t, attackerHealth == 1,
 		testStructAttributeFlagHasAll(k, sdkCtx, atkSAttr, uint64(types.StructStateDestroyed)),
 		"attacker should be flagged destroyed")
 
@@ -636,6 +653,34 @@ func TestMsgStructAttackDefenderCounterDestroysAttacker(t *testing.T) {
 	// the volley would have hit it.
 	require.Equal(t, tgtType.MaxHealth, k.GetStructAttribute(sdkCtx, tgtHAttr),
 		"target HP should be unchanged when attacker is destroyed before volley")
+
+	var attacks []*types.EventAttack
+	for _, event := range sdkCtx.EventManager().ABCIEvents() {
+		if event.Type != "structs.structs.EventAttack" {
+			continue
+		}
+		message, parseErr := sdk.ParseTypedEvent(event)
+		require.NoError(t, parseErr)
+		attack, ok := message.(*types.EventAttack)
+		require.True(t, ok)
+		attacks = append(attacks, attack)
+	}
+	require.Len(t, attacks, 1)
+	detail := attacks[0].EventAttackDetail
+	require.Equal(t, attackerHealth, detail.AttackerHealthBefore)
+	require.Equal(t, attackerHealth-1, detail.AttackerHealthAfter)
+	require.Len(t, detail.EventAttackShotDetail, 1)
+	shot := detail.EventAttackShotDetail[0]
+	require.Equal(t, evade, shot.Evaded)
+	require.False(t, shot.Blocked)
+	require.Zero(t, shot.Damage)
+	require.Equal(t, tgtType.MaxHealth, shot.TargetHealthBefore)
+	require.Equal(t, tgtType.MaxHealth, shot.TargetHealthAfter)
+	require.Len(t, shot.EventAttackDefenderCounterDetail, 1, "evasion must not hide a counter that actually executed")
+	counter := shot.EventAttackDefenderCounterDetail[0]
+	require.Equal(t, defStruct.Id, counter.CounterByStructId)
+	require.Equal(t, uint64(1), counter.CounterDamage)
+	require.Equal(t, attackerHealth == 1, counter.CounterDestroyedAttacker)
 }
 
 // TestMsgStructAttackBlockerSortedBeforeLethalCounter reproduces the live
@@ -1690,4 +1735,138 @@ func TestMsgStructAttackPlanetaryDefenseGuidedOnly(t *testing.T) {
 		require.Len(t, shots, 1)
 		require.False(t, shots[0].EvadedByPlanetaryDefenses, "shot must not be evaded when no satellite is active")
 	})
+}
+
+/* TestMsgStructAttackSelfRegisteredTargetCountersAfterTheVolley is the
+ * resolution-time half of the preemptive-counter regression.
+ *
+ * StructAttack resolves defender counters, then the volley, then the target's
+ * own counter: a target counters only after surviving the shots. A target
+ * registered as its own defender was picked up in the first pass instead -
+ * GetStruct returns one cache instance per id, so the "defender" is literally
+ * the target - and its counter landed before the volley. A counter that killed
+ * the attacker then voided the volley outright, so the target took nothing at
+ * all. CounterSpent lives on the per-transaction cache, so it worked every time.
+ *
+ * The registration is refused at the handler now; this drives SetStructDefender
+ * directly, which is both the row an old chain may already hold and the only way
+ * to exercise the guard in ResolveDefenders.
+ *
+ * The assertion is that the target took volley damage, not who survived: combat
+ * draws from the block hash, so shot rates are pinned at 1/1 and nothing here
+ * names a survivor it did not force.
+ */
+func TestMsgStructAttackSelfRegisteredTargetCountersAfterTheVolley(t *testing.T) {
+	k, ms, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
+
+	atkPlayer := testAppendPlayer(k, sdkCtx, types.Player{Creator: "cosmos1selfatk", PrimaryAddress: "cosmos1selfatk"})
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, atkPlayer.Id), uint64(100000))
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, atkPlayer.Id), uint64(0))
+
+	tgtPlayer := testAppendPlayer(k, sdkCtx, types.Player{Creator: "cosmos1selftgt", PrimaryAddress: "cosmos1selftgt"})
+	k.SetGridAttribute(sdkCtx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, tgtPlayer.Id), uint64(100000))
+
+	planet := testAppendPlanet(k, sdkCtx, types.Planet{
+		Creator: tgtPlayer.Creator, Owner: tgtPlayer.Id, LandSlots: 4,
+		Land: []string{"", "", "", ""},
+	})
+	tgtPlayer.PlanetId = planet.Id
+	k.SetPlayer(sdkCtx, tgtPlayer)
+
+	landAmbitFlag := uint64(1) << uint64(types.Ambit_land)
+
+	k.SetStructType(sdkCtx, types.StructType{Id: 700, Type: types.CommandStruct, Category: types.ObjectType_fleet})
+
+	// One hit point, so any counter that lands kills it. That is what makes the
+	// ordering observable: pre-fix it died before firing.
+	atkType := types.StructType{
+		Id:                                      701,
+		Type:                                    "SelfDefenseAttacker",
+		Category:                                types.ObjectType_fleet,
+		MaxHealth:                               1,
+		PossibleAmbit:                           landAmbitFlag,
+		PrimaryWeapon:                           types.TechActiveWeaponry_unguidedWeaponry,
+		PrimaryWeaponControl:                    types.TechWeaponControl_unguided,
+		PrimaryWeaponCharge:                     1,
+		PrimaryWeaponTargets:                    1,
+		PrimaryWeaponShots:                      1,
+		PrimaryWeaponDamage:                     2,
+		PrimaryWeaponAmbits:                     landAmbitFlag,
+		PrimaryWeaponCounterable:                true,
+		PrimaryWeaponShotSuccessRateNumerator:   1,
+		PrimaryWeaponShotSuccessRateDenominator: 1,
+		AttackCounterable:                       true,
+	}
+	k.SetStructType(sdkCtx, atkType)
+
+	// Survives the volley, and its counter is lethal to the attacker.
+	tgtType := types.StructType{
+		Id:                     702,
+		Type:                   "SelfDefenseTarget",
+		Category:               types.ObjectType_planet,
+		MaxHealth:              5,
+		PossibleAmbit:          landAmbitFlag,
+		PrimaryWeaponAmbits:    landAmbitFlag,
+		AttackCounterable:      true,
+		PassiveWeaponry:        types.TechPassiveWeaponry_counterAttack,
+		CounterAttack:          3,
+		CounterAttackSameAmbit: 3,
+		CanDefend:              true,
+	}
+	k.SetStructType(sdkCtx, tgtType)
+
+	afleet := testAppendFleet(k, sdkCtx, types.Fleet{Owner: atkPlayer.Id, LocationId: planet.Id, Status: types.FleetStatus_away})
+	acmd := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator: atkPlayer.Creator, Owner: atkPlayer.Id, Type: 700,
+		LocationId: afleet.Id, LocationType: types.ObjectType_fleet, OperatingAmbit: types.Ambit_land,
+	})
+	acmdSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, acmd.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, acmdSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, acmdSAttr, uint64(types.StructStateOnline))
+	afleet.CommandStruct = acmd.Id
+	k.SetFleet(sdkCtx, afleet)
+	atkPlayer.FleetId = afleet.Id
+	k.SetPlayer(sdkCtx, atkPlayer)
+
+	// A planet struct counters whatever sits at the head of the planet's visitor
+	// queue, so the attacking fleet has to actually be there.
+	planet.LocationListStart = afleet.Id
+	k.SetPlanet(sdkCtx, planet)
+
+	atkStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator: atkPlayer.Creator, Owner: atkPlayer.Id, Type: atkType.Id,
+		LocationId: afleet.Id, LocationType: types.ObjectType_fleet, OperatingAmbit: types.Ambit_land,
+	})
+	atkSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, atkStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, atkSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, atkSAttr, uint64(types.StructStateOnline))
+	atkHAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, atkStruct.Id)
+	k.SetStructAttribute(sdkCtx, atkHAttr, atkType.MaxHealth)
+
+	tgtStruct := testAppendStruct(k, sdkCtx, types.Struct{
+		Creator: tgtPlayer.Creator, Owner: tgtPlayer.Id, Type: tgtType.Id,
+		LocationId: planet.Id, LocationType: types.ObjectType_planet, OperatingAmbit: types.Ambit_land,
+	})
+	tgtSAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, tgtStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, tgtSAttr, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, tgtSAttr, uint64(types.StructStateOnline))
+	tgtHAttr := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_health, tgtStruct.Id)
+	k.SetStructAttribute(sdkCtx, tgtHAttr, tgtType.MaxHealth)
+
+	// The row an old chain could be holding: the target defending itself.
+	k.SetStructDefender(sdkCtx, tgtStruct.Id, tgtStruct.Index, tgtStruct.Id)
+
+	_, err := ms.StructAttack(wctx, &types.MsgStructAttack{
+		Creator:           atkPlayer.Creator,
+		OperatingStructId: atkStruct.Id,
+		WeaponSystem:      "primaryWeapon",
+		TargetStructId:    []string{tgtStruct.Id},
+	})
+	require.NoError(t, err)
+
+	require.Less(t, k.GetStructAttribute(sdkCtx, tgtHAttr), tgtType.MaxHealth,
+		"the target countered before the volley and dodged it entirely; a target counters only after surviving the shots")
 }

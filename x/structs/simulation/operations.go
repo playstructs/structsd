@@ -559,7 +559,7 @@ func SimulateMsgAddressRegister(
 
 		// Generate proof signature (simplified for simulation - in real usage this would be cryptographic)
 		// For simulation, we'll use a simple approach: create a message hash and sign it
-		hashInput := fmt.Sprintf("PLAYER%sADDRESS%s", player.GetPlayerId(), newAccount.Address.String())
+		hashInput := types.AddressRegisterProofInput(sdk.UnwrapSDKContext(ctx).ChainID(), player.GetPlayerId(), newAccount.Address.String(), k.GetAddressProofNonce(ctx, newAccount.Address.String()))
 		hashBytes := []byte(hashInput)
 
 		// Sign with the new account's private key
@@ -1001,7 +1001,7 @@ func SimulateCommandShipBuildComplete(
 
 		// Check current difficulty
 		currentAge := uint64(ctx.BlockHeight()) - structCache.GetBlockStartBuild()
-		difficulty := types.CalculateDifficulty(float64(currentAge), structCache.GetStructType().BuildDifficulty)
+		difficulty := types.CalculateDifficulty(currentAge, structCache.GetStructType().BuildDifficulty)
 
 		// Only complete if difficulty <= 2
 		if difficulty > 2 {
@@ -1940,7 +1940,7 @@ func SimulateMsgStructBuildComplete(
 
 		// Calculate proof of work if difficulty is low enough
 		currentAge := uint64(ctx.BlockHeight()) - structCache.GetBlockStartBuild()
-		difficulty := types.CalculateDifficulty(float64(currentAge), structCache.GetStructType().BuildDifficulty)
+		difficulty := types.CalculateDifficulty(currentAge, structCache.GetStructType().BuildDifficulty)
 
 		var proof string
 		var nonce string

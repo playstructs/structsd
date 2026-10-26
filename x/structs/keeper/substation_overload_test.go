@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -8,6 +9,60 @@ import (
 	keeperlib "structs/x/structs/keeper"
 	"structs/x/structs/types"
 )
+
+func TestPlayerPowerChecksCompareExactCombinedAmounts(t *testing.T) {
+	max := ^uint64(0)
+	for _, test := range []struct {
+		name string
+		capacity, shared, load, structs uint64
+	}{
+		{"wrapped load", 200, 0, max, 101},
+		{"wrapped capacity", max, 1, 0, 0},
+		{"both sums exceed uint64 and overloaded", max, 10, max, 11},
+		{"both sums exceed uint64 with headroom", max, 20, max, 10},
+		{"capacity carry with small headroom", max, 50, max-10, 0},
+		{"exactly full", 100, 50, 75, 75},
+		{"ordinary brownout", 100, 0, 75, 26},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			f := setupTeardownFixture(t, 10, "0", "0")
+			consumer := f.consumer
+			consumer.SubstationId = f.substationId
+			f.k.SetPlayer(f.ctx, consumer)
+			for kind, value := range map[types.GridAttributeType]uint64{
+				types.GridAttributeType_capacity: test.capacity,
+				types.GridAttributeType_load: test.load,
+				types.GridAttributeType_structsLoad: test.structs,
+			} {
+				f.k.SetGridAttribute(f.ctx, keeperlib.GetGridAttributeIDByObjectId(kind, consumer.Id), value)
+			}
+			f.k.SetGridAttribute(f.ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, consumer.SubstationId), test.shared)
+			player := f.k.NewCurrentContext(f.ctx).GetPlayer(consumer.Id)
+			require.Equal(t, test.capacity, player.GetCapacity())
+			require.Equal(t, test.shared, player.GetCapacitySecondary())
+			require.Equal(t, test.load, player.GetLoad())
+			require.Equal(t, test.structs, player.GetStructsLoad())
+			capacity := new(big.Int).Add(new(big.Int).SetUint64(test.capacity), new(big.Int).SetUint64(test.shared))
+			load := new(big.Int).Add(new(big.Int).SetUint64(test.load), new(big.Int).SetUint64(test.structs))
+			headroom := new(big.Int).Sub(capacity, load)
+			online := headroom.Sign() >= 0
+			require.Equal(t, online, player.IsOnline())
+			want := uint64(0)
+			if online {
+				if headroom.IsUint64() {
+					want = headroom.Uint64()
+				} else {
+					want = max
+				}
+			}
+			require.Equal(t, want, player.GetAvailableCapacity())
+			for _, addition := range []uint64{0, 1, 10, 100, max} {
+				fits := online && headroom.Cmp(new(big.Int).SetUint64(addition)) >= 0
+				require.Equal(t, fits, player.CanSupportLoadAddition(addition), "addition=%d", addition)
+			}
+		})
+	}
+}
 
 // Regression tests for the availability gate that underflowed during a brownout.
 //
@@ -162,16 +217,20 @@ func TestBrownout_HeadroomStillSellableWhenHealthy(t *testing.T) {
 	agreement, _ := f.openAgreement(t, capacity, duration)
 
 	loadId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_load, f.substationId)
-	capacityId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, f.substationId)
 
 	load := f.k.GetGridAttribute(f.ctx, loadId)
 	const headroom = 500
-	f.k.SetGridAttribute(f.ctx, capacityId, load+headroom)
+	cc := f.k.NewCurrentContext(f.ctx)
+	incoming := cc.GetAllAllocationByDestination(f.substationId)
+	require.Len(t, incoming, 1)
+	_, err := incoming[0].SetPower((load+headroom)*10/9 + 1)
+	require.NoError(t, err)
+	cc.CommitAll()
 
 	require.Equal(t, uint64(headroom), substationAvailableCapacity(f),
 		"a healthy substation must report its real headroom")
 
-	_, err := f.ms.AgreementCapacityIncrease(f.ctx, &types.MsgAgreementCapacityIncrease{
+	_, err = f.ms.AgreementCapacityIncrease(f.ctx, &types.MsgAgreementCapacityIncrease{
 		Creator:          f.consumer.Creator,
 		AgreementId:      agreement.Id,
 		CapacityIncrease: headroom,

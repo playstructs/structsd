@@ -1,12 +1,14 @@
 package ante
 
 import (
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"os"
 	"path/filepath"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -199,6 +201,17 @@ func TestEveryKnownMessageHasPermissionOrDynamic(t *testing.T) {
 	}
 }
 
+func TestAllocationDeletePreservesAlternativeAuthority(t *testing.T) {
+	const message = "/structs.structs.MsgAllocationDelete"
+	_, fixed := PermissionMap[message]
+	require.False(t, fixed, "neither SourceAllocation nor Delete is required on both handler authority paths")
+	require.True(t, DynamicPermissionMessages[message], "the handler must choose and enforce the complete source or object permission check")
+	for _, sourceOnly := range []string{"/structs.structs.MsgAllocationCreate", "/structs.structs.MsgAllocationUpdate"} {
+		require.Equal(t, types.PermSourceAllocation, PermissionMap[sourceOnly])
+		require.False(t, DynamicPermissionMessages[sourceOnly], "creation and resizing still require source authority")
+	}
+}
+
 func TestProofMessagesHaveCorrectPermissions(t *testing.T) {
 	expected := map[string]types.Permission{
 		"/structs.structs.MsgStructBuildComplete":       types.PermHashBuild,
@@ -253,15 +266,15 @@ func TestGuildBankMintRequiresTokenTransfer(t *testing.T) {
 
 // TestArch_PrimaryAddressDebitsRequireTokenBit is the standing guard for the whole
 // family of gaps the open-market bypass belonged to. A handler that debits the
-// player's primary address is spending the player's money on the signer's
+// player or guild asset account is spending that owner's money on the signer's
 // authority, and the only control on that is a token bit on the signing key. An
 // access or update permission is not a substitute: PermProviderOpen decides who
 // may contract with a provider and PermUpdate who may modify an agreement, and
 // neither says anything about whose coins may move.
 //
 // Rather than trusting review to notice the next one, this walks the handler
-// sources and requires any that pairs GetPrimaryAddress with SendCoins to demand
-// one of the asset bits in PermissionMap.
+// sources and requires an asset-account lookup paired with SendCoins to demand
+// one of the asset bits in PermissionMap, including vault debits.
 func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 	// Handlers where the primary address is the destination rather than the
 	// source. Sweeping another address of the same player into the primary is a
@@ -282,12 +295,14 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 	creditCalls := map[string]bool{
 		"SendCoinsFromModuleToAccount": true,
 	}
-	// These cache methods hide a primary-account debit from the handler AST.
+	// These cache methods hide an asset-account debit from the handler AST.
 	// Keep the list explicit so adding another such method requires classifying it.
-	primaryDebitHelpers := map[string]bool{
-		"BankConvert": true,
-		"BankMint":    true,
-		"BankRedeem":  true,
+	assetDebitHelpers := map[string]bool{
+		"BankConvert":     true,
+		"BankMint":        true,
+		"BankRedeem":      true,
+		"FundCreation":    true,
+		"payRankPurchase": true,
 	}
 	seenSendCalls := map[string]bool{}
 
@@ -298,6 +313,7 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 	fset := token.NewFileSet()
 	var failures []string
 	checked := 0
+	checkedMessages := map[string]bool{}
 
 	for _, e := range entries {
 		name := e.Name()
@@ -320,15 +336,15 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 				continue
 			}
 
-			var readsPrimary, debits bool
+			var readsAssetAccount, debits bool
 			ast.Inspect(fn.Body, func(n ast.Node) bool {
 				sel, ok := n.(*ast.SelectorExpr)
 				if !ok {
 					return true
 				}
 				called := sel.Sel.Name
-				if called == "GetPrimaryAddress" {
-					readsPrimary = true
+				if called == "GetPrimaryAddress" || called == "GetVault" || called == "EnsureVaults" {
+					readsAssetAccount = true
 				}
 				if strings.HasPrefix(called, "SendCoins") {
 					seenSendCalls[called] = true
@@ -336,14 +352,14 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 				if debitCalls[called] {
 					debits = true
 				}
-				if primaryDebitHelpers[called] {
-					readsPrimary = true
+				if assetDebitHelpers[called] {
+					readsAssetAccount = true
 					debits = true
 				}
 				return true
 			})
 
-			if !readsPrimary || !debits {
+			if !readsAssetAccount || !debits {
 				continue
 			}
 			if _, exempt := creditsPrimary[msgName]; exempt {
@@ -351,11 +367,12 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 			}
 
 			checked++
+			checkedMessages[msgName] = true
 			typeURL := "/structs.structs." + msgName
 
 			if DynamicPermissionMessages[typeURL] {
 				failures = append(failures, name+": "+msgName+
-					" debits the primary address but is in DynamicPermissionMessages, which makes"+
+					" debits an asset account but is in DynamicPermissionMessages, which makes"+
 					" StructsDecorator skip PermissionMap entirely")
 				continue
 			}
@@ -363,19 +380,19 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 			perm, found := PermissionMap[typeURL]
 			if !found {
 				failures = append(failures, name+": "+msgName+
-					" debits the primary address but has no PermissionMap entry")
+					" debits an asset account but has no PermissionMap entry")
 				continue
 			}
 			if perm&types.PermAssetsAll == 0 {
 				failures = append(failures, name+": "+msgName+
-					" debits the primary address but requires no asset bit (has "+
+					" debits an asset account but requires no asset bit (has "+
 					strconv.FormatUint(uint64(perm), 10)+")")
 			}
 		}
 	}
 
 	// A new way to move coins out of an account must be classified, or a handler
-	// could debit the primary through it and never reach the check above.
+	// could debit an asset account through it and never reach the check above.
 	for called := range seenSendCalls {
 		require.True(t, debitCalls[called] || creditCalls[called],
 			"handlers use bankKeeper.%s, which this guard does not classify as a debit or a credit", called)
@@ -383,10 +400,27 @@ func TestArch_PrimaryAddressDebitsRequireTokenBit(t *testing.T) {
 
 	// If the scan silently stops matching, the guard is worthless but still green.
 	require.GreaterOrEqual(t, checked, 4,
-		"expected to find the known primary-address debits; the source scan is probably broken")
+		"expected to find the known asset-account debits; the source scan is probably broken")
+
+	// Pin the new vault paths individually: a broad count stayed green when
+	// agreement funding stopped calling GetPrimaryAddress and fell out of the scan.
+	for _, message := range []string{
+		"MsgAgreementOpen", "MsgAgreementDurationIncrease", "MsgVaultSend",
+		"MsgGuildCreate", "MsgGuildRankPurchase", "MsgGuildMembershipJoinByRankPurchase",
+	} {
+		require.True(t, checkedMessages[message], "%s must be covered by the debit scan", message)
+		require.NotZero(t, PermissionMap["/structs.structs."+message]&types.PermTokenTransfer,
+			"%s must require the token-transfer bit, not a different asset bit", message)
+	}
+
+	// Generator fuel uses the vault too, but its specific authority is infusion,
+	// not generic transfer. Keep this path pinned as the spend-source code evolves.
+	require.True(t, checkedMessages["MsgStructGeneratorInfuse"])
+	require.Equal(t, types.PermTokenInfuse, PermissionMap["/structs.structs.MsgStructGeneratorInfuse"])
+	require.False(t, DynamicPermissionMessages["/structs.structs.MsgStructGeneratorInfuse"])
 
 	require.Empty(t, failures,
-		"handlers spending the player's primary address must require a token bit:\n  - %s",
+		"handlers spending the player or guild asset account must require a token bit:\n  - %s",
 		strings.Join(failures, "\n  - "))
 }
 
@@ -687,4 +721,169 @@ func handlerMessageType(fn *ast.FuncDecl) string {
 		return sel.Sel.Name
 	}
 	return ""
+}
+
+// TestStakingSignerExtractorsCoverFreeStakingMessages pins the coupling between
+// the two staking maps.
+//
+// StakingThrottleDecorator skips a message that is not a staking message and
+// rejects one that is but has no signer extractor. That reject branch is a
+// maps.go consistency assertion, not something a transaction can reach, and this
+// is what keeps it that way: an entry added to one map and not the other would
+// otherwise either escape the throttle or reject a legitimate tx.
+func TestStakingSignerExtractorsCoverFreeStakingMessages(t *testing.T) {
+	for typeURL := range FreeStakingMessages {
+		_, ok := StakingSignerExtractors[typeURL]
+		require.True(t, ok, "%s is a free staking message with no signer extractor", typeURL)
+	}
+
+	for typeURL := range StakingSignerExtractors {
+		require.True(t, FreeStakingMessages[typeURL],
+			"%s has a signer extractor but is not a free staking message", typeURL)
+	}
+}
+
+/* TestArch_DischargingHandlersAreChargeMessages keeps ChargeMessages and the
+ * handlers that actually spend a charge from drifting apart.
+ *
+ * A charge action costs the player their one discharge per block, and the ante
+ * enforces two things on the strength of this map: StructsDecorator refuses a
+ * player who has already discharged this block, and ThrottleDecorator refuses a
+ * second charge message in the same transaction. Both read the map, neither
+ * reads the handler.
+ *
+ * So a handler that discharges without an entry here is admitted by CheckTx and
+ * then fails in delivery, which is the worst of both: free to submit, because a
+ * pure Structs transaction pays no fee, and rolled back only after the block has
+ * paid to execute it. MsgStructTrash was missing for exactly that reason.
+ *
+ * The reverse is a defect too. An entry with no discharge behind it spends the
+ * player's block slot for nothing, and StructActivate's own comment records that
+ * the two ante checks then disagree about whether the slot was used.
+ */
+func TestArch_DischargingHandlersAreChargeMessages(t *testing.T) {
+	keeperDir := filepath.Join("..", "..", "x", "structs", "keeper")
+	entries, err := os.ReadDir(keeperDir)
+	require.NoError(t, err)
+
+	fset := token.NewFileSet()
+	discharging := map[string]bool{}
+
+	for _, e := range entries {
+		name := e.Name()
+		if !strings.HasPrefix(name, "msg_server_") || !strings.HasSuffix(name, ".go") ||
+			strings.HasSuffix(name, "_test.go") {
+			continue
+		}
+
+		file, err := parser.ParseFile(fset, filepath.Join(keeperDir, name), nil, 0)
+		require.NoError(t, err)
+
+		for _, decl := range file.Decls {
+			fn, ok := decl.(*ast.FuncDecl)
+			if !ok || fn.Recv == nil || fn.Body == nil {
+				continue
+			}
+
+			msgName := handlerMessageType(fn)
+			if msgName == "" {
+				continue
+			}
+
+			ast.Inspect(fn.Body, func(n ast.Node) bool {
+				sel, ok := n.(*ast.SelectorExpr)
+				if !ok {
+					return true
+				}
+				if sel.Sel.Name == "Discharge" {
+					discharging[msgName] = true
+				}
+				return true
+			})
+		}
+	}
+
+	require.GreaterOrEqual(t, len(discharging), 8,
+		"expected to find the charge-consuming handlers; the source scan is probably broken")
+
+	var missing []string
+	for msgName := range discharging {
+		if !ChargeMessages["/structs.structs."+msgName] {
+			missing = append(missing, msgName)
+		}
+	}
+	sort.Strings(missing)
+	require.Empty(t, missing,
+		"these handlers call Discharge() but are not in ChargeMessages, so the ante applies neither the charge floor nor the per-transaction duplicate check to them: %s",
+		strings.Join(missing, ", "))
+
+	var stale []string
+	for typeURL := range ChargeMessages {
+		msgName := strings.TrimPrefix(typeURL, "/structs.structs.")
+		if !discharging[msgName] {
+			stale = append(stale, msgName)
+		}
+	}
+	sort.Strings(stale)
+	require.Empty(t, stale,
+		"these are declared charge messages but no handler discharges for them, so the ante spends a player's block slot for nothing: %s",
+		strings.Join(stale, ", "))
+}
+
+/* TestArch_PaginatedQueriesAreBounded keeps a new query from being added with
+ * the request's own pagination.
+ *
+ * query.Paginate takes the request at its word: an uncapped uint64 Limit can ask
+ * a node to decode and retain an entire collection, and a request with no Limit
+ * turns CountTotal on, which walks the whole prefix however small the page. The
+ * endpoints take no authorization, so the bound has to be in the handler.
+ *
+ * Lives here rather than in the keeper package because it is the same kind of
+ * check as the maps coverage above - a rule about a whole family of handlers
+ * that no single one of them can enforce.
+ */
+func TestArch_PaginatedQueriesAreBounded(t *testing.T) {
+	keeperDir := filepath.Join("..", "..", "x", "structs", "keeper")
+	entries, err := os.ReadDir(keeperDir)
+	require.NoError(t, err)
+
+	var unbounded []string
+	checked := 0
+
+	for _, e := range entries {
+		name := e.Name()
+		if !strings.HasPrefix(name, "query_") || !strings.HasSuffix(name, ".go") ||
+			strings.HasSuffix(name, "_test.go") {
+			continue
+		}
+
+		raw, err := os.ReadFile(filepath.Join(keeperDir, name))
+		require.NoError(t, err)
+
+		lines := strings.Split(string(raw), "\n")
+		for i, line := range lines {
+			if !strings.Contains(line, "query.Paginate(") {
+				continue
+			}
+			checked++
+			// The validating helper now returns an error for excessive offsets.
+			// Require its checked result immediately before the pagination call.
+			validated := i >= 4 && strings.Contains(line, ", pagination,") &&
+				strings.TrimSpace(lines[i-4]) == "pagination, err := boundedPagination(req.Pagination)" &&
+				strings.TrimSpace(lines[i-3]) == "if err != nil {" &&
+				strings.TrimSpace(lines[i-2]) == "return nil, err" &&
+				strings.TrimSpace(lines[i-1]) == "}"
+			if !validated {
+				unbounded = append(unbounded, fmt.Sprintf("%s:%d", name, i+1))
+			}
+		}
+	}
+
+	require.GreaterOrEqual(t, checked, 25,
+		"expected to find the paginated query handlers; the source scan is probably broken")
+
+	sort.Strings(unbounded)
+	require.Empty(t, unbounded,
+		"these queries pass the caller's pagination straight to query.Paginate, so a single request can ask the node for an entire collection: %s",
+		strings.Join(unbounded, ", "))
 }

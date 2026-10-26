@@ -11,132 +11,82 @@ import (
 )
 
 func TestMsgGuildUpdateOwnerId(t *testing.T) {
-	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
-
-	// Create players
-	ownerAcc := sdk.AccAddress("owner123456789012345678901234567890")
-	owner := types.Player{
-		Creator:        ownerAcc.String(),
-		PrimaryAddress: ownerAcc.String(),
-	}
-	owner = testAppendPlayer(k, ctx, owner)
-
-	newOwnerAcc := sdk.AccAddress("newowner123456789012345678901234567890")
-	newOwner := types.Player{
-		Creator:        newOwnerAcc.String(),
-		PrimaryAddress: newOwnerAcc.String(),
-	}
-	newOwner = testAppendPlayer(k, ctx, newOwner)
-
-	// Create reactor for guild
-	validatorAddress := sdk.ValAddress(ownerAcc.Bytes())
-	reactor := types.Reactor{
-		RawAddress: validatorAddress.Bytes(),
-	}
-	// AppendReactor already calls SetReactorValidatorBytes internally
-	reactor = k.AppendReactor(ctx, reactor)
-
-	// Create guild
-	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, owner, "")
-	owner.GuildId = guild.Id
-	k.SetPlayer(ctx, owner)
-
-	// Grant permissions
-	guildPermissionId := keeperlib.GetObjectPermissionIDBytes(guild.Id, owner.Id)
-	testPermissionAdd(k, ctx, guildPermissionId, types.PermUpdate)
-
-	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(owner.Creator)
-	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
-
-	testCases := []struct {
-		name      string
-		input     *types.MsgGuildUpdateOwnerId
-		expErr    bool
-		expErrMsg string
-		skip      bool
-	}{
-		{
-			name: "valid owner update",
-			input: &types.MsgGuildUpdateOwnerId{
-				Creator: owner.Creator,
-				GuildId: guild.Id,
-				Owner:   newOwner.Id,
-			},
-			expErr: false,
-		},
-		{
-			name: "guild not found",
-			input: &types.MsgGuildUpdateOwnerId{
-				Creator: owner.Creator,
-				GuildId: "invalid-guild",
-				Owner:   newOwner.Id,
-			},
-			expErr:    true,
-			expErrMsg: "wasn't found",
-			skip:      true, // Skip - cache system doesn't validate existence before permission check
-		},
-		{
-			// Un-skipped. The handler does resolve the incoming owner before
-			// writing it — this is one of the sites that already paired
-			// cc.GetPlayer with an explicit CheckPlayer, now folded into
-			// cc.GetExistingPlayer, which returns the same error. Only the
-			// expected wording was stale.
-			//
-			// Signed by newOwner rather than owner because the case above has
-			// already transferred the guild, and a transfer now revokes the
-			// seller's row: owner would be refused for want of permission before
-			// ever reaching the resolution this case is about.
-			name: "new owner not found",
-			input: &types.MsgGuildUpdateOwnerId{
-				Creator: newOwner.Creator,
-				GuildId: guild.Id,
-				Owner:   "invalid-player",
-			},
-			expErr:    true,
-			expErrMsg: "player (invalid-player) not found",
-		},
-		{
-			name: "no update permissions",
-			input: &types.MsgGuildUpdateOwnerId{
-				Creator: sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				GuildId: guild.Id,
-				Owner:   newOwner.Id,
-			},
-			expErr:    true,
-			expErrMsg: "has no permissions",
-			skip:      true, // Skip - GetPlayerCacheFromAddress might create player
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.skip {
-				t.Skip("Skipping test - error condition not easily testable with current cache system")
+	for _, name := range []string{"nonmember recipient", "same owner", "missing guild", "missing recipient", "unregistered signer", "unprivileged player", "key lacks admin"} {
+		t.Run(name, func(t *testing.T) {
+			k, ms, goCtx := setupMsgServer(t)
+			ctx := sdk.UnwrapSDKContext(goCtx)
+			gs := testCreateGuild(k, ctx)
+			address := sdk.AccAddress("guild_recipient_0001")
+			recipient := testAppendPlayer(k, ctx, types.Player{Creator: address.String(), PrimaryAddress: address.String()})
+			require.Empty(t, recipient.GuildId)
+			oldID := keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id, gs.GuildOwner.Id)
+			newID := keeperlib.GetObjectPermissionIDBytes(gs.Guild.Id, recipient.Id)
+			k.SetPermissionsByBytes(ctx, oldID, types.PermGuildAll|types.PermPlay)
+			k.SetPermissionsByBytes(ctx, newID, types.PermPlay)
+			beforePermissions := k.GetPermissionsByObject(ctx, gs.Guild.Id)
+			msg := &types.MsgGuildUpdateOwnerId{Creator: gs.GuildOwner.Creator, GuildId: gs.Guild.Id, Owner: recipient.Id}
+			wantError := ""
+			switch name {
+			case "same owner":
+				msg.Owner = gs.GuildOwner.Id
+			case "missing guild":
+				msg.GuildId = "0-999999"
+				wantError = "not found"
+			case "missing recipient":
+				msg.Owner = "1-999999"
+				wantError = "not found"
+			case "unregistered signer":
+				msg.Creator = sdk.AccAddress("guild_unknown_00001").String()
+				wantError = "player"
+			case "unprivileged player":
+				msg.Creator = recipient.Creator
+				wantError = "permission"
+			case "key lacks admin":
+				k.SetPermissionsByBytes(ctx, keeperlib.GetAddressPermissionIDBytes(gs.GuildOwner.Creator), types.PermUpdate)
+				wantError = "permission"
 			}
-
-			resp, err := ms.GuildUpdateOwnerId(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				// The handler pairs its errors with a non-nil empty response, and
-				// MsgGuildUpdateResponse carries no fields, so the error is the
-				// whole assertion. A nil check stood here only because every error
-				// case was skipped.
-				storedGuild, guildFound := k.GetGuild(ctx, guild.Id)
-				require.True(t, guildFound)
-				require.NotEqual(t, "invalid-player", storedGuild.Owner,
-					"a refused update must not write the bogus owner")
+			ctx = ctx.WithEventManager(sdk.NewEventManager())
+			resp, err := ms.GuildUpdateOwnerId(ctx, msg)
+			require.NotNil(t, resp)
+			stored, found := k.GetGuild(ctx, gs.Guild.Id)
+			require.True(t, found)
+			if wantError != "" {
+				require.ErrorContains(t, err, wantError)
+			}
+			if wantError != "" || name == "same owner" {
+				if wantError == "" {
+					require.NoError(t, err)
+				}
+				require.Equal(t, gs.Guild, stored)
+				require.Equal(t, beforePermissions, k.GetPermissionsByObject(ctx, gs.Guild.Id))
+				for _, event := range ctx.EventManager().ABCIEvents() {
+					require.NotContains(t, []string{"structs.structs.EventGuild", "structs.structs.EventPermission"}, event.Type)
+				}
 			} else {
 				require.NoError(t, err)
-				require.NotNil(t, resp)
-
-				// Verify owner was updated
-				updatedGuild, found := k.GetGuild(ctx, guild.Id)
-				require.True(t, found)
-				require.Equal(t, tc.input.Owner, updatedGuild.Owner)
+				expected := gs.Guild
+				expected.Owner = recipient.Id
+				require.Equal(t, expected, stored)
+				require.Equal(t, types.Permissionless, k.GetPermissionsByBytes(ctx, oldID))
+				require.Equal(t, types.PermGuildAll|types.PermPlay, k.GetPermissionsByBytes(ctx, newID))
+				guildEvents := 0
+				for _, event := range ctx.EventManager().ABCIEvents() {
+					if event.Type == "structs.structs.EventGuild" {
+						decoded, decodeErr := sdk.ParseTypedEvent(event)
+						require.NoError(t, decodeErr)
+						require.Equal(t, &stored, decoded.(*types.EventGuild).Guild)
+						guildEvents++
+					}
+				}
+				require.Equal(t, 1, guildEvents)
 			}
+			// Ownership does not silently change either player's membership/rank.
+			oldPlayer, found := k.GetPlayer(ctx, gs.GuildOwner.Id)
+			require.True(t, found)
+			require.Equal(t, gs.GuildOwner, oldPlayer)
+			newPlayer, found := k.GetPlayer(ctx, recipient.Id)
+			require.True(t, found)
+			require.Equal(t, recipient, newPlayer)
 		})
 	}
 }

@@ -24,7 +24,8 @@ func (k msgServer) AllocationTransfer(goCtx context.Context, msg *types.MsgAlloc
     // only whether the caller may transfer, so an unchecked id parks the
     // allocation on a player who can never sign for it, and writes a permission
     // row keyed to them.
-    if _, err = cc.GetExistingPlayer(msg.Controller); err != nil {
+    controller, err := cc.GetExistingAssetOwner(msg.Controller)
+    if err != nil {
         return emptyResponse, err
     }
 
@@ -45,11 +46,17 @@ func (k msgServer) AllocationTransfer(goCtx context.Context, msg *types.MsgAlloc
     // AllocationDelete tries when the source-side check fails. Clearing the row
     // would take a creator's control of their own allocation away with the
     // transfer.
-    oldControllerPermissionId := GetObjectPermissionIDBytes(allocation.ID(), allocation.GetAllocation().Controller)
-    cc.PermissionRemove(oldControllerPermissionId, types.PermAllocationConnection)
+    if kind, _, err := types.ParseAssetOwnerID(allocation.GetOwnerId()); err == nil && kind == types.ObjectType_player {
+        oldControllerPermissionId := GetObjectPermissionIDBytes(allocation.ID(), allocation.GetOwnerId())
+        cc.PermissionRemove(oldControllerPermissionId, types.PermAllocationConnection)
+    }
 
-    newControllerPermissionId := GetObjectPermissionIDBytes(allocation.ID(), msg.Controller)
-    cc.SetPermissions(newControllerPermissionId, types.PermAllocationConnection)
+    if _, playerController := controller.(*PlayerCache); playerController {
+        newControllerPermissionId := GetObjectPermissionIDBytes(allocation.ID(), msg.Controller)
+        // Receiving control must preserve independently granted rights, including
+        // when the old and new controller are the same player.
+        cc.PermissionAdd(newControllerPermissionId, types.PermAllocationConnection)
+    }
 
     allocation.SetController(msg.Controller)
 

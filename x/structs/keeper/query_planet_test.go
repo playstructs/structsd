@@ -15,12 +15,26 @@ import (
 )
 
 func TestPlanetQuery(t *testing.T) {
-	t.Skip("requires allocation-based grid attribute setup")
 	keeper, ctx := keepertest.StructsKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 
-	// Create test planet
-	planet := testAppendPlanet(keeper, ctx, types.Planet{Creator: "test-creator", Owner: "test-player"})
+	// Explicit post-migration planet clocks and active quantities are query
+	// state; the old per-struct ore clocks are not their source.
+	address := sdk.AccAddress("planet-query-primary")
+	owner := testAppendPlayer(keeper, ctx, types.Player{Creator: address.String(), PrimaryAddress: address.String()})
+	planet := testAppendPlanet(keeper, ctx, types.Planet{Creator: address.String(), Owner: owner.Id})
+	for _, attribute := range []struct {
+		kind types.PlanetAttributeType
+		value uint64
+	}{
+		{types.PlanetAttributeType_planetBlockStartOreMine, 17},
+		{types.PlanetAttributeType_planetBlockStartOreRefine, 23},
+		{types.PlanetAttributeType_oreMiningActiveQuantity, 2},
+		{types.PlanetAttributeType_oreRefiningActiveQuantity, 1},
+		{types.PlanetAttributeType_defensiveCannonQuantity, 3},
+	} {
+		keeper.SetPlanetAttribute(ctx, keeperlib.GetPlanetAttributeIDByObjectId(attribute.kind, planet.Id), attribute.value)
+	}
 
 	for _, tc := range []struct {
 		desc     string
@@ -40,6 +54,9 @@ func TestPlanetQuery(t *testing.T) {
 				},
 				PlanetAttributes: &types.PlanetAttributes{
 					PlanetaryShield: types.PlanetaryShieldBase,
+					BlockStartOreMine: 17, BlockStartOreRefine: 23,
+					OreMiningActiveQuantity: 2, OreRefiningActiveQuantity: 1,
+					DefensiveCannonQuantity: 3,
 				},
 			},
 		},
@@ -56,7 +73,9 @@ func TestPlanetQuery(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
+			eventsBefore := len(ctx.EventManager().Events())
 			response, err := keeper.Planet(wctx, tc.request)
+			require.Len(t, ctx.EventManager().Events(), eventsBefore)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {
@@ -94,30 +113,41 @@ func TestPlanetAllQuery(t *testing.T) {
 	}
 
 	t.Run("ByOffset", func(t *testing.T) {
+		var collected []types.Planet
 		step := 2
 		for i := 0; i < len(planets); i += step {
 			resp, err := keeper.PlanetAll(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.Planet), step)
+			require.Len(t, resp.Planet, min(step, len(planets)-i))
+			collected = append(collected, resp.Planet...)
 		}
+		require.ElementsMatch(t, planets, collected)
 	})
 
 	t.Run("ByKey", func(t *testing.T) {
+		var collected []types.Planet
 		step := 2
 		var next []byte
 		for i := 0; i < len(planets); i += step {
 			resp, err := keeper.PlanetAll(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.Planet), step)
+			require.Len(t, resp.Planet, min(step, len(planets)-i))
+			collected = append(collected, resp.Planet...)
 			next = resp.Pagination.NextKey
 		}
+		require.Empty(t, next)
+		require.ElementsMatch(t, planets, collected)
 	})
 
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.PlanetAll(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, len(planets), int(resp.Pagination.Total))
-		require.Len(t, resp.Planet, len(planets))
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
+		require.ElementsMatch(t, planets, resp.Planet)
 	})
 
 	t.Run("InvalidRequest", func(t *testing.T) {
@@ -171,7 +201,11 @@ func TestPlanetAllByPlayerQuery(t *testing.T) {
 		resp, err := keeper.PlanetAllByPlayer(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
 		// Pagination.Total counts all planets (not just filtered), since filtering is done in-memory
-		require.Equal(t, 3, int(resp.Pagination.Total))
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
 		require.Len(t, resp.Planet, 2)
 	})
 
@@ -179,6 +213,43 @@ func TestPlanetAllByPlayerQuery(t *testing.T) {
 		_, err := keeper.PlanetAllByPlayer(wctx, nil)
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
+}
+
+func TestPlanetOwnerPagesIgnoreUnrelatedPlanets(t *testing.T) {
+	k, ctx := keepertest.StructsKeeper(t)
+	want := []types.Planet{}
+	for i := 0; i < 7; i++ {
+		owner := "1-2"
+		if i == 2 || i == 5 { owner = "1-1" }
+		planet := testAppendPlanet(k, ctx, types.Planet{Owner: owner})
+		if owner == "1-1" { want = append(want, planet) }
+	}
+	var next []byte
+	for i := range want {
+		page, err := k.PlanetAllByPlayer(ctx, &types.QueryAllPlanetByPlayerRequest{PlayerId: "1-1", Pagination: &query.PageRequest{Key: next, Limit: 1}})
+		require.NoError(t, err)
+		require.Equal(t, []types.Planet{want[i]}, page.Planet)
+		next = page.Pagination.NextKey
+	}
+	require.Empty(t, next)
+	page, err := k.PlanetAllByPlayer(ctx, &types.QueryAllPlanetByPlayerRequest{PlayerId: "1-1", Pagination: &query.PageRequest{Offset: 1, Limit: 1}})
+	require.NoError(t, err)
+	require.Equal(t, []types.Planet{want[1]}, page.Planet)
+	// Updating ownership must remove the exact old index row; deletion must
+	// remove the new one rather than leaving an unreadable query entry.
+	moved := want[0]
+	moved.Owner = "1-10"
+	k.SetPlanet(ctx, moved)
+	page, err = k.PlanetAllByPlayer(ctx, &types.QueryAllPlanetByPlayerRequest{PlayerId: "1-1"})
+	require.NoError(t, err)
+	require.Equal(t, []types.Planet{want[1]}, page.Planet)
+	page, err = k.PlanetAllByPlayer(ctx, &types.QueryAllPlanetByPlayerRequest{PlayerId: "1-10"})
+	require.NoError(t, err)
+	require.Equal(t, []types.Planet{moved}, page.Planet)
+	k.RemovePlanet(ctx, moved.Id)
+	page, err = k.PlanetAllByPlayer(ctx, &types.QueryAllPlanetByPlayerRequest{PlayerId: "1-10"})
+	require.NoError(t, err)
+	require.Empty(t, page.Planet)
 }
 
 func TestPlanetAttributeQuery(t *testing.T) {
@@ -292,7 +363,11 @@ func TestPlanetAttributeAllQuery(t *testing.T) {
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.PlanetAttributeAll(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, len(attributes), int(resp.Pagination.Total))
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
 		require.Len(t, resp.PlanetAttributeRecords, len(attributes))
 	})
 

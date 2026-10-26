@@ -122,7 +122,11 @@ func TestInfusionAllQuery(t *testing.T) {
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.InfusionAll(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, len(infusions), int(resp.Pagination.Total))
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
 		require.ElementsMatch(t,
 			nullify.Fill(infusions),
 			nullify.Fill(resp.Infusion),
@@ -160,7 +164,11 @@ func TestInfusionAllByDestinationQuery(t *testing.T) {
 	t.Run("QueryDestination1", func(t *testing.T) {
 		resp, err := keeper.InfusionAllByDestination(wctx, request(destination1, nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, len(infusions1), int(resp.Pagination.Total))
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
 		require.ElementsMatch(t,
 			nullify.Fill(infusions1),
 			nullify.Fill(resp.Infusion),
@@ -170,7 +178,11 @@ func TestInfusionAllByDestinationQuery(t *testing.T) {
 	t.Run("QueryDestination2", func(t *testing.T) {
 		resp, err := keeper.InfusionAllByDestination(wctx, request(destination2, nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, len(infusions2), int(resp.Pagination.Total))
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
 		require.ElementsMatch(t,
 			nullify.Fill(infusions2),
 			nullify.Fill(resp.Infusion),
@@ -180,7 +192,11 @@ func TestInfusionAllByDestinationQuery(t *testing.T) {
 	t.Run("QueryNonExistentDestination", func(t *testing.T) {
 		resp, err := keeper.InfusionAllByDestination(wctx, request("non-existent", nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, 0, int(resp.Pagination.Total))
+		// CountTotal is forced off by boundedPagination: it scans the whole
+		// prefix however small the page, so capping the page alone would not
+		// bound the work. The set stays fully reachable - see the assertion
+		// below - only the count is gone.
+		require.Zero(t, resp.Pagination.Total, "CountTotal must stay off; total is reported as 0")
 		require.Empty(t, resp.Infusion)
 	})
 

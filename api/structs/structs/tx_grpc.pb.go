@@ -19,6 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	Msg_VaultSend_FullMethodName                                     = "/structs.structs.Msg/VaultSend"
+	Msg_GuildUpdateRankPurchase_FullMethodName                       = "/structs.structs.Msg/GuildUpdateRankPurchase"
+	Msg_GuildRankPurchase_FullMethodName                             = "/structs.structs.Msg/GuildRankPurchase"
+	Msg_GuildMembershipJoinByRankPurchase_FullMethodName             = "/structs.structs.Msg/GuildMembershipJoinByRankPurchase"
 	Msg_UpdateParams_FullMethodName                                  = "/structs.structs.Msg/UpdateParams"
 	Msg_AddressRegister_FullMethodName                               = "/structs.structs.Msg/AddressRegister"
 	Msg_AddressRevoke_FullMethodName                                 = "/structs.structs.Msg/AddressRevoke"
@@ -124,6 +128,10 @@ const (
 //
 // Msg defines the Msg service.
 type MsgClient interface {
+	VaultSend(ctx context.Context, in *MsgVaultSend, opts ...grpc.CallOption) (*MsgVaultSendResponse, error)
+	GuildUpdateRankPurchase(ctx context.Context, in *MsgGuildUpdateRankPurchase, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
+	GuildRankPurchase(ctx context.Context, in *MsgGuildRankPurchase, opts ...grpc.CallOption) (*MsgGuildRankPurchaseResponse, error)
+	GuildMembershipJoinByRankPurchase(ctx context.Context, in *MsgGuildMembershipJoinByRankPurchase, opts ...grpc.CallOption) (*MsgGuildRankPurchaseResponse, error)
 	// UpdateParams defines a (governance) operation for updating the module
 	// parameters. The authority defaults to the x/gov module account.
 	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
@@ -231,6 +239,46 @@ type msgClient struct {
 
 func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 	return &msgClient{cc}
+}
+
+func (c *msgClient) VaultSend(ctx context.Context, in *MsgVaultSend, opts ...grpc.CallOption) (*MsgVaultSendResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgVaultSendResponse)
+	err := c.cc.Invoke(ctx, Msg_VaultSend_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildUpdateRankPurchase(ctx context.Context, in *MsgGuildUpdateRankPurchase, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgGuildUpdateResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildUpdateRankPurchase_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildRankPurchase(ctx context.Context, in *MsgGuildRankPurchase, opts ...grpc.CallOption) (*MsgGuildRankPurchaseResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgGuildRankPurchaseResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildRankPurchase_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildMembershipJoinByRankPurchase(ctx context.Context, in *MsgGuildMembershipJoinByRankPurchase, opts ...grpc.CallOption) (*MsgGuildRankPurchaseResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgGuildRankPurchaseResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildMembershipJoinByRankPurchase_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error) {
@@ -1209,6 +1257,10 @@ func (c *msgClient) SubstationPlayerMigrate(ctx context.Context, in *MsgSubstati
 //
 // Msg defines the Msg service.
 type MsgServer interface {
+	VaultSend(context.Context, *MsgVaultSend) (*MsgVaultSendResponse, error)
+	GuildUpdateRankPurchase(context.Context, *MsgGuildUpdateRankPurchase) (*MsgGuildUpdateResponse, error)
+	GuildRankPurchase(context.Context, *MsgGuildRankPurchase) (*MsgGuildRankPurchaseResponse, error)
+	GuildMembershipJoinByRankPurchase(context.Context, *MsgGuildMembershipJoinByRankPurchase) (*MsgGuildRankPurchaseResponse, error)
 	// UpdateParams defines a (governance) operation for updating the module
 	// parameters. The authority defaults to the x/gov module account.
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
@@ -1318,6 +1370,18 @@ type MsgServer interface {
 // pointer dereference when methods are called.
 type UnimplementedMsgServer struct{}
 
+func (UnimplementedMsgServer) VaultSend(context.Context, *MsgVaultSend) (*MsgVaultSendResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VaultSend not implemented")
+}
+func (UnimplementedMsgServer) GuildUpdateRankPurchase(context.Context, *MsgGuildUpdateRankPurchase) (*MsgGuildUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildUpdateRankPurchase not implemented")
+}
+func (UnimplementedMsgServer) GuildRankPurchase(context.Context, *MsgGuildRankPurchase) (*MsgGuildRankPurchaseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildRankPurchase not implemented")
+}
+func (UnimplementedMsgServer) GuildMembershipJoinByRankPurchase(context.Context, *MsgGuildMembershipJoinByRankPurchase) (*MsgGuildRankPurchaseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipJoinByRankPurchase not implemented")
+}
 func (UnimplementedMsgServer) UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateParams not implemented")
 }
@@ -1628,6 +1692,78 @@ func RegisterMsgServer(s grpc.ServiceRegistrar, srv MsgServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&Msg_ServiceDesc, srv)
+}
+
+func _Msg_VaultSend_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgVaultSend)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).VaultSend(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_VaultSend_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).VaultSend(ctx, req.(*MsgVaultSend))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildUpdateRankPurchase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildUpdateRankPurchase)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildUpdateRankPurchase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildUpdateRankPurchase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildUpdateRankPurchase(ctx, req.(*MsgGuildUpdateRankPurchase))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildRankPurchase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildRankPurchase)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildRankPurchase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildRankPurchase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildRankPurchase(ctx, req.(*MsgGuildRankPurchase))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildMembershipJoinByRankPurchase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildMembershipJoinByRankPurchase)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildMembershipJoinByRankPurchase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildMembershipJoinByRankPurchase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildMembershipJoinByRankPurchase(ctx, req.(*MsgGuildMembershipJoinByRankPurchase))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_UpdateParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -3383,6 +3519,22 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "structs.structs.Msg",
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "VaultSend",
+			Handler:    _Msg_VaultSend_Handler,
+		},
+		{
+			MethodName: "GuildUpdateRankPurchase",
+			Handler:    _Msg_GuildUpdateRankPurchase_Handler,
+		},
+		{
+			MethodName: "GuildRankPurchase",
+			Handler:    _Msg_GuildRankPurchase_Handler,
+		},
+		{
+			MethodName: "GuildMembershipJoinByRankPurchase",
+			Handler:    _Msg_GuildMembershipJoinByRankPurchase_Handler,
+		},
 		{
 			MethodName: "UpdateParams",
 			Handler:    _Msg_UpdateParams_Handler,

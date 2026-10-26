@@ -35,6 +35,12 @@ func (k msgServer) PermissionRevokeOnAddress(goCtx context.Context, msg *types.M
     }
 
     targetAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)
+
+    resulting := cc.GetPermissions(targetAddressPermissionId) &^ types.Permission(msg.Permissions)
+    if lockoutErr := requirePrimaryAddressKeepsFullAccess(targetPlayer, msg.Address, resulting); lockoutErr != nil {
+        return emptyResponse, lockoutErr
+    }
+
     cc.PermissionRemove(targetAddressPermissionId, types.Permission(msg.Permissions))
 
 	cc.CommitAll()

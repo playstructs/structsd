@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"context"
+	"time"
+
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
@@ -11,12 +13,13 @@ import (
 // BeginBlocker will persist the current header and validator set as a historical entry
 // and prune the oldest entry based on the HistoricalEntries parameter
 func (k *Keeper) BeginBlocker(ctx context.Context) {
+	ctx = sdk.UnwrapSDKContext(ctx).WithValue(deferPermissionCleanupKey{}, true)
 
     k.logger.Debug("Begin Block Processes")
 
     k.EmitEventTime(ctx)
-
     k.EventAllGenesis(ctx)
+    k.processReactorCommissionRevisionReplay(ctx)
 
     k.StructSweepDestroyed(ctx)
 
@@ -25,7 +28,9 @@ func (k *Keeper) BeginBlocker(ctx context.Context) {
 
 // Called every block, update validator set
 func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error) {
+	ctx = sdk.UnwrapSDKContext(ctx).WithValue(deferPermissionCleanupKey{}, true)
 	k.logger.Debug("End Block Processes")
+	if err := k.EvaluateReactorStakeCap(ctx); err != nil { return nil, err }
 
 	// Commit each phase before the next one opens a CurrentContext. Grid
 	// cascade and infusion reconciliation can update the same attributes, and
@@ -33,11 +38,10 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 	preSweepCC := k.NewCurrentContext(ctx)
 	preSweepCC.AgreementExpirations()
 
-	/* Cascade all the possible failures across the grid
-	 *
-	 * This will mean that there will be some cases in which
-	 * devices have one last block of power before shutting down
-	 * but I think that's ok. We'll see how it goes in practice.
+    /* Process the bounded grid cascade. A capacity loss reaches downstream
+     * allocations only as their source is serviced. Deep graphs or queue
+     * backlogs can therefore retain downstream capacity for multiple blocks;
+     * this phase does not guarantee shutdown throughout the graph this block.
 	 */
 	preSweepCC.GridCascade()
 	preSweepCC.CommitAll()
@@ -55,14 +59,44 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 	destructionCC.ProcessInfusionDestructionQueue()
 	destructionCC.CommitAll()
 
+	/* Reconcile infusions on reactors that were slashed or changed bonded status. Both kinds share one rotating queue and one per-block budget.
+	 *
+	 * BeforeValidatorSlashed only queues the reactor: it runs in BeginBlock with
+	 * no gas meter over a delegator set the delegators size, so doing the work
+	 * there made one slash cost whatever they had built up. It also fires before
+	 * staking applies the slash, so running here has the second advantage that
+	 * live staking state is already the answer and nothing has to be carried.
+	 * Restoration runs after this block's cascade: a pending capacity loss is
+	 * not undone by promising that a later batch will restore the source.
+	 */
+	k.ProcessReactorSlashReconcileQueue(ctx)
+
+	// Generator transitions have a separate bounded budget and commit before
+	// later phases. They may enqueue owner/downstream cascades for next block.
+	k.ProcessGeneratorPowerQueue(ctx)
+
+	/* Finish removing permissions granted on objects that have been destroyed.
+	 *
+	 * The row count is chosen by whoever owned the object, and an agreement's
+	 * expiry height is chosen by the consumer who opened it, so doing all of it
+	 * at destruction time put an attacker-sized amount of work in one block. The
+	 * remainder is inert - a permission is only consulted after its object has
+	 * been loaded, and a destroyed object cannot be - so this is collection, not
+	 * settlement, and it can take as many blocks as it needs.
+	 */
+	k.ProcessPermissionCleanupQueue(ctx)
+
+
+
 	k.logger.Debug("End Block Complete")
 
 	return []abci.ValidatorUpdate{}, nil
 }
 
-// ProcessInfusionMaturitySweep drains every InfusionMaturitySweepQueue row whose
-// CompletionTime <= the current block time and reconciles each affected
-// infusion against the live Cosmos staking state. This is the structs-module
+// ProcessInfusionMaturitySweep drains a bounded batch of InfusionMaturitySweepQueue
+// rows whose CompletionTime <= the current block time and reconciles each affected
+// infusion against live Cosmos staking state. Native refunds are not delayed by
+// this bookkeeping budget. This is the structs-module
 // substitute for the missing AfterUnbondingComplete hook in Cosmos SDK v0.53.
 func (k *Keeper) ProcessInfusionMaturitySweep(ctx context.Context) {
 	cc := k.NewCurrentContext(ctx)
@@ -110,7 +144,15 @@ func (k *Keeper) processInfusionMaturitySweep(ctx context.Context, cc *CurrentCo
             continue
         }
 
-        k.reconcileInfusionForDelegation(ctx, cc, playerAddress, validatorAddress)
+        // A queued source can have been revoked or moved since enqueueing.
+        // This bookkeeping pass must not auto-register it as a new player.
+        if err := k.reconcileExistingInfusionForDelegation(ctx, cc, playerAddress, validatorAddress); err != nil {
+            // The row was consumed by the dequeue. Put it back after this
+            // block's time so Fuel and Defusing are retried rather than left
+            // stale with nothing scheduled to touch them again.
+            k.logger.Error("Infusion maturity sweep: reconcile failed", "infusionId", infusionId, "error", err)
+            k.EnqueueInfusionMaturitySweep(ctx, blockTime.Add(time.Nanosecond), infusionId)
+        }
     }
 }
 
@@ -164,6 +206,15 @@ func (k *Keeper) EventAllGenesis(ctx context.Context) {
         _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventReactor{Reactor: &reactor})
     }
 
+
+
+
+    if err := k.EmitReactorStakeCap(ctx); err != nil { panic(err) }
+    if err := k.EmitReactorCommissionRevisionSnapshot(ctx); err != nil {
+        panic(err)
+    }
+    if err := k.EmitOwnerReactorDiversitySnapshot(ctx); err != nil { panic(err) }
+
 	// Infusion
     infusions := k.GetAllInfusion(ctx)
     for _, infusion := range infusions {
@@ -207,6 +258,12 @@ func (k *Keeper) EventAllGenesis(ctx context.Context) {
         })
     }
 
+
+    // Vault associations follow their player/guild owner events. Replay does
+    // not create accounts or advertise these addresses as signing keys.
+    if err := k.EmitVaultAddressEvents(ctx); err != nil {
+        k.logger.Error("Cannot replay vault address associations", "error", err)
+    }
 
     // Planet
     planets := k.GetAllPlanet(ctx)

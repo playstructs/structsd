@@ -13,6 +13,30 @@ import (
 
 // InitGenesis initializes the module's state from a provided genesis state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
+    k.SuspendReactorDiversity(ctx)
+    genState.Params = genState.Params.WithReactorDefaults()
+    if err := genState.Params.ValidateReactorParams(); err != nil { panic(err) }
+	if err := genState.ValidatePermissionCleanupQueue(); err != nil { panic(err) }
+	if err := genState.ValidateGeneratorPowerQueue(); err != nil { panic(err) }
+	if err := genState.ValidateVaultOwners(); err != nil { panic(err) }
+	infusionOwners := map[string]string{}
+	for _, address := range genState.AddressList {
+		if address.PlayerIndex != 0 { infusionOwners[address.Address] = keeper.GetObjectID(types.ObjectType_player, address.PlayerIndex) }
+	}
+	for _, owner := range genState.VaultOwnerList {
+		address, err := types.VaultAddress(owner)
+		if err != nil { panic(err) }
+		infusionOwners[address.String()] = owner
+	}
+	infusionKeys := map[string]bool{}
+	for _, infusion := range genState.InfusionList {
+		if err := infusion.ValidateAssetOwner(); err != nil { panic(err) }
+		if infusion.DestinationType != types.ObjectType_reactor { continue }
+		key := types.BuildInfusionKey(infusion.DestinationId, infusion.Address)
+		if infusionKeys[key] { panic("duplicate reactor infusion in genesis") }
+		infusionKeys[key] = true
+		if owner, found := infusionOwners[infusion.Address]; !found || owner != infusion.AssetOwnerID() { panic("reactor infusion lacks its owner association") }
+	}
 
 	// =========================================================================
 	// Phase 0: Pre-processing lookup maps
@@ -80,18 +104,22 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	}
 	k.SetStructTypeCount(ctx, structTypeTop+1)
 
-	// Entity counts derived from max index in each list.
+	// Preserve exported next-ID counters even when their highest objects were
+	// deleted. Surviving rows and earlier staking hooks can only advance them.
 	// Use advanceCount to avoid resetting counts that staking hooks
 	// (ReactorInitialize) may have already advanced before this module's
 	// InitGenesis runs.
-	advanceCount := func(current uint64, genesis uint64) uint64 {
+	advanceCount := func(current uint64, genesis uint64, exported uint64) uint64 {
+		if exported > current {
+			current = exported
+		}
 		if genesis > current {
 			return genesis
 		}
 		return current
 	}
 
-	k.SetGuildCount(ctx, advanceCount(k.GetGuildCount(ctx), maxIndex(genState.GuildList, func(g types.Guild) uint64 { return g.Index })+1))
+	k.SetGuildCount(ctx, advanceCount(k.GetGuildCount(ctx), maxIndex(genState.GuildList, func(g types.Guild) uint64 { return g.Index })+1, genState.GuildCount))
 
 	/* The charter anchor cannot be rebuilt from anything else, so an unset one
 	 * falls back to the current height rather than to zero. Zero is not a
@@ -105,13 +133,13 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		k.SetGuildCharterAnchor(ctx, genState.GuildCharterAnchor)
 	}
 
-	k.SetReactorCount(ctx, advanceCount(k.GetReactorCount(ctx), maxIndexFromId(genState.ReactorList, func(r types.Reactor) string { return r.Id })+1))
-	k.SetSubstationCount(ctx, advanceCount(k.GetSubstationCount(ctx), maxIndexFromId(genState.SubstationList, func(s types.Substation) string { return s.Id })+1))
-	k.SetPlayerCount(ctx, advanceCount(k.GetPlayerCount(ctx), maxIndex(genState.PlayerList, func(p types.Player) uint64 { return p.Index })+1))
-	k.SetPlanetCount(ctx, advanceCount(k.GetPlanetCount(ctx), maxIndexFromId(genState.PlanetList, func(p types.Planet) string { return p.Id })+1))
-	k.SetStructCount(ctx, advanceCount(k.GetStructCount(ctx), maxIndex(genState.StructList, func(s types.Struct) uint64 { return s.Index })+1))
-	k.SetProviderCount(ctx, advanceCount(k.GetProviderCount(ctx), maxIndex(genState.ProviderList, func(p types.Provider) uint64 { return p.Index })+1))
-	k.SetAllocationCount(ctx, advanceCount(k.GetAllocationCount(ctx), maxIndex(genState.AllocationList, func(a types.Allocation) uint64 { return a.Index })+1))
+	k.SetReactorCount(ctx, advanceCount(k.GetReactorCount(ctx), maxIndexFromId(genState.ReactorList, func(r types.Reactor) string { return r.Id })+1, genState.ReactorCount))
+	k.SetSubstationCount(ctx, advanceCount(k.GetSubstationCount(ctx), maxIndexFromId(genState.SubstationList, func(s types.Substation) string { return s.Id })+1, genState.SubstationCount))
+	k.SetPlayerCount(ctx, advanceCount(k.GetPlayerCount(ctx), maxIndex(genState.PlayerList, func(p types.Player) uint64 { return p.Index })+1, genState.PlayerCount))
+	k.SetPlanetCount(ctx, advanceCount(k.GetPlanetCount(ctx), maxIndexFromId(genState.PlanetList, func(p types.Planet) string { return p.Id })+1, genState.PlanetCount))
+	k.SetStructCount(ctx, advanceCount(k.GetStructCount(ctx), maxIndex(genState.StructList, func(s types.Struct) uint64 { return s.Index })+1, genState.StructCount))
+	k.SetProviderCount(ctx, advanceCount(k.GetProviderCount(ctx), maxIndex(genState.ProviderList, func(p types.Provider) uint64 { return p.Index })+1, genState.ProviderCount))
+	k.SetAllocationCount(ctx, advanceCount(k.GetAllocationCount(ctx), maxIndex(genState.AllocationList, func(a types.Allocation) uint64 { return a.Index })+1, genState.AllocationCount))
 
 	// =========================================================================
 	// Phase 1: CC population
@@ -161,9 +189,21 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		k.SetGuildRankPermissionStoreOnly(ctx, rec.ObjectId, rec.GuildId, types.Permission(rec.Permissions), rec.Rank)
 	}
 
+	for _, objectId := range genState.PermissionCleanupQueue {
+		k.EnqueuePermissionCleanup(ctx, objectId)
+	}
+
 	// Addresses
 	for _, elem := range genState.AddressList {
 		cc.GenesisImportAddress(elem.Address, elem.PlayerIndex)
+	}
+
+	// Address registration-proof nonces. A separate list from AddressList
+	// because a revoked address keeps its nonce and loses its association, and
+	// that is the row a restored chain must not forget: dropping it resets the
+	// address to nonce 0 and makes its original proof replayable.
+	for _, elem := range genState.AddressNonceList {
+		cc.GenesisImportAddressNonce(elem.Address, elem.Nonce)
 	}
 
 	// Planets
@@ -171,10 +211,21 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		cc.GenesisImportPlanet(planet)
 	}
 
-	// Fleets (send all home)
+	/* Fleets (send all home).
+	 *
+	 * A fleet whose id does not parse cannot be cached, and CommitAll only
+	 * commits what is in the cache - so this used to drop the fleet in silence
+	 * while the players and structs pointing at it imported normally, leaving
+	 * those owners holding fleet-bound assets with no fleet to hold them. Refuse
+	 * the file instead. GenesisState.Validate catches this first for anything
+	 * that goes through `structsd genesis validate`; this covers the paths that
+	 * reach InitGenesis without it.
+	 */
 	for _, fleet := range genState.FleetList {
 		homePlanetId := playerPlanetMap[fleet.Owner]
-		cc.GenesisImportFleet(fleet, homePlanetId)
+		if err := cc.GenesisImportFleet(fleet, homePlanetId); err != nil {
+			panic(fmt.Sprintf("fleet (%s) could not be imported: %s", fleet.Id, err))
+		}
 	}
 
 	// Structs
@@ -183,7 +234,34 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		cc.GenesisImportStruct(s, importedStatus)
 	}
 
-	// Selective grid attribute import: player ore, proxyNonce, nonce only
+	/* Pending struct sweeps.
+	 *
+	 * Destroying a struct does not remove it: the flag is set, the struct stays
+	 * in its planet or fleet slot, and StructSweepDestroyed clears the slot and
+	 * deletes the object StructSweepDelay blocks later. The queue holding that
+	 * appointment was exported and never imported, so a struct destroyed within
+	 * those blocks of an export came back as rubble that nothing was scheduled to
+	 * collect - occupying its slot, and for a command ship occupying
+	 * Fleet.CommandStruct, permanently. Nothing else clears either: StructTrash
+	 * refuses an already-destroyed struct.
+	 *
+	 * Rescheduled rather than restored verbatim, because the sweep reads the
+	 * queue at *exactly* the current height. An exported appointment is either
+	 * already behind the restart height or, after a zero-height export, so far
+	 * ahead the chain never reaches it; either way the entry would never be
+	 * visited again. The struct is rubble and contributes nothing, so when it is
+	 * collected does not matter - only that it is.
+	 */
+	sweepHeight := ctx.BlockHeight() + types.StructSweepDelay
+	for _, pending := range genState.StructDestructionQueue {
+		if pending == nil || pending.StructId == "" {
+			continue
+		}
+		k.SetStructDestructionQueueAtHeight(ctx, sweepHeight, pending.StructId)
+	}
+
+	// Restore non-derived grid values after object reconstruction, including
+	// remaining planetary ore over the default assigned by GenesisImportPlanet.
 	for _, attr := range genState.GridList {
 		if isGenesisGridImportable(attr.AttributeId) {
 			cc.SetGridAttribute(attr.AttributeId, attr.Value)
@@ -201,21 +279,114 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		cc.GenesisImportAllocation(allocation, importedPower)
 	}
 
-	// Agreements
+	genesisHeightForAgreements := uint64(ctx.BlockHeight())
+
+	/* Agreements.
+	 *
+	 * An agreement whose end block already precedes the genesis height can never
+	 * expire: AgreementExpirations reads the index at exactly the current height,
+	 * so a row written in the past is never visited, and the agreement holds
+	 * capacity in its provider's load which Checkpoint() keeps billing against
+	 * other consumers' escrow. Refusing the file beats starting a chain that is
+	 * already breaking agreement-expiry-liveness.
+	 *
+	 * Equal to the genesis height is fine - that agreement expires on the first
+	 * block. This is the check that catches a zero-height export started with an
+	 * initial_height the rebase did not expect.
+	 */
 	for _, agreement := range genState.AgreementList {
+		if agreement.EndBlock < genesisHeightForAgreements {
+			panic(fmt.Sprintf(
+				"agreement %s ends at block %d, before the genesis height %d, and could never expire",
+				agreement.Id, agreement.EndBlock, genesisHeightForAgreements,
+			))
+		}
 		cc.GenesisImportAgreement(agreement)
 	}
 
-	// Reactor infusions (rebuild from staking delegations)
-	for _, reactor := range genState.ReactorList {
-		cc.GenesisImportReactorInfusions(reactor)
+	/* Every provider leaves this function with a checkpoint clock standing at or
+	 * after the genesis height.
+	 *
+	 * The exported value is restored by the grid import above and is the right
+	 * answer for a height-preserving restart. A file that carries no checkpoint
+	 * row - a hand-written genesis, or one exported before that attribute was
+	 * imported at all - would otherwise start the provider at zero, and the
+	 * first checkpoint would bill from block zero across the load these
+	 * agreements just rebuilt. Stamping the genesis height instead says the
+	 * provider has been paid up to the moment the chain starts, which is the
+	 * only reading consistent with the agreements it is starting with.
+	 */
+	genesisHeight := uint64(ctx.BlockHeight())
+	suppliedCheckpoints := make(map[string]bool, len(genState.ProviderList))
+	for _, attr := range genState.GridList {
+		attrTypeId, ok := parseAttributeTypeId(attr.AttributeId)
+		if !ok {
+			continue
+		}
+		if types.GridAttributeType(attrTypeId) == types.GridAttributeType_checkpointBlock {
+			suppliedCheckpoints[objectIdFromAttributeId(attr.AttributeId)] = true
+		}
 	}
+
+	for _, provider := range genState.ProviderList {
+		if suppliedCheckpoints[provider.Id] {
+			// The exported clock is the right answer and may legitimately sit
+			// below the genesis height: a restart at H+1 carrying a checkpoint of
+			// H owes exactly one block. Flooring it here would be the same bug in
+			// the other direction, silently forgiving service already rendered.
+			continue
+		}
+		cc.GetProvider(provider.Id).SetCheckpointBlock(genesisHeight)
+	}
+
+	// Rebuild exported reactor positions, including UBD-only records. The
+	// validated association map covers vaults before their indexes commit.
+	for _, infusion := range genState.InfusionList {
+		if infusion.DestinationType == types.ObjectType_reactor {
+			if err := cc.GenesisImportReactorInfusion(infusion, infusionOwners[infusion.Address]); err != nil { panic(err) }
+		}
+	}
+	for _, reactor := range genState.ReactorList {
+		if err := cc.GenesisImportReactorInfusions(reactor, infusionOwners); err != nil { panic(err) }
+	}
+
+	/* Pending grid cascades.
+	 *
+	 * The queue was exported but never imported, which was survivable only
+	 * while GridCascade drained it to exhaustion every block - anything pending
+	 * at export time had been enqueued and processed inside the same block, so
+	 * an export could not catch one. Now that the cascade is bounded and carries
+	 * work forward, a restore that dropped the queue would leave those objects
+	 * over-subscribed with nothing left to schedule them.
+	 *
+	 * Re-appended in export order, which is sequence order, so the restored
+	 * queue is the exported one.
+	 */
+	for _, objectId := range genState.GridCascadeQueue {
+		if err := k.AppendGridCascadeQueue(ctx, objectId); err != nil {
+			panic(err)
+		}
+	}
+    // Restore work for closing or overloaded stations even when an export omitted
+    // their queue entries. Apply loss to raw reconstructed input exactly once.
+    for _, station := range genState.SubstationList {
+        cached := cc.GetSubstation(station.Id)
+        cc.UpdateSubstationConnectionCapacity(station.Id)
+        if station.DeletionPending || cached.GetLoad() > cached.GetUsableCapacity() {
+            if err := k.AppendGridCascadeQueue(ctx, station.Id); err != nil { panic(err) }
+        }
+    }
 
 	// =========================================================================
 	// Commit
 	// =========================================================================
 
 	cc.CommitAll()
+	// Owners and addresses must be committed before resolving provisioned vaults.
+	// Existing auth accounts keep their exported account numbers.
+	if _, err := k.NewCurrentContext(ctx).EnsureVaults(genState.VaultOwnerList...); err != nil {
+		panic(err)
+	}
 
 	// Guild names are stored on guild records, while the normalized lookup is
 	// derived state. Rebuild it on every import in list order; first wins is
@@ -259,16 +430,29 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, row := range genState.InfusionMaturitySweepQueue {
 		k.ImportInfusionMaturitySweepRow(ctx, row)
 	}
+
+	for _, id := range genState.GeneratorPowerQueue { k.EnqueueGeneratorPower(ctx, id) }
+	k.RebuildGeneratorPowerQueue(ctx)
+
+    k.SetReactorStakeCapActive(ctx, genState.ReactorStakeCapActive)
+    if err := k.EvaluateReactorStakeCap(ctx); err != nil { panic(err) }
+	if err := k.RebuildReactorDiversity(ctx); err != nil { panic(err) }
+	k.ScheduleReactorCommissionRevisionReplay(ctx)
 }
 
 // ExportGenesis returns the module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.Params = k.GetParams(ctx)
+	genesis.ReactorStakeCapActive = k.ReactorStakeCapActive(ctx)
 
 	genesis.PortId = k.GetPort(ctx)
+	var vaultErr error
+	genesis.VaultOwnerList, vaultErr = k.GetVaultOwnersForExport(ctx)
+	if vaultErr != nil { panic(vaultErr) }
 
 	genesis.AddressList = k.GetAllAddressExport(ctx)
+	genesis.AddressNonceList = k.GetAllAddressProofNonceExport(ctx)
 
 	genesis.AgreementList = k.GetAllAgreement(ctx)
 
@@ -312,6 +496,10 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.GridList = k.GetAllGridExport(ctx)
 	genesis.GridCascadeQueue = k.GetGridCascadeQueueExport(ctx)
 
+	genesis.PermissionCleanupQueue = k.GetPermissionCleanupQueue(ctx)
+	var generatorQueueErr error
+	genesis.GeneratorPowerQueue, generatorQueueErr = k.GetGeneratorPowerQueue(ctx)
+	if generatorQueueErr != nil { panic(generatorQueueErr) }
 	genesis.PermissionList = k.GetAllPermissionExport(ctx)
 	genesis.GuildRankPermissionList = k.GetAllGuildRankPermissionExport(ctx)
 
@@ -350,7 +538,26 @@ func isGenesisGridImportable(attributeId string) bool {
 		return true
 	case types.GridAttributeType_ore:
 		objectId := objectIdFromAttributeId(attributeId)
-		return strings.HasPrefix(objectId, fmt.Sprintf("%d-", types.ObjectType_player))
+		// Neither stored nor buried ore can be rebuilt from object records.
+		// Dropping the planet row replenishes every active world on restart.
+		return strings.HasPrefix(objectId, fmt.Sprintf("%d-", types.ObjectType_player)) ||
+			strings.HasPrefix(objectId, fmt.Sprintf("%d-", types.ObjectType_planet))
+	case types.GridAttributeType_checkpointBlock:
+		/* A provider's checkpoint block is the one grid attribute that is not
+		 * derivable from the objects around it. Load and capacity are rebuilt by
+		 * the import itself, so admitting them would double-count; the checkpoint
+		 * is a clock, and nothing else on the export says where it stood.
+		 *
+		 * Losing it is not a cosmetic drift. Checkpoint() bills
+		 * (currentBlock - checkpointBlock) * rate * aggregate load, and an unset
+		 * attribute reads as zero, so the first checkpoint after a restore bills
+		 * the whole height of the chain against the full reconstructed load.
+		 * SweepRevenue clamps that to what the pool holds rather than failing, so
+		 * the visible outcome is every consumer's collateral swept into the
+		 * provider's earnings pool in one transaction.
+		 */
+		objectId := objectIdFromAttributeId(attributeId)
+		return strings.HasPrefix(objectId, fmt.Sprintf("%d-", types.ObjectType_provider))
 	default:
 		return false
 	}

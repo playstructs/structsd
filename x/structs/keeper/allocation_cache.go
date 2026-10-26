@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"strings"
 	"structs/x/structs/types"
 )
 
@@ -72,7 +73,14 @@ func (cache *AllocationCache) GetOwnerId() string {
 }
 
 func (cache *AllocationCache) GetOwner() *PlayerCache {
-	return cache.CC.GetPlayer(cache.GetAllocation().Controller)
+	// This legacy accessor represents a personal owner only. A guild
+	// controller must not allocate a phantom player under the guild's id.
+	owner, err := cache.CC.GetExistingAssetOwner(cache.GetOwnerId())
+	if err != nil {
+		return nil
+	}
+	player, _ := owner.(*PlayerCache)
+	return player
 }
 
 func (cache *AllocationCache) GetSourceId() string {
@@ -108,8 +116,7 @@ func (cache *AllocationCache) GetPower() (uint64) {
 }
 
 func (cache *AllocationCache) GetObjectCapacity(objectId string) (uint64) {
-    objectCapacityAttributeId := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)
-    return cache.CC.GetGridAttribute(objectCapacityAttributeId)
+    return cache.CC.GetEffectiveGridCapacity(objectId)
 }
 
 func (cache *AllocationCache) GetObjectLoad(objectId string) (uint64) {
@@ -162,21 +169,39 @@ func (cache *AllocationCache) SetAllocationController(playerId string) (bool) {
 }
 
 
-func (cache *AllocationCache) SetSource(sourceObjectId string) (error) {
-
-	if cache.IsAutomated() {
-        // Automated Allocations must be the only allocation on a source
-        // All allocations must have > 0 power, so this should show accurately
-        _, destinationAutoResizeAllocationFound := cache.CC.k.GetAutoResizeAllocationBySource(cache.CC.ctx, sourceObjectId)
-        if destinationAutoResizeAllocationFound || cache.GetObjectLoad(sourceObjectId) > 0 {
+func (cache *AllocationCache) validateSource(sourceObjectId string) error {
+    if strings.HasPrefix(sourceObjectId, "3-") && !cache.CC.reactorSourceEligible(sourceObjectId) {
+        return types.NewAllocationError(sourceObjectId, "unsupported_supply")
+    }
+    if cache.IsAutomated() {
+        _, found := cache.CC.k.GetAutoResizeAllocationBySource(cache.CC.ctx, sourceObjectId)
+        if found || cache.GetObjectLoad(sourceObjectId) > 0 {
             return types.NewAllocationError(sourceObjectId, "automated_conflict")
         }
+    }
+    if cache.IsAutomated() && (strings.HasPrefix(sourceObjectId, "0-") || strings.HasPrefix(sourceObjectId, "1-")) {
+        if cache.CC.getUsableOwnerCapacity(sourceObjectId) < cache.GetObjectCapacity(sourceObjectId) {
+            return types.NewAllocationError(sourceObjectId, "unsupported_supply")
+        }
+    }
+    return nil
+}
 
+// setValidatedSource performs no reads that can reject the creation. Keep the
+// public setter's validation and the constructor's preflight on the same rule.
+func (cache *AllocationCache) setValidatedSource(sourceObjectId string) {
+    if cache.IsAutomated() {
         cache.CC.k.SetAutoResizeAllocationSource(cache.CC.ctx, cache.ID(), sourceObjectId)
     }
-
     cache.SetAllocationSourceObjectId(sourceObjectId)
     cache.CC.k.SetAllocationSourceIndex(cache.CC.ctx, sourceObjectId, cache.ID())
+}
+
+func (cache *AllocationCache) SetSource(sourceObjectId string) (error) {
+    if err := cache.validateSource(sourceObjectId); err != nil {
+        return err
+    }
+    cache.setValidatedSource(sourceObjectId)
     return nil
 }
 
@@ -199,8 +224,17 @@ func (cache *AllocationCache) SetDynamicPower(newPower uint64) (uint64, error) {
     }
 
     currentPower := cache.GetPower()
+    if newPower > currentPower && strings.HasPrefix(cache.GetSourceId(), "3-") && !cache.CC.reactorSourceEligible(cache.GetSourceId()) {
+        return 0, types.NewAllocationError(cache.GetSourceId(), "unsupported_supply")
+    }
     sourceLoad := cache.CC.GetGridAttribute(cache.SourceLoadAttributeId)
-    sourceCapacity := cache.CC.GetGridAttribute(cache.SourceCapacityAttributeId)
+    sourceCapacity := cache.GetObjectCapacity(cache.GetSourceId())
+
+    // Reductions remain possible during repair. Only an increase must fit
+    // the owner's currently usable primary supply rather than stale totals.
+    if newPower > currentPower && (strings.HasPrefix(cache.GetSourceId(), "0-") || strings.HasPrefix(cache.GetSourceId(), "1-")) {
+        sourceCapacity = cache.CC.getUsableOwnerCapacity(cache.GetSourceId())
+    }
 
     // Release this allocation's current power before checking: the capacity it
     // already holds belongs to it (create-vs-update asymmetry).
@@ -220,30 +254,49 @@ func (cache *AllocationCache) SetDynamicPower(newPower uint64) (uint64, error) {
     return cache.SetPower(newPower)
 }
 
-func (cache *AllocationCache) SetInitialPower(newPower uint64) (uint64, error) {
+func (cache *AllocationCache) validateInitialPower(newPower uint64) error {
     if cache.IsAutomated() {
-        return 0, types.NewAllocationError(cache.ID(), "incorrect_type")
+        return types.NewAllocationError(cache.ID(), "incorrect_type")
     }
 
     if (newPower == 0) {
-        return 0, types.NewAllocationError(cache.GetAllocation().SourceObjectId, "new_power_zero")
+        return types.NewAllocationError(cache.GetAllocation().SourceObjectId, "new_power_zero")
     }
 
     sourceLoad := cache.CC.GetGridAttribute(cache.SourceLoadAttributeId)
-    sourceCapacity := cache.CC.GetGridAttribute(cache.SourceCapacityAttributeId)
+    sourceCapacity := cache.GetObjectCapacity(cache.GetSourceId())
+    if strings.HasPrefix(cache.GetSourceId(), "0-") || strings.HasPrefix(cache.GetSourceId(), "1-") {
+        sourceCapacity = cache.CC.getUsableOwnerCapacity(cache.GetSourceId())
+    }
     if sourceLoad >= sourceCapacity {
-        return 0, types.NewAllocationError(cache.GetAllocation().SourceObjectId, "capacity_exceeded").WithCapacity(0, newPower)
+        return types.NewAllocationError(cache.GetAllocation().SourceObjectId, "capacity_exceeded").WithCapacity(0, newPower)
     }
     availableCapacity := sourceCapacity - sourceLoad
     if (availableCapacity < newPower) {
-        return 0, types.NewAllocationError(cache.GetAllocation().SourceObjectId, "capacity_exceeded").WithCapacity(availableCapacity, newPower)
+        return types.NewAllocationError(cache.GetAllocation().SourceObjectId, "capacity_exceeded").WithCapacity(availableCapacity, newPower)
     }
 
-    return cache.SetPower(newPower)
+    return nil
 }
 
 
+func (cache *AllocationCache) SetInitialPower(newPower uint64) (uint64, error) {
+    if err := cache.validateInitialPower(newPower); err != nil {
+        return 0, err
+    }
+    return cache.SetPower(newPower)
+}
+
 func (cache *AllocationCache) SetPower(newPower uint64) (uint64, error) {
+    // A destroyed allocation contributes nothing, and its power attribute still
+    // holds the value it had when it was torn down, so a delta computed from it
+    // would move the source and destination by an amount Destroy already
+    // removed. Callers reaching here with a deleted cache are holding a stale
+    // pointer; GetAllocation no longer hands one out.
+    if cache.Deleted {
+        return 0, types.NewAllocationError(cache.ID(), "unknown_allocation")
+    }
+
     previousPower := cache.GetPower()
     destinationId := cache.GetAllocation().DestinationId
 
@@ -262,6 +315,9 @@ func (cache *AllocationCache) SetPower(newPower uint64) (uint64, error) {
         }
         cache.CC.SetGridAttributeDelta(cache.PowerAttributeId, previousPower, newPower)
         cache.CC.SetGridAttributeDelta(cache.SourceLoadAttributeId, previousPower, newPower)
+        // Outgoing reservations reduce the source station's player shares.
+        // Recompute after the load delta, through this same grid cache.
+        cache.CC.UpdateSubstationConnectionCapacity(cache.GetSourceId())
     }
 
     return newPower, nil
@@ -273,6 +329,13 @@ func (cache *AllocationCache) SetDestination(objectId string) (error) {
     previousDestinationId := cache.GetAllocation().DestinationId
 
     if (previousDestinationId != objectId) {
+
+        // Refuse before removing the old index or changing cached capacity.
+        // A cache-level caller may continue and commit after an error; only a
+        // valid move (or an explicit empty-destination disconnect) may cut supply.
+        if objectId != "" && cache.CC.GetSubstation(objectId).CheckAcceptingConnections() != nil {
+            return types.NewAllocationError(cache.ID(), "unacceptable_destination")
+        }
 
         cache.CC.k.RemoveAllocationDestinationIndex(cache.CC.ctx, previousDestinationId, cache.ID())
 
@@ -292,10 +355,6 @@ func (cache *AllocationCache) SetDestination(objectId string) (error) {
 
         // Deal with the new Destination
         if (objectId != "") {
-
-            if cache.CC.GetSubstation(objectId).CheckSubstation() != nil {
-                return types.NewAllocationError(cache.ID(), "unacceptable_destination")
-            }
 
             if cache.GetPower() > 0 {
                 // Increment the Capacity of the new Destination
@@ -317,6 +376,16 @@ func (cache *AllocationCache) SetDestination(objectId string) (error) {
 }
 
 func (cache *AllocationCache) Destroy() (error) {
+
+    // Destroying twice is a no-op, not a second teardown. The record survives in
+    // the store until CommitAll, so LoadAllocation below would succeed on a
+    // second pass, and the power attribute is never zeroed - so the grid deltas
+    // would come off again, taking the load of whatever allocations are still
+    // sharing this source. Already gone is not a failure, so this returns nil
+    // and lets the teardown paths that call it in a loop carry on.
+    if cache.Deleted {
+        return nil
+    }
 
     if !cache.LoadAllocation() {
         return types.NewAllocationError(cache.ID(), "unknown_allocation")
@@ -371,6 +440,11 @@ func (cache *AllocationCache) Destroy() (error) {
     }
 
     cache.CC.k.RemoveAllocationSourceIndex(cache.CC.ctx, cache.GetAllocation().SourceObjectId, cache.ID())
+
+    // The record and indices are gone at commit, so its power row must go too.
+    // Use the shared grid cache: a previously loaded/changed power entry must
+    // not recreate an orphan after allocation commits run earlier in CommitAll.
+    cache.CC.ClearGridAttribute(cache.PowerAttributeId)
 
     cache.CC.ClearPermissionsForObject(cache.ID())
 

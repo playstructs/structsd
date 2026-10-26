@@ -4,6 +4,11 @@ import (
 	"cosmossdk.io/math"
 )
 
+func (a Infusion) AssetOwnerID() string {
+    if a.OwnerId != "" { return a.OwnerId }
+    return a.PlayerId
+}
+
 func (a *Infusion) GetPowerDistribution() (infusionPower uint64, commissionPower uint64, playerPower uint64) {
         infusionPower       = a.Power
         commissionPower     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(infusionPower))).RoundInt().Uint64()
@@ -34,6 +39,11 @@ func CreateNewInfusion(destinationType ObjectType, destinationId string, playerA
 }
 
 func (a *Infusion) Recalculate() {
+    if a.GeneratorDisabled {
+        a.Power = 0
+        return
+    }
+
     a.Power = a.Ratio * a.Fuel
 }
 
@@ -50,4 +60,3 @@ func IsValidInfusionConnectionType(objectType ObjectType) bool {
 	}
 	return false
 }
-

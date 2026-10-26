@@ -8,6 +8,7 @@ import (
 
 	"structs/x/structs/types"
 
+	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -67,6 +68,32 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 		return emptyResponse, types.NewPlayerPowerError(fleet.GetOwnerId(), "offline")
 	}
 
+	/* A raid takes ore from a planet's owner, so the planet has to be one they
+	 * still live on.
+	 *
+	 * Completing a planet leaves its Owner stamped and its record in the store:
+	 * PlanetExplore points the player at a new planet and the old one stays
+	 * loadable, still naming them. Nothing about the raid path noticed. The
+	 * defences that make a live raid hard all hang off the owner's *current*
+	 * planet - RefreshRaidVulnerability is only ever called on
+	 * owner.GetPlanet(), so a historical planet's clock is started once by an
+	 * arriving raider and then never reset again, decaying to a one-zero puzzle
+	 * while the owner comes and goes from a planet they actually occupy. And
+	 * IsDefenderCommandStructVulnerable asks whether the owner's fleet is on
+	 * station, which for an abandoned planet is a question about somewhere else
+	 * entirely.
+	 *
+	 * Stored ore is a player attribute rather than a planet one, so what the
+	 * obsolete planet paid out was the victim's whole live balance.
+	 *
+	 * An active planet is always the owner's current one - PlanetExplore refuses
+	 * to move a player on until AttemptComplete succeeds, and that fails while
+	 * the planet still holds ore - so this is the whole of the condition.
+	 */
+	if !fleet.GetPlanet().IsActive() {
+		return emptyResponse, types.NewPlanetStateError(fleet.GetPlanet().GetPlanetId(), "not_active", "raid_complete")
+	}
+
 	// The raid hashing puzzle can only be won while the defending Command
 	// Ship is offline, destroyed, or non-existent (shieldsVulnerable)
 	if !fleet.GetPlanet().IsDefenderCommandStructVulnerable() {
@@ -75,15 +102,23 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 
 	// Defensive: a zero start block would make currentAge the full chain
 	// height, collapsing the puzzle difficulty to trivial
-	if fleet.GetPlanet().GetBlockStartRaid() == 0 {
+	blockStart := fleet.GetPlanet().GetBlockStartRaid()
+	if blockStart == 0 {
 		return emptyResponse, types.NewPlanetStateError(fleet.GetPlanet().GetPlanetId(), "raid_clock_unset", "raid_complete")
 	}
 
+	// A future anchor is not elapsed work. Unsigned subtraction would wrap
+	// to an enormous age and accept a one-zero proof before the raid starts.
+	blockHeight := uint64(ctx.BlockHeight())
+	if blockHeight < blockStart {
+		return emptyResponse, sdkerrors.Wrapf(types.ErrInvalidParameters, "block height %d precedes start block %d", blockHeight, blockStart)
+	}
+
 	raidedPlanet := fleet.GetPlanet().GetPlanetId()
-	blockStartRaidString := strconv.FormatUint(fleet.GetPlanet().GetBlockStartRaid(), 10)
+	blockStartRaidString := strconv.FormatUint(blockStart, 10)
 	hashInput := msg.FleetId + "@" + fleet.GetPlanet().GetPlanetId() + "RAID" + blockStartRaidString + "NONCE" + msg.Nonce
 
-	currentAge := uint64(ctx.BlockHeight()) - fleet.GetPlanet().GetBlockStartRaid()
+	currentAge := blockHeight - blockStart
 	valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, fleet.GetPlanet().GetPlanetaryShield());
 	if !valid {
 		//_ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleet.GetFleetId(), PlanetId: raidedPlanet, Status: types.RaidStatus_ongoing}})

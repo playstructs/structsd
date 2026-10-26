@@ -94,7 +94,169 @@ const (
 
 const (
     GridAttributeKey = "Grid/attribute/"
-    GridCascadeQueue = "Grid/cascadeQueue/"
+
+    /* The cascade queue is FIFO, which is a safety property rather than a
+     * preference.
+     *
+     * GridCascade cannot drain the queue to exhaustion in one block, so what it
+     * does not reach stays pending and an object waits. Ordering by object id
+     * would let an attacker choose how long their own object waits: ids sort
+     * lexicographically, so one whose id sorts late is skipped for as long as
+     * cheaper-sorting entries keep arriving, and a substation that is never
+     * reached goes on powering structs it has no capacity for. Under a sequence
+     * nothing can be inserted in front of an entry already queued, so the wait
+     * is bounded by the backlog that existed when it was enqueued.
+     *
+     * GridCascadeQueue is keyed by that sequence and holds the object id.
+     * GridCascadeQueueIndex is the reverse row, keyed by object id, which makes
+     * a re-append while an object is still pending a no-op rather than a second
+     * entry. GridCascadeQueueSequenceKey is the monotonic counter.
+     */
+    GridCascadeQueue            = "Grid/cascadeQueue/"
+    GridCascadeQueueIndex       = "Grid/cascadeQueueIndex/"
+    GridCascadeQueueSequenceKey = "Grid/cascadeQueueSequence/"
+)
+
+/* GridCascadeBlockBudget caps the allocations GridCascade may destroy in one
+ * block.
+ *
+ * The EndBlocker runs against an infinite gas meter, so the cost of the cascade
+ * is block time every validator pays and nobody is charged for. The graph it
+ * walks is attacker-sized: an allocation of one power feeds a substation, that
+ * substation allocates the same power onward, and repeating two free messages
+ * builds a chain as long as patience allows. Destroying the root then collapsed
+ * the whole chain inside a single block, which is a halt rather than a slow
+ * block, and a deterministic one that replays on every retry.
+ *
+ * The budget makes the collapse proportional to the construction instead:
+ * building a link costs a transaction, and the per-player message cap is well
+ * under this, so a chain can never be torn down more slowly than it was built.
+ * A legitimate cascade - a reactor going offline, a guild's substation tree
+ * shedding - is orders of magnitude below this and still completes in the block
+ * it starts.
+ *
+ * It counts queue entries visited as well as allocations destroyed. Charging
+ * only for destroys would bound the shedding and leave the walk unbounded, and
+ * a queue full of objects that each turn out to be under capacity is exactly as
+ * cheap to build as one that is not.
+ */
+const GridCascadeBlockBudget = 256
+
+/* AgreementExpirationBucketCap limits how many agreements may share one
+ * expiration height.
+ *
+ * AgreementExpirations processes the whole bucket for the current height inside
+ * the EndBlocker, which has no gas meter, and each entry checkpoints its
+ * provider, moves money, destroys an allocation and rewrites indexes. EndBlock
+ * is chosen by the consumer, so agreements opened across many earlier blocks can
+ * be aimed at one height.
+ *
+ * The bound goes on creating that work rather than on doing it, which is the
+ * opposite of how GridCascade is bounded, and the difference is forced. A
+ * cascade can be left half-finished and picked up next block. An expiry cannot:
+ * the index is read at exactly the current height, so an agreement not torn down
+ * on its one block is never revisited, and until it is, its capacity stays in
+ * the provider's aggregate load where Checkpoint() bills it against every other
+ * consumer's escrow. Deferring an expiry is not slower settlement, it is
+ * somebody else paying for it - see the rules in AGENTS.md and the
+ * agreement-expiry-liveness invariant.
+ *
+ * So a height fills up and the next agreement picks another. The cost of being
+ * wrong in this direction is a consumer shifting their duration by a block; the
+ * cost in the other direction is a halt.
+ */
+const AgreementExpirationBucketCap = 256
+
+/* ReactorSlashReconcileQueue holds reactors whose infusions still need
+ * reconciling after their validator was slashed or, after economy activation,
+ * bonded, and how far through each one the reconciliation has got. The stored
+ * prefix retains its historical name for compatibility.
+ *
+ * A slash does not change delegation shares, so AfterDelegationModified never
+ * fires for it - BeforeValidatorSlashed is the only signal the module gets. It
+ * used to reconcile every active delegation to that validator inside the hook,
+ * which runs in BeginBlock against an infinite gas meter over a set the
+ * delegators choose the size of.
+ *
+ * The queue is keyed by reactor id and stores the address to resume from, so a
+ * reactor with more delegators than one block's budget simply comes back. The
+ * value is the *next* key to read, not the last one read, so resuming never
+ * re-does or skips an entry.
+ */
+const ReactorSlashReconcileQueue = "Reactor/slashReconcileQueue/"
+
+// The last serviced reactor, outside the queue prefix, rotates bounded work
+// across reactors even when a new slash resets one reactor's infusion cursor.
+const ReactorSlashReconcilePosition = "Reactor/slashReconcilePosition"
+
+/* ReactorSlashReconcileBudget caps how many infusions are reconciled per block.
+ *
+ * Reconciling is not free - each one reads a delegation and an unbonding
+ * delegation out of staking and rewrites grid attributes - and it happens in a
+ * block hook, so nothing else bounds it.
+ *
+ * An infusion that has not been reached yet still carries its pre-slash fuel,
+ * and therefore its pre-slash grid capacity. That is a real window in which a
+ * reactor's delegators hold capacity the stake no longer backs, bounded by the
+ * slash fraction and by delegators/budget blocks. It is the price of not doing
+ * the whole set in one block; the alternative, zeroing the reactor's
+ * contribution up front, would brown out every delegator's grid over a slash
+ * that took five percent.
+ */
+const ReactorSlashReconcileBudget = 128
+
+// InfusionMaturitySweepBudget limits queue rows examined per block, including
+// duplicate and malformed rows. Native staking refunds run independently;
+// deferred rows only delay Structs reconciliation of the resulting state.
+const InfusionMaturitySweepBudget = 128
+
+// InfusionDestructionBudget bounds queued cleanup attempts, including stale keys.
+const InfusionDestructionBudget = 128
+
+/* PermissionCleanupQueue holds objects whose permission rows are still being
+ * removed after the object itself was destroyed.
+ *
+ * Deleting an object clears every permission granted on it, and the number of
+ * those is chosen by whoever owns the object - one row per player granted.
+ * Agreement expiry reaches that cleanup from the EndBlocker, which has no gas
+ * meter, so the cost of one expiry was whatever had been granted before it.
+ *
+ * The queue needs no cursor: deletion is destructive, so the next pass simply
+ * re-reads the object's prefix and finds what is left. An object is queued only
+ * while rows remain.
+ */
+const PermissionCleanupQueue = "Permission/cleanupQueue/"
+
+/* PermissionCleanupBudget caps permission rows removed per object per pass.
+ *
+ * Rows left behind are inert, which is what makes deferring this safe in a way
+ * that deferring an agreement expiry is not: a permission is only ever consulted
+ * after its object has been loaded, and the object is gone. Nothing accrues
+ * while the remainder waits, so this is garbage collection rather than
+ * settlement.
+ *
+ * The budget covers the guild-rank register rows as well, which carry up to
+ * PermissionBitCount events each and so are the more expensive half per row.
+ */
+const PermissionCleanupBudget = 256
+
+/* QueryPageLimitDefault and QueryPageLimitMaximum bound a single query response.
+ *
+ * The query endpoints take no authorization and their pagination came straight
+ * from the request: an uncapped uint64 Limit could ask a node to decode and
+ * retain an entire collection, and a request with no Limit turned CountTotal on,
+ * which walks the whole prefix regardless of page size.
+ *
+ * These bound the node serving the query rather than consensus - no chain state
+ * is involved - but the endpoints are public and unauthenticated, so a node that
+ * exposes them is exposing whatever the largest collection happens to be.
+ *
+ * The maximum is deliberately generous. It exists to stop "give me everything",
+ * not to force small pages on honest clients; anything larger follows next_key.
+ */
+const (
+	QueryPageLimitDefault = 100
+	QueryPageLimitMaximum = 1000
 )
 
 const (
@@ -125,6 +287,8 @@ const (
 	InfusionKey      = "Infusion/value/"
 	InfusionCountKey = "Infusion/count/"
 	InfusionDestructionQueue = "Infusion/destructionQueue/"
+	// Scheduling hint outside the queue prefix; pending rows remain authoritative.
+	InfusionDestructionPosition = "Infusion/destructionPosition"
 
 	// InfusionMaturitySweepQueue indexes (Cosmos UBD entry CompletionTime, infusionKey)
 	// rows that the structs EndBlocker drains as their maturity time arrives, calling
@@ -176,6 +340,13 @@ const (
 
 const (
 	AddressPlayerKey = "Address/player/"
+
+	// AddressNonceKey holds the registration-proof nonce for an address.
+	//
+	// Deliberately a separate row from AddressPlayerKey: AddressRevoke deletes
+	// the association, and the nonce has to outlive it or the proof that
+	// created the association becomes replayable the moment it is revoked.
+	AddressNonceKey = "Address/nonce/"
 )
 
 const (

@@ -68,3 +68,15 @@ func (k Keeper) GetAllPlayerIdBySubstationIndex(ctx context.Context, substationI
 
 	return
 }
+
+// GetPlayerIdsBySubstationIndexUpTo bounds reads by the station's raw index rows.
+func (k Keeper) GetPlayerIdsBySubstationIndexUpTo(ctx context.Context, substationId string, limit int) (list []string, more bool) {
+    store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), SubstationPlayerKeyPrefix(substationId))
+    iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+    defer iterator.Close()
+    for ; iterator.Valid(); iterator.Next() {
+        if len(list) >= limit { return list, true }
+        list = append(list, string(iterator.Key()))
+    }
+    return list, false
+}
