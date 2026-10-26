@@ -26,8 +26,9 @@ def recover(ambit='land', fault='none'):
 PLAYER_2_ID=1-2 PLAYER_2_FLEET_ID=9-2 RESULT=5-stale
 query() {
     case "$*" in
-        'query structs fleet 9-2') printf '%s' "$fixture_fleet_json"; [ "$fault" != fleet_rpc ];;
-        'query structs struct 5-1') printf '%s' "$fixture_struct_json"; [ "$fault" != struct_rpc ];;
+        'query structs block-height') printf '%s' '{"blockHeight":"7"}';;
+        'query structs fleet 9-2 --height 7') printf '%s' "$fixture_fleet_json"; [ "$fault" != fleet_rpc ];;
+        'query structs struct 5-1 --height 7') printf '%s' "$fixture_struct_json"; [ "$fault" != struct_rpc ];;
         *) return 9;;
     esac
 }

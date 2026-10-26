@@ -1716,17 +1716,19 @@ combat_require_struct() {
 # A Command Ship's ambit is movable; preserve it instead of treating a live
 # command in another ambit as missing and attempting to build a duplicate.
 combat_require_command() {
-    local output="$1" player="$2" label="$3" owner fleet payload command ambit=land resolved
+    local output="$1" player="$2" label="$3" owner fleet height payload command ambit=land resolved
     [[ "${output}" =~ ^[A-Z][A-Z0-9_]*$ && "${player}" =~ ^[1-9][0-9]*$ ]] || return 1
     eval "owner=\${PLAYER_${player}_ID}"
     eval "fleet=\${PLAYER_${player}_FLEET_ID}"
-    payload=$(query query structs fleet "${fleet}") || return 1
+    # A destruction sweep between the fleet and struct reads would read as an error.
+    height=$(query query structs block-height | jq -er '.blockHeight | select(type == "string" and test("^[1-9][0-9]*$"))') || return 1
+    payload=$(query query structs fleet "${fleet}" --height "${height}") || return 1
     command=$(printf '%s' "${payload}" | jq -er --arg fleet "${fleet}" --arg owner "${owner}" '
         .Fleet | select(.id == $fleet and .owner == $owner)
         | (if has("commandStruct") then .commandStruct else "" end)
         | select(type == "string" and (. == "" or test("^5-[1-9][0-9]*$")))') || return 1
     if [ -n "${command}" ]; then
-        payload=$(query query structs struct "${command}") || return 1
+        payload=$(query query structs struct "${command}" --height "${height}") || return 1
         ambit=$(printf '%s' "${payload}" | jq -er --arg id "${command}" --arg owner "${owner}" --arg fleet "${fleet}" '
             .Struct | select(.id == $id and .owner == $owner and .type == "1" and .locationId == $fleet and .locationType == "fleet")
             | .operatingAmbit | select(. == "land" or . == "water" or . == "air" or . == "space")') || return 1

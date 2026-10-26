@@ -319,6 +319,8 @@ echo "$AR_P2_SF1_ID"
 GENERATOR_TEST_DIR=$1
 PLAYER_2_ID=1-2;PLAYER_2_FLEET_ID=9-2;CHARGE_MOVE=3
 query() {
+ if [ "$3" = block-height ]; then echo '{"blockHeight":"7"}'; return; fi
+ [ "$5 $6" = "--height 7" ] || return 1
  if [ "$3" = fleet ]; then echo '{"Fleet":{"id":"9-2","owner":"1-2","commandStruct":"5-1"}}';
  else echo '{"Struct":{"id":"5-1","index":"1","type":"1","owner":"1-2","locationId":"9-2","operatingAmbit":"land"},"structAttributes":{"isBuilt":true,"isOnline":true,"health":"6"}}';fi
 }

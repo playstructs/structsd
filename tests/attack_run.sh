@@ -1,13 +1,16 @@
 # Required attack-run fixtures and receipt checks, sourced by test_chain.sh.
 
 ar_require_command() {
-    local player="$1" fleet owner payload id ambit stage output="AR_P${1}_CS_ID"
+    local player="$1" fleet owner height payload id ambit stage output="AR_P${1}_CS_ID"
     eval "fleet=\${PLAYER_${player}_FLEET_ID}; owner=\${PLAYER_${player}_ID}"
-    payload=$(query query structs fleet "${fleet}") || return 1
+    # The destruction sweep clears the fleet slot and the struct in one block, so
+    # both reads must share a height or a sweep between them reads as an error.
+    height=$(query query structs block-height | jq -er '.blockHeight | select(type == "string" and test("^[1-9][0-9]*$"))') || return 1
+    payload=$(query query structs fleet "${fleet}" --height "${height}") || return 1
     id=$(printf '%s' "${payload}" | jq -er --arg id "${fleet}" --arg owner "${owner}" \
         '.Fleet | select(.id == $id and .owner == $owner) | .commandStruct // ""') || return 1
     if [ -n "${id}" ]; then
-        payload=$(query query structs struct "${id}") || return 1
+        payload=$(query query structs struct "${id}" --height "${height}") || return 1
         ambit=$(printf '%s' "${payload}" | jq -er '.Struct.operatingAmbit') || return 1
         stage=$(printf '%s' "${payload}" | python3 "${GENERATOR_TEST_DIR}/combat_fixture.py" fixture "${id}" "${owner}" 1 "${fleet}" "${ambit}") || return 1
         if [ "${stage}" != destroyed ]; then
