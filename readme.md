@@ -8,6 +8,10 @@ In the distant future the species of the galaxy are embroiled in a race for Alph
 
 [Structs](https://playstructs.com) is a decentralized game in the Cosmos ecosystem, operated and governed by our community of players--ensuring Structs remains online as long as there are players to play it.
 
+## v0.23.0 development
+
+Development takes place on `119b`. See the [v0.23.0 upgrade notes](docs/upgrades/v0.23.0.md) for the inherited dependency baseline, upgrade handler, and validation status. The upgrade height has not been selected.
+
 ## Get started
 **structsd** is a [Cosmos SDK docs](https://docs.cosmos.network) project being developed with the help of the [Ignite CLI](https://ignite.com/cli). To learn more, see the [Ignite CLI docs](https://docs.ignite.com).
 

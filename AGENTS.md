@@ -1,5 +1,11 @@
 # AGENTS.md
 
+## v0.23.0 development branch
+
+All v0.23.0 development stays on the existing `119b` branch in this checkout.
+Do not create other branches in the structsd workspace and do not merge this
+work to master. See `docs/upgrades/v0.23.0.md` for the release setup and baseline.
+
 Cosmos SDK chain for Structs. Game logic lives in `x/structs/{keeper,types,module,client}`;
 `app/` wires the chain together and `app/ante/` holds the custom fee, charge, permission and
 throttle gating. `proto/` is the source of truth for wire types; `api/` and every `*.pb.go` are
