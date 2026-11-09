@@ -111,6 +111,7 @@ const (
 	Msg_StructGeneratorInfuse_FullMethodName                         = "/structs.structs.Msg/StructGeneratorInfuse"
 	Msg_StructOreMinerComplete_FullMethodName                        = "/structs.structs.Msg/StructOreMinerComplete"
 	Msg_StructOreRefineryComplete_FullMethodName                     = "/structs.structs.Msg/StructOreRefineryComplete"
+	Msg_SubstationUpdateConnectionCapacityMaximum_FullMethodName     = "/structs.structs.Msg/SubstationUpdateConnectionCapacityMaximum"
 	Msg_SubstationUpdateName_FullMethodName                          = "/structs.structs.Msg/SubstationUpdateName"
 	Msg_SubstationUpdatePfp_FullMethodName                           = "/structs.structs.Msg/SubstationUpdatePfp"
 	Msg_SubstationCreate_FullMethodName                              = "/structs.structs.Msg/SubstationCreate"
@@ -222,6 +223,7 @@ type MsgClient interface {
 	StructGeneratorInfuse(ctx context.Context, in *MsgStructGeneratorInfuse, opts ...grpc.CallOption) (*MsgStructGeneratorStatusResponse, error)
 	StructOreMinerComplete(ctx context.Context, in *MsgStructOreMinerComplete, opts ...grpc.CallOption) (*MsgStructOreMinerStatusResponse, error)
 	StructOreRefineryComplete(ctx context.Context, in *MsgStructOreRefineryComplete, opts ...grpc.CallOption) (*MsgStructOreRefineryStatusResponse, error)
+	SubstationUpdateConnectionCapacityMaximum(ctx context.Context, in *MsgSubstationUpdateConnectionCapacityMaximum, opts ...grpc.CallOption) (*MsgSubstationUpdateResponse, error)
 	SubstationUpdateName(ctx context.Context, in *MsgSubstationUpdateName, opts ...grpc.CallOption) (*MsgSubstationUpdateResponse, error)
 	SubstationUpdatePfp(ctx context.Context, in *MsgSubstationUpdatePfp, opts ...grpc.CallOption) (*MsgSubstationUpdateResponse, error)
 	SubstationCreate(ctx context.Context, in *MsgSubstationCreate, opts ...grpc.CallOption) (*MsgSubstationCreateResponse, error)
@@ -1161,6 +1163,16 @@ func (c *msgClient) StructOreRefineryComplete(ctx context.Context, in *MsgStruct
 	return out, nil
 }
 
+func (c *msgClient) SubstationUpdateConnectionCapacityMaximum(ctx context.Context, in *MsgSubstationUpdateConnectionCapacityMaximum, opts ...grpc.CallOption) (*MsgSubstationUpdateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgSubstationUpdateResponse)
+	err := c.cc.Invoke(ctx, Msg_SubstationUpdateConnectionCapacityMaximum_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) SubstationUpdateName(ctx context.Context, in *MsgSubstationUpdateName, opts ...grpc.CallOption) (*MsgSubstationUpdateResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgSubstationUpdateResponse)
@@ -1351,6 +1363,7 @@ type MsgServer interface {
 	StructGeneratorInfuse(context.Context, *MsgStructGeneratorInfuse) (*MsgStructGeneratorStatusResponse, error)
 	StructOreMinerComplete(context.Context, *MsgStructOreMinerComplete) (*MsgStructOreMinerStatusResponse, error)
 	StructOreRefineryComplete(context.Context, *MsgStructOreRefineryComplete) (*MsgStructOreRefineryStatusResponse, error)
+	SubstationUpdateConnectionCapacityMaximum(context.Context, *MsgSubstationUpdateConnectionCapacityMaximum) (*MsgSubstationUpdateResponse, error)
 	SubstationUpdateName(context.Context, *MsgSubstationUpdateName) (*MsgSubstationUpdateResponse, error)
 	SubstationUpdatePfp(context.Context, *MsgSubstationUpdatePfp) (*MsgSubstationUpdateResponse, error)
 	SubstationCreate(context.Context, *MsgSubstationCreate) (*MsgSubstationCreateResponse, error)
@@ -1645,6 +1658,9 @@ func (UnimplementedMsgServer) StructOreMinerComplete(context.Context, *MsgStruct
 }
 func (UnimplementedMsgServer) StructOreRefineryComplete(context.Context, *MsgStructOreRefineryComplete) (*MsgStructOreRefineryStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructOreRefineryComplete not implemented")
+}
+func (UnimplementedMsgServer) SubstationUpdateConnectionCapacityMaximum(context.Context, *MsgSubstationUpdateConnectionCapacityMaximum) (*MsgSubstationUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubstationUpdateConnectionCapacityMaximum not implemented")
 }
 func (UnimplementedMsgServer) SubstationUpdateName(context.Context, *MsgSubstationUpdateName) (*MsgSubstationUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubstationUpdateName not implemented")
@@ -3350,6 +3366,24 @@ func _Msg_StructOreRefineryComplete_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_SubstationUpdateConnectionCapacityMaximum_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSubstationUpdateConnectionCapacityMaximum)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).SubstationUpdateConnectionCapacityMaximum(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_SubstationUpdateConnectionCapacityMaximum_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).SubstationUpdateConnectionCapacityMaximum(ctx, req.(*MsgSubstationUpdateConnectionCapacityMaximum))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_SubstationUpdateName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgSubstationUpdateName)
 	if err := dec(in); err != nil {
@@ -3886,6 +3920,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StructOreRefineryComplete",
 			Handler:    _Msg_StructOreRefineryComplete_Handler,
+		},
+		{
+			MethodName: "SubstationUpdateConnectionCapacityMaximum",
+			Handler:    _Msg_SubstationUpdateConnectionCapacityMaximum_Handler,
 		},
 		{
 			MethodName: "SubstationUpdateName",

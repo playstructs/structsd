@@ -405,6 +405,7 @@ func (k Keeper) GetGridAttributesByObject(ctx context.Context, objectId string) 
 		StructsLoad:        k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, objectId)),
 		Power:              k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, objectId)),
 		ConnectionCapacity: k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId)),
+		ConnectionCapacityMaximum: k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacityMaximum, objectId)),
 		ConnectionCount:    k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, objectId)),
 		ProxyNonce:         k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_proxyNonce, objectId)),
 		LastAction:         k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, objectId)),

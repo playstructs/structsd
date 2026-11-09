@@ -437,6 +437,7 @@ var GridAttributeType_enum = map[string]GridAttributeType{
 	"nonce":                    GridAttributeType_nonce,
 	"ready":                    GridAttributeType_ready,
 	"checkpointBlock":          GridAttributeType_checkpointBlock,
+	"connectionCapacityMaximum": GridAttributeType_connectionCapacityMaximum,
 }
 
 

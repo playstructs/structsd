@@ -146,37 +146,32 @@ func (cc *CurrentContext) GetEffectiveGridCapacity(objectId string) uint64 {
     return capacity
 }
 
+// Recalculate the shared player capacity from cached inputs. A maximum only
+// caps the per-connection share; it does not consume or remove station capacity.
 func (cc *CurrentContext) UpdateSubstationConnectionCapacity(objectId string) {
-    if strings.HasPrefix(objectId, "4-") {
+    if !strings.HasPrefix(objectId, "4-") { return }
 
-        station := cc.GetSubstation(objectId)
-        if station.CheckSubstation() == nil && station.IsDeletionPending() {
-            cc.SetGridAttribute(GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId), 0)
-            return
-        }
-        loadAttributeId                 := GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)
-        connectionCapacityAttributeId   := GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId)
-        connectionCountAttributeId      := GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, objectId)
-
-        capacity    := cc.GetEffectiveGridCapacity(objectId)
-        load        := cc.GetGridAttribute(loadAttributeId)
-
+    station := cc.GetSubstation(objectId)
+    var connectionCapacity uint64
+    if station.CheckSubstation() != nil || !station.IsDeletionPending() {
+        capacity := cc.GetEffectiveGridCapacity(objectId)
+        load := station.GetLoad()
         if capacity > load {
-            availableCapacity := capacity - load
-
-            connectionCount := cc.GetGridAttribute(connectionCountAttributeId)
-            if connectionCount == 0 {
-                connectionCount = 1
+            connectionCount := station.GetConnectionCount()
+            if connectionCount == 0 { connectionCount = 1 }
+            connectionCapacity = (capacity - load) / connectionCount
+            if maximum := station.GetConnectionCapacityMaximum(); maximum != 0 && connectionCapacity > maximum {
+                connectionCapacity = maximum
             }
-
-            cc.SetGridAttribute(connectionCapacityAttributeId, availableCapacity/connectionCount)
-        } else {
-            cc.SetGridAttribute(connectionCapacityAttributeId, 0)
         }
     }
+
+    // Read the actual cached attribute, even for a closing station whose public
+    // getter already returns zero. Only changed shares need a store write/event.
+    if cc.GetGridAttribute(station.ConnectionCapacityAttributeId) != connectionCapacity {
+        cc.SetGridAttribute(station.ConnectionCapacityAttributeId, connectionCapacity)
+    }
 }
-
-
 
 
 /* GridCascade sheds load from every object that is over-subscribed, and stops

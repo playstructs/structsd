@@ -450,3 +450,25 @@ holdback rounding against exact block receipts and pool balances. The quiet
 migration fixture must finish before any expiry; outages, concurrent transactions
 and repricing require separate fixtures. Passing Python fixtures is not evidence
 that a final native upgrade/lifecycle rehearsal has run.
+
+## v0.23.0 substation connection capacity maximum
+
+Phase 4 of `test_chain.sh` sources `substation_capacity_maximum.sh` and exercises
+an isolated station with a 100,000-power feeder. It checks zero/unlimited behavior,
+setting/lowering/removing the cap, unauthorized rejection, player connection
+changes, incoming and outgoing allocation changes, and the absence of redundant
+connection-capacity grid events while capped. Repeated identical settings must
+emit neither maximum nor share writes. It restores player links and the main
+feeder power before the remaining lifecycle phases.
+
+The scenario requires a v0.23.0 binary with the new transaction. It does not skip
+silently on older binaries. Offline checks (no chain or broadcasts):
+
+```sh
+bash -n tests/test_chain.sh tests/substation_capacity_maximum.sh
+python3 -B -m unittest discover -s tests -p test_substation_capacity_maximum.py
+```
+
+Signed transaction authorization/rollback and export/import preservation are also
+covered by Go app/module tests. The shell checks above validate the test harness;
+they do not replace a live lifecycle run.

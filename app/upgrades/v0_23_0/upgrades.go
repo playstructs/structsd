@@ -11,7 +11,8 @@ import (
 )
 
 // CreateUpgradeHandler runs the standard module migrations for v0.23.0.
-// This initial scaffold adds no Structs state migration. In particular, it must
+// The new substation maximum defaults to unlimited on a missing grid row, so
+// no Structs state migration is needed. In particular, this handler must
 // not replay the v0.22.0 economy conversion on already migrated state.
 func CreateUpgradeHandler(
 	mm *module.Manager,

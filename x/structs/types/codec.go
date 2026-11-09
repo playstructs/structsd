@@ -131,6 +131,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationCreate{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationDelete{}, )
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationUpdateName{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationUpdateConnectionCapacityMaximum{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationUpdatePfp{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationAllocationConnect{}, )
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationAllocationDisconnect{}, )

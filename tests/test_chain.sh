@@ -2117,6 +2117,7 @@ recover_state() {
 }
 
 GENERATOR_TEST_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+source "${GENERATOR_TEST_DIR}/substation_capacity_maximum.sh"
 source "${GENERATOR_TEST_DIR}/attack_run.sh"
 source "${GENERATOR_TEST_DIR}/defender_counter_fixture.sh"
 source "${GENERATOR_TEST_DIR}/dead_bomber.sh"
@@ -2815,6 +2816,9 @@ assert_gt "Substation capacity" 0 "${SUB_CAP}"
 echo "  Substation incoming capacity: ${SUB_CAP}, outgoing allocation load: ${SUB_LOAD}"
 SUB_EXPECTED_SHARE=$(echo "${SUB_JSON}" | python3 -c 'import json,sys; g=json.load(sys.stdin)["gridAttributes"]; print(max(int(g.get("capacity","0"))*9//10-int(g.get("load","0")),0)//max(1,int(g.get("connectionCount","0"))))')
 assert_eq "Substation player share includes 10% operating loss" "${SUB_EXPECTED_SHARE}" "$(jqr "${SUB_JSON}" '.gridAttributes.connectionCapacity // "0"')"
+
+# v0.23.0: isolated capped-share lifecycle; restores player links and feeder power.
+run_substation_capacity_maximum_tests
 
 # ─── Dump all players ───
 info "All players state"

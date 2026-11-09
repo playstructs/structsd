@@ -912,6 +912,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "allocationId"}},
                  },
                  {
+                     RpcMethod:      "SubstationUpdateConnectionCapacityMaximum",
+                     Use:            "substation-update-connection-capacity-maximum [substation id] [maximum]",
+                     Short:          "Set the maximum capacity per player connection (0 removes the limit)",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "substationId"},{ProtoField: "connectionCapacityMaximum"}},
+                 },
+                 {
                      RpcMethod:      "SubstationUpdateName",
                      Use:            "substation-update-name [substation id] [name]",
                      Short:          "Update the cosmetic name of a substation",

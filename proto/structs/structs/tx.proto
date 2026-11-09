@@ -150,6 +150,7 @@ service Msg {
   //  rpc StructStorageRecall            (MsgStructStorageRecall           ) returns (MsgStructStatusResponse                  );
 
 
+  rpc SubstationUpdateConnectionCapacityMaximum (MsgSubstationUpdateConnectionCapacityMaximum) returns (MsgSubstationUpdateResponse);
   rpc SubstationUpdateName           (MsgSubstationUpdateName          ) returns (MsgSubstationUpdateResponse              );
   rpc SubstationUpdatePfp            (MsgSubstationUpdatePfp           ) returns (MsgSubstationUpdateResponse              );
   rpc SubstationCreate               (MsgSubstationCreate              ) returns (MsgSubstationCreateResponse              );
@@ -1191,6 +1192,14 @@ message MsgSubstationPlayerMigrate {
   repeated string playerId  = 3;
 }
 message MsgSubstationPlayerMigrateResponse {}
+
+message MsgSubstationUpdateConnectionCapacityMaximum {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator = 1;
+  string substationId = 2;
+  uint64 connectionCapacityMaximum = 3; // Zero removes the limit.
+}
 
 message MsgSubstationUpdateName {
   option (cosmos.msg.v1.signer) = "creator";

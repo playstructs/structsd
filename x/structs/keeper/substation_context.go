@@ -18,6 +18,7 @@ func (cc *CurrentContext) GetSubstation(substationId string) *SubstationCache {
                 CapacityAttributeId:    	    GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, substationId),
                 ConnectionCountAttributeId:     GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, substationId),
                 ConnectionCapacityAttributeId:  GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, substationId),
+                ConnectionCapacityMaximumAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacityMaximum, substationId),
             }
 
 	return cc.substations[substationId]
@@ -103,6 +104,7 @@ func (cc *CurrentContext) NewSubstation(creatorAddress string, owner AssetOwner,
                   CapacityAttributeId:    	    GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, substationId),
                   ConnectionCountAttributeId:   GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, substationId),
                   ConnectionCapacityAttributeId:GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, substationId),
+                ConnectionCapacityMaximumAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacityMaximum, substationId),
 
     }
 

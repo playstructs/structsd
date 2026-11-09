@@ -22,6 +22,7 @@ type SubstationCache struct {
     CapacityAttributeId string
     ConnectionCountAttributeId string
     ConnectionCapacityAttributeId string
+    ConnectionCapacityMaximumAttributeId string
 
 }
 
@@ -80,6 +81,22 @@ func (cache *SubstationCache) GetOwnerId()      (string)            { if (!cache
 func (cache *SubstationCache) GetConnectionCapacity() (uint64) {
     if cache.IsDeletionPending() { return 0 }
     return cache.CC.GetGridAttribute(cache.ConnectionCapacityAttributeId)
+}
+
+func (cache *SubstationCache) GetConnectionCapacityMaximum() uint64 {
+    return cache.CC.GetGridAttribute(cache.ConnectionCapacityMaximumAttributeId)
+}
+
+func (cache *SubstationCache) SetConnectionCapacityMaximum(maximum uint64) {
+    if cache.GetConnectionCapacityMaximum() != maximum {
+        cache.CC.SetGridAttribute(cache.ConnectionCapacityMaximumAttributeId, maximum)
+    }
+    cache.CC.UpdateSubstationConnectionCapacity(cache.SubstationId)
+}
+
+func (cache *SubstationCache) CanUpdateConnectionCapacityMaximumBy(activePlayer *PlayerCache) error {
+    if err := cache.CheckAcceptingConnections(); err != nil { return err }
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermUpdate)
 }
 
 func (cache *SubstationCache) GetConnectionCount() (uint64) {
@@ -152,7 +169,7 @@ func (cache *SubstationCache) Delete(migrationSubstationId string) {
         cache.Substation.DeletionPending = true
         cache.Substation.DeletionMigrationSubstationId = migrationSubstationId
         cache.Changed = true
-        cache.CC.SetGridAttribute(cache.ConnectionCapacityAttributeId, 0)
+        cache.CC.UpdateSubstationConnectionCapacity(cache.SubstationId)
     }
     // Keep small deletes immediate, but never charge a transaction for an
     // attacker-sized incoming prefix. The existing persistent FIFO finishes it.
@@ -206,6 +223,7 @@ func (cache *SubstationCache) ProcessDeletion(limit int) (used int, done bool) {
     cache.CC.ClearGridAttribute(cache.CapacityAttributeId)
     cache.CC.ClearGridAttribute(cache.ConnectionCountAttributeId)
     cache.CC.ClearGridAttribute(cache.ConnectionCapacityAttributeId)
+    cache.CC.ClearGridAttribute(cache.ConnectionCapacityMaximumAttributeId)
     cache.CC.ClearPermissionsForObject(cache.ID())
     cache.Deleted = true
     cache.Changed = true
