@@ -5318,6 +5318,14 @@ echo "  Player 4 Planet: ${PLAYER_4_PLANET_ID}  Fleet: ${PLAYER_4_FLEET_ID}"
 P4_PLANET_JSON=$(query query structs planet "${PLAYER_4_PLANET_ID}")
 assert_eq "Player 4 planet named on explore" "NewEden" "$(jqr "${P4_PLANET_JSON}" '.Planet.name')"
 
+# Sector is assigned once at creation and exposed by the normal planet query.
+for sector_planet in "${PLAYER_2_PLANET_ID}" "${PLAYER_3_PLANET_ID}" "${PLAYER_4_PLANET_ID}"; do
+    sector_value=$(get_planet_field "${sector_planet}" sector)
+    sector_valid=false
+    case "${sector_value}" in 127|999|44) sector_valid=true ;; esac
+    assert_eq "Planet ${sector_planet} has a valid sector" "true" "${sector_valid}"
+done
+
 # Verify planets exist
 info "Verifying planets"
 PLANET_COUNT=$(query query structs planet-all | jq '.Planet | length' 2>/dev/null || echo 0)
@@ -7451,8 +7459,10 @@ assert_eq "Substation pfp set" "https://example.com/sub.png" "${SUB_PFP}"
 
 # ─── Planet Name ───
 
+P2_SECTOR_BEFORE_RENAME=$(get_planet_field "${PLAYER_2_PLANET_ID}" sector)
 run_tx "Setting player 2 planet name" \
     tx structs planet-update-name "${PLAYER_2_PLANET_ID}" "AlphaPrime" --from player_2
+assert_eq "Planet rename preserves sector" "${P2_SECTOR_BEFORE_RENAME}" "$(get_planet_field "${PLAYER_2_PLANET_ID}" sector)"
 
 PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
 PLANET_NAME=$(jqr "${PLANET_JSON}" '.Planet.name')

@@ -382,6 +382,7 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, appOpts servertypes.App
 		SignModeHandler: txConfig.SignModeHandler(),
 		CircuitKeeper:  &app.CircuitBreakerKeeper,
 		StructsKeeper:  app.StructsKeeper,
+		GroupKeeper:   app.GroupKeeper,
 
 		// Consensus-critical limits are binary-deterministic defaults, not local config.
 		MaxFreeTxSize:     structsante.DefaultMaxFreeTxSize,

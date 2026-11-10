@@ -38,6 +38,9 @@ message Planet {
   uint64 locationListExtra  = 17;
   // Current number of visiting fleets linked in the raid queue.
   uint64 locationListCount  = 18;
+
+  // Assigned at creation: 127, 999, or 44. Zero denotes legacy unassigned state.
+  uint64 sector = 19;
 }
 
 message PlanetAttributeRecord {

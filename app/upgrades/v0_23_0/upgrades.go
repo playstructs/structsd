@@ -11,16 +11,20 @@ import (
 )
 
 // CreateUpgradeHandler runs the standard module migrations for v0.23.0.
-// The new substation maximum defaults to unlimited on a missing grid row, so
-// no Structs state migration is needed. In particular, this handler must
-// not replay the v0.22.0 economy conversion on already migrated state.
+// Backfill planet sectors without replaying the v0.22.0 economy conversion.
+// The substation maximum still defaults to unlimited on a missing grid row.
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
 	keepers *upgrades.Keepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		return mm.RunMigrations(ctx, configurator, fromVM)
+		versionMap, err := mm.RunMigrations(ctx, configurator, fromVM)
+		if err != nil {
+			return nil, err
+		}
+		keepers.StructsKeeper.BackfillPlanetSectors(ctx)
+		return versionMap, nil
 	}
 }
 

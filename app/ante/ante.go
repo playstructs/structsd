@@ -20,6 +20,7 @@ type HandlerOptions struct {
 	SignModeHandler *txsigning.HandlerMap
 	CircuitKeeper   circuitante.CircuitBreaker
 	StructsKeeper   StructsAnteKeeper
+	GroupKeeper     GroupProposalReader
 
 	MaxFreeTxSize     int
 	MaxMsgCount       int
@@ -37,17 +38,23 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		return nil, errors.New("structs keeper is required for ante builder")
 	}
 
+	if options.GroupKeeper == nil {
+		return nil, errors.New("group keeper is required for ante builder")
+	}
+
 	anteDecorators := []sdk.AnteDecorator{
-		// 1-3: Cheap pre-checks (no state reads, no gas meter needed)
+		// Cheap pre-checks (no state reads, no gas meter needed)
 		NewTxSizeDecorator(options.MaxFreeTxSize),
 		NewMsgCountDecorator(options.MaxMsgCount),
-		NewNestedStructsMsgDecorator(),
 
-		// 4: SDK SetUpContext creates the initial gas meter from block gas limit
+		// 3: SDK SetUpContext creates the initial gas meter from block gas limit
 		ante.NewSetUpContextDecorator(),
 
-		// 5: Replace gas meter with free meter for pure-Structs or pure-staking txs
+		// 4: Replace gas meter with free meter for pure-Structs or pure-staking txs
 		NewGasRouterDecorator(options.FreeGasCap, options.FreeStakingGasCap),
+
+		// 5: Stored group proposals must be inspected under the transaction gas meter.
+		NewNestedStructsMsgDecorator(options.GroupKeeper),
 
 		// 6: Circuit breaker (governance can disable message types)
 		circuitante.NewCircuitBreakerDecorator(options.CircuitKeeper),

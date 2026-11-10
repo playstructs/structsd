@@ -61,7 +61,7 @@ func TestGenesis_PreservesExportedCountersAfterObjectDeletion(t *testing.T) {
 
 func TestGenesis_RebuildsPlanetOwnerIndex(t *testing.T) {
 	gs := types.DefaultGenesis()
-	gs.PlanetList = []types.Planet{{Id: "2-1", Owner: "1-1"}, {Id: "2-2", Owner: "1-10"}}
+	gs.PlanetList = []types.Planet{{Id: "2-1", Owner: "1-1", Sector: 127}, {Id: "2-2", Owner: "1-10", Sector: 44}}
 	for pass := 0; pass < 2; pass++ {
 		k, ctx := keepertest.StructsKeeper(t)
 		structs.InitGenesis(ctx, k, *gs)

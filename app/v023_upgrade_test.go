@@ -22,6 +22,13 @@ func TestV23RegisteredUpgradePreservesCurrentState(t *testing.T) {
 	// modules. Seed the completed v0.22.0 migration map for this upgrade test.
 	beforeVM := bApp.ModuleManager.GetVersionMap()
 	require.NoError(t, bApp.UpgradeKeeper.SetModuleVersionMap(ctx, beforeVM))
+	for _, planet := range []types.Planet{
+		{Id: "2-991", Name: "Legacy", MaxOre: 123},
+		{Id: "2-992", Status: types.PlanetStatus_complete},
+		{Id: "2-993", Sector: 44},
+	} {
+		bApp.StructsKeeper.SetPlanet(ctx, planet)
+	}
 	before, err := bApp.ModuleManager.ExportGenesisForModules(ctx, bApp.AppCodec(), []string{types.ModuleName})
 	require.NoError(t, err)
 
@@ -33,7 +40,18 @@ func TestV23RegisteredUpgradePreservesCurrentState(t *testing.T) {
 	require.Equal(t, beforeVM, afterVM)
 	after, err := bApp.ModuleManager.ExportGenesisForModules(ctx, bApp.AppCodec(), []string{types.ModuleName})
 	require.NoError(t, err)
-	require.JSONEq(t, string(before[types.ModuleName]), string(after[types.ModuleName]))
+	var expected, actual types.GenesisState
+	bApp.AppCodec().MustUnmarshalJSON(before[types.ModuleName], &expected)
+	bApp.AppCodec().MustUnmarshalJSON(after[types.ModuleName], &actual)
+	require.Len(t, actual.PlanetList, len(expected.PlanetList))
+	for i := range expected.PlanetList {
+		require.True(t, types.IsPlanetSector(actual.PlanetList[i].Sector))
+		if expected.PlanetList[i].Sector != 0 {
+			require.Equal(t, expected.PlanetList[i].Sector, actual.PlanetList[i].Sector)
+		}
+		expected.PlanetList[i].Sector = actual.PlanetList[i].Sector
+	}
+	require.JSONEq(t, string(bApp.AppCodec().MustMarshalJSON(&expected)), string(after[types.ModuleName]))
 	doneHeight, err := bApp.UpgradeKeeper.GetDoneHeight(ctx, v23.UpgradeName)
 	require.NoError(t, err)
 	require.Equal(t, plan.Height, doneHeight)
