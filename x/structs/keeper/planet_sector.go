@@ -7,6 +7,8 @@ import (
 	"math/rand"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"structs/x/structs/types"
 )
 
 // planetSector follows the existing block-AppHash seeded math/rand system.
@@ -22,12 +24,19 @@ func planetSector(ctx context.Context, planetID string) uint64 {
 	offset := fnv.New64a()
 	_, _ = offset.Write([]byte(planetID))
 	orb := rand.New(rand.NewSource(seed + int64(offset.Sum64())))
-	sectors := [...]uint64{127, 999, 44}
-	return sectors[orb.Intn(len(sectors))]
+	return types.PlanetSectors[orb.Intn(len(types.PlanetSectors))]
 }
 
 func (cache *PlanetCache) GetSector() uint64 {
 	return cache.GetPlanet().Sector
+}
+
+func (cache *PlanetCache) SetSector(sector uint64) {
+	if !cache.PlanetLoaded {
+		cache.LoadPlanet()
+	}
+	cache.Planet.Sector = sector
+	cache.Changed = true
 }
 
 // BackfillPlanetSectors is upgrade-only: scan all worlds, including completed
@@ -40,11 +49,7 @@ func (k Keeper) BackfillPlanetSectors(ctx context.Context) {
 			continue
 		}
 		cc := k.NewCurrentContext(ctx)
-		planet := cc.GetPlanet(row.Id)
-		// The migration already loaded this record; don't read it again on commit.
-		planet.Planet, planet.PlanetLoaded, planet.storedOwner = row, true, row.Owner
-		planet.Planet.Sector = planetSector(ctx, row.Id)
-		planet.Changed = true
+		cc.GetPlanet(row.Id).SetSector(planetSector(ctx, row.Id))
 		cc.CommitAll()
 	}
 }

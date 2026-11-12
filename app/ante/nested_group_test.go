@@ -109,3 +109,77 @@ func TestNestedGroupTraversalBounds(t *testing.T) {
 	_, err := sante.NewNestedStructsMsgDecorator(nil).AnteHandle(newTestCtx(), mockTx{msgs: []sdk.Msg{msg}}, false, next)
 	require.ErrorIs(t, err, sante.ErrNestedStructsMessage)
 }
+
+type countingProposalReader struct {
+	proposalReader
+	reads map[uint64]int
+}
+
+func (c countingProposalReader) Proposal(ctx context.Context, r *group.QueryProposalRequest) (*group.QueryProposalResponse, error) {
+	c.reads[r.ProposalId]++
+	return c.proposalReader.Proposal(ctx, r)
+}
+
+func TestNestedGroupReadsEachProposalOnce(t *testing.T) {
+	pack := func(m sdk.Msg) *codectypes.Any {
+		a, e := codectypes.NewAnyWithValue(m)
+		require.NoError(t, e)
+		return a
+	}
+	wrap := func(m sdk.Msg, levels int) *codectypes.Any {
+		a := pack(m)
+		for i := 0; i < levels; i++ {
+			a = pack(&authz.MsgExec{Msgs: []*codectypes.Any{a}})
+		}
+		return a
+	}
+	bank := pack(&banktypes.MsgSend{})
+	exec1, exec2, exec3 := &group.MsgExec{ProposalId: 1}, &group.MsgExec{ProposalId: 2}, &group.MsgExec{ProposalId: 3}
+	proposals := proposalReader{1: {bank}, 2: {wrap(&banktypes.MsgSend{}, 1)}, 3: {pack(exec2)}}
+	run := func(msgs ...*codectypes.Any) (map[uint64]int, error) {
+		reader := countingProposalReader{proposals, map[uint64]int{}}
+		next, _ := identityHandler()
+		_, err := sante.NewNestedStructsMsgDecorator(reader).AnteHandle(newTestCtx(), mockTx{msgs: []sdk.Msg{&authz.MsgExec{Msgs: msgs}}}, false, next)
+		return reader.reads, err
+	}
+
+	// Each repeated reference still spends what a rescan would: the root wrapper,
+	// then the MsgExec and its one stored leaf per reference.
+	for _, refs := range []int{127, 128} {
+		msgs := make([]*codectypes.Any, refs)
+		for i := range msgs {
+			msgs[i] = pack(exec1)
+		}
+		reads, err := run(msgs...)
+		require.Equal(t, map[uint64]int{1: 1}, reads)
+		if refs == 127 {
+			require.NoError(t, err)
+		} else {
+			require.ErrorIs(t, err, sante.ErrNestedStructsMessage)
+		}
+	}
+
+	// A repeated reference reaches as deep as a rescan would, including through a
+	// proposal whose own height was recorded while replaying another.
+	for _, tc := range []struct {
+		name   string
+		msgs   []*codectypes.Any
+		reads  map[uint64]int
+		reject bool
+	}{
+		{"replay at depth limit", []*codectypes.Any{pack(exec2), wrap(exec2, 5)}, map[uint64]int{2: 1}, false},
+		{"replay past depth limit", []*codectypes.Any{pack(exec2), wrap(exec2, 6)}, map[uint64]int{2: 1}, true},
+		{"nested replay at depth limit", []*codectypes.Any{pack(exec2), pack(exec3), wrap(exec3, 4)}, map[uint64]int{2: 1, 3: 1}, false},
+		{"nested replay past depth limit", []*codectypes.Any{pack(exec2), pack(exec3), wrap(exec3, 5)}, map[uint64]int{2: 1, 3: 1}, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			reads, err := run(tc.msgs...)
+			require.Equal(t, tc.reads, reads)
+			if tc.reject {
+				require.ErrorIs(t, err, sante.ErrNestedStructsMessage)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}

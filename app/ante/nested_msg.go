@@ -20,7 +20,8 @@ type GroupProposalReader interface {
 // Inspect submissions even without EXEC_TRY, and resolve execution references at
 // admission time rather than assuming all stored proposals were checked before.
 // Governance remains authority-gated and supports MsgUpdateParams as before.
-// This decorator reads state and must run AFTER the SDK installs the gas meter.
+// This decorator reads state and must run AFTER signature verification and fee
+// deduction, under the transaction gas meter.
 type NestedStructsMsgDecorator struct{ proposals GroupProposalReader }
 
 const (
@@ -47,12 +48,32 @@ type nestedMessageScan struct {
 	ctx       sdk.Context
 	proposals GroupProposalReader
 	visits    int
+	deepest   int
+	// A repeated reference must pass or fail exactly as a rescan would, so it
+	// replays the proposal's recorded height and visits instead of reading it again.
+	scanned map[uint64]scannedProposal
+}
+
+type scannedProposal struct{ height, visits int }
+
+func (s *nestedMessageScan) visit(depth int) error {
+	s.visits++
+	s.reach(depth)
+	if depth > maxAuthzNestingDepth || s.visits > maxNestedMessageVisits {
+		return errorsmod.Wrap(ErrNestedStructsMessage, "nested message traversal limit exceeded")
+	}
+	return nil
+}
+
+func (s *nestedMessageScan) reach(depth int) {
+	if depth > s.deepest {
+		s.deepest = depth
+	}
 }
 
 func (s *nestedMessageScan) message(msg sdk.Msg, depth int) error {
-	s.visits++
-	if depth > maxAuthzNestingDepth || s.visits > maxNestedMessageVisits {
-		return errorsmod.Wrap(ErrNestedStructsMessage, "nested message traversal limit exceeded")
+	if err := s.visit(depth); err != nil {
+		return err
 	}
 	if depth > 0 && IsStructsMessage(sdk.MsgTypeURL(msg)) {
 		return errorsmod.Wrapf(ErrNestedStructsMessage, "nested %s", sdk.MsgTypeURL(msg))
@@ -76,6 +97,14 @@ func (s *nestedMessageScan) proposal(id uint64, depth int) error {
 	if depth > maxAuthzNestingDepth || s.proposals == nil {
 		return errorsmod.Wrap(ErrNestedStructsMessage, "cannot inspect group proposal")
 	}
+	if seen, ok := s.scanned[id]; ok {
+		s.visits += seen.visits
+		s.reach(depth + seen.height)
+		if depth+seen.height > maxAuthzNestingDepth || s.visits > maxNestedMessageVisits {
+			return errorsmod.Wrap(ErrNestedStructsMessage, "nested message traversal limit exceeded")
+		}
+		return nil
+	}
 	result, err := s.proposals.Proposal(s.ctx, &group.QueryProposalRequest{ProposalId: id})
 	if err != nil {
 		return errorsmod.Wrapf(ErrNestedStructsMessage, "cannot inspect group proposal %d: %v", id, err)
@@ -83,7 +112,17 @@ func (s *nestedMessageScan) proposal(id uint64, depth int) error {
 	if result == nil || result.Proposal == nil {
 		return errorsmod.Wrap(ErrNestedStructsMessage, "missing group proposal")
 	}
-	return s.messages(result.Proposal.Messages, depth)
+	outerDeepest, outerVisits := s.deepest, s.visits
+	s.deepest = depth
+	if err := s.messages(result.Proposal.Messages, depth); err != nil {
+		return err
+	}
+	if s.scanned == nil {
+		s.scanned = make(map[uint64]scannedProposal)
+	}
+	s.scanned[id] = scannedProposal{height: s.deepest - depth, visits: s.visits - outerVisits}
+	s.reach(outerDeepest)
+	return nil
 }
 
 func (s *nestedMessageScan) messages(messages []*codectypes.Any, depth int) error {
@@ -109,9 +148,8 @@ func (s *nestedMessageScan) messages(messages []*codectypes.Any, depth int) erro
 		case sdk.MsgTypeURL(&group.MsgVote{}):
 			msg = &group.MsgVote{}
 		default:
-			s.visits++
-			if depth > maxAuthzNestingDepth || s.visits > maxNestedMessageVisits {
-				return errorsmod.Wrap(ErrNestedStructsMessage, "nested message traversal limit exceeded")
+			if err := s.visit(depth); err != nil {
+				return err
 			}
 			continue
 		}

@@ -43,7 +43,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	}
 
 	anteDecorators := []sdk.AnteDecorator{
-		// Cheap pre-checks (no state reads, no gas meter needed)
+		// 1-2: Cheap pre-checks (no state reads, no gas meter needed)
 		NewTxSizeDecorator(options.MaxFreeTxSize),
 		NewMsgCountDecorator(options.MaxMsgCount),
 
@@ -53,35 +53,37 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		// 4: Replace gas meter with free meter for pure-Structs or pure-staking txs
 		NewGasRouterDecorator(options.FreeGasCap, options.FreeStakingGasCap),
 
-		// 5: Stored group proposals must be inspected under the transaction gas meter.
-		NewNestedStructsMsgDecorator(options.GroupKeeper),
-
-		// 6: Circuit breaker (governance can disable message types)
+		// 5: Circuit breaker (governance can disable message types)
 		circuitante.NewCircuitBreakerDecorator(options.CircuitKeeper),
 
-		// 7-10: Standard SDK tx validation
+		// 6-9: Standard SDK tx validation
 		ante.NewExtensionOptionsDecorator(nil),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 
-		// 11: Gas for tx size (counts toward free meter cap)
+		// 10: Gas for tx size (counts toward free meter cap)
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
 
-		// 12: Conditional mempool fee check (skip for free Structs txs)
+		// 11: Conditional mempool fee check (skip for free Structs txs)
 		NewConditionalMempoolFeeDecorator(),
 
-		// 13: Conditional fee deduction (skip for free Structs txs)
+		// 12: Conditional fee deduction (skip for free Structs txs)
 		NewConditionalFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper),
 
-		// 14-17: Signature handling
+		// 13-16: Signature handling
 		ante.NewSetPubKeyDecorator(options.AccountKeeper),
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, ante.DefaultSigVerificationGasConsumer),
 		ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
 
-		// 18: Per-address CheckTx rate limit (after sig verify so signer is authenticated)
+		// 17: Per-address CheckTx rate limit (after sig verify so signer is authenticated)
 		NewCheckTxThrottleDecorator(options.CheckTxAddrCap),
+
+		// 18: Wrapped Structs messages. This reads stored group proposals, so it
+		// must stay behind signature verification and fee deduction: ahead of
+		// them, an unsigned, unfunded tx could make every node read state.
+		NewNestedStructsMsgDecorator(options.GroupKeeper),
 
 		// 19: Nonce increment (prevents replay attacks)
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
