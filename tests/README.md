@@ -1,5 +1,71 @@
 # Structs integration tests
 
+## Focused v0.22.0 to v0.23.0 upgrade rehearsal
+
+`run_v023_upgrade_rehearsal.py` creates its own private single-validator chain,
+generates disposable test keys, populates real v0.22.0 state, passes a governance
+proposal, observes the old binary's upgrade halt, and starts v0.23.0 against the
+same database. It uses only loopback endpoints, refuses other running native
+nodes/occupied rehearsal ports, and stops only processes it started. Keep these
+runs serial. The user's request to run an isolated local upgrade rehearsal is
+authorization for these local broadcasts; otherwise ask before starting it.
+
+Use a freshly built released v0.22.0 baseline and the current candidate, not an
+old development executable whose version label happens to be v0.22.0. A build
+from a Git archive needs an explicit `COMMIT` override because it has no own Git
+metadata. These commands do not change branches or replace installed binaries:
+
+```sh
+REHEARSAL_ROOT=$(mktemp -d "$PWD/build/v023-upgrade-XXXXXX")
+mkdir "$REHEARSAL_ROOT/source-v022"
+git archive v0.22.0 | tar -x -C "$REHEARSAL_ROOT/source-v022"
+make -C "$REHEARSAL_ROOT/source-v022" -o go.sum build VERSION=v0.22.0 \
+  COMMIT="$(git rev-parse v0.22.0)" BUILDDIR="$REHEARSAL_ROOT/old"
+make -o go.sum build VERSION=v0.23.0 BUILDDIR="$REHEARSAL_ROOT/new"
+python3 -u -B tests/run_v023_upgrade_rehearsal.py \
+  --old-binary "$REHEARSAL_ROOT/old/structsd" \
+  --new-binary "$REHEARSAL_ROOT/new/structsd" \
+  --output-parent "$REHEARSAL_ROOT"
+```
+
+The printed `fresh-chain-*` directory retains binary metadata/hashes, script
+hashes, genesis, transaction receipts, node logs, an untouched native checkpoint,
+before/after exports, migration block events, and result JSON. It contains local
+test keys and must remain ignored build output. Failures retain their evidence;
+reruns create a new directory. Local governance voting is shortened to 12 seconds;
+the pending unbonding retains the normal staking duration.
+
+The fixture has two players with funded vaults, a guild treasury, two planets,
+a powered substation, a provider, a live agreement and a pending unbonding.
+Verification requires exact Structs preservation except planet sectors, matching
+planet migration events, unchanged staking positions, complete bank event replay,
+and no replay of vault provisioning. After a native cold reopen, transactions
+exercise cap set/clear, unauthorized cap rejection, sector-preserving rename and
+new player/planet creation. This is a focused upgrade test, not `test_chain.sh`,
+multi-validator consensus testing, or production-cardinality evidence.
+
+Replay the stopped checkpoint twice through the real application with identical
+synthetic ABCI requests, including a cold reopen in each run:
+
+```sh
+STRUCTS_V023_REHEARSAL=/absolute/path/to/fresh-chain-result \
+  go test ./app -run '^TestV23NativeCheckpointDeterministicReplay$' -count=1 -v
+```
+
+This compares complete response hashes/events and exported state, and checks
+vault ownership, collateral solvency, expiry liveness, native staking/distribution
+accounting and reactor diversity. It refuses existing replay output directories.
+The synthetic replay tests determinism; the separate native runner tests the
+actual daemon halt/start path. The test is skipped during ordinary `make test`.
+
+Offline verifier regression tests:
+
+```sh
+python3 -B -m unittest discover -s tests -p test_v023_upgrade_rehearsal.py -v
+```
+
+## Existing lifecycle scripts
+
 Bash scripts that broadcast real transactions against a live `structsd` chain. They are separate
 from the Go test suite (`make test`), which needs no chain and no daemon.
 
