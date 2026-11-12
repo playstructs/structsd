@@ -48,6 +48,9 @@ func (cc *CurrentContext) GetPlanet(planetId string) *PlanetCache {
 }
 
 func (cc *CurrentContext) GenesisImportPlanet(planet types.Planet) {
+	if planet.Sector == 0 {
+		planet.Sector = planetSector(cc.ctx, planet.Id)
+	}
 	planet.LocationListStart = ""
 	planet.LocationListLast = ""
 	// Fleets are all sent home on import (GenesisImportFleet), so the visitor
@@ -77,6 +80,7 @@ func (cc *CurrentContext) NewPlanet(creator string, playerId string) (*PlanetCac
 	planetId := GetObjectID(types.ObjectType_planet, count)
 
 	planet.Id = planetId
+	planet.Sector = planetSector(cc.ctx, planetId)
 	planet.SetCreator(creator)
 	planet.SetOwner(playerId)
 

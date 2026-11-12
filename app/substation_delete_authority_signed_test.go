@@ -59,6 +59,7 @@ func TestSignedSubstationDeletionAuthorityAndCleanup(t *testing.T) {
 					k.SetGridAttribute(ctx, gridID(types.GridAttributeType_capacity, root.Id), 1000)
 					k.SetGridAttribute(ctx, gridID(types.GridAttributeType_capacity, automatedRoot.Id), 40)
 					k.SetGridAttribute(ctx, gridID(types.GridAttributeType_capacity, targetStation), 300)
+					k.SetGridAttribute(ctx, gridID(types.GridAttributeType_connectionCapacityMaximum, oldStation), 10000)
 					cc := k.NewCurrentContext(ctx)
 					incoming, err := cc.NewAllocation(types.AllocationType_dynamic, root.Id, oldStation, root.Creator, root.Id, 120)
 					require.NoError(t, err)
@@ -219,7 +220,7 @@ func TestSignedSubstationDeletionAuthorityAndCleanup(t *testing.T) {
 								playerEvents[expectedPlayers[i].Id] = expectedPlayers[i]
 							}
 						}
-						for _, kind := range []types.GridAttributeType{types.GridAttributeType_capacity, types.GridAttributeType_load, types.GridAttributeType_connectionCapacity, types.GridAttributeType_connectionCount} {
+						for _, kind := range []types.GridAttributeType{types.GridAttributeType_capacity, types.GridAttributeType_load, types.GridAttributeType_connectionCapacity, types.GridAttributeType_connectionCount, types.GridAttributeType_connectionCapacityMaximum} {
 							attribute := gridID(kind, oldStation)
 							delete(expectedGrid, attribute)
 							gridEvents[attribute] = 0

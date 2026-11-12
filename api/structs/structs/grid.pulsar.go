@@ -482,22 +482,23 @@ func (x *fastReflection_GridRecord) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_GridAttributes                        protoreflect.MessageDescriptor
-	fd_GridAttributes_ore                    protoreflect.FieldDescriptor
-	fd_GridAttributes_fuel                   protoreflect.FieldDescriptor
-	fd_GridAttributes_capacity               protoreflect.FieldDescriptor
-	fd_GridAttributes_load                   protoreflect.FieldDescriptor
-	fd_GridAttributes_structsLoad            protoreflect.FieldDescriptor
-	fd_GridAttributes_power                  protoreflect.FieldDescriptor
-	fd_GridAttributes_connectionCapacity     protoreflect.FieldDescriptor
-	fd_GridAttributes_connectionCount        protoreflect.FieldDescriptor
-	fd_GridAttributes_allocationPointerStart protoreflect.FieldDescriptor
-	fd_GridAttributes_allocationPointerEnd   protoreflect.FieldDescriptor
-	fd_GridAttributes_proxyNonce             protoreflect.FieldDescriptor
-	fd_GridAttributes_lastAction             protoreflect.FieldDescriptor
-	fd_GridAttributes_nonce                  protoreflect.FieldDescriptor
-	fd_GridAttributes_ready                  protoreflect.FieldDescriptor
-	fd_GridAttributes_checkpointBlock        protoreflect.FieldDescriptor
+	md_GridAttributes                           protoreflect.MessageDescriptor
+	fd_GridAttributes_ore                       protoreflect.FieldDescriptor
+	fd_GridAttributes_fuel                      protoreflect.FieldDescriptor
+	fd_GridAttributes_capacity                  protoreflect.FieldDescriptor
+	fd_GridAttributes_load                      protoreflect.FieldDescriptor
+	fd_GridAttributes_structsLoad               protoreflect.FieldDescriptor
+	fd_GridAttributes_power                     protoreflect.FieldDescriptor
+	fd_GridAttributes_connectionCapacity        protoreflect.FieldDescriptor
+	fd_GridAttributes_connectionCount           protoreflect.FieldDescriptor
+	fd_GridAttributes_allocationPointerStart    protoreflect.FieldDescriptor
+	fd_GridAttributes_allocationPointerEnd      protoreflect.FieldDescriptor
+	fd_GridAttributes_proxyNonce                protoreflect.FieldDescriptor
+	fd_GridAttributes_lastAction                protoreflect.FieldDescriptor
+	fd_GridAttributes_nonce                     protoreflect.FieldDescriptor
+	fd_GridAttributes_ready                     protoreflect.FieldDescriptor
+	fd_GridAttributes_checkpointBlock           protoreflect.FieldDescriptor
+	fd_GridAttributes_connectionCapacityMaximum protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -518,6 +519,7 @@ func init() {
 	fd_GridAttributes_nonce = md_GridAttributes.Fields().ByName("nonce")
 	fd_GridAttributes_ready = md_GridAttributes.Fields().ByName("ready")
 	fd_GridAttributes_checkpointBlock = md_GridAttributes.Fields().ByName("checkpointBlock")
+	fd_GridAttributes_connectionCapacityMaximum = md_GridAttributes.Fields().ByName("connectionCapacityMaximum")
 }
 
 var _ protoreflect.Message = (*fastReflection_GridAttributes)(nil)
@@ -675,6 +677,12 @@ func (x *fastReflection_GridAttributes) Range(f func(protoreflect.FieldDescripto
 			return
 		}
 	}
+	if x.ConnectionCapacityMaximum != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.ConnectionCapacityMaximum)
+		if !f(fd_GridAttributes_connectionCapacityMaximum, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -720,6 +728,8 @@ func (x *fastReflection_GridAttributes) Has(fd protoreflect.FieldDescriptor) boo
 		return x.Ready != uint64(0)
 	case "structs.structs.GridAttributes.checkpointBlock":
 		return x.CheckpointBlock != uint64(0)
+	case "structs.structs.GridAttributes.connectionCapacityMaximum":
+		return x.ConnectionCapacityMaximum != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GridAttributes"))
@@ -766,6 +776,8 @@ func (x *fastReflection_GridAttributes) Clear(fd protoreflect.FieldDescriptor) {
 		x.Ready = uint64(0)
 	case "structs.structs.GridAttributes.checkpointBlock":
 		x.CheckpointBlock = uint64(0)
+	case "structs.structs.GridAttributes.connectionCapacityMaximum":
+		x.ConnectionCapacityMaximum = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GridAttributes"))
@@ -827,6 +839,9 @@ func (x *fastReflection_GridAttributes) Get(descriptor protoreflect.FieldDescrip
 	case "structs.structs.GridAttributes.checkpointBlock":
 		value := x.CheckpointBlock
 		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.GridAttributes.connectionCapacityMaximum":
+		value := x.ConnectionCapacityMaximum
+		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GridAttributes"))
@@ -877,6 +892,8 @@ func (x *fastReflection_GridAttributes) Set(fd protoreflect.FieldDescriptor, val
 		x.Ready = value.Uint()
 	case "structs.structs.GridAttributes.checkpointBlock":
 		x.CheckpointBlock = value.Uint()
+	case "structs.structs.GridAttributes.connectionCapacityMaximum":
+		x.ConnectionCapacityMaximum = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GridAttributes"))
@@ -927,6 +944,8 @@ func (x *fastReflection_GridAttributes) Mutable(fd protoreflect.FieldDescriptor)
 		panic(fmt.Errorf("field ready of message structs.structs.GridAttributes is not mutable"))
 	case "structs.structs.GridAttributes.checkpointBlock":
 		panic(fmt.Errorf("field checkpointBlock of message structs.structs.GridAttributes is not mutable"))
+	case "structs.structs.GridAttributes.connectionCapacityMaximum":
+		panic(fmt.Errorf("field connectionCapacityMaximum of message structs.structs.GridAttributes is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GridAttributes"))
@@ -969,6 +988,8 @@ func (x *fastReflection_GridAttributes) NewField(fd protoreflect.FieldDescriptor
 	case "structs.structs.GridAttributes.ready":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.GridAttributes.checkpointBlock":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.GridAttributes.connectionCapacityMaximum":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
@@ -1084,6 +1105,9 @@ func (x *fastReflection_GridAttributes) ProtoMethods() *protoiface.Methods {
 		if x.CheckpointBlock != 0 {
 			n += 1 + runtime.Sov(uint64(x.CheckpointBlock))
 		}
+		if x.ConnectionCapacityMaximum != 0 {
+			n += 2 + runtime.Sov(uint64(x.ConnectionCapacityMaximum))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -1112,6 +1136,13 @@ func (x *fastReflection_GridAttributes) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.ConnectionCapacityMaximum != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ConnectionCapacityMaximum))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x80
 		}
 		if x.CheckpointBlock != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.CheckpointBlock))
@@ -1522,6 +1553,25 @@ func (x *fastReflection_GridAttributes) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
+			case 16:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ConnectionCapacityMaximum", wireType)
+				}
+				x.ConnectionCapacityMaximum = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ConnectionCapacityMaximum |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -1618,21 +1668,22 @@ type GridAttributes struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Ore                    uint64 `protobuf:"varint,1,opt,name=ore,proto3" json:"ore,omitempty"`
-	Fuel                   uint64 `protobuf:"varint,2,opt,name=fuel,proto3" json:"fuel,omitempty"`
-	Capacity               uint64 `protobuf:"varint,3,opt,name=capacity,proto3" json:"capacity,omitempty"`
-	Load                   uint64 `protobuf:"varint,4,opt,name=load,proto3" json:"load,omitempty"`
-	StructsLoad            uint64 `protobuf:"varint,5,opt,name=structsLoad,proto3" json:"structsLoad,omitempty"`
-	Power                  uint64 `protobuf:"varint,6,opt,name=power,proto3" json:"power,omitempty"`
-	ConnectionCapacity     uint64 `protobuf:"varint,7,opt,name=connectionCapacity,proto3" json:"connectionCapacity,omitempty"`
-	ConnectionCount        uint64 `protobuf:"varint,8,opt,name=connectionCount,proto3" json:"connectionCount,omitempty"`
-	AllocationPointerStart uint64 `protobuf:"varint,9,opt,name=allocationPointerStart,proto3" json:"allocationPointerStart,omitempty"`
-	AllocationPointerEnd   uint64 `protobuf:"varint,10,opt,name=allocationPointerEnd,proto3" json:"allocationPointerEnd,omitempty"`
-	ProxyNonce             uint64 `protobuf:"varint,11,opt,name=proxyNonce,proto3" json:"proxyNonce,omitempty"`
-	LastAction             uint64 `protobuf:"varint,12,opt,name=lastAction,proto3" json:"lastAction,omitempty"`
-	Nonce                  uint64 `protobuf:"varint,13,opt,name=nonce,proto3" json:"nonce,omitempty"`
-	Ready                  uint64 `protobuf:"varint,14,opt,name=ready,proto3" json:"ready,omitempty"`
-	CheckpointBlock        uint64 `protobuf:"varint,15,opt,name=checkpointBlock,proto3" json:"checkpointBlock,omitempty"`
+	Ore                       uint64 `protobuf:"varint,1,opt,name=ore,proto3" json:"ore,omitempty"`
+	Fuel                      uint64 `protobuf:"varint,2,opt,name=fuel,proto3" json:"fuel,omitempty"`
+	Capacity                  uint64 `protobuf:"varint,3,opt,name=capacity,proto3" json:"capacity,omitempty"`
+	Load                      uint64 `protobuf:"varint,4,opt,name=load,proto3" json:"load,omitempty"`
+	StructsLoad               uint64 `protobuf:"varint,5,opt,name=structsLoad,proto3" json:"structsLoad,omitempty"`
+	Power                     uint64 `protobuf:"varint,6,opt,name=power,proto3" json:"power,omitempty"`
+	ConnectionCapacity        uint64 `protobuf:"varint,7,opt,name=connectionCapacity,proto3" json:"connectionCapacity,omitempty"`
+	ConnectionCount           uint64 `protobuf:"varint,8,opt,name=connectionCount,proto3" json:"connectionCount,omitempty"`
+	AllocationPointerStart    uint64 `protobuf:"varint,9,opt,name=allocationPointerStart,proto3" json:"allocationPointerStart,omitempty"`
+	AllocationPointerEnd      uint64 `protobuf:"varint,10,opt,name=allocationPointerEnd,proto3" json:"allocationPointerEnd,omitempty"`
+	ProxyNonce                uint64 `protobuf:"varint,11,opt,name=proxyNonce,proto3" json:"proxyNonce,omitempty"`
+	LastAction                uint64 `protobuf:"varint,12,opt,name=lastAction,proto3" json:"lastAction,omitempty"`
+	Nonce                     uint64 `protobuf:"varint,13,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Ready                     uint64 `protobuf:"varint,14,opt,name=ready,proto3" json:"ready,omitempty"`
+	CheckpointBlock           uint64 `protobuf:"varint,15,opt,name=checkpointBlock,proto3" json:"checkpointBlock,omitempty"`
+	ConnectionCapacityMaximum uint64 `protobuf:"varint,16,opt,name=connectionCapacityMaximum,proto3" json:"connectionCapacityMaximum,omitempty"` // Substation per-player limit; zero is unlimited.
 }
 
 func (x *GridAttributes) Reset() {
@@ -1760,6 +1811,13 @@ func (x *GridAttributes) GetCheckpointBlock() uint64 {
 	return 0
 }
 
+func (x *GridAttributes) GetConnectionCapacityMaximum() uint64 {
+	if x != nil {
+		return x.ConnectionCapacityMaximum
+	}
+	return 0
+}
+
 var File_structs_structs_grid_proto protoreflect.FileDescriptor
 
 var file_structs_structs_grid_proto_rawDesc = []byte{
@@ -1771,7 +1829,7 @@ var file_structs_structs_grid_proto_rawDesc = []byte{
 	0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
 	0x65, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0xfa, 0x03, 0x0a, 0x0e, 0x47, 0x72,
+	0x28, 0x04, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0xb8, 0x04, 0x0a, 0x0e, 0x47, 0x72,
 	0x69, 0x64, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x12, 0x10, 0x0a, 0x03,
 	0x6f, 0x72, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x03, 0x6f, 0x72, 0x65, 0x12, 0x12,
 	0x0a, 0x04, 0x66, 0x75, 0x65, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x04, 0x66, 0x75,
@@ -1803,17 +1861,21 @@ var file_structs_structs_grid_proto_rawDesc = []byte{
 	0x0e, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x72, 0x65, 0x61, 0x64, 0x79, 0x12, 0x28, 0x0a, 0x0f,
 	0x63, 0x68, 0x65, 0x63, 0x6b, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x18,
 	0x0f, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x63, 0x68, 0x65, 0x63, 0x6b, 0x70, 0x6f, 0x69, 0x6e,
-	0x74, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x42, 0x9f, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x09,
-	0x47, 0x72, 0x69, 0x64, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03,
-	0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a,
-	0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x12, 0x3c, 0x0a, 0x19, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63,
+	0x74, 0x69, 0x6f, 0x6e, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x4d, 0x61, 0x78, 0x69,
+	0x6d, 0x75, 0x6d, 0x18, 0x10, 0x20, 0x01, 0x28, 0x04, 0x52, 0x19, 0x63, 0x6f, 0x6e, 0x6e, 0x65,
+	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x4d, 0x61, 0x78,
+	0x69, 0x6d, 0x75, 0x6d, 0x42, 0x9f, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x09, 0x47, 0x72,
+	0x69, 0x64, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53,
+	0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64,
+	0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

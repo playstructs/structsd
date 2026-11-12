@@ -31,6 +31,12 @@ func (gs GenesisState) Validate() error {
 		return err
 	}
 
+	for _, planet := range gs.PlanetList {
+		if planet.Sector != 0 && !IsPlanetSector(planet.Sector) {
+			return NewParameterValidationError("planet.sector", planet.Sector, "invalid_sector")
+		}
+	}
+
 	// Constructors reject undeclared proto3 enum values. Imports must do the
 	// same; legacy live state is normalized by the v0.22 upgrade before capture.
 	for _, allocation := range gs.AllocationList {

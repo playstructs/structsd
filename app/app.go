@@ -85,6 +85,7 @@ import (
 	v0_20_0 "structs/app/upgrades/v0_20_0"
 	v0_21_0 "structs/app/upgrades/v0_21_0"
 	v0_22_0 "structs/app/upgrades/v0_22_0"
+	v0_23_0 "structs/app/upgrades/v0_23_0"
 	"structs/docs"
 
 	upgradetypes "cosmossdk.io/x/upgrade/types"
@@ -381,6 +382,7 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, appOpts servertypes.App
 		SignModeHandler: txConfig.SignModeHandler(),
 		CircuitKeeper:  &app.CircuitBreakerKeeper,
 		StructsKeeper:  app.StructsKeeper,
+		GroupKeeper:   app.GroupKeeper,
 
 		// Consensus-critical limits are binary-deterministic defaults, not local config.
 		MaxFreeTxSize:     structsante.DefaultMaxFreeTxSize,
@@ -418,6 +420,7 @@ func (app *App) RegisterUpgradeHandlers() {
 		v0_20_0.NewUpgrade(),
 		v0_21_0.NewUpgrade(),
 		v0_22_0.NewUpgrade(),
+		v0_23_0.NewUpgrade(),
 	}
 
 	for _, upgrade := range upgradesList {

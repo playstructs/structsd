@@ -40,6 +40,7 @@ enum gridAttributeType {
     nonce                   = 12;
     ready                   = 13;
     checkpointBlock         = 14;
+    connectionCapacityMaximum = 15; // Substation per-player limit; zero is unlimited.
 }
 
 enum allocationType {

@@ -536,6 +536,9 @@ func isGenesisGridImportable(attributeId string) bool {
 	switch types.GridAttributeType(attrTypeId) {
 	case types.GridAttributeType_proxyNonce, types.GridAttributeType_nonce:
 		return true
+	case types.GridAttributeType_connectionCapacityMaximum:
+        // This is operator configuration, not a derived capacity counter.
+        return keeper.ObjectIdHasType(objectIdFromAttributeId(attributeId), types.ObjectType_substation)
 	case types.GridAttributeType_ore:
 		objectId := objectIdFromAttributeId(attributeId)
 		// Neither stored nor buried ore can be rebuilt from object records.

@@ -2117,6 +2117,7 @@ recover_state() {
 }
 
 GENERATOR_TEST_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+source "${GENERATOR_TEST_DIR}/substation_capacity_maximum.sh"
 source "${GENERATOR_TEST_DIR}/attack_run.sh"
 source "${GENERATOR_TEST_DIR}/defender_counter_fixture.sh"
 source "${GENERATOR_TEST_DIR}/dead_bomber.sh"
@@ -2815,6 +2816,9 @@ assert_gt "Substation capacity" 0 "${SUB_CAP}"
 echo "  Substation incoming capacity: ${SUB_CAP}, outgoing allocation load: ${SUB_LOAD}"
 SUB_EXPECTED_SHARE=$(echo "${SUB_JSON}" | python3 -c 'import json,sys; g=json.load(sys.stdin)["gridAttributes"]; print(max(int(g.get("capacity","0"))*9//10-int(g.get("load","0")),0)//max(1,int(g.get("connectionCount","0"))))')
 assert_eq "Substation player share includes 10% operating loss" "${SUB_EXPECTED_SHARE}" "$(jqr "${SUB_JSON}" '.gridAttributes.connectionCapacity // "0"')"
+
+# v0.23.0: isolated capped-share lifecycle; restores player links and feeder power.
+run_substation_capacity_maximum_tests
 
 # ─── Dump all players ───
 info "All players state"
@@ -5314,6 +5318,14 @@ echo "  Player 4 Planet: ${PLAYER_4_PLANET_ID}  Fleet: ${PLAYER_4_FLEET_ID}"
 P4_PLANET_JSON=$(query query structs planet "${PLAYER_4_PLANET_ID}")
 assert_eq "Player 4 planet named on explore" "NewEden" "$(jqr "${P4_PLANET_JSON}" '.Planet.name')"
 
+# Sector is assigned once at creation and exposed by the normal planet query.
+for sector_planet in "${PLAYER_2_PLANET_ID}" "${PLAYER_3_PLANET_ID}" "${PLAYER_4_PLANET_ID}"; do
+    sector_value=$(get_planet_field "${sector_planet}" sector)
+    sector_valid=false
+    case "${sector_value}" in 127|999|44) sector_valid=true ;; esac
+    assert_eq "Planet ${sector_planet} has a valid sector" "true" "${sector_valid}"
+done
+
 # Verify planets exist
 info "Verifying planets"
 PLANET_COUNT=$(query query structs planet-all | jq '.Planet | length' 2>/dev/null || echo 0)
@@ -7447,8 +7459,10 @@ assert_eq "Substation pfp set" "https://example.com/sub.png" "${SUB_PFP}"
 
 # ─── Planet Name ───
 
+P2_SECTOR_BEFORE_RENAME=$(get_planet_field "${PLAYER_2_PLANET_ID}" sector)
 run_tx "Setting player 2 planet name" \
     tx structs planet-update-name "${PLAYER_2_PLANET_ID}" "AlphaPrime" --from player_2
+assert_eq "Planet rename preserves sector" "${P2_SECTOR_BEFORE_RENAME}" "$(get_planet_field "${PLAYER_2_PLANET_ID}" sector)"
 
 PLANET_JSON=$(query query structs planet "${PLAYER_2_PLANET_ID}")
 PLANET_NAME=$(jqr "${PLANET_JSON}" '.Planet.name')

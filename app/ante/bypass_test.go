@@ -123,7 +123,7 @@ func TestNestedStructsMsgDecorator_RejectsStructsInsideMsgExec(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	dec := sante.NewNestedStructsMsgDecorator()
+	dec := sante.NewNestedStructsMsgDecorator(nil)
 	next, called := identityHandler()
 
 	tx := mockTx{msgs: []sdk.Msg{&authz.MsgExec{Grantee: "structs1grantee", Msgs: []*codectypes.Any{inner}}}}
@@ -147,7 +147,7 @@ func TestNestedStructsMsgDecorator_RejectsStructsInsideNestedMsgExec(t *testing.
 	})
 	require.NoError(t, err)
 
-	dec := sante.NewNestedStructsMsgDecorator()
+	dec := sante.NewNestedStructsMsgDecorator(nil)
 	next, called := identityHandler()
 	tx := mockTx{msgs: []sdk.Msg{&authz.MsgExec{
 		Grantee: "structs1grantee",
@@ -167,7 +167,7 @@ func TestNestedStructsMsgDecorator_AllowsNonStructsInsideMsgExec(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	dec := sante.NewNestedStructsMsgDecorator()
+	dec := sante.NewNestedStructsMsgDecorator(nil)
 	next, called := identityHandler()
 
 	tx := mockTx{msgs: []sdk.Msg{&authz.MsgExec{Grantee: "structs1grantee", Msgs: []*codectypes.Any{inner}}}}
@@ -178,7 +178,7 @@ func TestNestedStructsMsgDecorator_AllowsNonStructsInsideMsgExec(t *testing.T) {
 }
 
 func TestNestedStructsMsgDecorator_IgnoresOrdinaryTxs(t *testing.T) {
-	dec := sante.NewNestedStructsMsgDecorator()
+	dec := sante.NewNestedStructsMsgDecorator(nil)
 	next, called := identityHandler()
 
 	tx := mockTx{msgs: []sdk.Msg{&types.MsgFleetMove{Creator: "structs1alice", FleetId: "2-1"}}}

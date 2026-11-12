@@ -112,6 +112,7 @@ var KnownStructsMessages = map[string]bool{
 	"/structs.structs.MsgSubstationCreate":                               true,
 	"/structs.structs.MsgSubstationDelete":                               true,
 	"/structs.structs.MsgSubstationUpdateName":                           true,
+	"/structs.structs.MsgSubstationUpdateConnectionCapacityMaximum": true,
 	"/structs.structs.MsgSubstationUpdatePfp":                            true,
 	"/structs.structs.MsgSubstationPlayerConnect":                        true,
 	"/structs.structs.MsgSubstationPlayerDisconnect":                     true,
@@ -215,6 +216,9 @@ var PermissionMap = map[string]types.Permission{
 	"/structs.structs.MsgAllocationCreate":  types.PermSourceAllocation,
 	"/structs.structs.MsgAllocationUpdate":  types.PermSourceAllocation,
 	"/structs.structs.MsgProviderCreate":    types.PermSourceAllocation,
+
+	// Substation configuration (not cosmetic UGC moderation).
+	"/structs.structs.MsgSubstationUpdateConnectionCapacityMaximum": types.PermUpdate,
 
 	// Connection management
 	"/structs.structs.MsgSubstationAllocationConnect":    types.PermAllocationConnection,
